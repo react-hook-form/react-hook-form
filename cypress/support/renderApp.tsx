@@ -1,14 +1,18 @@
+import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
+import { AppRoutes } from '@app/app';
 import { cleanup, render } from '@testing-library/react';
-import { vi } from 'vitest';
 
 export async function renderApp(url: string) {
   cleanup();
-  vi.resetModules();
 
-  const { AppRoutesAt } = await import('./AppRoutes');
   const path = new URL(url, 'http://localhost:3000').pathname;
 
-  return render(AppRoutesAt(path));
+  return render(
+    <MemoryRouter initialEntries={[path]}>
+      <AppRoutes />
+    </MemoryRouter>,
+  );
 }
 
 export function parseAppPath(url: string) {

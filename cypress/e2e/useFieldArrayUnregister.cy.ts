@@ -1,6 +1,7 @@
+import { fireEvent } from '@testing-library/react';
 import { describe, it } from 'vitest';
+import { userEvent } from 'vitest/browser';
 
-import * as cy from '../support/cy';
 import {
   expectRenderCountDelta,
   getRenderCount,
@@ -11,24 +12,55 @@ describe('useFieldArrayUnregister', () => {
   it('should behaviour correctly', async () => {
     await renderApp('http://localhost:3000/UseFieldArrayUnregister');
     const renderCountStart = getRenderCount();
-    await cy.clearAndType('#field0', 'bill');
+    await userEvent.clear(document.querySelector('#field0')!);
+    await userEvent.type(document.querySelector('#field0')!, 'bill');
 
-    await cy.type('input[name="data.0.conditional"]', 'test');
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="data.0.conditional"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
 
-    cy.expectJson('#dirtyFields', {
+    expect(
+      JSON.parse(document.querySelector('#dirtyFields')!.textContent ?? ''),
+    ).toEqual({
       data: [{ name: true, conditional: true }, null, null],
     });
 
-    await cy.blur('input[name="data.0.conditional"]');
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="data.0.conditional"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
 
-    cy.expectJson('#touched', [{ name: true, conditional: true }]);
+    expect(
+      JSON.parse(document.querySelector('#touched')!.textContent ?? ''),
+    ).toEqual([{ name: true, conditional: true }]);
 
-    await cy.click('#prepend');
+    await userEvent.click(document.querySelector('#prepend')!);
 
-    cy.expectNotExist('input[name="data.0.conditional"]');
-    cy.expectValue('input[name="data.1.conditional"]', '');
+    expect(
+      document.querySelector('input[name="data.0.conditional"]'),
+    ).toBeNull();
+    expect(
+      (
+        document.querySelector('input[name="data.1.conditional"]')! as
+          | HTMLInputElement
+          | HTMLSelectElement
+      ).value,
+    ).toBe('');
 
-    cy.expectJson('#dirtyFields', {
+    expect(
+      JSON.parse(document.querySelector('#dirtyFields')!.textContent ?? ''),
+    ).toEqual({
       data: [
         { name: true, conditional: true },
         { name: true, conditional: true },
@@ -37,16 +69,38 @@ describe('useFieldArrayUnregister', () => {
       ],
     });
 
-    cy.expectJson('#touched', [null, { name: true, conditional: true }]);
+    expect(
+      JSON.parse(document.querySelector('#touched')!.textContent ?? ''),
+    ).toEqual([null, { name: true, conditional: true }]);
 
-    await cy.blur('input[name="data.0.name"]');
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="data.0.name"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
 
-    await cy.click('#swap');
+    await userEvent.click(document.querySelector('#swap')!);
 
-    cy.expectNotExist('input[name="data.1.conditional"]');
-    cy.expectValue('input[name="data.2.conditional"]', '');
+    expect(
+      document.querySelector('input[name="data.1.conditional"]'),
+    ).toBeNull();
+    expect(
+      (
+        document.querySelector('input[name="data.2.conditional"]')! as
+          | HTMLInputElement
+          | HTMLSelectElement
+      ).value,
+    ).toBe('');
 
-    cy.expectJson('#dirtyFields', {
+    expect(
+      JSON.parse(document.querySelector('#dirtyFields')!.textContent ?? ''),
+    ).toEqual({
       data: [
         { name: true },
         null,
@@ -55,20 +109,30 @@ describe('useFieldArrayUnregister', () => {
       ],
     });
 
-    cy.expectJson('#touched', [
+    expect(
+      JSON.parse(document.querySelector('#touched')!.textContent ?? ''),
+    ).toEqual([
       { name: true },
       null,
       { name: true, conditional: true },
       { name: true },
     ]);
 
-    await cy.click('#insert');
+    await userEvent.click(document.querySelector('#insert')!);
 
-    await cy.click('#insert');
+    await userEvent.click(document.querySelector('#insert')!);
 
-    await cy.type('input[name="data.4.name"]', 'test');
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="data.4.name"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
 
-    cy.expectJson('#dirtyFields', {
+    expect(
+      JSON.parse(document.querySelector('#dirtyFields')!.textContent ?? ''),
+    ).toEqual({
       data: [
         { name: true },
         { name: true, conditional: true },
@@ -79,7 +143,9 @@ describe('useFieldArrayUnregister', () => {
       ],
     });
 
-    cy.expectJson('#touched', [
+    expect(
+      JSON.parse(document.querySelector('#touched')!.textContent ?? ''),
+    ).toEqual([
       { name: true },
       { name: true },
       { name: true },
@@ -88,11 +154,17 @@ describe('useFieldArrayUnregister', () => {
       { name: true },
     ]);
 
-    await cy.click('#move');
+    await userEvent.click(document.querySelector('#move')!);
 
-    await cy.clearAndType('input[name="data.2.name"]', 'bill');
+    await userEvent.clear(document.querySelector('input[name="data.2.name"]')!);
+    await userEvent.type(
+      document.querySelector('input[name="data.2.name"]')!,
+      'bill',
+    );
 
-    cy.expectJson('#dirtyFields', {
+    expect(
+      JSON.parse(document.querySelector('#dirtyFields')!.textContent ?? ''),
+    ).toEqual({
       data: [
         { name: true },
         { name: true },
@@ -103,7 +175,9 @@ describe('useFieldArrayUnregister', () => {
       ],
     });
 
-    cy.expectJson('#touched', [
+    expect(
+      JSON.parse(document.querySelector('#touched')!.textContent ?? ''),
+    ).toEqual([
       { name: true },
       { name: true },
       { name: true, conditional: true },
@@ -112,30 +186,78 @@ describe('useFieldArrayUnregister', () => {
       { name: true },
     ]);
 
-    await cy.click('#delete1');
+    await userEvent.click(document.querySelector('#delete1')!);
 
-    const submitData = cy.getFieldArraySubmitData();
-    await cy.click('#submit');
+    const submitData = Array.from(document.querySelectorAll('ul > li')).map(
+      (li) => {
+        const nameInput = li.querySelector(
+          'input[name$=".name"]',
+        ) as HTMLInputElement;
+        const conditionalInput = li.querySelector(
+          'input[name$=".conditional"]',
+        ) as HTMLInputElement | null;
+        return conditionalInput
+          ? { name: nameInput.value, conditional: conditionalInput.value }
+          : { name: nameInput.value };
+      },
+    );
+    await userEvent.click(document.querySelector('#submit')!);
 
-    cy.expectJson('#result', {
+    expect(
+      JSON.parse(document.querySelector('#result')!.textContent ?? ''),
+    ).toEqual({
       data: submitData,
     });
 
-    await cy.type('input[name="data.3.name"]', 'test');
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="data.3.name"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
 
-    const submitData2 = cy.getFieldArraySubmitData();
-    await cy.click('#submit');
+    const submitData2 = Array.from(document.querySelectorAll('ul > li')).map(
+      (li) => {
+        const nameInput = li.querySelector(
+          'input[name$=".name"]',
+        ) as HTMLInputElement;
+        const conditionalInput = li.querySelector(
+          'input[name$=".conditional"]',
+        ) as HTMLInputElement | null;
+        return conditionalInput
+          ? { name: nameInput.value, conditional: conditionalInput.value }
+          : { name: nameInput.value };
+      },
+    );
+    await userEvent.click(document.querySelector('#submit')!);
 
-    cy.expectJson('#result', {
+    expect(
+      JSON.parse(document.querySelector('#result')!.textContent ?? ''),
+    ).toEqual({
       data: submitData2,
     });
 
-    await cy.click('#delete3');
+    await userEvent.click(document.querySelector('#delete3')!);
 
-    const submitData3 = cy.getFieldArraySubmitData();
-    await cy.click('#submit');
+    const submitData3 = Array.from(document.querySelectorAll('ul > li')).map(
+      (li) => {
+        const nameInput = li.querySelector(
+          'input[name$=".name"]',
+        ) as HTMLInputElement;
+        const conditionalInput = li.querySelector(
+          'input[name$=".conditional"]',
+        ) as HTMLInputElement | null;
+        return conditionalInput
+          ? { name: nameInput.value, conditional: conditionalInput.value }
+          : { name: nameInput.value };
+      },
+    );
+    await userEvent.click(document.querySelector('#submit')!);
 
-    cy.expectJson('#result', {
+    expect(
+      JSON.parse(document.querySelector('#result')!.textContent ?? ''),
+    ).toEqual({
       data: submitData3,
     });
 

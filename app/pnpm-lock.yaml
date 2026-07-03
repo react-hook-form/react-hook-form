@@ -814,7 +814,7 @@ packages:
 
   react-hook-form@file:..:
     resolution: {directory: .., type: directory}
-    engines: {node: '>=18.0.0'}
+    engines: {node: '>=20.19.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
 

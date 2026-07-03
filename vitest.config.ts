@@ -6,7 +6,9 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   plugins: [react()],
   resolve: {
+    dedupe: ['react', 'react-dom'],
     alias: {
+      '@app': resolve(__dirname, 'app/src'),
       'react-hook-form': resolve(__dirname, 'src/index.ts'),
     },
   },
@@ -57,7 +59,11 @@ export default defineConfig({
       {
         extends: true,
         resolve: {
+          dedupe: ['react', 'react-dom'],
           alias: {
+            '@app': resolve(__dirname, 'app/src'),
+            react: resolve(__dirname, 'node_modules/react'),
+            'react-dom': resolve(__dirname, 'node_modules/react-dom'),
             'react-hook-form': resolve(__dirname, 'dist/index.esm.mjs'),
           },
         },

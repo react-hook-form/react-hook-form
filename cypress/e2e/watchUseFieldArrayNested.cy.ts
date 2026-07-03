@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
+import { userEvent } from 'vitest/browser';
 
-import * as cy from '../support/cy';
 import {
   expectRenderCountDelta,
   getRenderCount,
@@ -11,7 +11,9 @@ describe('watchUseFieldArrayNested', () => {
   it('should watch the correct nested field array', async () => {
     await renderApp('http://localhost:3000/watchUseFieldArrayNested');
     const renderCountStart = getRenderCount();
-    cy.expectJson('#result', [
+    expect(
+      JSON.parse(document.querySelector('#result')!.textContent ?? ''),
+    ).toEqual([
       {
         firstName: 'Bill',
         keyValue: [{ name: '1a' }, { name: '1c' }],
@@ -19,13 +21,15 @@ describe('watchUseFieldArrayNested', () => {
       },
     ]);
 
-    await cy.click('#nest-append-0');
-    await cy.click('#nest-prepend-0');
-    await cy.click('#nest-insert-0');
-    await cy.click('#nest-swap-0');
-    await cy.click('#nest-move-0');
+    await userEvent.click(document.querySelector('#nest-append-0')!);
+    await userEvent.click(document.querySelector('#nest-prepend-0')!);
+    await userEvent.click(document.querySelector('#nest-insert-0')!);
+    await userEvent.click(document.querySelector('#nest-swap-0')!);
+    await userEvent.click(document.querySelector('#nest-move-0')!);
 
-    cy.expectJson('#result', [
+    expect(
+      JSON.parse(document.querySelector('#result')!.textContent ?? ''),
+    ).toEqual([
       {
         firstName: 'Bill',
         keyValue: [
@@ -39,9 +43,11 @@ describe('watchUseFieldArrayNested', () => {
       },
     ]);
 
-    await cy.click('#nest-update-0');
+    await userEvent.click(document.querySelector('#nest-update-0')!);
 
-    cy.expectJson('#result', [
+    expect(
+      JSON.parse(document.querySelector('#result')!.textContent ?? ''),
+    ).toEqual([
       {
         firstName: 'Bill',
         keyValue: [
@@ -55,11 +61,13 @@ describe('watchUseFieldArrayNested', () => {
       },
     ]);
 
-    await cy.click('#nest-remove-0');
+    await userEvent.click(document.querySelector('#nest-remove-0')!);
 
-    await cy.click('#submit');
+    await userEvent.click(document.querySelector('#submit')!);
 
-    cy.expectJson('#result', [
+    expect(
+      JSON.parse(document.querySelector('#result')!.textContent ?? ''),
+    ).toEqual([
       {
         firstName: 'Bill',
         keyValue: [
@@ -72,12 +80,14 @@ describe('watchUseFieldArrayNested', () => {
       },
     ]);
 
-    await cy.click('#prepend');
-    await cy.click('#append');
-    await cy.click('#swap');
-    await cy.click('#insert');
+    await userEvent.click(document.querySelector('#prepend')!);
+    await userEvent.click(document.querySelector('#append')!);
+    await userEvent.click(document.querySelector('#swap')!);
+    await userEvent.click(document.querySelector('#insert')!);
 
-    cy.expectJson('#result', [
+    expect(
+      JSON.parse(document.querySelector('#result')!.textContent ?? ''),
+    ).toEqual([
       { firstName: 'prepend', keyValue: [] },
       { firstName: 'insert', keyValue: [] },
       { firstName: 'append', keyValue: [] },
@@ -93,13 +103,15 @@ describe('watchUseFieldArrayNested', () => {
       },
     ]);
 
-    await cy.click('#nest-append-0');
-    await cy.click('#nest-prepend-0');
-    await cy.click('#nest-insert-0');
-    await cy.click('#nest-swap-0');
-    await cy.click('#nest-move-0');
+    await userEvent.click(document.querySelector('#nest-append-0')!);
+    await userEvent.click(document.querySelector('#nest-prepend-0')!);
+    await userEvent.click(document.querySelector('#nest-insert-0')!);
+    await userEvent.click(document.querySelector('#nest-swap-0')!);
+    await userEvent.click(document.querySelector('#nest-move-0')!);
 
-    cy.expectJson('#result', [
+    expect(
+      JSON.parse(document.querySelector('#result')!.textContent ?? ''),
+    ).toEqual([
       {
         firstName: 'prepend',
         keyValue: [{ name: 'insert' }, { name: 'prepend' }, { name: 'append' }],
@@ -118,10 +130,12 @@ describe('watchUseFieldArrayNested', () => {
       },
     ]);
 
-    await cy.click('#nest-remove-3');
-    await cy.click('#nest-remove-3');
+    await userEvent.click(document.querySelector('#nest-remove-3')!);
+    await userEvent.click(document.querySelector('#nest-remove-3')!);
 
-    cy.expectJson('#result', [
+    expect(
+      JSON.parse(document.querySelector('#result')!.textContent ?? ''),
+    ).toEqual([
       {
         firstName: 'prepend',
         keyValue: [{ name: 'insert' }, { name: 'prepend' }, { name: 'append' }],
@@ -135,37 +149,43 @@ describe('watchUseFieldArrayNested', () => {
       },
     ]);
 
-    await cy.click('#nest-remove-all-3');
-    await cy.click('#nest-remove-all-2');
-    await cy.click('#nest-remove-all-1');
-    await cy.click('#nest-remove-all-0');
+    await userEvent.click(document.querySelector('#nest-remove-all-3')!);
+    await userEvent.click(document.querySelector('#nest-remove-all-2')!);
+    await userEvent.click(document.querySelector('#nest-remove-all-1')!);
+    await userEvent.click(document.querySelector('#nest-remove-all-0')!);
 
-    cy.expectJson('#result', [
+    expect(
+      JSON.parse(document.querySelector('#result')!.textContent ?? ''),
+    ).toEqual([
       { firstName: 'prepend', keyValue: [] },
       { firstName: 'insert', keyValue: [] },
       { firstName: 'append', keyValue: [] },
       { firstName: 'Bill', lastName: 'Luo', keyValue: [] },
     ]);
 
-    await cy.click('#update');
+    await userEvent.click(document.querySelector('#update')!);
 
-    cy.expectJson('#result', [
+    expect(
+      JSON.parse(document.querySelector('#result')!.textContent ?? ''),
+    ).toEqual([
       { firstName: 'BillUpdate', keyValue: [] },
       { firstName: 'insert', keyValue: [] },
       { firstName: 'append', keyValue: [] },
       { firstName: 'Bill', lastName: 'Luo', keyValue: [] },
     ]);
 
-    await cy.click('#remove');
-    await cy.click('#remove');
-    await cy.click('#remove');
+    await userEvent.click(document.querySelector('#remove')!);
+    await userEvent.click(document.querySelector('#remove')!);
+    await userEvent.click(document.querySelector('#remove')!);
 
-    cy.expectJson('#result', [{ firstName: 'BillUpdate', keyValue: [] }]);
+    expect(
+      JSON.parse(document.querySelector('#result')!.textContent ?? ''),
+    ).toEqual([{ firstName: 'BillUpdate', keyValue: [] }]);
 
     expectRenderCountDelta(renderCountStart, 35);
 
-    await cy.click('#removeAll');
+    await userEvent.click(document.querySelector('#removeAll')!);
 
-    cy.expectContains('#result', '[]');
+    expect(document.querySelector('#result')!.textContent).toContain('[]');
   });
 });

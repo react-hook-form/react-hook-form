@@ -1,6 +1,7 @@
+import { fireEvent } from '@testing-library/react';
 import { describe, it } from 'vitest';
+import { userEvent } from 'vitest/browser';
 
-import * as cy from '../support/cy';
 import {
   expectRenderCountDelta,
   getRenderCount,
@@ -11,7 +12,9 @@ describe('form state with schema validation', () => {
   it('should return correct form state with onSubmit mode', async () => {
     await renderApp('http://localhost:3000/formStateWithSchema/onSubmit');
     const renderCountStart = getRenderCount();
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: [],
       isSubmitted: false,
       submitCount: 0,
@@ -22,9 +25,17 @@ describe('form state with schema validation', () => {
       isValid: false,
     });
 
-    await cy.type('input[name="firstName"]', 'test');
-    cy.blurInput('input[name="firstName"]');
-    cy.expectJson('#state', {
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="firstName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    fireEvent.blur(document.querySelector('input[name="firstName"]')!);
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: ['firstName'],
       isSubmitted: false,
       submitCount: 0,
@@ -35,8 +46,10 @@ describe('form state with schema validation', () => {
       isValid: false,
     });
 
-    await cy.clear('input[name="firstName"]');
-    cy.expectJson('#state', {
+    await userEvent.clear(document.querySelector('input[name="firstName"]')!);
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: [],
       isSubmitted: false,
       submitCount: 0,
@@ -47,10 +60,24 @@ describe('form state with schema validation', () => {
       isValid: false,
     });
 
-    await cy.type('input[name="firstName"]', 'test');
-    await cy.type('input[name="lastName"]', 'test');
-    cy.blurInput('input[name="lastName"]');
-    cy.expectJson('#state', {
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="firstName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="lastName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    fireEvent.blur(document.querySelector('input[name="lastName"]')!);
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: ['firstName', 'lastName'],
       isSubmitted: false,
       submitCount: 0,
@@ -61,10 +88,12 @@ describe('form state with schema validation', () => {
       isValid: false,
     });
 
-    await cy.clear('input[name="lastName"]');
+    await userEvent.clear(document.querySelector('input[name="lastName"]')!);
 
-    await cy.click('#submit');
-    cy.expectJson('#state', {
+    await userEvent.click(document.querySelector('#submit')!);
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: ['firstName'],
       isSubmitted: true,
       submitCount: 1,
@@ -75,9 +104,17 @@ describe('form state with schema validation', () => {
       isValid: false,
     });
 
-    await cy.type('input[name="lastName"]', 'test');
-    await cy.click('#submit');
-    cy.expectJson('#state', {
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="lastName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await userEvent.click(document.querySelector('#submit')!);
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: ['firstName', 'lastName'],
       isSubmitted: true,
       submitCount: 2,
@@ -87,14 +124,19 @@ describe('form state with schema validation', () => {
       isSubmitSuccessful: false,
       isValid: false,
     });
-    await cy.selectOption('select[name="select"]', '1');
+    await userEvent.selectOptions(
+      document.querySelector('select[name="select"]')!,
+      '1',
+    );
     expectRenderCountDelta(renderCountStart, 13);
   });
 
   it('should return correct form state with onChange mode', async () => {
     await renderApp('http://localhost:3000/formState/onChange');
     const renderCountStart = getRenderCount();
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: [],
       isSubmitted: false,
       submitCount: 0,
@@ -105,9 +147,27 @@ describe('form state with schema validation', () => {
       isValid: false,
     });
 
-    await cy.type('input[name="firstName"]', 'test');
-    await cy.blur('input[name="firstName"]');
-    cy.expectJson('#state', {
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="firstName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="firstName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: ['firstName'],
       isSubmitted: false,
       submitCount: 0,
@@ -118,8 +178,10 @@ describe('form state with schema validation', () => {
       isValid: false,
     });
 
-    await cy.clear('input[name="firstName"]');
-    cy.expectJson('#state', {
+    await userEvent.clear(document.querySelector('input[name="firstName"]')!);
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: [],
       isSubmitted: false,
       submitCount: 0,
@@ -130,10 +192,34 @@ describe('form state with schema validation', () => {
       isValid: false,
     });
 
-    await cy.type('input[name="firstName"]', 'test');
-    await cy.type('input[name="lastName"]', 'test');
-    await cy.blur('input[name="lastName"]');
-    cy.expectJson('#state', {
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="firstName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="lastName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="lastName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: ['firstName', 'lastName'],
       isSubmitted: false,
       submitCount: 0,
@@ -144,10 +230,12 @@ describe('form state with schema validation', () => {
       isValid: true,
     });
 
-    await cy.clear('input[name="lastName"]');
+    await userEvent.clear(document.querySelector('input[name="lastName"]')!);
 
-    await cy.click('#submit');
-    cy.expectJson('#state', {
+    await userEvent.click(document.querySelector('#submit')!);
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: ['firstName'],
       isSubmitted: true,
       submitCount: 1,
@@ -158,9 +246,17 @@ describe('form state with schema validation', () => {
       isValid: false,
     });
 
-    await cy.type('input[name="lastName"]', 'test');
-    await cy.click('#submit');
-    cy.expectJson('#state', {
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="lastName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await userEvent.click(document.querySelector('#submit')!);
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: ['firstName', 'lastName'],
       isSubmitted: true,
       submitCount: 2,
@@ -176,7 +272,9 @@ describe('form state with schema validation', () => {
   it('should return correct form state with onBlur mode', async () => {
     await renderApp('http://localhost:3000/formState/onBlur');
     const renderCountStart = getRenderCount();
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: [],
       isSubmitted: false,
       submitCount: 0,
@@ -187,9 +285,27 @@ describe('form state with schema validation', () => {
       isValid: false,
     });
 
-    await cy.type('input[name="firstName"]', 'test');
-    await cy.blur('input[name="firstName"]');
-    cy.expectJson('#state', {
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="firstName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="firstName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: ['firstName'],
       isSubmitted: false,
       submitCount: 0,
@@ -200,8 +316,10 @@ describe('form state with schema validation', () => {
       isValid: false,
     });
 
-    await cy.clear('input[name="firstName"]');
-    cy.expectJson('#state', {
+    await userEvent.clear(document.querySelector('input[name="firstName"]')!);
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: [],
       isSubmitted: false,
       submitCount: 0,
@@ -212,10 +330,34 @@ describe('form state with schema validation', () => {
       isValid: false,
     });
 
-    await cy.type('input[name="firstName"]', 'test');
-    await cy.type('input[name="lastName"]', 'test');
-    await cy.blur('input[name="lastName"]');
-    cy.expectJson('#state', {
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="firstName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="lastName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="lastName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: ['firstName', 'lastName'],
       isSubmitted: false,
       submitCount: 0,
@@ -226,10 +368,12 @@ describe('form state with schema validation', () => {
       isValid: true,
     });
 
-    await cy.clear('input[name="lastName"]');
+    await userEvent.clear(document.querySelector('input[name="lastName"]')!);
 
-    await cy.click('#submit');
-    cy.expectJson('#state', {
+    await userEvent.click(document.querySelector('#submit')!);
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: ['firstName'],
       isSubmitted: true,
       submitCount: 1,
@@ -240,9 +384,17 @@ describe('form state with schema validation', () => {
       isValid: false,
     });
 
-    await cy.type('input[name="lastName"]', 'test');
-    await cy.click('#submit');
-    cy.expectJson('#state', {
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="lastName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await userEvent.click(document.querySelector('#submit')!);
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: ['firstName', 'lastName'],
       isSubmitted: true,
       submitCount: 2,
@@ -258,12 +410,46 @@ describe('form state with schema validation', () => {
   it('should reset dirty value when inputs reset back to default with onSubmit mode', async () => {
     await renderApp('http://localhost:3000/formState/onSubmit');
     const renderCountStart = getRenderCount();
-    await cy.type('input[name="firstName"]', 'test');
-    await cy.blur('input[name="firstName"]');
-    await cy.type('input[name="lastName"]', 'test');
-    await cy.blur('input[name="lastName"]');
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="firstName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="firstName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="lastName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="lastName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
 
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: ['firstName', 'lastName'],
       isSubmitted: false,
       submitCount: 0,
@@ -274,10 +460,12 @@ describe('form state with schema validation', () => {
       isValid: true,
     });
 
-    await cy.clear('input[name="firstName"]');
-    await cy.clear('input[name="lastName"]');
+    await userEvent.clear(document.querySelector('input[name="firstName"]')!);
+    await userEvent.clear(document.querySelector('input[name="lastName"]')!);
 
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: [],
       isSubmitted: false,
       submitCount: 0,
@@ -288,9 +476,24 @@ describe('form state with schema validation', () => {
       isValid: false,
     });
 
-    await cy.selectOption('select[name="select"]', 'test1');
-    await cy.blur('select[name="select"]');
-    cy.expectJson('#state', {
+    await userEvent.selectOptions(
+      document.querySelector('select[name="select"]')!,
+      'test1',
+    );
+    await (async () => {
+      const el = document.querySelector(
+        'select[name="select"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: ['select'],
       isSubmitted: false,
       submitCount: 0,
@@ -300,8 +503,13 @@ describe('form state with schema validation', () => {
       isSubmitSuccessful: false,
       isValid: false,
     });
-    await cy.selectOption('select[name="select"]', '');
-    cy.expectJson('#state', {
+    await userEvent.selectOptions(
+      document.querySelector('select[name="select"]')!,
+      '',
+    );
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: [],
       isSubmitted: false,
       submitCount: 0,
@@ -312,9 +520,21 @@ describe('form state with schema validation', () => {
       isValid: false,
     });
 
-    await cy.click('input[name="checkbox"]');
-    await cy.blur('input[name="checkbox"]');
-    cy.expectJson('#state', {
+    await userEvent.click(document.querySelector('input[name="checkbox"]')!);
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="checkbox"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: ['checkbox'],
       isSubmitted: false,
       submitCount: 0,
@@ -324,8 +544,10 @@ describe('form state with schema validation', () => {
       isSubmitSuccessful: false,
       isValid: false,
     });
-    await cy.click('input[name="checkbox"]');
-    cy.expectJson('#state', {
+    await userEvent.click(document.querySelector('input[name="checkbox"]')!);
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: [],
       isSubmitted: false,
       submitCount: 0,
@@ -336,9 +558,23 @@ describe('form state with schema validation', () => {
       isValid: false,
     });
 
-    await cy.click('input[name="checkbox-checked"]');
-    await cy.blur('input[name="checkbox-checked"]');
-    cy.expectJson('#state', {
+    await userEvent.click(
+      document.querySelector('input[name="checkbox-checked"]')!,
+    );
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="checkbox-checked"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: ['checkbox-checked'],
       isSubmitted: false,
       submitCount: 0,
@@ -354,8 +590,12 @@ describe('form state with schema validation', () => {
       isSubmitSuccessful: false,
       isValid: false,
     });
-    await cy.click('input[name="checkbox-checked"]');
-    cy.expectJson('#state', {
+    await userEvent.click(
+      document.querySelector('input[name="checkbox-checked"]')!,
+    );
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: [],
       isSubmitted: false,
       submitCount: 0,
@@ -372,9 +612,21 @@ describe('form state with schema validation', () => {
       isValid: false,
     });
 
-    await cy.click('input[name="radio"]');
-    await cy.blur('input[name="radio"]');
-    cy.expectJson('#state', {
+    await userEvent.click(document.querySelector('input[name="radio"]')!);
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="radio"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: ['radio'],
       isSubmitted: false,
       submitCount: 0,
@@ -392,8 +644,13 @@ describe('form state with schema validation', () => {
       isValid: false,
     });
 
-    await cy.selectOption('select[name="select"]', '');
-    cy.expectJson('#state', {
+    await userEvent.selectOptions(
+      document.querySelector('select[name="select"]')!,
+      '',
+    );
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: ['radio'],
       isSubmitted: false,
       submitCount: 0,
@@ -416,12 +673,46 @@ describe('form state with schema validation', () => {
   it('should reset dirty value when inputs reset back to default with onBlur mode', async () => {
     await renderApp('http://localhost:3000/formState/onBlur');
     const renderCountStart = getRenderCount();
-    await cy.type('input[name="firstName"]', 'test');
-    await cy.blur('input[name="firstName"]');
-    await cy.type('input[name="lastName"]', 'test');
-    await cy.blur('input[name="lastName"]');
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="firstName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="firstName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="lastName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="lastName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
 
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: ['firstName', 'lastName'],
       isSubmitted: false,
       submitCount: 0,
@@ -432,11 +723,23 @@ describe('form state with schema validation', () => {
       isValid: true,
     });
 
-    await cy.clear('input[name="firstName"]');
-    await cy.clear('input[name="lastName"]');
-    await cy.blur('input[name="lastName"]');
+    await userEvent.clear(document.querySelector('input[name="firstName"]')!);
+    await userEvent.clear(document.querySelector('input[name="lastName"]')!);
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="lastName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
 
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: [],
       isSubmitted: false,
       submitCount: 0,
@@ -452,12 +755,46 @@ describe('form state with schema validation', () => {
   it('should reset dirty value when inputs reset back to default with onChange mode', async () => {
     await renderApp('http://localhost:3000/formState/onChange');
     const renderCountStart = getRenderCount();
-    await cy.type('input[name="firstName"]', 'test');
-    await cy.blur('input[name="firstName"]');
-    await cy.type('input[name="lastName"]', 'test');
-    await cy.blur('input[name="lastName"]');
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="firstName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="firstName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="lastName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="lastName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
 
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: ['firstName', 'lastName'],
       isSubmitted: false,
       submitCount: 0,
@@ -468,9 +805,11 @@ describe('form state with schema validation', () => {
       isValid: true,
     });
 
-    await cy.click('#resetForm');
+    await userEvent.click(document.querySelector('#resetForm')!);
 
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: [],
       isSubmitted: false,
       submitCount: 0,
@@ -481,15 +820,49 @@ describe('form state with schema validation', () => {
       isValid: false,
     });
 
-    await cy.type('input[name="firstName"]', 'test');
-    await cy.blur('input[name="firstName"]');
-    await cy.type('input[name="lastName"]', 'test');
-    await cy.blur('input[name="lastName"]');
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="firstName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="firstName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="lastName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="lastName"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
 
-    await cy.clear('input[name="firstName"]');
-    await cy.clear('input[name="lastName"]');
+    await userEvent.clear(document.querySelector('input[name="firstName"]')!);
+    await userEvent.clear(document.querySelector('input[name="lastName"]')!);
 
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       dirty: [],
       isSubmitted: false,
       submitCount: 0,

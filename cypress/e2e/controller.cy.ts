@@ -1,6 +1,8 @@
+import { fireEvent } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+import { vi } from 'vitest';
+import { userEvent } from 'vitest/browser';
 
-import * as cy from '../support/cy';
 import {
   expectRenderCountDelta,
   getRenderCount,
@@ -11,22 +13,44 @@ describe('controller basic form validation', () => {
   it('should validate the form and reset the form', async () => {
     await renderApp('http://localhost:3000/controller/onSubmit');
     const renderCountStart = getRenderCount();
-    await cy.click('#submit');
+    await userEvent.click(document.querySelector('#submit')!);
 
-    cy.expectContains('#TextField', 'TextField Error');
-    cy.expectContains('#RadioGroup', 'RadioGroup Error');
-    cy.expectContains('#Checkbox', 'Checkbox Error');
-    cy.expectContains('#Select', 'Select Error');
-    cy.expectContains('#switch', 'switch Error');
+    expect(document.querySelector('#TextField')!.textContent).toContain(
+      'TextField Error',
+    );
+    expect(document.querySelector('#RadioGroup')!.textContent).toContain(
+      'RadioGroup Error',
+    );
+    expect(document.querySelector('#Checkbox')!.textContent).toContain(
+      'Checkbox Error',
+    );
+    expect(document.querySelector('#Select')!.textContent).toContain(
+      'Select Error',
+    );
+    expect(document.querySelector('#switch')!.textContent).toContain(
+      'switch Error',
+    );
 
-    await cy.click('#input-checkbox input');
-    await cy.clickAt('input[name="gender1"]', 0);
-    await cy.type('#input-textField input', 'test');
-    await cy.click('#input-select > div > div');
-    await cy.clickFirstMuiPopoverOption();
-    await cy.click('#input-switch input');
-    await cy.click('#input-ReactSelect > div');
-    await cy.clickAt('#input-ReactSelect > div > div', 1);
+    await userEvent.click(document.querySelector('#input-checkbox input')!);
+    await userEvent.click(
+      Array.from(document.querySelectorAll('input[name="gender1"]'))[0],
+    );
+    await (async () => {
+      const el = document.querySelector(
+        '#input-textField input',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await userEvent.click(document.querySelector('#input-select > div > div')!);
+    await userEvent.click(document.querySelector('.MuiPopover-root ul > li')!);
+    await userEvent.click(document.querySelector('#input-switch input')!);
+    await userEvent.click(document.querySelector('#input-ReactSelect > div')!);
+    await userEvent.click(
+      Array.from(
+        document.querySelectorAll('#input-ReactSelect > div > div'),
+      )[1],
+    );
 
     expect(
       Array.from(document.querySelectorAll('.container > p')).filter((p) =>
@@ -39,54 +63,162 @@ describe('controller basic form validation', () => {
   it('should validate the form with onBlur mode and reset the form', async () => {
     await renderApp('http://localhost:3000/controller/onBlur');
     const renderCountStart = getRenderCount();
-    cy.expectNoParagraphs();
-    await cy.focus('#input-checkbox input');
-    await cy.blur('#input-checkbox input');
-    await cy.waitFor(() => cy.expectContains('#Checkbox', 'Checkbox Error'));
+    expect(
+      Array.from(document.querySelectorAll('p')).filter((p) =>
+        p.textContent?.includes('error'),
+      ),
+    ).toHaveLength(0);
+    await (async () => {
+      const el = document.querySelector(
+        '#input-checkbox input',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.focus(el);
+      else await userEvent.click(el);
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        '#input-checkbox input',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    await vi.waitFor(() =>
+      expect(document.querySelector('#Checkbox')!.textContent).toContain(
+        'Checkbox Error',
+      ),
+    );
 
-    await cy.focus('#input-textField input');
-    await cy.blur('#input-textField input');
-    cy.expectContains('#TextField', 'TextField Error');
+    await (async () => {
+      const el = document.querySelector(
+        '#input-textField input',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.focus(el);
+      else await userEvent.click(el);
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        '#input-textField input',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    expect(document.querySelector('#TextField')!.textContent).toContain(
+      'TextField Error',
+    );
 
-    await cy.focusMuiSelect('#input-select > div > div');
-    await cy.blurMuiSelect('#input-select > div > div');
-    await cy.waitFor(() => cy.expectContains('#Select', 'Select Error'));
+    fireEvent.focus(document.querySelector('#input-select > div > div')!);
+    fireEvent.blur(document.querySelector('#input-select > div > div')!);
+    await vi.waitFor(() =>
+      expect(document.querySelector('#Select')!.textContent).toContain(
+        'Select Error',
+      ),
+    );
 
-    await cy.focus('#input-switch input');
-    await cy.blur('#input-switch input');
-    await cy.waitFor(() => cy.expectContains('#switch', 'switch Error'));
+    await (async () => {
+      const el = document.querySelector(
+        '#input-switch input',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.focus(el);
+      else await userEvent.click(el);
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        '#input-switch input',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    await vi.waitFor(() =>
+      expect(document.querySelector('#switch')!.textContent).toContain(
+        'switch Error',
+      ),
+    );
 
-    await cy.click('#input-checkbox input');
-    await cy.type('#input-textField input', 'test');
-    await cy.click('#input-select > div > div');
-    await cy.clickFirstMuiPopoverOption();
-    await cy.click('#input-switch input');
-    await cy.blur('#input-switch input');
+    await userEvent.click(document.querySelector('#input-checkbox input')!);
+    await (async () => {
+      const el = document.querySelector(
+        '#input-textField input',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await userEvent.click(document.querySelector('#input-select > div > div')!);
+    await userEvent.click(document.querySelector('.MuiPopover-root ul > li')!);
+    await userEvent.click(document.querySelector('#input-switch input')!);
+    await (async () => {
+      const el = document.querySelector(
+        '#input-switch input',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
 
-    cy.expectNoParagraphs();
+    expect(
+      Array.from(document.querySelectorAll('p')).filter((p) =>
+        p.textContent?.includes('error'),
+      ),
+    ).toHaveLength(0);
     expectRenderCountDelta(renderCountStart, 9);
   });
 
   it('should validate the form with onChange mode and reset the form', async () => {
     await renderApp('http://localhost:3000/controller/onChange');
     const renderCountStart = getRenderCount();
-    await cy.click('#input-checkbox input');
-    await cy.click('#input-checkbox input');
-    cy.expectContains('#Checkbox', 'Checkbox Error');
+    await userEvent.click(document.querySelector('#input-checkbox input')!);
+    await userEvent.click(document.querySelector('#input-checkbox input')!);
+    expect(document.querySelector('#Checkbox')!.textContent).toContain(
+      'Checkbox Error',
+    );
 
-    await cy.type('#input-textField input', 'test');
-    await cy.clear('#input-textField input');
-    cy.expectContains('#TextField', 'TextField Error');
+    await (async () => {
+      const el = document.querySelector(
+        '#input-textField input',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await userEvent.clear(document.querySelector('#input-textField input')!);
+    expect(document.querySelector('#TextField')!.textContent).toContain(
+      'TextField Error',
+    );
 
-    await cy.click('#input-switch input');
-    await cy.click('#input-switch input');
-    cy.expectContains('#switch', 'switch Error');
+    await userEvent.click(document.querySelector('#input-switch input')!);
+    await userEvent.click(document.querySelector('#input-switch input')!);
+    expect(document.querySelector('#switch')!.textContent).toContain(
+      'switch Error',
+    );
 
-    await cy.click('#input-checkbox input');
-    await cy.type('#input-textField input', 'test');
-    await cy.click('#input-switch input');
+    await userEvent.click(document.querySelector('#input-checkbox input')!);
+    await (async () => {
+      const el = document.querySelector(
+        '#input-textField input',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await userEvent.click(document.querySelector('#input-switch input')!);
 
-    cy.expectNoParagraphs();
+    expect(
+      Array.from(document.querySelectorAll('p')).filter((p) =>
+        p.textContent?.includes('error'),
+      ),
+    ).toHaveLength(0);
     expectRenderCountDelta(renderCountStart, 7);
   });
 });

@@ -1,6 +1,7 @@
+import { fireEvent } from '@testing-library/react';
 import { describe, it } from 'vitest';
+import { userEvent } from 'vitest/browser';
 
-import * as cy from '../support/cy';
 import {
   expectRenderCountDelta,
   getRenderCount,
@@ -11,7 +12,9 @@ describe('form state with nested fields', () => {
   it('should return correct form state with onSubmit mode', async () => {
     await renderApp('http://localhost:3000/formStateWithNestedFields/onSubmit');
     const renderCountStart = getRenderCount();
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: false,
       dirty: [],
       isSubmitted: false,
@@ -22,10 +25,28 @@ describe('form state with nested fields', () => {
       isValid: false,
     });
 
-    await cy.type('input[name="left.test1"]', 'test');
-    await cy.blur('input[name="left.test1"]');
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test1"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test1"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
 
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: true,
       dirty: ['left.test1'],
       isSubmitted: false,
@@ -36,9 +57,11 @@ describe('form state with nested fields', () => {
       isValid: false,
     });
 
-    await cy.clear('input[name="left.test1"]');
+    await userEvent.clear(document.querySelector('input[name="left.test1"]')!);
 
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: false,
       dirty: [],
       isSubmitted: false,
@@ -49,10 +72,34 @@ describe('form state with nested fields', () => {
       isValid: false,
     });
 
-    await cy.type('input[name="left.test1"]', 'test');
-    await cy.type('input[name="left.test2"]', 'test');
-    await cy.blur('input[name="left.test2"]');
-    cy.expectJson('#state', {
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test1"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test2"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test2"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: true,
       dirty: ['left.test1', 'left.test2'],
       isSubmitted: false,
@@ -63,10 +110,12 @@ describe('form state with nested fields', () => {
       isValid: true,
     });
 
-    await cy.clear('input[name="left.test2"]');
+    await userEvent.clear(document.querySelector('input[name="left.test2"]')!);
 
-    await cy.click('#submit');
-    cy.expectJson('#state', {
+    await userEvent.click(document.querySelector('#submit')!);
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: true,
       dirty: ['left.test1'],
       isSubmitted: true,
@@ -77,9 +126,17 @@ describe('form state with nested fields', () => {
       isValid: false,
     });
 
-    await cy.type('input[name="left.test2"]', 'test');
-    await cy.click('#submit');
-    cy.expectJson('#state', {
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test2"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await userEvent.click(document.querySelector('#submit')!);
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: true,
       dirty: ['left.test1', 'left.test2'],
       isSubmitted: true,
@@ -95,7 +152,9 @@ describe('form state with nested fields', () => {
   it('should return correct form state with onChange mode', async () => {
     await renderApp('http://localhost:3000/formStateWithNestedFields/onChange');
     const renderCountStart = getRenderCount();
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: false,
       dirty: [],
       isSubmitted: false,
@@ -106,9 +165,27 @@ describe('form state with nested fields', () => {
       isValid: false,
     });
 
-    await cy.type('input[name="left.test1"]', 'test');
-    await cy.blur('input[name="left.test1"]');
-    cy.expectJson('#state', {
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test1"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test1"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: true,
       dirty: ['left.test1'],
       isSubmitted: false,
@@ -119,8 +196,10 @@ describe('form state with nested fields', () => {
       isValid: false,
     });
 
-    await cy.clear('input[name="left.test1"]');
-    cy.expectJson('#state', {
+    await userEvent.clear(document.querySelector('input[name="left.test1"]')!);
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: false,
       dirty: [],
       isSubmitted: false,
@@ -131,10 +210,34 @@ describe('form state with nested fields', () => {
       isValid: false,
     });
 
-    await cy.type('input[name="left.test1"]', 'test');
-    await cy.type('input[name="left.test2"]', 'test');
-    await cy.blur('input[name="left.test2"]');
-    cy.expectJson('#state', {
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test1"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test2"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test2"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: true,
       dirty: ['left.test1', 'left.test2'],
       isSubmitted: false,
@@ -145,10 +248,12 @@ describe('form state with nested fields', () => {
       isValid: true,
     });
 
-    await cy.clear('input[name="left.test2"]');
+    await userEvent.clear(document.querySelector('input[name="left.test2"]')!);
 
-    await cy.click('#submit');
-    cy.expectJson('#state', {
+    await userEvent.click(document.querySelector('#submit')!);
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: true,
       dirty: ['left.test1'],
       isSubmitted: true,
@@ -159,9 +264,17 @@ describe('form state with nested fields', () => {
       isValid: false,
     });
 
-    await cy.type('input[name="left.test2"]', 'test');
-    await cy.click('#submit');
-    cy.expectJson('#state', {
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test2"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await userEvent.click(document.querySelector('#submit')!);
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: true,
       dirty: ['left.test1', 'left.test2'],
       isSubmitted: true,
@@ -177,7 +290,9 @@ describe('form state with nested fields', () => {
   it('should return correct form state with onBlur mode', async () => {
     await renderApp('http://localhost:3000/formStateWithNestedFields/onBlur');
     const renderCountStart = getRenderCount();
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: false,
       dirty: [],
       isSubmitted: false,
@@ -188,9 +303,27 @@ describe('form state with nested fields', () => {
       isValid: false,
     });
 
-    await cy.type('input[name="left.test1"]', 'test');
-    await cy.blur('input[name="left.test1"]');
-    cy.expectJson('#state', {
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test1"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test1"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: true,
       dirty: ['left.test1'],
       isSubmitted: false,
@@ -201,8 +334,10 @@ describe('form state with nested fields', () => {
       isValid: false,
     });
 
-    await cy.clear('input[name="left.test1"]');
-    cy.expectJson('#state', {
+    await userEvent.clear(document.querySelector('input[name="left.test1"]')!);
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: false,
       dirty: [],
       isSubmitted: false,
@@ -213,10 +348,34 @@ describe('form state with nested fields', () => {
       isValid: false,
     });
 
-    await cy.type('input[name="left.test1"]', 'test');
-    await cy.type('input[name="left.test2"]', 'test');
-    await cy.blur('input[name="left.test2"]');
-    cy.expectJson('#state', {
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test1"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test2"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test2"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: true,
       dirty: ['left.test1', 'left.test2'],
       isSubmitted: false,
@@ -227,10 +386,12 @@ describe('form state with nested fields', () => {
       isValid: true,
     });
 
-    await cy.clear('input[name="left.test2"]');
+    await userEvent.clear(document.querySelector('input[name="left.test2"]')!);
 
-    await cy.click('#submit');
-    cy.expectJson('#state', {
+    await userEvent.click(document.querySelector('#submit')!);
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: true,
       dirty: ['left.test1'],
       isSubmitted: true,
@@ -241,9 +402,17 @@ describe('form state with nested fields', () => {
       isValid: false,
     });
 
-    await cy.type('input[name="left.test2"]', 'test');
-    await cy.click('#submit');
-    cy.expectJson('#state', {
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test2"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await userEvent.click(document.querySelector('#submit')!);
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: true,
       dirty: ['left.test1', 'left.test2'],
       isSubmitted: true,
@@ -259,12 +428,46 @@ describe('form state with nested fields', () => {
   it('should reset dirty value when inputs reset back to default with onSubmit mode', async () => {
     await renderApp('http://localhost:3000/formStateWithNestedFields/onSubmit');
     const renderCountStart = getRenderCount();
-    await cy.type('input[name="left.test1"]', 'test');
-    await cy.blur('input[name="left.test1"]');
-    await cy.type('input[name="left.test2"]', 'test');
-    await cy.blur('input[name="left.test2"]');
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test1"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test1"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test2"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test2"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
 
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: true,
       dirty: ['left.test1', 'left.test2'],
       isSubmitted: false,
@@ -275,10 +478,12 @@ describe('form state with nested fields', () => {
       isValid: true,
     });
 
-    await cy.clear('input[name="left.test1"]');
-    await cy.clear('input[name="left.test2"]');
+    await userEvent.clear(document.querySelector('input[name="left.test1"]')!);
+    await userEvent.clear(document.querySelector('input[name="left.test2"]')!);
 
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: false,
       dirty: [],
       isSubmitted: false,
@@ -295,12 +500,46 @@ describe('form state with nested fields', () => {
   it('should reset dirty value when inputs reset back to default with onBlur mode', async () => {
     await renderApp('http://localhost:3000/formStateWithNestedFields/onBlur');
     const renderCountStart = getRenderCount();
-    await cy.type('input[name="left.test1"]', 'test');
-    await cy.blur('input[name="left.test1"]');
-    await cy.type('input[name="left.test2"]', 'test');
-    await cy.blur('input[name="left.test2"]');
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test1"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test1"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test2"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test2"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
 
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: true,
       dirty: ['left.test1', 'left.test2'],
       isSubmitted: false,
@@ -311,11 +550,23 @@ describe('form state with nested fields', () => {
       isValid: true,
     });
 
-    await cy.clear('input[name="left.test1"]');
-    await cy.clear('input[name="left.test2"]');
-    await cy.blur('input[name="left.test2"]');
+    await userEvent.clear(document.querySelector('input[name="left.test1"]')!);
+    await userEvent.clear(document.querySelector('input[name="left.test2"]')!);
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test2"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
 
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: false,
       dirty: [],
       isSubmitted: false,
@@ -332,12 +583,46 @@ describe('form state with nested fields', () => {
   it('should reset dirty value when inputs reset back to default with onChange mode', async () => {
     await renderApp('http://localhost:3000/formStateWithNestedFields/onChange');
     const renderCountStart = getRenderCount();
-    await cy.type('input[name="left.test1"]', 'test');
-    await cy.blur('input[name="left.test1"]');
-    await cy.type('input[name="left.test2"]', 'test');
-    await cy.blur('input[name="left.test2"]');
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test1"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test1"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test2"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test2"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
 
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: true,
       dirty: ['left.test1', 'left.test2'],
       isSubmitted: false,
@@ -348,9 +633,11 @@ describe('form state with nested fields', () => {
       isValid: true,
     });
 
-    await cy.click('#resetForm');
+    await userEvent.click(document.querySelector('#resetForm')!);
 
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: false,
       dirty: [],
       isSubmitted: false,
@@ -361,15 +648,49 @@ describe('form state with nested fields', () => {
       isValid: false,
     });
 
-    await cy.type('input[name="left.test1"]', 'test');
-    await cy.blur('input[name="left.test1"]');
-    await cy.type('input[name="left.test2"]', 'test');
-    await cy.blur('input[name="left.test2"]');
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test1"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test1"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test2"]',
+      )! as HTMLInputElement;
+      if (el.type === 'date') await userEvent.fill(el, 'test');
+      else await userEvent.type(el, 'test');
+    })();
+    await (async () => {
+      const el = document.querySelector(
+        'input[name="left.test2"]',
+      )! as HTMLInputElement;
+      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
+      else {
+        await userEvent.click(el);
+        await userEvent.click(document.body);
+        if (document.activeElement === el) el.blur();
+      }
+    })();
 
-    await cy.clear('input[name="left.test1"]');
-    await cy.clear('input[name="left.test2"]');
+    await userEvent.clear(document.querySelector('input[name="left.test1"]')!);
+    await userEvent.clear(document.querySelector('input[name="left.test2"]')!);
 
-    cy.expectJson('#state', {
+    expect(
+      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
+    ).toEqual({
       isDirty: false,
       dirty: [],
       isSubmitted: false,

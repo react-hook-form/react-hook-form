@@ -1,54 +1,146 @@
-import * as cy from '../support/cy';
+import { vi } from 'vitest';
+import { userEvent } from 'vitest/browser';
+
 import { renderApp } from '../support/renderApp';
 
 describe('useFieldArray', () => {
   it('should behaviour correctly without defaultValues', async () => {
     await renderApp('http://localhost:3000/useFieldArray/normal');
-    await cy.click('#appendAsync');
+    await userEvent.click(document.querySelector('#appendAsync')!);
 
-    await cy.waitFor(() => cy.expectFocusedAttr('id', 'field0'));
+    await vi.waitFor(() =>
+      expect(document.activeElement).toHaveAttribute('id', 'field0'),
+    );
 
-    cy.expectLiInputValue(0, 'appendAsync');
+    expect(
+      (
+        Array.from(document.querySelectorAll('ul > li'))[0]?.querySelector(
+          'input',
+        ) as HTMLInputElement
+      ).value,
+    ).toBe('appendAsync');
 
-    await cy.waitFor(() => cy.expectFocusedAttr('id', 'field0'));
+    await vi.waitFor(() =>
+      expect(document.activeElement).toHaveAttribute('id', 'field0'),
+    );
 
-    await cy.click('#prependAsync');
+    await userEvent.click(document.querySelector('#prependAsync')!);
 
-    await cy.waitFor(() => cy.expectLiInputValue(0, 'prependAsync'));
+    await vi.waitFor(() =>
+      expect(
+        (
+          Array.from(document.querySelectorAll('ul > li'))[0]?.querySelector(
+            'input',
+          ) as HTMLInputElement
+        ).value,
+      ).toBe('prependAsync'),
+    );
 
-    await cy.click('#insertAsync');
+    await userEvent.click(document.querySelector('#insertAsync')!);
 
-    await cy.waitFor(() => cy.expectFocusedAttr('id', 'field1'));
+    await vi.waitFor(() =>
+      expect(document.activeElement).toHaveAttribute('id', 'field1'),
+    );
 
-    cy.expectValue('#field1', 'insertAsync');
+    expect(
+      (
+        document.querySelector('#field1')! as
+          | HTMLInputElement
+          | HTMLSelectElement
+      ).value,
+    ).toBe('insertAsync');
 
-    await cy.click('#swapAsync');
+    await userEvent.click(document.querySelector('#swapAsync')!);
 
-    await cy.waitFor(() => cy.expectValue('#field0', 'insertAsync'));
-    cy.expectValue('#field1', 'prependAsync');
+    await vi.waitFor(() =>
+      expect(
+        (
+          document.querySelector('#field0')! as
+            | HTMLInputElement
+            | HTMLSelectElement
+        ).value,
+      ).toBe('insertAsync'),
+    );
+    expect(
+      (
+        document.querySelector('#field1')! as
+          | HTMLInputElement
+          | HTMLSelectElement
+      ).value,
+    ).toBe('prependAsync');
 
-    await cy.click('#moveAsync');
+    await userEvent.click(document.querySelector('#moveAsync')!);
 
-    await cy.waitFor(() => cy.expectValue('#field1', 'insertAsync'));
-    cy.expectValue('#field0', 'prependAsync');
+    await vi.waitFor(() =>
+      expect(
+        (
+          document.querySelector('#field1')! as
+            | HTMLInputElement
+            | HTMLSelectElement
+        ).value,
+      ).toBe('insertAsync'),
+    );
+    expect(
+      (
+        document.querySelector('#field0')! as
+          | HTMLInputElement
+          | HTMLSelectElement
+      ).value,
+    ).toBe('prependAsync');
 
-    await cy.click('#updateAsync');
+    await userEvent.click(document.querySelector('#updateAsync')!);
 
-    await cy.waitFor(() => cy.expectValue('#field0', 'updateAsync'));
+    await vi.waitFor(() =>
+      expect(
+        (
+          document.querySelector('#field0')! as
+            | HTMLInputElement
+            | HTMLSelectElement
+        ).value,
+      ).toBe('updateAsync'),
+    );
 
-    await cy.click('#replaceAsync');
+    await userEvent.click(document.querySelector('#replaceAsync')!);
 
-    await cy.wait(100);
-    const replaceValues = cy.getReplaceFieldValues();
-    cy.expectLiInputValue(0, replaceValues[0]);
-    cy.expectLiInputValue(1, replaceValues[1]);
-    cy.expectLiInputValue(2, replaceValues[2]);
-    cy.expectLiInputValue(3, replaceValues[3]);
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    const replaceValues = Array.from(document.querySelectorAll('ul > li')).map(
+      (li) => (li.querySelector('input') as HTMLInputElement).value,
+    );
+    expect(
+      (
+        Array.from(document.querySelectorAll('ul > li'))[0]?.querySelector(
+          'input',
+        ) as HTMLInputElement
+      ).value,
+    ).toBe(replaceValues[0]);
+    expect(
+      (
+        Array.from(document.querySelectorAll('ul > li'))[1]?.querySelector(
+          'input',
+        ) as HTMLInputElement
+      ).value,
+    ).toBe(replaceValues[1]);
+    expect(
+      (
+        Array.from(document.querySelectorAll('ul > li'))[2]?.querySelector(
+          'input',
+        ) as HTMLInputElement
+      ).value,
+    ).toBe(replaceValues[2]);
+    expect(
+      (
+        Array.from(document.querySelectorAll('ul > li'))[3]?.querySelector(
+          'input',
+        ) as HTMLInputElement
+      ).value,
+    ).toBe(replaceValues[3]);
 
-    await cy.click('#removeAsync');
+    await userEvent.click(document.querySelector('#removeAsync')!);
 
-    await cy.click('#resetAsync');
+    await userEvent.click(document.querySelector('#resetAsync')!);
 
-    await cy.waitFor(() => cy.expectNotExist('ul > li'));
+    await vi.waitFor(() =>
+      expect(document.querySelector('ul > li')).toBeNull(),
+    );
   });
 });
