@@ -1,16 +1,9 @@
-import { describe, it } from 'vitest';
-
 import * as cy from '../support/cy';
-import {
-  expectRenderCountDelta,
-  getRenderCount,
-  renderApp,
-} from '../support/renderApp';
+import { renderApp } from '../support/renderApp';
 
 describe('useWatch', () => {
   it('should only trigger render when interact with input 1', async () => {
     await renderApp('http://localhost:3000/useWatch');
-    const renderCountStart = getRenderCount();
     const parentStart = cy.getCounterText('#parentCounter');
     const childStart = cy.getCounterText('#childCounter');
     const grandChildStart = cy.getCounterText('#grandChildCounter');
@@ -35,7 +28,6 @@ describe('useWatch', () => {
 
   it('should only trigger render when interact with input 2', async () => {
     await renderApp('http://localhost:3000/useWatch');
-    const renderCountStart = getRenderCount();
     const parentStart = cy.getCounterText('#parentCounter');
     const childStart = cy.getCounterText('#childCounter');
     const grandChildStart = cy.getCounterText('#grandChildCounter');
@@ -60,7 +52,6 @@ describe('useWatch', () => {
 
   it('should only trigger render when interact with input 3', async () => {
     await renderApp('http://localhost:3000/useWatch');
-    const renderCountStart = getRenderCount();
     const parentStart = cy.getCounterText('#parentCounter');
     const childStart = cy.getCounterText('#childCounter');
     const grandChildStart = cy.getCounterText('#grandChildCounter');

@@ -1,16 +1,9 @@
-import { describe, it } from 'vitest';
-
 import * as cy from '../support/cy';
-import {
-  expectRenderCountDelta,
-  getRenderCount,
-  renderApp,
-} from '../support/renderApp';
+import { renderApp } from '../support/renderApp';
 
 describe('watch form validation', () => {
   it('should watch all inputs', async () => {
     await renderApp('http://localhost:3000/watch');
-    const renderCountStart = getRenderCount();
     cy.expectPreJson('#watchAll', {
       testSingle: '',
       test: ['', ''],

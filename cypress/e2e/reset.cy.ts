@@ -1,16 +1,9 @@
-import { describe, it } from 'vitest';
-
 import * as cy from '../support/cy';
-import {
-  expectRenderCountDelta,
-  getRenderCount,
-  renderApp,
-} from '../support/renderApp';
+import { renderApp } from '../support/renderApp';
 
 describe('form reset', () => {
   it('should be able to re-populate the form while reset', async () => {
     await renderApp('http://localhost:3000/reset');
-    const renderCountStart = getRenderCount();
     await cy.type('input[name="firstName"]', '0 wrong');
     await cy.type('input[name="array.1"]', '1 wrong');
     await cy.type('input[name="objectData.test"]', '2 wrong');
@@ -28,7 +21,6 @@ describe('form reset', () => {
 
   it('should be able to re-populate the form while reset keeping dirty values', async () => {
     await renderApp('http://localhost:3000/resetKeepDirty');
-    const renderCountStart = getRenderCount();
     cy.expectValue('input[name="firstName"]', '');
     cy.expectValue('input[name="users"]', 'users#0');
     cy.expectValue('input[name="objectData.test"]', '');

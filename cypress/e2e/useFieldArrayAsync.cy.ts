@@ -1,16 +1,9 @@
-import { describe, it } from 'vitest';
-
 import * as cy from '../support/cy';
-import {
-  expectRenderCountDelta,
-  getRenderCount,
-  renderApp,
-} from '../support/renderApp';
+import { renderApp } from '../support/renderApp';
 
 describe('useFieldArray', () => {
   it('should behaviour correctly without defaultValues', async () => {
     await renderApp('http://localhost:3000/useFieldArray/normal');
-    const renderCountStart = getRenderCount();
     await cy.click('#appendAsync');
 
     await cy.waitFor(() => cy.expectFocusedAttr('id', 'field0'));

@@ -1,16 +1,9 @@
-import { describe, it } from 'vitest';
-
 import * as cy from '../support/cy';
-import {
-  expectRenderCountDelta,
-  getRenderCount,
-  renderApp,
-} from '../support/renderApp';
+import { renderApp } from '../support/renderApp';
 
 describe('autoUnregister', () => {
   it('should keep all inputs data when inputs get unmounted', async () => {
     await renderApp('http://localhost:3000/autoUnregister');
-    const renderCountStart = getRenderCount();
     await cy.type('input[name="test"]', 'test');
     await cy.type('input[name="test1"]', 'test1');
     await cy.check('input[name="test2"]');

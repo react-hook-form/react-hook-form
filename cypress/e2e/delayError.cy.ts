@@ -1,16 +1,9 @@
-import { describe, it } from 'vitest';
-
 import * as cy from '../support/cy';
-import {
-  expectRenderCountDelta,
-  getRenderCount,
-  renderApp,
-} from '../support/renderApp';
+import { renderApp } from '../support/renderApp';
 
 describe('delayError', () => {
   it('should delay from errors appear', async () => {
     await renderApp('http://localhost:3000/delayError');
-    const renderCountStart = getRenderCount();
     await cy.type('input[name="first"]', '123');
     await cy.wait(100);
     cy.expectInputError('input[name="first"]', 'First too long.');

@@ -1,11 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import * as cy from '../support/cy';
-import {
-  expectRenderCountDelta,
-  getRenderCount,
-  renderApp,
-} from '../support/renderApp';
+import { renderApp } from '../support/renderApp';
 
 describe('form setError', () => {
   it('should contain 3 errors when page land', async () => {
@@ -25,7 +21,6 @@ describe('form setError', () => {
 
   it('should clear individual error', async () => {
     await renderApp('http://localhost:3000/setError');
-    const renderCountStart = getRenderCount();
     await cy.click('#clear1');
     await cy.click('#clear2');
     cy.expectContains('#error0', '0 wrong');
@@ -33,14 +28,12 @@ describe('form setError', () => {
 
   it('should clear an array of errors', async () => {
     await renderApp('http://localhost:3000/setError');
-    const renderCountStart = getRenderCount();
     await cy.click('#clearArray');
     cy.expectContains('#error0', '0 wrong');
   });
 
   it('should clear every errors', async () => {
     await renderApp('http://localhost:3000/setError');
-    const renderCountStart = getRenderCount();
     await cy.click('#clear');
     expect(cy.$('#errorContainer').children.length).toBe(0);
   });
