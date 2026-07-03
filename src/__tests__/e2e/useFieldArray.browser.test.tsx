@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest';
 
 import * as cy from './cy';
-import { getRenderCount, expectRenderCountDelta, renderApp } from './renderApp';
+import { expectRenderCountDelta, getRenderCount, renderApp } from './renderApp';
 
 describe('useFieldArray', () => {
   it('should behaviour correctly without defaultValues', async () => {
@@ -135,13 +135,13 @@ describe('useFieldArray', () => {
 
     await cy.click('#submit');
     cy.expectJson('#result', {
-        data: [
-          { name: 'test' },
-          { name: 'test1' },
-          { name: 'test2' },
-          { name: appendVal },
-        ],
-      });
+      data: [
+        { name: 'test' },
+        { name: 'test1' },
+        { name: 'test2' },
+        { name: appendVal },
+      ],
+    });
 
     const prependVal = await cy.clickFieldArray('#prepend', 0);
     cy.expectLength('ul > li', 5);
@@ -150,14 +150,14 @@ describe('useFieldArray', () => {
 
     await cy.click('#submit');
     cy.expectJson('#result', {
-        data: [
-          { name: prependVal },
-          { name: 'test' },
-          { name: 'test1' },
-          { name: 'test2' },
-          { name: appendVal },
-        ],
-      });
+      data: [
+        { name: prependVal },
+        { name: 'test' },
+        { name: 'test1' },
+        { name: 'test2' },
+        { name: appendVal },
+      ],
+    });
 
     await cy.click('#swap');
     cy.expectLiInputValue(1, 'test1');
@@ -165,14 +165,14 @@ describe('useFieldArray', () => {
 
     await cy.click('#submit');
     cy.expectJson('#result', {
-        data: [
-          { name: prependVal },
-          { name: 'test1' },
-          { name: 'test' },
-          { name: 'test2' },
-          { name: appendVal },
-        ],
-      });
+      data: [
+        { name: prependVal },
+        { name: 'test1' },
+        { name: 'test' },
+        { name: 'test2' },
+        { name: appendVal },
+      ],
+    });
 
     await cy.click('#move');
     cy.expectLiInputValue(0, 'test');
@@ -180,29 +180,29 @@ describe('useFieldArray', () => {
 
     await cy.click('#submit');
     cy.expectJson('#result', {
-        data: [
-          { name: 'test' },
-          { name: prependVal },
-          { name: 'test1' },
-          { name: 'test2' },
-          { name: appendVal },
-        ],
-      });
+      data: [
+        { name: 'test' },
+        { name: prependVal },
+        { name: 'test1' },
+        { name: 'test2' },
+        { name: appendVal },
+      ],
+    });
 
     const insertVal = await cy.clickFieldArray('#insert', 1);
     cy.expectLiInputValue(1, insertVal);
 
     await cy.click('#submit');
     cy.expectJson('#result', {
-        data: [
-          { name: 'test' },
-          { name: insertVal },
-          { name: prependVal },
-          { name: 'test1' },
-          { name: 'test2' },
-          { name: appendVal },
-        ],
-      });
+      data: [
+        { name: 'test' },
+        { name: insertVal },
+        { name: prependVal },
+        { name: 'test1' },
+        { name: 'test2' },
+        { name: appendVal },
+      ],
+    });
 
     await cy.click('#remove');
     cy.expectLiInputValue(0, 'test');
@@ -210,14 +210,14 @@ describe('useFieldArray', () => {
 
     await cy.click('#submit');
     cy.expectJson('#result', {
-        data: [
-          { name: 'test' },
-          { name: prependVal },
-          { name: 'test1' },
-          { name: 'test2' },
-          { name: appendVal },
-        ],
-      });
+      data: [
+        { name: 'test' },
+        { name: prependVal },
+        { name: 'test1' },
+        { name: 'test2' },
+        { name: appendVal },
+      ],
+    });
 
     await cy.click('#delete2');
 
@@ -234,16 +234,16 @@ describe('useFieldArray', () => {
 
     await cy.click('#submit');
     cy.expectJson('#result', {
-        data: [{ name: 'test' }, { name: prependVal }, { name: 'test2' }],
-      });
+      data: [{ name: 'test' }, { name: prependVal }, { name: 'test2' }],
+    });
 
     await cy.click('#removeAll');
     cy.expectLength('ul > li', 0);
 
     await cy.click('#submit');
     cy.expectJson('#result', {
-        data: [],
-      });
+      data: [],
+    });
 
     const finalAppend = await cy.clickFieldArray('#append', 0);
 
@@ -257,7 +257,9 @@ describe('useFieldArray', () => {
   });
 
   it('should behaviour correctly with defaultValue and without auto focus', async () => {
-    await renderApp('http://localhost:3000/useFieldArray/defaultAndWithoutFocus');
+    await renderApp(
+      'http://localhost:3000/useFieldArray/defaultAndWithoutFocus',
+    );
     const renderCountStart = getRenderCount();
 
     cy.expectLength('ul > li', 3);
@@ -272,13 +274,13 @@ describe('useFieldArray', () => {
 
     await cy.click('#submit');
     cy.expectJson('#result', {
-        data: [
-          { name: 'test' },
-          { name: 'test1' },
-          { name: 'test2' },
-          { name: appendVal },
-        ],
-      });
+      data: [
+        { name: 'test' },
+        { name: 'test1' },
+        { name: 'test2' },
+        { name: appendVal },
+      ],
+    });
 
     const prependVal = await cy.clickFieldArray('#prepend', 0);
     cy.expectLength('ul > li', 5);
@@ -287,14 +289,14 @@ describe('useFieldArray', () => {
 
     await cy.click('#submit');
     cy.expectJson('#result', {
-        data: [
-          { name: prependVal },
-          { name: 'test' },
-          { name: 'test1' },
-          { name: 'test2' },
-          { name: appendVal },
-        ],
-      });
+      data: [
+        { name: prependVal },
+        { name: 'test' },
+        { name: 'test1' },
+        { name: 'test2' },
+        { name: appendVal },
+      ],
+    });
 
     await cy.click('#swap');
     cy.expectLiInputValue(1, 'test1');
@@ -302,14 +304,14 @@ describe('useFieldArray', () => {
 
     await cy.click('#submit');
     cy.expectJson('#result', {
-        data: [
-          { name: prependVal },
-          { name: 'test1' },
-          { name: 'test' },
-          { name: 'test2' },
-          { name: appendVal },
-        ],
-      });
+      data: [
+        { name: prependVal },
+        { name: 'test1' },
+        { name: 'test' },
+        { name: 'test2' },
+        { name: appendVal },
+      ],
+    });
 
     await cy.click('#move');
     cy.expectLiInputValue(0, 'test');
@@ -317,29 +319,29 @@ describe('useFieldArray', () => {
 
     await cy.click('#submit');
     cy.expectJson('#result', {
-        data: [
-          { name: 'test' },
-          { name: prependVal },
-          { name: 'test1' },
-          { name: 'test2' },
-          { name: appendVal },
-        ],
-      });
+      data: [
+        { name: 'test' },
+        { name: prependVal },
+        { name: 'test1' },
+        { name: 'test2' },
+        { name: appendVal },
+      ],
+    });
 
     const insertVal = await cy.clickFieldArray('#insert', 1);
     cy.expectLiInputValue(1, insertVal);
 
     await cy.click('#submit');
     cy.expectJson('#result', {
-        data: [
-          { name: 'test' },
-          { name: insertVal },
-          { name: prependVal },
-          { name: 'test1' },
-          { name: 'test2' },
-          { name: appendVal },
-        ],
-      });
+      data: [
+        { name: 'test' },
+        { name: insertVal },
+        { name: prependVal },
+        { name: 'test1' },
+        { name: 'test2' },
+        { name: appendVal },
+      ],
+    });
 
     await cy.click('#remove');
     cy.expectLiInputValue(0, 'test');
@@ -347,14 +349,14 @@ describe('useFieldArray', () => {
 
     await cy.click('#submit');
     cy.expectJson('#result', {
-        data: [
-          { name: 'test' },
-          { name: prependVal },
-          { name: 'test1' },
-          { name: 'test2' },
-          { name: appendVal },
-        ],
-      });
+      data: [
+        { name: 'test' },
+        { name: prependVal },
+        { name: 'test1' },
+        { name: 'test2' },
+        { name: appendVal },
+      ],
+    });
 
     await cy.click('#delete2');
 
@@ -371,16 +373,16 @@ describe('useFieldArray', () => {
 
     await cy.click('#submit');
     cy.expectJson('#result', {
-        data: [{ name: 'test' }, { name: prependVal }, { name: 'test2' }],
-      });
+      data: [{ name: 'test' }, { name: prependVal }, { name: 'test2' }],
+    });
 
     await cy.click('#removeAll');
     cy.expectLength('ul > li', 0);
 
     await cy.click('#submit');
     cy.expectJson('#result', {
-        data: [],
-      });
+      data: [],
+    });
 
     const finalAppend = await cy.clickFieldArray('#append', 0);
 
@@ -415,8 +417,8 @@ describe('useFieldArray', () => {
     cy.expectContains('#dirty', 'no');
     await cy.click('#update');
     cy.expectJson('#dirtyFields', {
-        data: [{ name: true }, null, null],
-      });
+      data: [{ name: true }, null, null],
+    });
     cy.expectContains('#dirty', 'yes');
     await cy.click('#updateRevert');
     cy.expectContains('#dirty', 'no');
@@ -425,24 +427,24 @@ describe('useFieldArray', () => {
     await cy.click('#prepend');
     await cy.click('#delete2');
     cy.expectJson('#dirtyFields', {
-        data: [{ name: true }, { name: true }, null, { name: true }],
-      });
+      data: [{ name: true }, { name: true }, null, { name: true }],
+    });
     await cy.click('#delete2');
     cy.expectJson('#dirtyFields', {
-        data: [{ name: true }, { name: true }, { name: true }],
-      });
+      data: [{ name: true }, { name: true }, { name: true }],
+    });
     await cy.click('#delete1');
     cy.expectJson('#dirtyFields', {
-        data: [{ name: true }, { name: true }, { name: true }],
-      });
+      data: [{ name: true }, { name: true }, { name: true }],
+    });
     await cy.click('#delete1');
     cy.expectJson('#dirtyFields', {
-        data: [{ name: true }, { name: true }, { name: true }],
-      });
+      data: [{ name: true }, { name: true }, { name: true }],
+    });
     await cy.click('#delete0');
     cy.expectJson('#dirtyFields', {
-        data: [{ name: true }, { name: true }, { name: true }],
-      });
+      data: [{ name: true }, { name: true }, { name: true }],
+    });
     cy.expectContains('#dirty', 'yes');
     expectRenderCountDelta(renderCountStart, 14);
   });
@@ -456,8 +458,8 @@ describe('useFieldArray', () => {
     await cy.focus('#field0');
     await cy.blur('#field0');
     cy.expectJson('#dirtyFields', {
-        data: [{ name: true }],
-      });
+      data: [{ name: true }],
+    });
     cy.expectContains('#dirty', 'yes');
     await cy.type('#field0', 'test');
     await cy.blur('#field0');
@@ -465,17 +467,17 @@ describe('useFieldArray', () => {
     await cy.click('#prepend');
     await cy.click('#prepend');
     cy.expectJson('#dirtyFields', {
-        data: [{ name: true }, { name: true }, { name: true }],
-      });
+      data: [{ name: true }, { name: true }, { name: true }],
+    });
     await cy.click('#delete0');
     cy.expectJson('#dirtyFields', {
-        data: [{ name: true }, { name: true }],
-      });
+      data: [{ name: true }, { name: true }],
+    });
 
     await cy.click('#delete1');
     cy.expectJson('#dirtyFields', {
-        data: [{ name: true }],
-      });
+      data: [{ name: true }],
+    });
 
     await cy.click('#delete0');
     cy.expectJson('#dirtyFields', {});
@@ -569,21 +571,41 @@ describe('useFieldArray', () => {
     cy.expectContains('#touched', '[{"name":true},{"name":true}]');
     await cy.click('#append');
     await cy.click('#prepend');
-    cy.expectContains('#touched', '[null,{"name":true},{"name":true},{"name":true},{"name":true}]');
+    cy.expectContains(
+      '#touched',
+      '[null,{"name":true},{"name":true},{"name":true},{"name":true}]',
+    );
     await cy.click('#insert');
-    cy.expectContains('#touched', '[{"name":true},null,{"name":true},{"name":true},{"name":true},{"name":true}]');
+    cy.expectContains(
+      '#touched',
+      '[{"name":true},null,{"name":true},{"name":true},{"name":true},{"name":true}]',
+    );
     await cy.click('#swap');
-    cy.expectContains('#touched', '[{"name":true},{"name":true},{"name":true},{"name":true},{"name":true},{"name":true}]');
+    cy.expectContains(
+      '#touched',
+      '[{"name":true},{"name":true},{"name":true},{"name":true},{"name":true},{"name":true}]',
+    );
     await cy.click('#move');
-    cy.expectContains('#touched', '[{"name":true},{"name":true},{"name":true},{"name":true},{"name":true},{"name":true}]');
+    cy.expectContains(
+      '#touched',
+      '[{"name":true},{"name":true},{"name":true},{"name":true},{"name":true},{"name":true}]',
+    );
     await cy.click('#insert');
-    cy.expectContains('#touched', '[{"name":true},null,{"name":true},{"name":true},{"name":true},{"name":true},{"name":true}]');
+    cy.expectContains(
+      '#touched',
+      '[{"name":true},null,{"name":true},{"name":true},{"name":true},{"name":true},{"name":true}]',
+    );
     await cy.click('#delete4');
-    cy.expectContains('#touched', '[{"name":true},{"name":true},{"name":true},{"name":true},{"name":true},{"name":true}]');
+    cy.expectContains(
+      '#touched',
+      '[{"name":true},{"name":true},{"name":true},{"name":true},{"name":true},{"name":true}]',
+    );
   });
 
   it('should return correct touched values without autoFocus', async () => {
-    await renderApp('http://localhost:3000/useFieldArray/defaultAndWithoutFocus');
+    await renderApp(
+      'http://localhost:3000/useFieldArray/defaultAndWithoutFocus',
+    );
     const renderCountStart = getRenderCount();
     await cy.type('#field0', '1');
     await cy.type('#field1', '1');
@@ -591,17 +613,35 @@ describe('useFieldArray', () => {
     cy.expectContains('#touched', '[{"name":true},{"name":true}]');
     await cy.click('#append');
     await cy.click('#prepend');
-    cy.expectContains('#touched', '[null,{"name":true},{"name":true},{"name":true},null]');
+    cy.expectContains(
+      '#touched',
+      '[null,{"name":true},{"name":true},{"name":true},null]',
+    );
     await cy.click('#insert');
-    cy.expectContains('#touched', '[null,null,{"name":true},{"name":true},{"name":true},null]');
+    cy.expectContains(
+      '#touched',
+      '[null,null,{"name":true},{"name":true},{"name":true},null]',
+    );
     await cy.click('#swap');
-    cy.expectContains('#touched', '[null,{"name":true},null,{"name":true},{"name":true},null]');
+    cy.expectContains(
+      '#touched',
+      '[null,{"name":true},null,{"name":true},{"name":true},null]',
+    );
     await cy.click('#move');
-    cy.expectContains('#touched', '[null,null,{"name":true},{"name":true},{"name":true},null]');
+    cy.expectContains(
+      '#touched',
+      '[null,null,{"name":true},{"name":true},{"name":true},null]',
+    );
     await cy.click('#insert');
-    cy.expectContains('#touched', '[null,null,null,{"name":true},{"name":true},{"name":true},null]');
+    cy.expectContains(
+      '#touched',
+      '[null,null,null,{"name":true},{"name":true},{"name":true},null]',
+    );
     await cy.click('#delete4');
-    cy.expectContains('#touched', '[null,null,null,{"name":true},{"name":true},null]');
+    cy.expectContains(
+      '#touched',
+      '[null,null,null,{"name":true},{"name":true},null]',
+    );
   });
 
   it('should return correct isValid formState', async () => {

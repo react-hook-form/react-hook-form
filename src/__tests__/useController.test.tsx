@@ -5,7 +5,6 @@ import {
   render,
   renderHook,
   screen,
-  waitFor,
 } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -17,6 +16,8 @@ import { FormProvider, useFormContext } from '../useFormContext';
 import { useWatch } from '../useWatch';
 import isBoolean from '../utils/isBoolean';
 import noop from '../utils/noop';
+
+import { waitFor } from './utils/waitFor';
 
 describe('useController', () => {
   it('should render input correctly', () => {
@@ -1165,7 +1166,7 @@ describe('useController', () => {
     });
   });
 
-  it('should pass validation with disabled to set to true', () => {
+  it('should pass validation with disabled to set to true', async () => {
     const callback = vi.fn();
 
     const App = () => {
@@ -1195,7 +1196,7 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(callback).toHaveBeenCalled();
     });
   });
@@ -1262,9 +1263,13 @@ describe('useController', () => {
       }),
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+    });
 
-    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
 
     await waitFor(() =>
       expect(onSubmit).toHaveBeenCalledWith({

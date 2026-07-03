@@ -5,7 +5,6 @@ import {
   render,
   renderHook,
   screen,
-  waitFor,
 } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -17,6 +16,7 @@ import type {
 } from '../../types';
 import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
+import { waitFor } from '../utils/waitFor';
 
 describe('setError', () => {
   const tests: [string, ErrorOption, DeepMap<any, FieldError>][] = [

@@ -2,7 +2,7 @@ import { describe, it } from 'vitest';
 import { userEvent } from 'vitest/browser';
 
 import * as cy from './cy';
-import { getRenderCount, expectRenderCountDelta, renderApp } from './renderApp';
+import { expectRenderCountDelta, getRenderCount, renderApp } from './renderApp';
 
 describe('form setFocus', () => {
   it('should focus input', async () => {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import * as cy from './cy';
-import { getRenderCount, expectRenderCountDelta, renderApp } from './renderApp';
+import { expectRenderCountDelta, getRenderCount, renderApp } from './renderApp';
 
 describe('controller basic form validation', () => {
   it('should validate the form and reset the form', async () => {

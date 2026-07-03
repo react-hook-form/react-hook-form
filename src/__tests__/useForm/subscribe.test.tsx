@@ -1,10 +1,11 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { UseFormSubscribe } from '../../types';
 import { useForm } from '../../useForm';
 import { useFormState } from '../../useFormState';
+import { waitFor } from '../utils/waitFor';
 
 describe('subscribe', () => {
   it('should properly handle multiple subscriptions', async () => {

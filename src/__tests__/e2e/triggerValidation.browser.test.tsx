@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest';
 
 import * as cy from './cy';
-import { getRenderCount, expectRenderCountDelta, renderApp } from './renderApp';
+import { expectRenderCountDelta, getRenderCount, renderApp } from './renderApp';
 
 describe('form trigger', () => {
   it('should trigger input validation', async () => {

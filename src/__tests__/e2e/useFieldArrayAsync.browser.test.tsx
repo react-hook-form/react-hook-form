@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest';
 
 import * as cy from './cy';
-import { getRenderCount, expectRenderCountDelta, renderApp } from './renderApp';
+import { expectRenderCountDelta, getRenderCount, renderApp } from './renderApp';
 
 describe('useFieldArray', () => {
   it('should behaviour correctly without defaultValues', async () => {

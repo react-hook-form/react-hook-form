@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, test, vi } from 'vitest';
 
 import { Controller } from '../../controller';
@@ -17,6 +11,7 @@ import { useForm } from '../../useForm';
 import { useFormState } from '../../useFormState';
 import noop from '../../utils/noop';
 import sleep from '../../utils/sleep';
+import { waitFor } from '../utils/waitFor';
 
 describe('resolver', () => {
   it('should update context within the resolver', async () => {

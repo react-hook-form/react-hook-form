@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest';
 
 import * as cy from './cy';
-import { getRenderCount, expectRenderCountDelta, renderApp } from './renderApp';
+import { expectRenderCountDelta, getRenderCount, renderApp } from './renderApp';
 
 describe('useFormState', () => {
   it('should subscribed to the form state without re-render the root', async () => {
@@ -26,39 +26,39 @@ describe('useFormState', () => {
     await cy.blur('input[name="minLength"]');
 
     cy.expectJson('#state', {
-        isDirty: true,
-        touched: [
-          'nestItem',
-          'firstName',
-          'arrayItem',
-          'lastName',
-          'selectNumber',
-          'minLength',
-          'pattern',
-          'min',
-          'max',
-          'minDate',
-          'maxDate',
-        ],
-        dirty: [
-          'nestItem',
-          'arrayItem',
-          'firstName',
-          'lastName',
-          'min',
-          'max',
-          'minDate',
-          'maxDate',
-          'minLength',
-          'minRequiredLength',
-          'selectNumber',
-          'pattern',
-        ],
-        isSubmitted: true,
-        isSubmitSuccessful: false,
-        submitCount: 1,
-        isValid: false,
-      });
+      isDirty: true,
+      touched: [
+        'nestItem',
+        'firstName',
+        'arrayItem',
+        'lastName',
+        'selectNumber',
+        'minLength',
+        'pattern',
+        'min',
+        'max',
+        'minDate',
+        'maxDate',
+      ],
+      dirty: [
+        'nestItem',
+        'arrayItem',
+        'firstName',
+        'lastName',
+        'min',
+        'max',
+        'minDate',
+        'maxDate',
+        'minLength',
+        'minRequiredLength',
+        'selectNumber',
+        'pattern',
+      ],
+      isSubmitted: true,
+      isSubmitSuccessful: false,
+      submitCount: 1,
+      isValid: false,
+    });
 
     await cy.type('input[name="pattern"]', '23');
     await cy.type('input[name="minLength"]', 'bi');
@@ -69,90 +69,90 @@ describe('useFormState', () => {
     await cy.type('input[name="maxDate"]', '2019-08-01');
 
     cy.expectJson('#state', {
-        isDirty: true,
-        touched: [
-          'nestItem',
-          'firstName',
-          'arrayItem',
-          'lastName',
-          'selectNumber',
-          'minLength',
-          'pattern',
-          'min',
-          'max',
-          'minDate',
-          'maxDate',
-          'minRequiredLength',
-        ],
-        dirty: [
-          'nestItem',
-          'arrayItem',
-          'firstName',
-          'lastName',
-          'min',
-          'max',
-          'minDate',
-          'maxDate',
-          'minLength',
-          'minRequiredLength',
-          'selectNumber',
-          'pattern',
-        ],
-        isSubmitted: true,
-        isSubmitSuccessful: false,
-        submitCount: 1,
-        isValid: true,
-      });
+      isDirty: true,
+      touched: [
+        'nestItem',
+        'firstName',
+        'arrayItem',
+        'lastName',
+        'selectNumber',
+        'minLength',
+        'pattern',
+        'min',
+        'max',
+        'minDate',
+        'maxDate',
+        'minRequiredLength',
+      ],
+      dirty: [
+        'nestItem',
+        'arrayItem',
+        'firstName',
+        'lastName',
+        'min',
+        'max',
+        'minDate',
+        'maxDate',
+        'minLength',
+        'minRequiredLength',
+        'selectNumber',
+        'pattern',
+      ],
+      isSubmitted: true,
+      isSubmitSuccessful: false,
+      submitCount: 1,
+      isValid: true,
+    });
 
     await cy.click('#submit');
 
     cy.expectJson('#state', {
-        isDirty: true,
-        touched: [
-          'nestItem',
-          'firstName',
-          'arrayItem',
-          'lastName',
-          'selectNumber',
-          'minLength',
-          'pattern',
-          'min',
-          'max',
-          'minDate',
-          'maxDate',
-          'minRequiredLength',
-        ],
-        dirty: [
-          'nestItem',
-          'arrayItem',
-          'firstName',
-          'lastName',
-          'min',
-          'max',
-          'minDate',
-          'maxDate',
-          'minLength',
-          'minRequiredLength',
-          'selectNumber',
-          'pattern',
-        ],
-        isSubmitted: true,
-        isSubmitSuccessful: true,
-        submitCount: 2,
-        isValid: true,
-      });
+      isDirty: true,
+      touched: [
+        'nestItem',
+        'firstName',
+        'arrayItem',
+        'lastName',
+        'selectNumber',
+        'minLength',
+        'pattern',
+        'min',
+        'max',
+        'minDate',
+        'maxDate',
+        'minRequiredLength',
+      ],
+      dirty: [
+        'nestItem',
+        'arrayItem',
+        'firstName',
+        'lastName',
+        'min',
+        'max',
+        'minDate',
+        'maxDate',
+        'minLength',
+        'minRequiredLength',
+        'selectNumber',
+        'pattern',
+      ],
+      isSubmitted: true,
+      isSubmitSuccessful: true,
+      submitCount: 2,
+      isValid: true,
+    });
 
     await cy.click('#resetForm');
 
     cy.expectJson('#state', {
-        isDirty: false,
-        touched: [],
-        dirty: [],
-        isSubmitted: false,
-        isSubmitSuccessful: false,
-        submitCount: 0,
-        isValid: true,
-      });
+      isDirty: false,
+      touched: [],
+      dirty: [],
+      isSubmitted: false,
+      isSubmitSuccessful: false,
+      submitCount: 0,
+      isValid: true,
+    });
 
     expectRenderCountDelta(renderCountStart, 1);
   });

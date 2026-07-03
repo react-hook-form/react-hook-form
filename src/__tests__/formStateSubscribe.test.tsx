@@ -1,6 +1,6 @@
 // __tests__/formState.component.test.tsx
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { Controller } from '../controller';
@@ -11,6 +11,8 @@ import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 import deepEqual from '../utils/deepEqual';
 import noop from '../utils/noop';
+
+import { waitFor } from './utils/waitFor';
 
 describe('FormStateSubscribe', () => {
   it('should render correct form state with isDirty, dirty, touched', () => {

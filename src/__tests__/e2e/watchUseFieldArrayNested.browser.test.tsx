@@ -1,19 +1,19 @@
 import { describe, it } from 'vitest';
 
 import * as cy from './cy';
-import { getRenderCount, expectRenderCountDelta, renderApp } from './renderApp';
+import { expectRenderCountDelta, getRenderCount, renderApp } from './renderApp';
 
 describe('watchUseFieldArrayNested', () => {
   it('should watch the correct nested field array', async () => {
     await renderApp('http://localhost:3000/watchUseFieldArrayNested');
     const renderCountStart = getRenderCount();
     cy.expectJson('#result', [
-        {
-          firstName: 'Bill',
-          keyValue: [{ name: '1a' }, { name: '1c' }],
-          lastName: 'Luo',
-        },
-      ]);
+      {
+        firstName: 'Bill',
+        keyValue: [{ name: '1a' }, { name: '1c' }],
+        lastName: 'Luo',
+      },
+    ]);
 
     await cy.click('#nest-append-0');
     await cy.click('#nest-prepend-0');
@@ -22,51 +22,51 @@ describe('watchUseFieldArrayNested', () => {
     await cy.click('#nest-move-0');
 
     cy.expectJson('#result', [
-        {
-          firstName: 'Bill',
-          keyValue: [
-            { name: 'insert' },
-            { name: 'prepend' },
-            { name: '1a' },
-            { name: '1c' },
-            { name: 'append' },
-          ],
-          lastName: 'Luo',
-        },
-      ]);
+      {
+        firstName: 'Bill',
+        keyValue: [
+          { name: 'insert' },
+          { name: 'prepend' },
+          { name: '1a' },
+          { name: '1c' },
+          { name: 'append' },
+        ],
+        lastName: 'Luo',
+      },
+    ]);
 
     await cy.click('#nest-update-0');
 
     cy.expectJson('#result', [
-        {
-          firstName: 'Bill',
-          keyValue: [
-            { name: 'billUpdate' },
-            { name: 'prepend' },
-            { name: '1a' },
-            { name: '1c' },
-            { name: 'append' },
-          ],
-          lastName: 'Luo',
-        },
-      ]);
+      {
+        firstName: 'Bill',
+        keyValue: [
+          { name: 'billUpdate' },
+          { name: 'prepend' },
+          { name: '1a' },
+          { name: '1c' },
+          { name: 'append' },
+        ],
+        lastName: 'Luo',
+      },
+    ]);
 
     await cy.click('#nest-remove-0');
 
     await cy.click('#submit');
 
     cy.expectJson('#result', [
-        {
-          firstName: 'Bill',
-          keyValue: [
-            { name: 'billUpdate' },
-            { name: '1a' },
-            { name: '1c' },
-            { name: 'append' },
-          ],
-          lastName: 'Luo',
-        },
-      ]);
+      {
+        firstName: 'Bill',
+        keyValue: [
+          { name: 'billUpdate' },
+          { name: '1a' },
+          { name: '1c' },
+          { name: 'append' },
+        ],
+        lastName: 'Luo',
+      },
+    ]);
 
     await cy.click('#prepend');
     await cy.click('#append');
@@ -74,20 +74,20 @@ describe('watchUseFieldArrayNested', () => {
     await cy.click('#insert');
 
     cy.expectJson('#result', [
-        { firstName: 'prepend', keyValue: [] },
-        { firstName: 'insert', keyValue: [] },
-        { firstName: 'append', keyValue: [] },
-        {
-          firstName: 'Bill',
-          lastName: 'Luo',
-          keyValue: [
-            { name: 'billUpdate' },
-            { name: '1a' },
-            { name: '1c' },
-            { name: 'append' },
-          ],
-        },
-      ]);
+      { firstName: 'prepend', keyValue: [] },
+      { firstName: 'insert', keyValue: [] },
+      { firstName: 'append', keyValue: [] },
+      {
+        firstName: 'Bill',
+        lastName: 'Luo',
+        keyValue: [
+          { name: 'billUpdate' },
+          { name: '1a' },
+          { name: '1c' },
+          { name: 'append' },
+        ],
+      },
+    ]);
 
     await cy.click('#nest-append-0');
     await cy.click('#nest-prepend-0');
@@ -96,48 +96,40 @@ describe('watchUseFieldArrayNested', () => {
     await cy.click('#nest-move-0');
 
     cy.expectJson('#result', [
-        {
-          firstName: 'prepend',
-          keyValue: [
-            { name: 'insert' },
-            { name: 'prepend' },
-            { name: 'append' },
-          ],
-        },
-        { firstName: 'insert', keyValue: [] },
-        { firstName: 'append', keyValue: [] },
-        {
-          firstName: 'Bill',
-          lastName: 'Luo',
-          keyValue: [
-            { name: 'billUpdate' },
-            { name: '1a' },
-            { name: '1c' },
-            { name: 'append' },
-          ],
-        },
-      ]);
+      {
+        firstName: 'prepend',
+        keyValue: [{ name: 'insert' }, { name: 'prepend' }, { name: 'append' }],
+      },
+      { firstName: 'insert', keyValue: [] },
+      { firstName: 'append', keyValue: [] },
+      {
+        firstName: 'Bill',
+        lastName: 'Luo',
+        keyValue: [
+          { name: 'billUpdate' },
+          { name: '1a' },
+          { name: '1c' },
+          { name: 'append' },
+        ],
+      },
+    ]);
 
     await cy.click('#nest-remove-3');
     await cy.click('#nest-remove-3');
 
     cy.expectJson('#result', [
-        {
-          firstName: 'prepend',
-          keyValue: [
-            { name: 'insert' },
-            { name: 'prepend' },
-            { name: 'append' },
-          ],
-        },
-        { firstName: 'insert', keyValue: [] },
-        { firstName: 'append', keyValue: [] },
-        {
-          firstName: 'Bill',
-          lastName: 'Luo',
-          keyValue: [{ name: 'billUpdate' }, { name: 'append' }],
-        },
-      ]);
+      {
+        firstName: 'prepend',
+        keyValue: [{ name: 'insert' }, { name: 'prepend' }, { name: 'append' }],
+      },
+      { firstName: 'insert', keyValue: [] },
+      { firstName: 'append', keyValue: [] },
+      {
+        firstName: 'Bill',
+        lastName: 'Luo',
+        keyValue: [{ name: 'billUpdate' }, { name: 'append' }],
+      },
+    ]);
 
     await cy.click('#nest-remove-all-3');
     await cy.click('#nest-remove-all-2');
@@ -145,28 +137,26 @@ describe('watchUseFieldArrayNested', () => {
     await cy.click('#nest-remove-all-0');
 
     cy.expectJson('#result', [
-        { firstName: 'prepend', keyValue: [] },
-        { firstName: 'insert', keyValue: [] },
-        { firstName: 'append', keyValue: [] },
-        { firstName: 'Bill', lastName: 'Luo', keyValue: [] },
-      ]);
+      { firstName: 'prepend', keyValue: [] },
+      { firstName: 'insert', keyValue: [] },
+      { firstName: 'append', keyValue: [] },
+      { firstName: 'Bill', lastName: 'Luo', keyValue: [] },
+    ]);
 
     await cy.click('#update');
 
     cy.expectJson('#result', [
-        { firstName: 'BillUpdate', keyValue: [] },
-        { firstName: 'insert', keyValue: [] },
-        { firstName: 'append', keyValue: [] },
-        { firstName: 'Bill', lastName: 'Luo', keyValue: [] },
-      ]);
+      { firstName: 'BillUpdate', keyValue: [] },
+      { firstName: 'insert', keyValue: [] },
+      { firstName: 'append', keyValue: [] },
+      { firstName: 'Bill', lastName: 'Luo', keyValue: [] },
+    ]);
 
     await cy.click('#remove');
     await cy.click('#remove');
     await cy.click('#remove');
 
-    cy.expectJson('#result', [
-        { firstName: 'BillUpdate', keyValue: [] },
-      ]);
+    cy.expectJson('#result', [{ firstName: 'BillUpdate', keyValue: [] }]);
 
     expectRenderCountDelta(renderCountStart, 35);
 

@@ -5,11 +5,11 @@ import {
   render,
   renderHook,
   screen,
-  waitFor,
 } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { useForm } from '../../useForm';
+import { waitFor } from '../utils/waitFor';
 
 describe('unregister', () => {
   it('should unregister an registered item', async () => {

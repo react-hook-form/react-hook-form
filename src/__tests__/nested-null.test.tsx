@@ -1,8 +1,10 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { useForm } from '../useForm';
+
+import { waitFor } from './utils/waitFor';
 
 describe('nested null bug', () => {
   it('should not keep parent as null and allow nested value', async () => {

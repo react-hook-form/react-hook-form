@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import * as cy from './cy';
-import { getRenderCount, expectRenderCountDelta, renderApp } from './renderApp';
+import { expectRenderCountDelta, getRenderCount, renderApp } from './renderApp';
 
 describe('basic form validation', () => {
   it('should validate the form and reset the form', async () => {
@@ -13,11 +13,17 @@ describe('basic form validation', () => {
 
     cy.expectInputError('input[name="firstName"]', 'firstName error');
     cy.expectInputError('input[name="nestItem.nest1"]', 'nest 1 error');
-    cy.expectInputError('input[name="arrayItem.0.test1"]', 'array item 1 error');
+    cy.expectInputError(
+      'input[name="arrayItem.0.test1"]',
+      'array item 1 error',
+    );
     cy.expectInputError('input[name="lastName"]', 'lastName error');
     cy.expectInputError('select[name="selectNumber"]', 'selectNumber error');
     cy.expectInputError('select[name="multiple"]', 'multiple error');
-    cy.expectInputError('input[name="minRequiredLength"]', 'minRequiredLength error');
+    cy.expectInputError(
+      'input[name="minRequiredLength"]',
+      'minRequiredLength error',
+    );
     cy.expectInputError('input[name="radio"]', 'radio error');
     cy.expectInputError('input[name="checkbox"]', 'checkbox error');
     cy.expectInputError('input[name="checkboxArray"]', 'checkboxArray error');
@@ -113,7 +119,10 @@ describe('basic form validation', () => {
 
     await cy.focus('input[name="arrayItem.0.test1"]');
     await cy.blur('input[name="arrayItem.0.test1"]');
-    cy.expectInputError('input[name="arrayItem.0.test1"]', 'array item 1 error');
+    cy.expectInputError(
+      'input[name="arrayItem.0.test1"]',
+      'array item 1 error',
+    );
 
     await cy.focus('select[name="selectNumber"]');
     await cy.blur('select[name="selectNumber"]');
@@ -146,7 +155,10 @@ describe('basic form validation', () => {
 
     await cy.focus('input[name="arrayItem.0.test1"]');
     await cy.blur('input[name="arrayItem.0.test1"]');
-    cy.expectInputError('input[name="arrayItem.0.test1"]', 'array item 1 error');
+    cy.expectInputError(
+      'input[name="arrayItem.0.test1"]',
+      'array item 1 error',
+    );
     await cy.type('input[name="arrayItem.0.test1"]', 'a');
 
     await cy.focus('input[name="firstName"]');

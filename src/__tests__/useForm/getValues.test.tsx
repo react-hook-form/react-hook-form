@@ -1,17 +1,12 @@
 import React from 'react';
-import {
-  fireEvent,
-  render,
-  renderHook,
-  screen,
-  waitFor,
-} from '@testing-library/react';
+import { fireEvent, render, renderHook, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { Controller } from '../../controller';
 import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
 import { useFormState } from '../../useFormState';
+import { waitFor } from '../utils/waitFor';
 
 describe('getValues', () => {
   it('should return defaultValues before inputs mounted', () => {

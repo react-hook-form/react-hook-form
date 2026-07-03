@@ -5,7 +5,6 @@ import {
   render,
   renderHook,
   screen,
-  waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -36,6 +35,8 @@ import {
   useForm,
   useFormState,
 } from '../';
+
+import { waitFor } from './utils/waitFor';
 
 describe('useForm', () => {
   beforeEach(() => {
@@ -1354,7 +1355,9 @@ describe('useForm', () => {
       });
       expect(resolver).toHaveBeenCalledTimes(2);
 
-      fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+      });
       await waitFor(() => expect(resolver).toHaveBeenCalledTimes(3));
 
       fireEvent.blur(screen.getByRole('textbox'), {

@@ -5,7 +5,6 @@ import {
   render,
   renderHook,
   screen,
-  waitFor,
 } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -22,6 +21,7 @@ import { useForm } from '../../useForm';
 import { useWatch } from '../../useWatch';
 import isEmptyObject from '../../utils/isEmptyObject';
 import noop from '../../utils/noop';
+import { waitFor } from '../utils/waitFor';
 
 describe('reset', () => {
   beforeEach(() => {
@@ -652,12 +652,15 @@ describe('reset', () => {
       it('should only update new reset values', async () => {
         render(<App />);
 
-        await waitFor(() =>
+        await waitFor(() => {
           expect(
             (screen.getByPlaceholderText('First Name') as HTMLInputElement)
               .value,
-          ).toEqual('bill'),
-        );
+          ).toEqual('bill');
+          expect(
+            screen.getByRole('button', { name: 'reset' }),
+          ).toBeInTheDocument();
+        });
 
         fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
@@ -833,12 +836,15 @@ describe('reset', () => {
       it('should only update new reset values', async () => {
         render(<App />);
 
-        await waitFor(() =>
+        await waitFor(() => {
           expect(
             (screen.getByPlaceholderText('First Name') as HTMLInputElement)
               .value,
-          ).toEqual('bill'),
-        );
+          ).toEqual('bill');
+          expect(
+            screen.getByRole('button', { name: 'reset' }),
+          ).toBeInTheDocument();
+        });
 
         fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 

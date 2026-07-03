@@ -1,11 +1,13 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { Control, UseFormReturn } from '../types';
 import { useForm } from '../useForm';
 import noop from '../utils/noop';
 import { Watch } from '../watch';
+
+import { waitFor } from './utils/waitFor';
 
 type FormType = {
   foo: string;

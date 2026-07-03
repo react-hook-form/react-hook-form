@@ -1,8 +1,9 @@
 import React from 'react';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { useForm } from '../../useForm';
+import { waitFor } from '../utils/waitFor';
 
 describe('setFocus', () => {
   it('should focus input when called after setError', async () => {

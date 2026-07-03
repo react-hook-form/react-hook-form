@@ -5,13 +5,13 @@ import {
   render,
   renderHook,
   screen,
-  waitFor,
 } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { Control } from '../../types';
 import { useForm } from '../../useForm';
 import { useFormState } from '../../useFormState';
+import { waitFor } from '../utils/waitFor';
 
 describe('clearErrors', () => {
   it('should remove error', () => {

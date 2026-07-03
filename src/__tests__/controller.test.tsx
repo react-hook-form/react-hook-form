@@ -4,7 +4,6 @@ import {
   fireEvent,
   render,
   screen,
-  waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
@@ -21,6 +20,8 @@ import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
 import { useWatch } from '../useWatch';
 import noop from '../utils/noop';
+
+import { waitFor } from './utils/waitFor';
 
 function Input<TFieldValues extends FieldValues>({
   onChange,

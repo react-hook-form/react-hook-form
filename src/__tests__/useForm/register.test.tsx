@@ -5,7 +5,6 @@ import {
   render,
   renderHook,
   screen,
-  waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react';
 import { describe, expect, it, test, vi } from 'vitest';
@@ -23,6 +22,7 @@ import { FormProvider, useFormContext } from '../../useFormContext';
 import isFunction from '../../utils/isFunction';
 import isString from '../../utils/isString';
 import noop from '../../utils/noop';
+import { waitFor } from '../utils/waitFor';
 
 describe('register', () => {
   it('should support register passed to ref', async () => {

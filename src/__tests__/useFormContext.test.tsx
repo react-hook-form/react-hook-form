@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { Controller } from '../controller';
@@ -18,6 +12,8 @@ import { useFormState } from '../useFormState';
 import { useWatch } from '../useWatch';
 import deepEqual from '../utils/deepEqual';
 import noop from '../utils/noop';
+
+import { waitFor } from './utils/waitFor';
 
 describe('FormProvider', () => {
   it('should have access to all methods with useFormContext', () => {
@@ -124,7 +120,7 @@ describe('FormProvider', () => {
     render(<App />);
   });
 
-  it('should be able to access defaultValues within formState', () => {
+  it('should be able to access defaultValues within formState', async () => {
     type FormValues = {
       firstName: string;
       lastName: string;
@@ -192,16 +188,9 @@ describe('FormProvider', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    waitFor(() => {
-      expect(screen.getByText('yes')).not.toBeValid();
-      expect(screen.getByText('context-yes')).not.toBeVisible();
-
-      screen.getByText(
-        JSON.stringify({
-          firstName: 'c',
-          lastName: 'd',
-        }),
-      );
+    await waitFor(() => {
+      expect(screen.getByText('no')).toBeVisible();
+      expect(screen.getByText('context-no')).toBeVisible();
     });
   });
 

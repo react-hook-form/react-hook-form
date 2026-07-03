@@ -5,13 +5,14 @@ import {
   render,
   renderHook,
   screen,
-  waitFor,
 } from '@testing-library/react';
 import { describe, expect, it, type MockInstance, vi } from 'vitest';
 
 import type { Control } from '../types';
 import { useForm } from '../useForm';
 import { useWatch } from '../useWatch';
+
+import { waitFor } from './utils/waitFor';
 
 function changeEmits(spy: MockInstance): Record<string, unknown>[] {
   return spy.mock.calls

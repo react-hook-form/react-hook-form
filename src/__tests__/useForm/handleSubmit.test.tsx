@@ -5,7 +5,6 @@ import {
   render,
   renderHook,
   screen,
-  waitFor,
 } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -14,6 +13,7 @@ import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import isFunction from '../../utils/isFunction';
 import noop from '../../utils/noop';
+import { waitFor } from '../utils/waitFor';
 
 describe('handleSubmit', () => {
   it('should invoke the callback when validation pass', async () => {

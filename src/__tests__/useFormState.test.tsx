@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { Controller } from '../controller';
@@ -10,6 +10,8 @@ import { FormProvider } from '../useFormContext';
 import { useFormState } from '../useFormState';
 import deepEqual from '../utils/deepEqual';
 import noop from '../utils/noop';
+
+import { waitFor } from './utils/waitFor';
 
 describe('useFormState', () => {
   it('should render correct form state with isDirty, dirty, touched', () => {
@@ -765,13 +767,13 @@ describe('useFormState', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    waitFor(() => screen.getByText('Required'));
+    await waitFor(() => screen.getByText('Required'));
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'data' },
     });
 
-    waitFor(() =>
+    await waitFor(() =>
       expect(screen.queryByText('Required')).not.toBeInTheDocument(),
     );
   });

@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest';
 
 import * as cy from './cy';
-import { getRenderCount, expectRenderCountDelta, renderApp } from './renderApp';
+import { expectRenderCountDelta, getRenderCount, renderApp } from './renderApp';
 
 describe('re-validate mode', () => {
   it('should re-validate the form only onSubmit with mode onSubmit and reValidateMode onSubmit', async () => {

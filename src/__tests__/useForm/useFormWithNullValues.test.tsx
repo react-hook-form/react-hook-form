@@ -1,9 +1,10 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { useController } from '../../useController';
 import { useForm } from '../../useForm';
+import { waitFor } from '../utils/waitFor';
 
 describe('useForm with null values (issue #12815)', () => {
   function NumberInput({

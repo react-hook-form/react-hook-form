@@ -1,3 +1,5 @@
+import '../../../app/src/style.css';
+
 import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
@@ -15,9 +17,9 @@ import FormStateWithNestedFields from '../../../app/src/formStateWithNestedField
 import FormStateWithSchema from '../../../app/src/formStateWithSchema';
 import IsValid from '../../../app/src/isValid';
 import ManualRegisterForm from '../../../app/src/manualRegisterForm';
-import ReValidateMode from '../../../app/src/reValidateMode';
 import Reset from '../../../app/src/reset';
 import ResetKeepDirty from '../../../app/src/resetKeepDirty';
+import ReValidateMode from '../../../app/src/reValidateMode';
 import SetError from '../../../app/src/setError';
 import SetFocus from '../../../app/src/setFocus';
 import SetValue from '../../../app/src/setValue';
@@ -37,8 +39,6 @@ import Watch from '../../../app/src/watch';
 import WatchDefaultValues from '../../../app/src/watchDefaultValues';
 import WatchFieldArray from '../../../app/src/watchUseFieldArray';
 import WatchUseFieldArrayNested from '../../../app/src/watchUseFieldArrayNested';
-
-import '../../../app/src/style.css';
 
 export function AppRoutes() {
   return (

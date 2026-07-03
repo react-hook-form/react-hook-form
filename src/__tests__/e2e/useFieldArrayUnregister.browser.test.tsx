@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest';
 
 import * as cy from './cy';
-import { getRenderCount, expectRenderCountDelta, renderApp } from './renderApp';
+import { expectRenderCountDelta, getRenderCount, renderApp } from './renderApp';
 
 describe('useFieldArrayUnregister', () => {
   it('should behaviour correctly', async () => {
@@ -12,14 +12,12 @@ describe('useFieldArrayUnregister', () => {
     await cy.type('input[name="data.0.conditional"]', 'test');
 
     cy.expectJson('#dirtyFields', {
-        data: [{ name: true, conditional: true }, null, null],
-      });
+      data: [{ name: true, conditional: true }, null, null],
+    });
 
     await cy.blur('input[name="data.0.conditional"]');
 
-    cy.expectJson('#touched', [
-        { name: true, conditional: true },
-      ]);
+    cy.expectJson('#touched', [{ name: true, conditional: true }]);
 
     await cy.click('#prepend');
 
@@ -27,18 +25,15 @@ describe('useFieldArrayUnregister', () => {
     cy.expectValue('input[name="data.1.conditional"]', '');
 
     cy.expectJson('#dirtyFields', {
-        data: [
-          { name: true, conditional: true },
-          { name: true, conditional: true },
-          { name: true },
-          { name: true },
-        ],
-      });
-
-    cy.expectJson('#touched', [
-        null,
+      data: [
         { name: true, conditional: true },
-      ]);
+        { name: true, conditional: true },
+        { name: true },
+        { name: true },
+      ],
+    });
+
+    cy.expectJson('#touched', [null, { name: true, conditional: true }]);
 
     await cy.blur('input[name="data.0.name"]');
 
@@ -48,20 +43,20 @@ describe('useFieldArrayUnregister', () => {
     cy.expectValue('input[name="data.2.conditional"]', '');
 
     cy.expectJson('#dirtyFields', {
-        data: [
-          { name: true },
-          null,
-          { name: true, conditional: true },
-          { name: true },
-        ],
-      });
-
-    cy.expectJson('#touched', [
+      data: [
         { name: true },
         null,
         { name: true, conditional: true },
         { name: true },
-      ]);
+      ],
+    });
+
+    cy.expectJson('#touched', [
+      { name: true },
+      null,
+      { name: true, conditional: true },
+      { name: true },
+    ]);
 
     await cy.click('#insert');
 
@@ -70,48 +65,48 @@ describe('useFieldArrayUnregister', () => {
     await cy.type('input[name="data.4.name"]', 'test');
 
     cy.expectJson('#dirtyFields', {
-        data: [
-          { name: true },
-          { name: true, conditional: true },
-          { name: true },
-          { name: true },
-          { name: true, conditional: true },
-          { name: true },
-        ],
-      });
-
-    cy.expectJson('#touched', [
+      data: [
         { name: true },
-        { name: true },
-        { name: true },
-        null,
         { name: true, conditional: true },
         { name: true },
-      ]);
+        { name: true },
+        { name: true, conditional: true },
+        { name: true },
+      ],
+    });
+
+    cy.expectJson('#touched', [
+      { name: true },
+      { name: true },
+      { name: true },
+      null,
+      { name: true, conditional: true },
+      { name: true },
+    ]);
 
     await cy.click('#move');
 
     await cy.clearAndType('input[name="data.2.name"]', 'bill');
 
     cy.expectJson('#dirtyFields', {
-        data: [
-          { name: true },
-          { name: true },
-          { name: true, conditional: true },
-          { name: true },
-          { name: true },
-          { name: true },
-        ],
-      });
-
-    cy.expectJson('#touched', [
+      data: [
         { name: true },
         { name: true },
         { name: true, conditional: true },
         { name: true },
-        null,
         { name: true },
-      ]);
+        { name: true },
+      ],
+    });
+
+    cy.expectJson('#touched', [
+      { name: true },
+      { name: true },
+      { name: true, conditional: true },
+      { name: true },
+      null,
+      { name: true },
+    ]);
 
     await cy.click('#delete1');
 
@@ -119,8 +114,8 @@ describe('useFieldArrayUnregister', () => {
     await cy.click('#submit');
 
     cy.expectJson('#result', {
-        data: submitData,
-      });
+      data: submitData,
+    });
 
     await cy.type('input[name="data.3.name"]', 'test');
 
@@ -128,8 +123,8 @@ describe('useFieldArrayUnregister', () => {
     await cy.click('#submit');
 
     cy.expectJson('#result', {
-        data: submitData2,
-      });
+      data: submitData2,
+    });
 
     await cy.click('#delete3');
 
@@ -137,8 +132,8 @@ describe('useFieldArrayUnregister', () => {
     await cy.click('#submit');
 
     cy.expectJson('#result', {
-        data: submitData3,
-      });
+      data: submitData3,
+    });
 
     expectRenderCountDelta(renderCountStart, 29);
   });

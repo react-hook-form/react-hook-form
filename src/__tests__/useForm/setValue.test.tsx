@@ -5,7 +5,6 @@ import {
   render,
   renderHook,
   screen,
-  waitFor,
 } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -18,6 +17,7 @@ import get from '../../utils/get';
 import isFunction from '../../utils/isFunction';
 import noop from '../../utils/noop';
 import sleep from '../../utils/sleep';
+import { waitFor } from '../utils/waitFor';
 
 describe('setValue', () => {
   beforeEach(() => {

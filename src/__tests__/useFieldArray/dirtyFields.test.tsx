@@ -1,9 +1,10 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import { waitFor } from '../utils/waitFor';
 
 const { generateIdMock, resetGenerateId } = vi.hoisted(() => {
   let i = 0;

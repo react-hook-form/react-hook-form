@@ -4,7 +4,6 @@ import {
   render,
   renderHook,
   screen,
-  waitFor,
   within,
 } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -22,6 +21,8 @@ import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
 import { useWatch } from '../useWatch';
 import noop from '../utils/noop';
+
+import { waitFor } from './utils/waitFor';
 
 const { generateIdMock, resetGenerateId } = vi.hoisted(() => {
   let i = 0;

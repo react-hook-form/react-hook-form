@@ -281,7 +281,9 @@ export async function uncheck(selector: string) {
 }
 
 export function expectLiInputValue(index: number, value: string) {
-  const input = $$('ul > li')[index]?.querySelector('input') as HTMLInputElement;
+  const input = $$('ul > li')[index]?.querySelector(
+    'input',
+  ) as HTMLInputElement;
 
   if (!input) {
     throw new Error(`No input at li index ${index}`);
@@ -290,7 +292,10 @@ export function expectLiInputValue(index: number, value: string) {
   expect(input.value).toBe(value);
 }
 
-export function expectSelectValues(selector: string, values: readonly string[]) {
+export function expectSelectValues(
+  selector: string,
+  values: readonly string[],
+) {
   const el = $(selector) as HTMLSelectElement;
   expect(Array.from(el.selectedOptions).map((option) => option.value)).toEqual([
     ...values,

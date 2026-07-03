@@ -5,7 +5,6 @@ import {
   render,
   renderHook,
   screen,
-  waitFor,
 } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -16,6 +15,7 @@ import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import noop from '../../utils/noop';
+import { waitFor } from '../utils/waitFor';
 
 describe('formState', () => {
   describe('isValid', () => {
@@ -713,7 +713,7 @@ describe('formState', () => {
     expect(dirtyFieldsState).toEqual({});
   });
 
-  it('should update isDirty with getFieldState at child component', () => {
+  it('should update isDirty with getFieldState at child component', async () => {
     type FormValues = {
       test?: string;
     };
@@ -761,7 +761,7 @@ describe('formState', () => {
       },
     });
 
-    waitFor(() => {
+    await waitFor(() => {
       screen.getByText('true');
     });
   });

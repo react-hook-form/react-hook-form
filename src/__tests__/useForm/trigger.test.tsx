@@ -5,7 +5,6 @@ import {
   render,
   renderHook,
   screen,
-  waitFor,
 } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -25,6 +24,7 @@ import { useForm } from '../../useForm';
 import { FormProvider } from '../../useFormContext';
 import { useFormState } from '../../useFormState';
 import noop from '../../utils/noop';
+import { waitFor } from '../utils/waitFor';
 
 describe('trigger', () => {
   it('should remove all errors before set new errors when trigger entire form', async () => {

@@ -5,7 +5,6 @@ import {
   render,
   renderHook,
   screen,
-  waitFor,
 } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -25,6 +24,8 @@ import { FormProvider } from '../useFormContext';
 import { useFormState } from '../useFormState';
 import { useWatch } from '../useWatch';
 import noop from '../utils/noop';
+
+import { waitFor } from './utils/waitFor';
 
 let i = 0;
 
