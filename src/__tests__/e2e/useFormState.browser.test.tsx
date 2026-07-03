@@ -1,25 +1,31 @@
+import { describe, it } from 'vitest';
+
+import * as cy from './cy';
+import { getRenderCount, expectRenderCountDelta, renderApp } from './renderApp';
+
 describe('useFormState', () => {
-  it('should subscribed to the form state without re-render the root', () => {
-    cy.visit('http://localhost:3000/useFormState');
-    cy.get('button#submit').click();
+  it('should subscribed to the form state without re-render the root', async () => {
+    await renderApp('http://localhost:3000/useFormState');
+    const renderCountStart = getRenderCount();
+    await cy.click('button#submit');
 
-    cy.get('input[name="firstName"]').type('bill');
-    cy.get('input[name="firstName"]').type('a');
-    cy.get('input[name="arrayItem.0.test1"]').type('ab');
-    cy.get('input[name="nestItem.nest1"]').type('ab');
-    cy.get('input[name="lastName"]').type('luo123456');
-    cy.get('select[name="selectNumber"]').select('1');
-    cy.get('input[name="pattern"]').type('luo');
-    cy.get('input[name="min"]').type('1');
-    cy.get('input[name="max"]').type('21');
-    cy.get('input[name="minDate"]').type('2019-07-30');
-    cy.get('input[name="maxDate"]').type('2019-08-02');
-    cy.get('input[name="lastName"]').clear().type('luo');
-    cy.get('input[name="minLength"]').type('b');
-    cy.get('input[name="minLength"]').blur();
+    await cy.type('input[name="firstName"]', 'bill');
+    await cy.type('input[name="firstName"]', 'a');
+    await cy.type('input[name="arrayItem.0.test1"]', 'ab');
+    await cy.type('input[name="nestItem.nest1"]', 'ab');
+    await cy.type('input[name="lastName"]', 'luo123456');
+    await cy.selectOption('select[name="selectNumber"]', '1');
+    await cy.blur('select[name="selectNumber"]');
+    await cy.type('input[name="pattern"]', 'luo');
+    await cy.type('input[name="min"]', '1');
+    await cy.type('input[name="max"]', '21');
+    await cy.type('input[name="minDate"]', '2019-07-30');
+    await cy.type('input[name="maxDate"]', '2019-08-02');
+    await cy.clearAndType('input[name="lastName"]', 'luo');
+    await cy.type('input[name="minLength"]', 'b');
+    await cy.blur('input[name="minLength"]');
 
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    cy.expectJson('#state', {
         isDirty: true,
         touched: [
           'nestItem',
@@ -27,12 +33,12 @@ describe('useFormState', () => {
           'arrayItem',
           'lastName',
           'selectNumber',
+          'minLength',
           'pattern',
           'min',
           'max',
           'minDate',
           'maxDate',
-          'minLength',
         ],
         dirty: [
           'nestItem',
@@ -52,19 +58,17 @@ describe('useFormState', () => {
         isSubmitSuccessful: false,
         submitCount: 1,
         isValid: false,
-      }),
-    );
+      });
 
-    cy.get('input[name="pattern"]').type('23');
-    cy.get('input[name="minLength"]').type('bi');
-    cy.get('input[name="minRequiredLength"]').type('bi');
-    cy.get('input[name="min"]').clear().type('11');
-    cy.get('input[name="max"]').clear().type('19');
-    cy.get('input[name="minDate"]').type('2019-08-01');
-    cy.get('input[name="maxDate"]').type('2019-08-01');
+    await cy.type('input[name="pattern"]', '23');
+    await cy.type('input[name="minLength"]', 'bi');
+    await cy.type('input[name="minRequiredLength"]', 'bi');
+    await cy.clearAndType('input[name="min"]', '11');
+    await cy.clearAndType('input[name="max"]', '19');
+    await cy.type('input[name="minDate"]', '2019-08-01');
+    await cy.type('input[name="maxDate"]', '2019-08-01');
 
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    cy.expectJson('#state', {
         isDirty: true,
         touched: [
           'nestItem',
@@ -72,12 +76,12 @@ describe('useFormState', () => {
           'arrayItem',
           'lastName',
           'selectNumber',
+          'minLength',
           'pattern',
           'min',
           'max',
           'minDate',
           'maxDate',
-          'minLength',
           'minRequiredLength',
         ],
         dirty: [
@@ -98,13 +102,11 @@ describe('useFormState', () => {
         isSubmitSuccessful: false,
         submitCount: 1,
         isValid: true,
-      }),
-    );
+      });
 
-    cy.get('#submit').click();
+    await cy.click('#submit');
 
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    cy.expectJson('#state', {
         isDirty: true,
         touched: [
           'nestItem',
@@ -112,12 +114,12 @@ describe('useFormState', () => {
           'arrayItem',
           'lastName',
           'selectNumber',
+          'minLength',
           'pattern',
           'min',
           'max',
           'minDate',
           'maxDate',
-          'minLength',
           'minRequiredLength',
         ],
         dirty: [
@@ -138,13 +140,11 @@ describe('useFormState', () => {
         isSubmitSuccessful: true,
         submitCount: 2,
         isValid: true,
-      }),
-    );
+      });
 
-    cy.get('#resetForm').click();
+    await cy.click('#resetForm');
 
-    cy.get('#state').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
+    cy.expectJson('#state', {
         isDirty: false,
         touched: [],
         dirty: [],
@@ -152,9 +152,8 @@ describe('useFormState', () => {
         isSubmitSuccessful: false,
         submitCount: 0,
         isValid: true,
-      }),
-    );
+      });
 
-    cy.get('#renderCount').contains('2');
+    expectRenderCountDelta(renderCountStart, 1);
   });
 });
