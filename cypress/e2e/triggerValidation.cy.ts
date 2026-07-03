@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
-import { userEvent } from 'vitest/browser';
 
+import * as cy from '../support/cy';
 import {
   expectRenderCountDelta,
   getRenderCount,
@@ -11,25 +11,19 @@ describe('form trigger', () => {
   it('should trigger input validation', async () => {
     await renderApp('http://localhost:3000/trigger-validation');
     const renderCountStart = getRenderCount();
-    expect(document.querySelector('#testError')!.textContent).toBe('');
-    expect(document.querySelector('#test1Error')!.textContent).toBe('');
-    expect(document.querySelector('#test2Error')!.textContent).toBe('');
+    cy.expectEmpty('#testError');
+    cy.expectEmpty('#test1Error');
+    cy.expectEmpty('#test2Error');
 
-    await userEvent.click(document.querySelector('#single')!);
-    expect(document.querySelector('#testError')!.textContent).toContain(
-      'required',
-    );
-    await userEvent.click(document.querySelector('#single')!);
+    await cy.click('#single');
+    cy.expectContains('#testError', 'required');
+    await cy.click('#single');
 
-    await userEvent.click(document.querySelector('#multiple')!);
-    expect(document.querySelector('#test1Error')!.textContent).toContain(
-      'required',
-    );
-    expect(document.querySelector('#test2Error')!.textContent).toContain(
-      'required',
-    );
+    await cy.click('#multiple');
+    cy.expectContains('#test1Error', 'required');
+    cy.expectContains('#test2Error', 'required');
 
-    await userEvent.click(document.querySelector('#multiple')!);
+    await cy.click('#multiple');
     expectRenderCountDelta(renderCountStart, 5);
   });
 });

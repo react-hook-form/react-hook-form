@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
-import { userEvent } from 'vitest/browser';
 
+import * as cy from '../support/cy';
 import {
   expectRenderCountDelta,
   getRenderCount,
@@ -11,70 +11,20 @@ describe('form setValue with trigger', () => {
   it('should set input value and trigger validation', async () => {
     await renderApp('http://localhost:3000/setValueWithTrigger');
     const renderCountStart = getRenderCount();
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="firstName"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'a');
-      else await userEvent.type(el, 'a');
-    })();
-    {
-      const inputs = document.querySelectorAll('input[name="firstName"]');
-      const input = inputs.length > 1 ? inputs[inputs.length - 1] : inputs[0];
-      expect(input?.nextElementSibling?.textContent).toContain('minLength 10');
-    }
-    await userEvent.clear(document.querySelector('input[name="firstName"]')!);
-    {
-      const inputs = document.querySelectorAll('input[name="firstName"]');
-      const input = inputs.length > 1 ? inputs[inputs.length - 1] : inputs[0];
-      expect(input?.nextElementSibling?.textContent).toContain('required');
-    }
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="firstName"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'clear1234567');
-      else await userEvent.type(el, 'clear1234567');
-    })();
+    await cy.type('input[name="firstName"]', 'a');
+    cy.expectInputError('input[name="firstName"]', 'minLength 10');
+    await cy.clear('input[name="firstName"]');
+    cy.expectInputError('input[name="firstName"]', 'required');
+    await cy.type('input[name="firstName"]', 'clear1234567');
 
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="lastName"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'a');
-      else await userEvent.type(el, 'a');
-    })();
-    {
-      const inputs = document.querySelectorAll('input[name="lastName"]');
-      const input = inputs.length > 1 ? inputs[inputs.length - 1] : inputs[0];
-      expect(input?.nextElementSibling?.textContent).toContain('too short');
-    }
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="lastName"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'fsdfsdfsd');
-      else await userEvent.type(el, 'fsdfsdfsd');
-    })();
-    {
-      const inputs = document.querySelectorAll('input[name="lastName"]');
-      const input = inputs.length > 1 ? inputs[inputs.length - 1] : inputs[0];
-      expect(input?.nextElementSibling?.textContent).toContain('error message');
-    }
-    await userEvent.clear(document.querySelector('input[name="lastName"]')!);
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="lastName"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'bill');
-      else await userEvent.type(el, 'bill');
-    })();
+    await cy.type('input[name="lastName"]', 'a');
+    cy.expectInputError('input[name="lastName"]', 'too short');
+    await cy.type('input[name="lastName"]', 'fsdfsdfsd');
+    cy.expectInputError('input[name="lastName"]', 'error message');
+    await cy.clear('input[name="lastName"]');
+    await cy.type('input[name="lastName"]', 'bill');
 
-    expect(
-      Array.from(document.querySelectorAll('p')).filter((p) =>
-        p.textContent?.includes('error'),
-      ),
-    ).toHaveLength(0);
+    cy.expectNoParagraphs();
     expectRenderCountDelta(renderCountStart, 30);
   });
 });

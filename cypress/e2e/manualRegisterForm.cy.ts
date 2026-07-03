@@ -1,7 +1,6 @@
-import { fireEvent } from '@testing-library/react';
 import { describe, it } from 'vitest';
-import { userEvent } from 'vitest/browser';
 
+import * as cy from '../support/cy';
 import {
   expectRenderCountDelta,
   getRenderCount,
@@ -12,213 +11,47 @@ describe('manual register form validation', () => {
   it('should validate the form', async () => {
     await renderApp('http://localhost:3000/manual-register-form');
     const renderCountStart = getRenderCount();
-    await userEvent.click(document.querySelector('#submit')!);
+    await cy.click('#submit');
 
-    {
-      const inputs = document.querySelectorAll('input[name="firstName"]');
-      const input = inputs.length > 1 ? inputs[inputs.length - 1] : inputs[0];
-      expect(input?.nextElementSibling?.textContent).toContain(
-        'firstName error',
-      );
-    }
-    {
-      const inputs = document.querySelectorAll('input[name="lastName"]');
-      const input = inputs.length > 1 ? inputs[inputs.length - 1] : inputs[0];
-      expect(input?.nextElementSibling?.textContent).toContain(
-        'lastName error',
-      );
-    }
-    {
-      const inputs = document.querySelectorAll('select[name="selectNumber"]');
-      const input = inputs.length > 1 ? inputs[inputs.length - 1] : inputs[0];
-      expect(input?.nextElementSibling?.textContent).toContain(
-        'selectNumber error',
-      );
-    }
-    {
-      const inputs = document.querySelectorAll(
-        'input[name="minRequiredLength"]',
-      );
-      const input = inputs.length > 1 ? inputs[inputs.length - 1] : inputs[0];
-      expect(input?.nextElementSibling?.textContent).toContain(
-        'minRequiredLength error',
-      );
-    }
-    {
-      const inputs = document.querySelectorAll('input[name="radio"]');
-      const input = inputs.length > 1 ? inputs[inputs.length - 1] : inputs[0];
-      expect(input?.nextElementSibling?.textContent).toContain('radio error');
-    }
-
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="firstName"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'bill');
-      else await userEvent.type(el, 'bill');
-    })();
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="lastName"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'luo123456');
-      else await userEvent.type(el, 'luo123456');
-    })();
-    {
-      const inputs = document.querySelectorAll('input[name="lastName"]');
-      const input = inputs.length > 1 ? inputs[inputs.length - 1] : inputs[0];
-      expect(input?.nextElementSibling?.textContent).toContain(
-        'lastName error',
-      );
-    }
-    await userEvent.selectOptions(
-      document.querySelector('select[name="selectNumber"]')!,
-      '1',
+    cy.expectInputError('input[name="firstName"]', 'firstName error');
+    cy.expectInputError('input[name="lastName"]', 'lastName error');
+    cy.expectInputError('select[name="selectNumber"]', 'selectNumber error');
+    cy.expectInputError(
+      'input[name="minRequiredLength"]',
+      'minRequiredLength error',
     );
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="pattern"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'luo');
-      else await userEvent.type(el, 'luo');
-    })();
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="min"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, '1');
-      else await userEvent.type(el, '1');
-    })();
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="max"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, '21');
-      else await userEvent.type(el, '21');
-    })();
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="minDate"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, '2019-07-30');
-      else await userEvent.type(el, '2019-07-30');
-    })();
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="maxDate"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, '2019-08-02');
-      else await userEvent.type(el, '2019-08-02');
-    })();
-    await userEvent.clear(document.querySelector('input[name="lastName"]')!);
-    await userEvent.type(
-      document.querySelector('input[name="lastName"]')!,
-      'luo',
-    );
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="minLength"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'b');
-      else await userEvent.type(el, 'b');
-    })();
+    cy.expectInputError('input[name="radio"]', 'radio error');
 
-    {
-      const inputs = document.querySelectorAll('input[name="pattern"]');
-      const input = inputs.length > 1 ? inputs[inputs.length - 1] : inputs[0];
-      expect(input?.nextElementSibling?.textContent).toContain('pattern error');
-    }
-    {
-      const inputs = document.querySelectorAll('input[name="minLength"]');
-      const input = inputs.length > 1 ? inputs[inputs.length - 1] : inputs[0];
-      expect(input?.nextElementSibling?.textContent).toContain(
-        'minLength error',
-      );
-    }
-    {
-      const inputs = document.querySelectorAll('input[name="min"]');
-      const input = inputs.length > 1 ? inputs[inputs.length - 1] : inputs[0];
-      expect(input?.nextElementSibling?.textContent).toContain('min error');
-    }
-    {
-      const inputs = document.querySelectorAll('input[name="max"]');
-      const input = inputs.length > 1 ? inputs[inputs.length - 1] : inputs[0];
-      expect(input?.nextElementSibling?.textContent).toContain('max error');
-    }
-    {
-      const inputs = document.querySelectorAll('input[name="minDate"]');
-      const input = inputs.length > 1 ? inputs[inputs.length - 1] : inputs[0];
-      expect(input?.nextElementSibling?.textContent).toContain('minDate error');
-    }
-    {
-      const inputs = document.querySelectorAll('input[name="maxDate"]');
-      const input = inputs.length > 1 ? inputs[inputs.length - 1] : inputs[0];
-      expect(input?.nextElementSibling?.textContent).toContain('maxDate error');
-    }
+    await cy.type('input[name="firstName"]', 'bill');
+    await cy.type('input[name="lastName"]', 'luo123456');
+    cy.expectInputError('input[name="lastName"]', 'lastName error');
+    await cy.selectOption('select[name="selectNumber"]', '1');
+    await cy.type('input[name="pattern"]', 'luo');
+    await cy.type('input[name="min"]', '1');
+    await cy.type('input[name="max"]', '21');
+    await cy.type('input[name="minDate"]', '2019-07-30');
+    await cy.type('input[name="maxDate"]', '2019-08-02');
+    await cy.clearAndType('input[name="lastName"]', 'luo');
+    await cy.type('input[name="minLength"]', 'b');
 
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="pattern"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, '23');
-      else await userEvent.type(el, '23');
-    })();
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="minLength"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'bi');
-      else await userEvent.type(el, 'bi');
-    })();
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="minRequiredLength"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'bi');
-      else await userEvent.type(el, 'bi');
-    })();
-    await (async () => {
-      const el = document.querySelector(
-        `${'input[name="radio"]'}[value="${'1'}"]`,
-      )! as HTMLInputElement;
-      if (!el.checked) {
-        if (el.type === 'radio') fireEvent.click(el);
-        else await userEvent.click(el);
-      }
-    })();
-    await userEvent.clear(document.querySelector('input[name="min"]')!);
-    await userEvent.type(document.querySelector('input[name="min"]')!, '11');
-    await userEvent.clear(document.querySelector('input[name="max"]')!);
-    await userEvent.type(document.querySelector('input[name="max"]')!, '19');
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="minDate"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, '2019-08-01');
-      else await userEvent.type(el, '2019-08-01');
-    })();
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="maxDate"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, '2019-08-01');
-      else await userEvent.type(el, '2019-08-01');
-    })();
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="checkbox"]',
-      )! as HTMLInputElement;
-      if (!el.checked) {
-        if (el.type === 'radio') fireEvent.click(el);
-        else await userEvent.click(el);
-      }
-    })();
+    cy.expectInputError('input[name="pattern"]', 'pattern error');
+    cy.expectInputError('input[name="minLength"]', 'minLength error');
+    cy.expectInputError('input[name="min"]', 'min error');
+    cy.expectInputError('input[name="max"]', 'max error');
+    cy.expectInputError('input[name="minDate"]', 'minDate error');
+    cy.expectInputError('input[name="maxDate"]', 'maxDate error');
 
-    expect(
-      Array.from(document.querySelectorAll('p')).filter((p) =>
-        p.textContent?.includes('error'),
-      ),
-    ).toHaveLength(0);
+    await cy.type('input[name="pattern"]', '23');
+    await cy.type('input[name="minLength"]', 'bi');
+    await cy.type('input[name="minRequiredLength"]', 'bi');
+    await cy.check('input[name="radio"]', '1');
+    await cy.clearAndType('input[name="min"]', '11');
+    await cy.clearAndType('input[name="max"]', '19');
+    await cy.type('input[name="minDate"]', '2019-08-01');
+    await cy.type('input[name="maxDate"]', '2019-08-01');
+    await cy.check('input[name="checkbox"]');
+
+    cy.expectNoParagraphs();
     expectRenderCountDelta(renderCountStart, 45);
   });
 });

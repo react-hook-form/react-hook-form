@@ -1,93 +1,28 @@
-import { userEvent } from 'vitest/browser';
-
+import * as cy from '../support/cy';
 import { renderApp } from '../support/renderApp';
 
 describe('defaultValues', () => {
   it('should populate defaultValue for inputs', async () => {
     await renderApp('http://localhost:3000/default-values');
-    expect(
-      (
-        document.querySelector('input[name="test"]')! as
-          | HTMLInputElement
-          | HTMLSelectElement
-      ).value,
-    ).toBe('test');
-    expect(
-      (
-        document.querySelector('input[name="test1.firstName"]')! as
-          | HTMLInputElement
-          | HTMLSelectElement
-      ).value,
-    ).toBe('firstName');
-    expect(
-      (
-        document.querySelector('input[name="test1.lastName.0"]')! as
-          | HTMLInputElement
-          | HTMLSelectElement
-      ).value,
-    ).toBe('lastName0');
-    expect(
-      (
-        document.querySelector('input[name="test1.lastName.1"]')! as
-          | HTMLInputElement
-          | HTMLSelectElement
-      ).value,
-    ).toBe('lastName1');
-    expect(
-      (
-        Array.from(
-          document.querySelectorAll('input[name="checkbox"]'),
-        )[0] as HTMLInputElement
-      ).checked,
-    ).toBe(true);
-    expect(
-      (
-        Array.from(
-          document.querySelectorAll('input[name="checkbox"]'),
-        )[1] as HTMLInputElement
-      ).checked,
-    ).toBe(true);
+    cy.expectValue('input[name="test"]', 'test');
+    cy.expectValue('input[name="test1.firstName"]', 'firstName');
+    cy.expectValue('input[name="test1.lastName.0"]', 'lastName0');
+    cy.expectValue('input[name="test1.lastName.1"]', 'lastName1');
+    cy.expectCheckedAt('input[name="checkbox"]', 0);
+    cy.expectCheckedAt('input[name="checkbox"]', 1);
 
-    await userEvent.click(
-      Array.from(document.querySelectorAll('input[name="checkbox"]'))[0],
-    );
-    await userEvent.click(document.querySelector('#toggle')!);
-    await userEvent.click(document.querySelector('#toggle')!);
+    await cy.clickAt('input[name="checkbox"]', 0);
+    await cy.click('#toggle');
+    await cy.click('#toggle');
 
-    expect(
-      (
-        Array.from(
-          document.querySelectorAll('input[name="checkbox"]'),
-        )[0] as HTMLInputElement
-      ).checked,
-    ).toBe(false);
-    expect(
-      (
-        Array.from(
-          document.querySelectorAll('input[name="checkbox"]'),
-        )[1] as HTMLInputElement
-      ).checked,
-    ).toBe(true);
-    await userEvent.click(
-      Array.from(document.querySelectorAll('input[name="checkbox"]'))[1],
-    );
+    cy.expectNotCheckedAt('input[name="checkbox"]', 0);
+    cy.expectCheckedAt('input[name="checkbox"]', 1);
+    await cy.clickAt('input[name="checkbox"]', 1);
 
-    await userEvent.click(document.querySelector('#toggle')!);
-    await userEvent.click(document.querySelector('#toggle')!);
+    await cy.click('#toggle');
+    await cy.click('#toggle');
 
-    expect(
-      (
-        Array.from(
-          document.querySelectorAll('input[name="checkbox"]'),
-        )[0] as HTMLInputElement
-      ).checked,
-    ).toBe(false);
-    expect(
-      (
-        Array.from(
-          document.querySelectorAll('input[name="checkbox"]'),
-        )[1] as HTMLInputElement
-      ).checked,
-    ).toBe(false);
+    cy.expectNotCheckedAt('input[name="checkbox"]', 0);
+    cy.expectNotCheckedAt('input[name="checkbox"]', 1);
   });
 });

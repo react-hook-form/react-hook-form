@@ -1,7 +1,6 @@
-import { fireEvent } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { userEvent } from 'vitest/browser';
 
+import * as cy from '../support/cy';
 import {
   expectRenderCountDelta,
   getRenderCount,
@@ -12,9 +11,7 @@ describe('ConditionalField', () => {
   it('should reflect correct form state and data collection', async () => {
     await renderApp('http://localhost:3000/conditionalField');
     const renderCountStart = getRenderCount();
-    expect(
-      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
-    ).toEqual({
+    cy.expectJson('#state', {
       dirty: [],
       isSubmitted: false,
       submitCount: 0,
@@ -25,49 +22,12 @@ describe('ConditionalField', () => {
       isValid: false,
     });
 
-    await userEvent.selectOptions(
-      document.querySelector('select[name="selectNumber"]')!,
-      '1',
-    );
-    await (async () => {
-      const el = document.querySelector(
-        'select[name="selectNumber"]',
-      )! as HTMLInputElement;
-      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
-      else {
-        await userEvent.click(el);
-        await userEvent.click(document.body);
-        if (document.activeElement === el) el.blur();
-      }
-    })();
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="firstName"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'bill');
-      else await userEvent.type(el, 'bill');
-    })();
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="lastName"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'luo');
-      else await userEvent.type(el, 'luo');
-    })();
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="lastName"]',
-      )! as HTMLInputElement;
-      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
-      else {
-        await userEvent.click(el);
-        await userEvent.click(document.body);
-        if (document.activeElement === el) el.blur();
-      }
-    })();
-    expect(
-      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
-    ).toEqual({
+    await cy.selectOption('select[name="selectNumber"]', '1');
+    await cy.blur('select[name="selectNumber"]');
+    await cy.type('input[name="firstName"]', 'bill');
+    await cy.type('input[name="lastName"]', 'luo');
+    await cy.blur('input[name="lastName"]');
+    cy.expectJson('#state', {
       dirty: ['selectNumber', 'firstName', 'lastName'],
       isSubmitted: false,
       submitCount: 0,
@@ -77,13 +37,12 @@ describe('ConditionalField', () => {
       isSubmitSuccessful: false,
       isValid: true,
     });
-    await userEvent.click(document.querySelector('button#submit')!);
-    expect(document.querySelector('#result')!.textContent).toContain(
+    await cy.click('button#submit');
+    cy.expectContains(
+      '#result',
       '{"selectNumber":"1","firstName":"bill","lastName":"luo"}',
     );
-    expect(
-      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
-    ).toEqual({
+    cy.expectJson('#state', {
       dirty: ['selectNumber', 'firstName', 'lastName'],
       isSubmitted: true,
       submitCount: 1,
@@ -93,21 +52,14 @@ describe('ConditionalField', () => {
       isSubmitSuccessful: true,
       isValid: true,
     });
-    expect(
-      JSON.parse(document.querySelector('#result')!.textContent ?? ''),
-    ).toEqual({
+    cy.expectJson('#result', {
       selectNumber: '1',
       firstName: 'bill',
       lastName: 'luo',
     });
 
-    await userEvent.selectOptions(
-      document.querySelector('select[name="selectNumber"]')!,
-      '2',
-    );
-    expect(
-      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
-    ).toEqual({
+    await cy.selectOption('select[name="selectNumber"]', '2');
+    cy.expectJson('#state', {
       dirty: ['selectNumber', 'firstName', 'lastName'],
       isSubmitted: true,
       submitCount: 1,
@@ -117,34 +69,10 @@ describe('ConditionalField', () => {
       isSubmitSuccessful: true,
       isValid: false,
     });
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="min"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, '10');
-      else await userEvent.type(el, '10');
-    })();
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="max"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, '2');
-      else await userEvent.type(el, '2');
-    })();
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="max"]',
-      )! as HTMLInputElement;
-      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
-      else {
-        await userEvent.click(el);
-        await userEvent.click(document.body);
-        if (document.activeElement === el) el.blur();
-      }
-    })();
-    expect(
-      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
-    ).toEqual({
+    await cy.type('input[name="min"]', '10');
+    await cy.type('input[name="max"]', '2');
+    await cy.blur('input[name="max"]');
+    cy.expectJson('#state', {
       dirty: ['selectNumber', 'firstName', 'lastName', 'min', 'max'],
       isSubmitted: true,
       submitCount: 1,
@@ -154,10 +82,8 @@ describe('ConditionalField', () => {
       isSubmitSuccessful: true,
       isValid: true,
     });
-    await userEvent.click(document.querySelector('button#submit')!);
-    expect(
-      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
-    ).toEqual({
+    await cy.click('button#submit');
+    cy.expectJson('#state', {
       dirty: ['selectNumber', 'firstName', 'lastName', 'min', 'max'],
       isSubmitted: true,
       submitCount: 2,
@@ -167,9 +93,7 @@ describe('ConditionalField', () => {
       isSubmitSuccessful: true,
       isValid: true,
     });
-    expect(
-      JSON.parse(document.querySelector('#result')!.textContent ?? ''),
-    ).toEqual({
+    cy.expectJson('#result', {
       selectNumber: '2',
       firstName: 'bill',
       lastName: 'luo',
@@ -177,13 +101,8 @@ describe('ConditionalField', () => {
       max: '2',
     });
 
-    await userEvent.selectOptions(
-      document.querySelector('select[name="selectNumber"]')!,
-      '3',
-    );
-    expect(
-      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
-    ).toEqual({
+    await cy.selectOption('select[name="selectNumber"]', '3');
+    cy.expectJson('#state', {
       dirty: ['selectNumber', 'firstName', 'lastName', 'min', 'max'],
       isSubmitted: true,
       submitCount: 2,
@@ -194,27 +113,9 @@ describe('ConditionalField', () => {
       isValid: true,
     });
 
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="notRequired"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'test');
-      else await userEvent.type(el, 'test');
-    })();
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="notRequired"]',
-      )! as HTMLInputElement;
-      if (el.type === 'radio' || el.type === 'checkbox') fireEvent.blur(el);
-      else {
-        await userEvent.click(el);
-        await userEvent.click(document.body);
-        if (document.activeElement === el) el.blur();
-      }
-    })();
-    expect(
-      JSON.parse(document.querySelector('#state')!.textContent ?? ''),
-    ).toEqual({
+    await cy.type('input[name="notRequired"]', 'test');
+    await cy.blur('input[name="notRequired"]');
+    cy.expectJson('#state', {
       dirty: [
         'selectNumber',
         'firstName',
@@ -239,10 +140,8 @@ describe('ConditionalField', () => {
       isValid: true,
     });
 
-    await userEvent.click(document.querySelector('button#submit')!);
-    expect(
-      JSON.parse(document.querySelector('#result')!.textContent ?? ''),
-    ).toEqual({
+    await cy.click('button#submit');
+    cy.expectJson('#result', {
       selectNumber: '3',
       firstName: 'bill',
       lastName: 'luo',

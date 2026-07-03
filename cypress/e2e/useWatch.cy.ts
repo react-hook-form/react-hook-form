@@ -1,370 +1,78 @@
-import { userEvent } from 'vitest/browser';
-
+import * as cy from '../support/cy';
 import { renderApp } from '../support/renderApp';
 
 describe('useWatch', () => {
   it('should only trigger render when interact with input 1', async () => {
     await renderApp('http://localhost:3000/useWatch');
-    const parentStart = Number.parseInt(
-      (document.querySelector('#parentCounter')!.textContent ?? '').match(
-        /(\d+)/,
-      )?.[1] ?? '0',
-      10,
-    );
-    const childStart = Number.parseInt(
-      (document.querySelector('#childCounter')!.textContent ?? '').match(
-        /(\d+)/,
-      )?.[1] ?? '0',
-      10,
-    );
-    const grandChildStart = Number.parseInt(
-      (document.querySelector('#grandChildCounter')!.textContent ?? '').match(
-        /(\d+)/,
-      )?.[1] ?? '0',
-      10,
-    );
-    const grandChild1Start = Number.parseInt(
-      (document.querySelector('#grandChild1Counter')!.textContent ?? '').match(
-        /(\d+)/,
-      )?.[1] ?? '0',
-      10,
-    );
-    const grandChild2Start = Number.parseInt(
-      (document.querySelector('#grandChild2Counter')!.textContent ?? '').match(
-        /(\d+)/,
-      )?.[1] ?? '0',
-      10,
-    );
+    const parentStart = cy.getCounterText('#parentCounter');
+    const childStart = cy.getCounterText('#childCounter');
+    const grandChildStart = cy.getCounterText('#grandChildCounter');
+    const grandChild1Start = cy.getCounterText('#grandChild1Counter');
+    const grandChild2Start = cy.getCounterText('#grandChild2Counter');
 
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="test"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 't');
-      else await userEvent.type(el, 't');
-    })();
+    await cy.type('input[name="test"]', 't');
 
-    {
-      const actual =
-        Number.parseInt(
-          (document.querySelector('#parentCounter')!.textContent ?? '').match(
-            /(\d+)/,
-          )?.[1] ?? '0',
-          10,
-        ) - parentStart;
-      expect(actual).toBeGreaterThanOrEqual(1 - 2);
-      expect(actual).toBeLessThanOrEqual(1 + 2);
-    }
-    {
-      const actual =
-        Number.parseInt(
-          (document.querySelector('#childCounter')!.textContent ?? '').match(
-            /(\d+)/,
-          )?.[1] ?? '0',
-          10,
-        ) - childStart;
-      expect(actual).toBeGreaterThanOrEqual(1 - 2);
-      expect(actual).toBeLessThanOrEqual(1 + 2);
-    }
-    {
-      const actual =
-        Number.parseInt(
-          (
-            document.querySelector('#grandChildCounter')!.textContent ?? ''
-          ).match(/(\d+)/)?.[1] ?? '0',
-          10,
-        ) - grandChildStart;
-      expect(actual).toBeGreaterThanOrEqual(1 - 2);
-      expect(actual).toBeLessThanOrEqual(1 + 2);
-    }
-    {
-      const actual =
-        Number.parseInt(
-          (
-            document.querySelector('#grandChild1Counter')!.textContent ?? ''
-          ).match(/(\d+)/)?.[1] ?? '0',
-          10,
-        ) - grandChild1Start;
-      expect(actual).toBeGreaterThanOrEqual(1 - 2);
-      expect(actual).toBeLessThanOrEqual(1 + 2);
-    }
-    {
-      const actual =
-        Number.parseInt(
-          (
-            document.querySelector('#grandChild2Counter')!.textContent ?? ''
-          ).match(/(\d+)/)?.[1] ?? '0',
-          10,
-        ) - grandChild2Start;
-      expect(actual).toBeGreaterThanOrEqual(1 - 2);
-      expect(actual).toBeLessThanOrEqual(1 + 2);
-    }
-    expect(document.querySelector('#grandchild01')!.textContent).toContain('t');
-    expect(document.querySelector('#grandchild00')!.textContent).toContain('t');
+    cy.expectCounterDelta('#parentCounter', parentStart, 1);
+    cy.expectCounterDelta('#childCounter', childStart, 1);
+    cy.expectCounterDelta('#grandChildCounter', grandChildStart, 1);
+    cy.expectCounterDelta('#grandChild1Counter', grandChild1Start, 1);
+    cy.expectCounterDelta('#grandChild2Counter', grandChild2Start, 1);
+    cy.expectContains('#grandchild01', 't');
+    cy.expectContains('#grandchild00', 't');
 
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="test"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'h');
-      else await userEvent.type(el, 'h');
-    })();
-    expect(document.querySelector('#grandchild00')!.textContent).toContain(
-      'th',
-    );
-    expect(document.querySelector('#grandchild01')!.textContent).toContain(
-      'th',
-    );
-    expect(document.querySelector('#grandchild2')!.textContent).toContain('t');
+    await cy.type('input[name="test"]', 'h');
+    cy.expectContains('#grandchild00', 'th');
+    cy.expectContains('#grandchild01', 'th');
+    cy.expectContains('#grandchild2', 't');
   });
 
   it('should only trigger render when interact with input 2', async () => {
     await renderApp('http://localhost:3000/useWatch');
-    const parentStart = Number.parseInt(
-      (document.querySelector('#parentCounter')!.textContent ?? '').match(
-        /(\d+)/,
-      )?.[1] ?? '0',
-      10,
-    );
-    const childStart = Number.parseInt(
-      (document.querySelector('#childCounter')!.textContent ?? '').match(
-        /(\d+)/,
-      )?.[1] ?? '0',
-      10,
-    );
-    const grandChildStart = Number.parseInt(
-      (document.querySelector('#grandChildCounter')!.textContent ?? '').match(
-        /(\d+)/,
-      )?.[1] ?? '0',
-      10,
-    );
-    const grandChild1Start = Number.parseInt(
-      (document.querySelector('#grandChild1Counter')!.textContent ?? '').match(
-        /(\d+)/,
-      )?.[1] ?? '0',
-      10,
-    );
-    const grandChild2Start = Number.parseInt(
-      (document.querySelector('#grandChild2Counter')!.textContent ?? '').match(
-        /(\d+)/,
-      )?.[1] ?? '0',
-      10,
-    );
+    const parentStart = cy.getCounterText('#parentCounter');
+    const childStart = cy.getCounterText('#childCounter');
+    const grandChildStart = cy.getCounterText('#grandChildCounter');
+    const grandChild1Start = cy.getCounterText('#grandChild1Counter');
+    const grandChild2Start = cy.getCounterText('#grandChild2Counter');
 
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="test1"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'h');
-      else await userEvent.type(el, 'h');
-    })();
+    await cy.type('input[name="test1"]', 'h');
 
-    {
-      const actual =
-        Number.parseInt(
-          (document.querySelector('#parentCounter')!.textContent ?? '').match(
-            /(\d+)/,
-          )?.[1] ?? '0',
-          10,
-        ) - parentStart;
-      expect(actual).toBeGreaterThanOrEqual(1 - 2);
-      expect(actual).toBeLessThanOrEqual(1 + 2);
-    }
-    {
-      const actual =
-        Number.parseInt(
-          (document.querySelector('#childCounter')!.textContent ?? '').match(
-            /(\d+)/,
-          )?.[1] ?? '0',
-          10,
-        ) - childStart;
-      expect(actual).toBeGreaterThanOrEqual(1 - 2);
-      expect(actual).toBeLessThanOrEqual(1 + 2);
-    }
-    {
-      const actual =
-        Number.parseInt(
-          (
-            document.querySelector('#grandChildCounter')!.textContent ?? ''
-          ).match(/(\d+)/)?.[1] ?? '0',
-          10,
-        ) - grandChildStart;
-      expect(actual).toBeGreaterThanOrEqual(1 - 2);
-      expect(actual).toBeLessThanOrEqual(1 + 2);
-    }
-    {
-      const actual =
-        Number.parseInt(
-          (
-            document.querySelector('#grandChild1Counter')!.textContent ?? ''
-          ).match(/(\d+)/)?.[1] ?? '0',
-          10,
-        ) - grandChild1Start;
-      expect(actual).toBeGreaterThanOrEqual(1 - 2);
-      expect(actual).toBeLessThanOrEqual(1 + 2);
-    }
-    {
-      const actual =
-        Number.parseInt(
-          (
-            document.querySelector('#grandChild2Counter')!.textContent ?? ''
-          ).match(/(\d+)/)?.[1] ?? '0',
-          10,
-        ) - grandChild2Start;
-      expect(actual).toBeGreaterThanOrEqual(1 - 2);
-      expect(actual).toBeLessThanOrEqual(1 + 2);
-    }
+    cy.expectCounterDelta('#parentCounter', parentStart, 1);
+    cy.expectCounterDelta('#childCounter', childStart, 1);
+    cy.expectCounterDelta('#grandChildCounter', grandChildStart, 1);
+    cy.expectCounterDelta('#grandChild1Counter', grandChild1Start, 1);
+    cy.expectCounterDelta('#grandChild2Counter', grandChild2Start, 1);
 
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="test1"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'h');
-      else await userEvent.type(el, 'h');
-    })();
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="test"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'h');
-      else await userEvent.type(el, 'h');
-    })();
-    expect(document.querySelector('#grandchild00')!.textContent).toContain('h');
-    expect(document.querySelector('#grandchild01')!.textContent).toContain('h');
-    expect(document.querySelector('#grandchild1')!.textContent).toContain('hh');
-    expect(document.querySelector('#grandchild2')!.textContent).toContain(
-      'hhh',
-    );
+    await cy.type('input[name="test1"]', 'h');
+    await cy.type('input[name="test"]', 'h');
+    cy.expectContains('#grandchild00', 'h');
+    cy.expectContains('#grandchild01', 'h');
+    cy.expectContains('#grandchild1', 'hh');
+    cy.expectContains('#grandchild2', 'hhh');
   });
 
   it('should only trigger render when interact with input 3', async () => {
     await renderApp('http://localhost:3000/useWatch');
-    const parentStart = Number.parseInt(
-      (document.querySelector('#parentCounter')!.textContent ?? '').match(
-        /(\d+)/,
-      )?.[1] ?? '0',
-      10,
-    );
-    const childStart = Number.parseInt(
-      (document.querySelector('#childCounter')!.textContent ?? '').match(
-        /(\d+)/,
-      )?.[1] ?? '0',
-      10,
-    );
-    const grandChildStart = Number.parseInt(
-      (document.querySelector('#grandChildCounter')!.textContent ?? '').match(
-        /(\d+)/,
-      )?.[1] ?? '0',
-      10,
-    );
-    const grandChild1Start = Number.parseInt(
-      (document.querySelector('#grandChild1Counter')!.textContent ?? '').match(
-        /(\d+)/,
-      )?.[1] ?? '0',
-      10,
-    );
-    const grandChild2Start = Number.parseInt(
-      (document.querySelector('#grandChild2Counter')!.textContent ?? '').match(
-        /(\d+)/,
-      )?.[1] ?? '0',
-      10,
-    );
+    const parentStart = cy.getCounterText('#parentCounter');
+    const childStart = cy.getCounterText('#childCounter');
+    const grandChildStart = cy.getCounterText('#grandChildCounter');
+    const grandChild1Start = cy.getCounterText('#grandChild1Counter');
+    const grandChild2Start = cy.getCounterText('#grandChild2Counter');
 
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="test2"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'e');
-      else await userEvent.type(el, 'e');
-    })();
+    await cy.type('input[name="test2"]', 'e');
 
-    {
-      const actual =
-        Number.parseInt(
-          (document.querySelector('#parentCounter')!.textContent ?? '').match(
-            /(\d+)/,
-          )?.[1] ?? '0',
-          10,
-        ) - parentStart;
-      expect(actual).toBeGreaterThanOrEqual(1 - 2);
-      expect(actual).toBeLessThanOrEqual(1 + 2);
-    }
-    {
-      const actual =
-        Number.parseInt(
-          (document.querySelector('#childCounter')!.textContent ?? '').match(
-            /(\d+)/,
-          )?.[1] ?? '0',
-          10,
-        ) - childStart;
-      expect(actual).toBeGreaterThanOrEqual(1 - 2);
-      expect(actual).toBeLessThanOrEqual(1 + 2);
-    }
-    {
-      const actual =
-        Number.parseInt(
-          (
-            document.querySelector('#grandChildCounter')!.textContent ?? ''
-          ).match(/(\d+)/)?.[1] ?? '0',
-          10,
-        ) - grandChildStart;
-      expect(actual).toBeGreaterThanOrEqual(1 - 2);
-      expect(actual).toBeLessThanOrEqual(1 + 2);
-    }
-    {
-      const actual =
-        Number.parseInt(
-          (
-            document.querySelector('#grandChild1Counter')!.textContent ?? ''
-          ).match(/(\d+)/)?.[1] ?? '0',
-          10,
-        ) - grandChild1Start;
-      expect(actual).toBeGreaterThanOrEqual(1 - 2);
-      expect(actual).toBeLessThanOrEqual(1 + 2);
-    }
-    {
-      const actual =
-        Number.parseInt(
-          (
-            document.querySelector('#grandChild2Counter')!.textContent ?? ''
-          ).match(/(\d+)/)?.[1] ?? '0',
-          10,
-        ) - grandChild2Start;
-      expect(actual).toBeGreaterThanOrEqual(1 - 2);
-      expect(actual).toBeLessThanOrEqual(1 + 2);
-    }
+    cy.expectCounterDelta('#parentCounter', parentStart, 1);
+    cy.expectCounterDelta('#childCounter', childStart, 1);
+    cy.expectCounterDelta('#grandChildCounter', grandChildStart, 1);
+    cy.expectCounterDelta('#grandChild1Counter', grandChild1Start, 1);
+    cy.expectCounterDelta('#grandChild2Counter', grandChild2Start, 1);
 
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="test2"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'eh');
-      else await userEvent.type(el, 'eh');
-    })();
+    await cy.type('input[name="test2"]', 'eh');
 
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="test1"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'eh');
-      else await userEvent.type(el, 'eh');
-    })();
-    await (async () => {
-      const el = document.querySelector(
-        'input[name="test"]',
-      )! as HTMLInputElement;
-      if (el.type === 'date') await userEvent.fill(el, 'eh');
-      else await userEvent.type(el, 'eh');
-    })();
-    expect(document.querySelector('#grandchild00')!.textContent).toContain(
-      'eh',
-    );
-    expect(document.querySelector('#grandchild01')!.textContent).toContain(
-      'eh',
-    );
-    expect(document.querySelector('#grandchild1')!.textContent).toContain('eh');
-    expect(document.querySelector('#grandchild2')!.textContent).toContain(
-      'eheheeh',
-    );
+    await cy.type('input[name="test1"]', 'eh');
+    await cy.type('input[name="test"]', 'eh');
+    cy.expectContains('#grandchild00', 'eh');
+    cy.expectContains('#grandchild01', 'eh');
+    cy.expectContains('#grandchild1', 'eh');
+    cy.expectContains('#grandchild2', 'eheheeh');
   });
 });
