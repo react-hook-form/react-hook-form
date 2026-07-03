@@ -58,18 +58,6 @@ const FormStateWithSchema: React.FC = () => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <input {...register('firstName')} placeholder="firstName" />
       <input {...register('lastName')} placeholder="lastName" />
-      <div id="state">
-        {JSON.stringify({
-          isSubmitted,
-          submitCount,
-          isDirty,
-          isSubmitting,
-          isSubmitSuccessful,
-          isValid,
-          touched: Object.keys(touchedFields),
-          dirty: Object.keys(dirtyFields),
-        })}
-      </div>
       <select {...register('select')}>
         <option value="">Select</option>
         <option value={1}>1</option>
@@ -86,6 +74,18 @@ const FormStateWithSchema: React.FC = () => {
       <button type="button" onClick={() => reset()} id="resetForm">
         Reset
       </button>
+      <div id="state">
+        {JSON.stringify({
+          isSubmitted,
+          submitCount,
+          isDirty,
+          isSubmitting,
+          isSubmitSuccessful,
+          isValid,
+          touched: Object.keys(touchedFields),
+          dirty: Object.keys(dirtyFields),
+        })}
+      </div>
       <div id="renderCount">{renderCounter}</div>
     </form>
   );
