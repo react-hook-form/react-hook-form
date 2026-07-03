@@ -10,6 +10,12 @@ type Item = {
 
 const items: Item[] = [
   {
+    title: 'ActivityIsSubmitting',
+    description:
+      'isSubmitting should reset when the form is hidden by <Activity> mid-submit',
+    slugs: ['/activityIsSubmitting'],
+  },
+  {
     title: 'AutoUnregister',
     description: 'Should keep all inputs data when inputs get unmounted',
     slugs: ['/autoUnregister'],
