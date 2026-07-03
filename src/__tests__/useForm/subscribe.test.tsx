@@ -282,6 +282,48 @@ describe('subscribe', () => {
     expect(capturedValues).toEqual({ test: 'hello' });
   });
 
+  it('should not leak the last changed field name into a reset triggered callback', async () => {
+    const names: (string | undefined)[] = [];
+
+    const App = () => {
+      const { register, subscribe, reset } = useForm({
+        defaultValues: {
+          firstName: '',
+        },
+      });
+
+      React.useEffect(() => {
+        return subscribe({
+          formState: {
+            values: true,
+          },
+          callback: ({ name }) => {
+            names.push(name);
+          },
+        });
+      }, [subscribe]);
+
+      return (
+        <form>
+          <input {...register('firstName')} />
+          <button type="button" onClick={() => reset({ firstName: '' })}>
+            reset
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'a' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+
+    expect(names).toEqual([undefined, 'firstName', undefined]);
+  });
+
   it('should keep isDirty true when reset keeps values and updates defaultValues', async () => {
     const callbackFn = jest.fn();
 
