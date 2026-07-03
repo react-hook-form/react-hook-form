@@ -176,3 +176,37 @@ export async function waitFor(callback: () => void, timeout = 5000) {
 export function fireChange(selector: string, value: string) {
   fireEvent.change($(selector), { target: { value } });
 }
+
+export function wait(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function clickButtonWithText(text: string) {
+  const button = Array.from(document.querySelectorAll('button')).find((el) =>
+    el.textContent?.includes(text),
+  );
+  if (!button) {
+    throw new Error(`Button not found with text: ${text}`);
+  }
+  await userEvent.click(button);
+}
+
+export function expectFocused(selector: string) {
+  expect(document.activeElement).toBe($(selector));
+}
+
+export function expectValueAt(selector: string, index: number, value: string) {
+  expect(($$(selector)[index] as HTMLInputElement).value).toBe(value);
+}
+
+export function expectCheckedAt(selector: string, index: number) {
+  expect(($$(selector)[index] as HTMLInputElement).checked).toBe(true);
+}
+
+export function expectNotCheckedAt(selector: string, index: number) {
+  expect(($$(selector)[index] as HTMLInputElement).checked).toBe(false);
+}
+
+export function expectEmpty(selector: string) {
+  expect($(selector).textContent).toBe('');
+}
