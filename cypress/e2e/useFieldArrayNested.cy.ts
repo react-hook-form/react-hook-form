@@ -1,273 +1,321 @@
-import { describe, it } from 'vitest';
-
-import * as cy from '../support/cy';
-import {
-  expectRenderCountDelta,
-  getRenderCount,
-  renderApp,
-} from '../support/renderApp';
-
 describe('useFieldArrayNested', () => {
-  it('should work correctly with nested field array', async () => {
-    await renderApp('http://localhost:3000/useFieldArrayNested');
-    const renderCountStart = getRenderCount();
-    await cy.click('#nest-append-0');
-    await cy.click('#nest-prepend-0');
-    await cy.click('#nest-insert-0');
-    await cy.click('#nest-swap-0');
-    await cy.click('#nest-move-0');
+  it('should work correctly with nested field array', () => {
+    cy.visit('http://localhost:3000/useFieldArrayNested');
 
-    cy.expectValue('input[name="test.0.keyValue.0.name"]', 'insert');
-    cy.expectValue('input[name="test.0.keyValue.1.name"]', 'prepend');
-    cy.expectValue('input[name="test.0.keyValue.2.name"]', '1a');
-    cy.expectValue('input[name="test.0.keyValue.3.name"]', '1c');
-    cy.expectValue('input[name="test.0.keyValue.4.name"]', 'append');
+    cy.get(`#nest-append-0`).click();
+    cy.get(`#nest-prepend-0`).click();
+    cy.get(`#nest-insert-0`).click();
+    cy.get(`#nest-swap-0`).click();
+    cy.get(`#nest-move-0`).click();
 
-    await cy.click('#nest-remove-0');
-    cy.expectValue('input[name="test.0.keyValue.2.name"]', '1c');
-    cy.expectValue('input[name="test.0.keyValue.3.name"]', 'append');
+    cy.get('input[name="test.0.keyValue.0.name"]').should(
+      'have.value',
+      'insert',
+    );
+    cy.get('input[name="test.0.keyValue.1.name"]').should(
+      'have.value',
+      'prepend',
+    );
+    cy.get('input[name="test.0.keyValue.2.name"]').should('have.value', '1a');
+    cy.get('input[name="test.0.keyValue.3.name"]').should('have.value', '1c');
+    cy.get('input[name="test.0.keyValue.4.name"]').should(
+      'have.value',
+      'append',
+    );
 
-    cy.expectJson('#dirty-nested-0', {
-      test: [
-        {
-          keyValue: [
-            { name: true },
-            { name: true },
-            { name: true },
-            { name: true },
-          ],
-        },
-      ],
-    });
+    cy.get(`#nest-remove-0`).click();
+    cy.get('input[name="test.0.keyValue.2.name"]').should('have.value', '1c');
+    cy.get('input[name="test.0.keyValue.3.name"]').should(
+      'have.value',
+      'append',
+    );
 
-    cy.expectJson('#touched-nested-0', {
-      test: [{ keyValue: [{ name: true }, null, null, { name: true }] }],
-    });
+    cy.get('#dirty-nested-0').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        test: [
+          {
+            keyValue: [
+              { name: true },
+              { name: true },
+              { name: true },
+              { name: true },
+            ],
+          },
+        ],
+      }),
+    );
 
-    await cy.click('#submit');
+    cy.get('#touched-nested-0').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        test: [{ keyValue: [{ name: true }, null, null, { name: true }] }],
+      }),
+    );
 
-    cy.expectJson('#result', {
-      test: [
-        {
-          firstName: 'Bill',
-          lastName: 'Luo',
-          keyValue: [
-            { name: 'insert' },
-            { name: '1a' },
-            { name: '1c' },
-            { name: 'append' },
-          ],
-        },
-      ],
-    });
+    cy.get('#submit').click();
 
-    await cy.click('#prepend');
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        test: [
+          {
+            firstName: 'Bill',
+            lastName: 'Luo',
+            keyValue: [
+              { name: 'insert' },
+              { name: '1a' },
+              { name: '1c' },
+              { name: 'append' },
+            ],
+          },
+        ],
+      }),
+    );
 
-    cy.expectJson('#dirty-nested-0', {
-      test: [
-        {
-          keyValue: [{ name: true }, { name: true }],
-          firstName: true,
-          lastName: true,
-        },
-        {
-          firstName: true,
-          lastName: true,
-          keyValue: [
-            { name: true },
-            { name: true },
-            { name: true },
-            { name: true },
-          ],
-        },
-      ],
-    });
+    cy.get('#prepend').click();
 
-    cy.expectJson('#touched-nested-0', {
-      test: [null, { keyValue: [{ name: true }, null, null, { name: true }] }],
-    });
+    cy.get('#dirty-nested-0').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        test: [
+          {
+            keyValue: [{ name: true }, { name: true }],
+            firstName: true,
+            lastName: true,
+          },
+          {
+            firstName: true,
+            lastName: true,
+            keyValue: [
+              { name: true },
+              { name: true },
+              { name: true },
+              { name: true },
+            ],
+          },
+        ],
+      }),
+    );
 
-    await cy.click('#append');
-    await cy.click('#swap');
-    await cy.click('#insert');
+    cy.get('#touched-nested-0').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        test: [
+          null,
+          { keyValue: [{ name: true }, null, null, { name: true }] },
+        ],
+      }),
+    );
 
-    cy.expectJson('#touched-nested-0', {
-      test: [
-        { firstName: true },
-        null,
-        { firstName: true },
-        { keyValue: [{ name: true }, null, null, { name: true }] },
-      ],
-    });
+    cy.get('#append').click();
+    cy.get('#swap').click();
+    cy.get('#insert').click();
 
-    cy.expectJson('#dirty-nested-0', {
-      test: [
-        {
-          firstName: true,
-          keyValue: [{ name: true }, { name: true }],
-          lastName: true,
-        },
-        { firstName: true },
-        { firstName: true },
-        {
-          firstName: true,
-          lastName: true,
-          keyValue: [
-            { name: true },
-            { name: true },
-            { name: true },
-            { name: true },
-          ],
-        },
-      ],
-    });
+    cy.get('#touched-nested-0').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        test: [
+          { firstName: true },
+          null,
+          { firstName: true },
+          { keyValue: [{ name: true }, null, null, { name: true }] },
+        ],
+      }),
+    );
 
-    await cy.click('#submit');
+    cy.get('#dirty-nested-0').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        test: [
+          {
+            firstName: true,
+            keyValue: [{ name: true }, { name: true }],
+            lastName: true,
+          },
+          { firstName: true },
+          { firstName: true },
+          {
+            firstName: true,
+            lastName: true,
+            keyValue: [
+              { name: true },
+              { name: true },
+              { name: true },
+              { name: true },
+            ],
+          },
+        ],
+      }),
+    );
 
-    cy.expectJson('#result', {
-      test: [
-        { firstName: 'prepend', keyValue: [] },
-        { firstName: 'insert', keyValue: [] },
-        { firstName: 'append', keyValue: [] },
-        {
-          firstName: 'Bill',
-          keyValue: [
-            { name: 'insert' },
-            { name: '1a' },
-            { name: '1c' },
-            { name: 'append' },
-          ],
-          lastName: 'Luo',
-        },
-      ],
-    });
+    cy.get('#submit').click();
 
-    await cy.click('#nest-append-0');
-    await cy.click('#nest-prepend-0');
-    await cy.click('#nest-insert-0');
-    await cy.click('#nest-swap-0');
-    await cy.click('#nest-move-0');
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        test: [
+          { firstName: 'prepend', keyValue: [] },
+          { firstName: 'insert', keyValue: [] },
+          { firstName: 'append', keyValue: [] },
+          {
+            firstName: 'Bill',
+            keyValue: [
+              { name: 'insert' },
+              { name: '1a' },
+              { name: '1c' },
+              { name: 'append' },
+            ],
+            lastName: 'Luo',
+          },
+        ],
+      }),
+    );
 
-    cy.expectLength('input', 11);
+    cy.get(`#nest-append-0`).click();
+    cy.get(`#nest-prepend-0`).click();
+    cy.get(`#nest-insert-0`).click();
+    cy.get(`#nest-swap-0`).click();
+    cy.get(`#nest-move-0`).click();
 
-    await cy.click('#nest-remove-3');
-    await cy.click('#nest-remove-3');
+    cy.get('input').its('length').should('eq', 11);
 
-    cy.expectValue('input[name="test.3.keyValue.0.name"]', 'insert');
-    cy.expectValue('input[name="test.3.keyValue.1.name"]', 'append');
+    cy.get('#nest-remove-3').click();
+    cy.get('#nest-remove-3').click();
 
-    cy.expectJson('#dirty-nested-0', {
-      test: [
-        {
-          firstName: true,
-          keyValue: [{ name: true }, { name: true }, { name: true }],
-          lastName: true,
-        },
-        { firstName: true },
-        { firstName: true },
-        {
-          firstName: true,
-          lastName: true,
-          keyValue: [{ name: true }, { name: true }],
-        },
-      ],
-    });
+    cy.get('input[name="test.3.keyValue.0.name"]').should(
+      'has.value',
+      'insert',
+    );
+    cy.get('input[name="test.3.keyValue.1.name"]').should(
+      'has.value',
+      'append',
+    );
 
-    await cy.click('#nest-update-0');
+    cy.get('#dirty-nested-0').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        test: [
+          {
+            firstName: true,
+            keyValue: [{ name: true }, { name: true }, { name: true }],
+            lastName: true,
+          },
+          { firstName: true },
+          { firstName: true },
+          {
+            firstName: true,
+            lastName: true,
+            keyValue: [{ name: true }, { name: true }],
+          },
+        ],
+      }),
+    );
 
-    cy.expectValue('input[name="test.0.keyValue.0.name"]', 'update');
+    cy.get('#nest-update-0').click();
 
-    await cy.click('#submit');
+    cy.get('input[name="test.0.keyValue.0.name"]').should(
+      'have.value',
+      'update',
+    );
 
-    cy.expectJson('#result', {
-      test: [
-        {
-          firstName: 'prepend',
-          keyValue: [
-            { name: 'update' },
-            { name: 'prepend' },
-            { name: 'append' },
-          ],
-        },
-        { firstName: 'insert', keyValue: [] },
-        { firstName: 'append', keyValue: [] },
-        {
-          firstName: 'Bill',
-          keyValue: [{ name: 'insert' }, { name: 'append' }],
-          lastName: 'Luo',
-        },
-      ],
-    });
+    cy.get('#submit').click();
 
-    await cy.click('#nest-remove-all-3');
-    await cy.click('#nest-remove-all-2');
-    await cy.click('#nest-remove-all-1');
-    await cy.click('#nest-remove-all-0');
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        test: [
+          {
+            firstName: 'prepend',
+            keyValue: [
+              { name: 'update' },
+              { name: 'prepend' },
+              { name: 'append' },
+            ],
+          },
+          { firstName: 'insert', keyValue: [] },
+          { firstName: 'append', keyValue: [] },
+          {
+            firstName: 'Bill',
+            keyValue: [{ name: 'insert' }, { name: 'append' }],
+            lastName: 'Luo',
+          },
+        ],
+      }),
+    );
 
-    cy.expectContains(
-      '#touched-nested-2',
+    cy.get('#nest-remove-all-3').click();
+    cy.get('#nest-remove-all-2').click();
+    cy.get('#nest-remove-all-1').click();
+    cy.get('#nest-remove-all-0').click();
+
+    cy.get('#touched-nested-2').contains(
       '{"test":[{"firstName":true,"keyValue":[]},{"firstName":true},{"firstName":true},{"keyValue":[]}]}',
     );
 
-    cy.expectJson('#dirty-nested-2', {
-      test: [
-        {
-          firstName: true,
-          keyValue: [{ name: true }, { name: true }],
-          lastName: true,
-        },
-        { firstName: true },
-        { firstName: true },
-        { firstName: true, lastName: true },
-      ],
-    });
+    cy.get('#dirty-nested-2').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        test: [
+          {
+            firstName: true,
+            keyValue: [{ name: true }, { name: true }],
+            lastName: true,
+          },
+          { firstName: true },
+          { firstName: true },
+          { firstName: true, lastName: true },
+        ],
+      }),
+    );
 
-    await cy.click('#submit');
+    cy.get('#submit').click();
 
-    cy.expectJson('#result', {
-      test: [
-        { firstName: 'prepend', keyValue: [] },
-        { firstName: 'insert', keyValue: [] },
-        { firstName: 'append', keyValue: [] },
-        { firstName: 'Bill', keyValue: [], lastName: 'Luo' },
-      ],
-    });
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        test: [
+          { firstName: 'prepend', keyValue: [] },
+          { firstName: 'insert', keyValue: [] },
+          { firstName: 'append', keyValue: [] },
+          { firstName: 'Bill', keyValue: [], lastName: 'Luo' },
+        ],
+      }),
+    );
 
-    await cy.click('#remove');
-    await cy.click('#remove');
-    await cy.click('#remove');
+    cy.get('#remove').click();
+    cy.get('#remove').click();
+    cy.get('#remove').click();
 
-    cy.expectJson('#dirty-nested-0', {
-      test: [
-        {
-          firstName: true,
-          keyValue: [{ name: true }, { name: true }],
-          lastName: true,
-        },
-      ],
-    });
+    cy.get('#dirty-nested-0').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        test: [
+          {
+            firstName: true,
+            keyValue: [{ name: true }, { name: true }],
+            lastName: true,
+          },
+        ],
+      }),
+    );
 
-    await cy.click('#submit');
-    cy.expectContains(
-      '#result',
+    cy.get('#submit').click();
+    cy.get('#result').contains(
       '{"test":[{"firstName":"prepend","keyValue":[]}]}',
     );
 
-    await cy.click('#update');
+    cy.get('#update').click();
 
-    cy.expectValue('input[name="test.0.firstName"]', 'updateFirstName');
-    cy.expectValue('input[name="test.0.keyValue.0.name"]', 'updateFirstName1');
-    cy.expectValue('input[name="test.0.keyValue.1.name"]', 'updateFirstName2');
+    cy.get('input[name="test.0.firstName"]').should(
+      'have.value',
+      'updateFirstName',
+    );
+    cy.get('input[name="test.0.keyValue.0.name"]').should(
+      'have.value',
+      'updateFirstName1',
+    );
+    cy.get('input[name="test.0.keyValue.1.name"]').should(
+      'have.value',
+      'updateFirstName2',
+    );
 
-    await cy.click('#removeAll');
+    cy.get('#removeAll').click();
 
-    cy.expectNotExist('#dirty-nested-0');
+    cy.get('#dirty-nested-0').should('not.exist');
 
-    cy.expectNotExist('#touched-nested-0');
+    cy.get('#touched-nested-0').should('not.exist');
 
-    await cy.click('#submit');
-    cy.expectContains('#result', '{"test":[]}');
+    cy.get('#submit').click();
+    cy.get('#result').contains('{"test":[]}');
 
-    expectRenderCountDelta(renderCountStart, 16);
+    cy.get('#count').contains('17');
   });
 });

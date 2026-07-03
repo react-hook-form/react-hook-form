@@ -1,53 +1,52 @@
-import { describe, it } from 'vitest';
-
-import * as cy from '../support/cy';
-import {
-  expectRenderCountDelta,
-  getRenderCount,
-  renderApp,
-} from '../support/renderApp';
-
 describe('form setValue', () => {
-  it('should set input value, trigger validation and clear all errors', async () => {
-    await renderApp('http://localhost:3000/setValue');
-    const renderCountStart = getRenderCount();
-    cy.expectValue('input[name="firstName"]', 'wrong');
-    cy.expectValue('input[name="age"]', '2');
-    cy.expectValue('input[name="array.0"]', 'array.0');
-    cy.expectValue('input[name="array.1"]', 'array.1');
-    cy.expectValue('input[name="array.2"]', 'array.2');
-    cy.expectValue('input[name="object.firstName"]', 'firstName');
-    cy.expectValue('input[name="object.lastName"]', 'lastName');
-    cy.expectValue('input[name="object.middleName"]', 'middleName');
-    cy.expectChecked('input[name="radio"]');
-    cy.expectChecked('input[name="checkboxArray"][value="2"]');
-    cy.expectChecked('input[name="checkboxArray"][value="3"]');
-    cy.expectValue('select[name="select"]', 'a');
-    cy.expectSelectValues('select[name="multiple"]', ['a', 'b']);
-    await cy.waitFor(() => cy.expectContains('#trigger', 'Trigger error'));
-    cy.expectNotExist('#lastName');
-    cy.expectContains('#nestedValue', 'required');
+  it('should set input value, trigger validation and clear all errors', () => {
+    cy.visit('http://localhost:3000/setValue');
 
-    await cy.click('#submit');
+    cy.get('input[name="firstName"]').should('have.value', 'wrong');
+    cy.get('input[name="age"]').should('have.value', '2');
+    cy.get('input[name="array.0"]').should('have.value', 'array.0');
+    cy.get('input[name="array.1"]').should('have.value', 'array.1');
+    cy.get('input[name="array.2"]').should('have.value', 'array.2');
+    cy.get('input[name="object.firstName').should('have.value', 'firstName');
+    cy.get('input[name="object.lastName').should('have.value', 'lastName');
+    cy.get('input[name="object.middleName').should('have.value', 'middleName');
+    cy.get('input[name="radio"]').should('have.checked', true);
+    cy.get('input[name="checkboxArray"][value="2"]').should(
+      'have.checked',
+      true,
+    );
+    cy.get('input[name="checkboxArray"][value="3"]').should(
+      'have.checked',
+      true,
+    );
+    cy.get('select[name="select"]').should('have.value', 'a');
+    cy.get('select[name="multiple"]')
+      .invoke('val')
+      .should('deep.equal', ['a', 'b']);
+    cy.get('#trigger').contains('Trigger error');
+    cy.get('#lastName').should('not.exist');
+    cy.get('#nestedValue').contains('required');
 
-    cy.expectContains('#lastName', 'Last name error');
+    cy.get('#submit').click();
 
-    await cy.type('input[name="lastName"]', 'test');
-    await cy.type('input[name="trigger"]', 'trigger');
-    await cy.type('input[name="nestedValue"]', 'test');
+    cy.get('#lastName').contains('Last name error');
 
-    await cy.click('#submit');
-    cy.expectNoParagraphs();
-    expectRenderCountDelta(renderCountStart, 6);
+    cy.get('input[name="lastName"]').type('test');
+    cy.get('input[name="trigger"]').type('trigger');
+    cy.get('input[name="nestedValue"]').type('test');
 
-    await cy.click('#setMultipleValues');
-    cy.expectValue('input[name="array.0"]', 'array[0]1');
-    cy.expectValue('input[name="array.1"]', 'array[1]1');
-    cy.expectValue('input[name="array.2"]', 'array[2]1');
-    cy.expectValue('input[name="object.firstName"]', 'firstName1');
-    cy.expectValue('input[name="object.lastName"]', 'lastName1');
-    cy.expectValue('input[name="object.middleName"]', 'middleName1');
-    cy.expectValue('input[name="nestedValue"]', 'a,b');
-    expectRenderCountDelta(renderCountStart, 6);
+    cy.get('#submit').click();
+    cy.get('p').should('have.length', 0);
+    cy.get('#renderCount').contains('7');
+
+    cy.get('#setMultipleValues').click();
+    cy.get('input[name="array.0"]').should('have.value', 'array[0]1');
+    cy.get('input[name="array.1"]').should('have.value', 'array[1]1');
+    cy.get('input[name="array.2"]').should('have.value', 'array[2]1');
+    cy.get('input[name="object.firstName').should('have.value', 'firstName1');
+    cy.get('input[name="object.lastName').should('have.value', 'lastName1');
+    cy.get('input[name="object.middleName').should('have.value', 'middleName1');
+    cy.get('input[name="nestedValue"]').should('have.value', 'a,b');
+    cy.get('#renderCount').contains('7');
   });
 });

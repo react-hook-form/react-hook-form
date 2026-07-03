@@ -1,171 +1,192 @@
-import { describe, it } from 'vitest';
-
-import * as cy from '../support/cy';
-import {
-  expectRenderCountDelta,
-  getRenderCount,
-  renderApp,
-} from '../support/renderApp';
-
 describe('watchUseFieldArrayNested', () => {
-  it('should watch the correct nested field array', async () => {
-    await renderApp('http://localhost:3000/watchUseFieldArrayNested');
-    const renderCountStart = getRenderCount();
-    cy.expectJson('#result', [
-      {
-        firstName: 'Bill',
-        keyValue: [{ name: '1a' }, { name: '1c' }],
-        lastName: 'Luo',
-      },
-    ]);
+  it('should watch the correct nested field array', () => {
+    cy.visit('http://localhost:3000/watchUseFieldArrayNested');
 
-    await cy.click('#nest-append-0');
-    await cy.click('#nest-prepend-0');
-    await cy.click('#nest-insert-0');
-    await cy.click('#nest-swap-0');
-    await cy.click('#nest-move-0');
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal([
+        {
+          firstName: 'Bill',
+          keyValue: [{ name: '1a' }, { name: '1c' }],
+          lastName: 'Luo',
+        },
+      ]),
+    );
 
-    cy.expectJson('#result', [
-      {
-        firstName: 'Bill',
-        keyValue: [
-          { name: 'insert' },
-          { name: 'prepend' },
-          { name: '1a' },
-          { name: '1c' },
-          { name: 'append' },
-        ],
-        lastName: 'Luo',
-      },
-    ]);
+    cy.get(`#nest-append-0`).click();
+    cy.get(`#nest-prepend-0`).click();
+    cy.get(`#nest-insert-0`).click();
+    cy.get(`#nest-swap-0`).click();
+    cy.get(`#nest-move-0`).click();
 
-    await cy.click('#nest-update-0');
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal([
+        {
+          firstName: 'Bill',
+          keyValue: [
+            { name: 'insert' },
+            { name: 'prepend' },
+            { name: '1a' },
+            { name: '1c' },
+            { name: 'append' },
+          ],
+          lastName: 'Luo',
+        },
+      ]),
+    );
 
-    cy.expectJson('#result', [
-      {
-        firstName: 'Bill',
-        keyValue: [
-          { name: 'billUpdate' },
-          { name: 'prepend' },
-          { name: '1a' },
-          { name: '1c' },
-          { name: 'append' },
-        ],
-        lastName: 'Luo',
-      },
-    ]);
+    cy.get('#nest-update-0').click();
 
-    await cy.click('#nest-remove-0');
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal([
+        {
+          firstName: 'Bill',
+          keyValue: [
+            { name: 'billUpdate' },
+            { name: 'prepend' },
+            { name: '1a' },
+            { name: '1c' },
+            { name: 'append' },
+          ],
+          lastName: 'Luo',
+        },
+      ]),
+    );
 
-    await cy.click('#submit');
+    cy.get(`#nest-remove-0`).click();
 
-    cy.expectJson('#result', [
-      {
-        firstName: 'Bill',
-        keyValue: [
-          { name: 'billUpdate' },
-          { name: '1a' },
-          { name: '1c' },
-          { name: 'append' },
-        ],
-        lastName: 'Luo',
-      },
-    ]);
+    cy.get('#submit').click();
 
-    await cy.click('#prepend');
-    await cy.click('#append');
-    await cy.click('#swap');
-    await cy.click('#insert');
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal([
+        {
+          firstName: 'Bill',
+          keyValue: [
+            { name: 'billUpdate' },
+            { name: '1a' },
+            { name: '1c' },
+            { name: 'append' },
+          ],
+          lastName: 'Luo',
+        },
+      ]),
+    );
 
-    cy.expectJson('#result', [
-      { firstName: 'prepend', keyValue: [] },
-      { firstName: 'insert', keyValue: [] },
-      { firstName: 'append', keyValue: [] },
-      {
-        firstName: 'Bill',
-        lastName: 'Luo',
-        keyValue: [
-          { name: 'billUpdate' },
-          { name: '1a' },
-          { name: '1c' },
-          { name: 'append' },
-        ],
-      },
-    ]);
+    cy.get('#prepend').click();
+    cy.get('#append').click();
+    cy.get('#swap').click();
+    cy.get('#insert').click();
 
-    await cy.click('#nest-append-0');
-    await cy.click('#nest-prepend-0');
-    await cy.click('#nest-insert-0');
-    await cy.click('#nest-swap-0');
-    await cy.click('#nest-move-0');
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal([
+        { firstName: 'prepend', keyValue: [] },
+        { firstName: 'insert', keyValue: [] },
+        { firstName: 'append', keyValue: [] },
+        {
+          firstName: 'Bill',
+          lastName: 'Luo',
+          keyValue: [
+            { name: 'billUpdate' },
+            { name: '1a' },
+            { name: '1c' },
+            { name: 'append' },
+          ],
+        },
+      ]),
+    );
 
-    cy.expectJson('#result', [
-      {
-        firstName: 'prepend',
-        keyValue: [{ name: 'insert' }, { name: 'prepend' }, { name: 'append' }],
-      },
-      { firstName: 'insert', keyValue: [] },
-      { firstName: 'append', keyValue: [] },
-      {
-        firstName: 'Bill',
-        lastName: 'Luo',
-        keyValue: [
-          { name: 'billUpdate' },
-          { name: '1a' },
-          { name: '1c' },
-          { name: 'append' },
-        ],
-      },
-    ]);
+    cy.get(`#nest-append-0`).click();
+    cy.get(`#nest-prepend-0`).click();
+    cy.get(`#nest-insert-0`).click();
+    cy.get(`#nest-swap-0`).click();
+    cy.get(`#nest-move-0`).click();
 
-    await cy.click('#nest-remove-3');
-    await cy.click('#nest-remove-3');
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal([
+        {
+          firstName: 'prepend',
+          keyValue: [
+            { name: 'insert' },
+            { name: 'prepend' },
+            { name: 'append' },
+          ],
+        },
+        { firstName: 'insert', keyValue: [] },
+        { firstName: 'append', keyValue: [] },
+        {
+          firstName: 'Bill',
+          lastName: 'Luo',
+          keyValue: [
+            { name: 'billUpdate' },
+            { name: '1a' },
+            { name: '1c' },
+            { name: 'append' },
+          ],
+        },
+      ]),
+    );
 
-    cy.expectJson('#result', [
-      {
-        firstName: 'prepend',
-        keyValue: [{ name: 'insert' }, { name: 'prepend' }, { name: 'append' }],
-      },
-      { firstName: 'insert', keyValue: [] },
-      { firstName: 'append', keyValue: [] },
-      {
-        firstName: 'Bill',
-        lastName: 'Luo',
-        keyValue: [{ name: 'billUpdate' }, { name: 'append' }],
-      },
-    ]);
+    cy.get('#nest-remove-3').click();
+    cy.get('#nest-remove-3').click();
 
-    await cy.click('#nest-remove-all-3');
-    await cy.click('#nest-remove-all-2');
-    await cy.click('#nest-remove-all-1');
-    await cy.click('#nest-remove-all-0');
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal([
+        {
+          firstName: 'prepend',
+          keyValue: [
+            { name: 'insert' },
+            { name: 'prepend' },
+            { name: 'append' },
+          ],
+        },
+        { firstName: 'insert', keyValue: [] },
+        { firstName: 'append', keyValue: [] },
+        {
+          firstName: 'Bill',
+          lastName: 'Luo',
+          keyValue: [{ name: 'billUpdate' }, { name: 'append' }],
+        },
+      ]),
+    );
 
-    cy.expectJson('#result', [
-      { firstName: 'prepend', keyValue: [] },
-      { firstName: 'insert', keyValue: [] },
-      { firstName: 'append', keyValue: [] },
-      { firstName: 'Bill', lastName: 'Luo', keyValue: [] },
-    ]);
+    cy.get('#nest-remove-all-3').click();
+    cy.get('#nest-remove-all-2').click();
+    cy.get('#nest-remove-all-1').click();
+    cy.get('#nest-remove-all-0').click();
 
-    await cy.click('#update');
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal([
+        { firstName: 'prepend', keyValue: [] },
+        { firstName: 'insert', keyValue: [] },
+        { firstName: 'append', keyValue: [] },
+        { firstName: 'Bill', lastName: 'Luo', keyValue: [] },
+      ]),
+    );
 
-    cy.expectJson('#result', [
-      { firstName: 'BillUpdate', keyValue: [] },
-      { firstName: 'insert', keyValue: [] },
-      { firstName: 'append', keyValue: [] },
-      { firstName: 'Bill', lastName: 'Luo', keyValue: [] },
-    ]);
+    cy.get('#update').click();
 
-    await cy.click('#remove');
-    await cy.click('#remove');
-    await cy.click('#remove');
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal([
+        { firstName: 'BillUpdate', keyValue: [] },
+        { firstName: 'insert', keyValue: [] },
+        { firstName: 'append', keyValue: [] },
+        { firstName: 'Bill', lastName: 'Luo', keyValue: [] },
+      ]),
+    );
 
-    cy.expectJson('#result', [{ firstName: 'BillUpdate', keyValue: [] }]);
+    cy.get('#remove').click();
+    cy.get('#remove').click();
+    cy.get('#remove').click();
 
-    expectRenderCountDelta(renderCountStart, 35);
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal([
+        { firstName: 'BillUpdate', keyValue: [] },
+      ]),
+    );
 
-    await cy.click('#removeAll');
+    cy.get('#count').contains('36');
 
-    cy.expectContains('#result', '[]');
+    cy.get('#removeAll').click();
+
+    cy.get('#result').should('have.value', '');
   });
 });

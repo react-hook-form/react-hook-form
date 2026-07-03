@@ -1,57 +1,46 @@
-import { describe, it } from 'vitest';
-
-import * as cy from '../support/cy';
-import {
-  expectRenderCountDelta,
-  getRenderCount,
-  renderApp,
-} from '../support/renderApp';
-
 describe('manual register form validation', () => {
-  it('should validate the form', async () => {
-    await renderApp('http://localhost:3000/manual-register-form');
-    const renderCountStart = getRenderCount();
-    await cy.click('#submit');
+  it('should validate the form', () => {
+    cy.visit('http://localhost:3000/manual-register-form');
+    cy.get('#submit').click();
 
-    cy.expectInputError('input[name="firstName"]', 'firstName error');
-    cy.expectInputError('input[name="lastName"]', 'lastName error');
-    cy.expectInputError('select[name="selectNumber"]', 'selectNumber error');
-    cy.expectInputError(
-      'input[name="minRequiredLength"]',
+    cy.get('input[name="firstName"] + p').contains('firstName error');
+    cy.get('input[name="lastName"] + p').contains('lastName error');
+    cy.get('select[name="selectNumber"] + p').contains('selectNumber error');
+    cy.get('input[name="minRequiredLength"] + p').contains(
       'minRequiredLength error',
     );
-    cy.expectInputError('input[name="radio"]', 'radio error');
+    cy.get('input[name="radio"] + p').contains('radio error');
 
-    await cy.type('input[name="firstName"]', 'bill');
-    await cy.type('input[name="lastName"]', 'luo123456');
-    cy.expectInputError('input[name="lastName"]', 'lastName error');
-    await cy.selectOption('select[name="selectNumber"]', '1');
-    await cy.type('input[name="pattern"]', 'luo');
-    await cy.type('input[name="min"]', '1');
-    await cy.type('input[name="max"]', '21');
-    await cy.type('input[name="minDate"]', '2019-07-30');
-    await cy.type('input[name="maxDate"]', '2019-08-02');
-    await cy.clearAndType('input[name="lastName"]', 'luo');
-    await cy.type('input[name="minLength"]', 'b');
+    cy.get('input[name="firstName"]').type('bill');
+    cy.get('input[name="lastName"]').type('luo123456');
+    cy.get('input[name="lastName"] + p').contains('lastName error');
+    cy.get('select[name="selectNumber"]').select('1');
+    cy.get('input[name="pattern"]').type('luo');
+    cy.get('input[name="min"]').type('1');
+    cy.get('input[name="max"]').type('21');
+    cy.get('input[name="minDate"]').type('2019-07-30');
+    cy.get('input[name="maxDate"]').type('2019-08-02');
+    cy.get('input[name="lastName"]').clear().type('luo');
+    cy.get('input[name="minLength"]').type('b');
 
-    cy.expectInputError('input[name="pattern"]', 'pattern error');
-    cy.expectInputError('input[name="minLength"]', 'minLength error');
-    cy.expectInputError('input[name="min"]', 'min error');
-    cy.expectInputError('input[name="max"]', 'max error');
-    cy.expectInputError('input[name="minDate"]', 'minDate error');
-    cy.expectInputError('input[name="maxDate"]', 'maxDate error');
+    cy.get('input[name="pattern"] + p').contains('pattern error');
+    cy.get('input[name="minLength"] + p').contains('minLength error');
+    cy.get('input[name="min"] + p').contains('min error');
+    cy.get('input[name="max"] + p').contains('max error');
+    cy.get('input[name="minDate"] + p').contains('minDate error');
+    cy.get('input[name="maxDate"] + p').contains('maxDate error');
 
-    await cy.type('input[name="pattern"]', '23');
-    await cy.type('input[name="minLength"]', 'bi');
-    await cy.type('input[name="minRequiredLength"]', 'bi');
-    await cy.check('input[name="radio"]', '1');
-    await cy.clearAndType('input[name="min"]', '11');
-    await cy.clearAndType('input[name="max"]', '19');
-    await cy.type('input[name="minDate"]', '2019-08-01');
-    await cy.type('input[name="maxDate"]', '2019-08-01');
-    await cy.check('input[name="checkbox"]');
+    cy.get('input[name="pattern"]').type('23');
+    cy.get('input[name="minLength"]').type('bi');
+    cy.get('input[name="minRequiredLength"]').type('bi');
+    cy.get('input[name="radio"]').check('1');
+    cy.get('input[name="min"]').clear().type('11');
+    cy.get('input[name="max"]').clear().type('19');
+    cy.get('input[name="minDate"]').type('2019-08-01');
+    cy.get('input[name="maxDate"]').type('2019-08-01');
+    cy.get('input[name="checkbox"]').check();
 
-    cy.expectNoParagraphs();
-    expectRenderCountDelta(renderCountStart, 45);
+    cy.get('p').should('have.length', 0);
+    cy.get('#renderCount').contains('46');
   });
 });

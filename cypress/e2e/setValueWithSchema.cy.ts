@@ -1,36 +1,27 @@
-import { describe, it } from 'vitest';
-
-import * as cy from '../support/cy';
-import {
-  expectRenderCountDelta,
-  getRenderCount,
-  renderApp,
-} from '../support/renderApp';
-
 describe('form setValue with schema', () => {
-  it('should set input value, trigger validation and clear all errors', async () => {
-    await renderApp('http://localhost:3000/setValueWithSchema');
-    const renderCountStart = getRenderCount();
-    await cy.type('input[name="firstName"]', 'a');
-    cy.expectInputError('input[name="firstName"]', 'firstName error');
-    cy.expectParagraphCount(1);
-    await cy.type('input[name="firstName"]', 'asdasdasdasd');
+  it('should set input value, trigger validation and clear all errors', () => {
+    cy.visit('http://localhost:3000/setValueWithSchema');
 
-    await cy.type('input[name="lastName"]', 'a');
-    cy.expectInputError('input[name="lastName"]', 'lastName error');
-    cy.expectParagraphCount(1);
-    await cy.type('input[name="lastName"]', 'asdasdasdasd');
+    cy.get('input[name="firstName"]').type('a');
+    cy.get('input[name="firstName"] + p').contains('firstName error');
+    cy.get('p').should('have.length', 1);
+    cy.get('input[name="firstName"]').type('asdasdasdasd');
 
-    await cy.type('input[name="age"]', 'a2323');
+    cy.get('input[name="lastName"]').type('a');
+    cy.get('input[name="lastName"] + p').contains('lastName error');
+    cy.get('p').should('have.length', 1);
+    cy.get('input[name="lastName"]').type('asdasdasdasd');
 
-    await cy.click('#submit');
-    cy.expectParagraphCount(1);
-    cy.expectInputError('input[name="requiredField"]', 'RequiredField error');
+    cy.get('input[name="age"]').type('a2323');
 
-    await cy.click('#setValue');
-    cy.expectValue('input[name="requiredField"]', 'test123456789');
-    cy.expectNoParagraphs();
+    cy.get('#submit').click();
+    cy.get('p').should('have.length', 1);
+    cy.get('input[name="requiredField"] + p').contains('RequiredField error');
 
-    expectRenderCountDelta(renderCountStart, 34);
+    cy.get('#setValue').click();
+    cy.get('input[name="requiredField"]').should('have.value', 'test123456789');
+    cy.get('p').should('have.length', 0);
+
+    cy.get('#renderCount').contains('35');
   });
 });

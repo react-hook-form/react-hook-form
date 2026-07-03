@@ -1,713 +1,742 @@
-import { describe, it } from 'vitest';
-
-import * as cy from '../support/cy';
-import {
-  expectRenderCountDelta,
-  getRenderCount,
-  renderApp,
-} from '../support/renderApp';
-
 describe('useFieldArray', () => {
-  it('should behaviour correctly without defaultValues', async () => {
-    await renderApp('http://localhost:3000/useFieldArray/normal');
-    const renderCountStart = getRenderCount();
+  it('should behaviour correctly without defaultValues', () => {
+    cy.visit('http://localhost:3000/useFieldArray/normal');
 
-    const append1 = await cy.clickFieldArray('#append', 0);
-    cy.expectLength('ul > li', 1);
+    cy.get('#append').click();
+    cy.get('ul > li').its('length').should('equal', 1);
 
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [{ name: append1 }],
-    });
-
-    const prepend1 = await cy.clickFieldArray('#prepend', 0);
-    cy.expectLength('ul > li', 2);
-    cy.expectLiInputValue(0, prepend1);
-
-    const append2 = await cy.clickFieldArray('#append', 2);
-    cy.expectLength('ul > li', 3);
-    cy.expectLiInputValue(2, append2);
-
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [{ name: prepend1 }, { name: append1 }, { name: append2 }],
-    });
-
-    await cy.click('#swap');
-    cy.expectLiInputValue(1, append2);
-    cy.expectLiInputValue(2, append1);
-
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [{ name: prepend1 }, { name: append2 }, { name: append1 }],
-    });
-
-    await cy.click('#move');
-    cy.expectLiInputValue(0, append1);
-    cy.expectLiInputValue(1, prepend1);
-
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [{ name: append1 }, { name: prepend1 }, { name: append2 }],
-    });
-
-    const insert1 = await cy.clickFieldArray('#insert', 1);
-    cy.expectLiInputValue(1, insert1);
-
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [
-        { name: append1 },
-        { name: insert1 },
-        { name: prepend1 },
-        { name: append2 },
-      ],
-    });
-
-    await cy.click('#remove');
-    cy.expectLiInputValue(0, append1);
-    cy.expectLiInputValue(1, prepend1);
-
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [{ name: append1 }, { name: prepend1 }, { name: append2 }],
-    });
-
-    await cy.click('#delete1');
-
-    cy.expectLength('ul > li', 2);
-
-    cy.expectLiInputValue(0, append1);
-    cy.expectLiInputValue(1, append2);
-
-    await cy.click('#delete1');
-
-    cy.expectLength('ul > li', 1);
-
-    cy.expectLiInputValue(0, append1);
-
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [{ name: append1 }],
-    });
-
-    await cy.click('#update');
-
-    cy.expectLiInputValue(0, 'changed');
-
-    await cy.click('#removeAll');
-    cy.expectLength('ul > li', 0);
-
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [],
-    });
-
-    const asyncAppend1 = await cy.clickFieldArray('#append', 0);
-    await cy.click('#append');
-    await cy.click('#append');
-
-    await cy.click('#removeAsync');
-    await cy.wait(100);
-    await cy.click('#removeAsync');
-    await cy.wait(100);
-
-    cy.expectLength('input', 1);
-
-    await cy.click('#submit');
-
-    cy.expectJson('#result', {
-      data: [{ name: asyncAppend1 }],
-    });
-
-    expectRenderCountDelta(renderCountStart, 41);
-  });
-
-  it('should behaviour correctly with defaultValue', async () => {
-    await renderApp('http://localhost:3000/useFieldArray/default');
-    const renderCountStart = getRenderCount();
-
-    cy.expectLength('ul > li', 3);
-
-    cy.expectLiInputValue(0, 'test');
-
-    cy.expectLiInputValue(1, 'test1');
-
-    cy.expectLiInputValue(2, 'test2');
-
-    const appendVal = await cy.clickFieldArray('#append', 3);
-
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [
-        { name: 'test' },
-        { name: 'test1' },
-        { name: 'test2' },
-        { name: appendVal },
-      ],
-    });
-
-    const prependVal = await cy.clickFieldArray('#prepend', 0);
-    cy.expectLength('ul > li', 5);
-
-    cy.expectLiInputValue(0, prependVal);
-
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [
-        { name: prependVal },
-        { name: 'test' },
-        { name: 'test1' },
-        { name: 'test2' },
-        { name: appendVal },
-      ],
-    });
-
-    await cy.click('#swap');
-    cy.expectLiInputValue(1, 'test1');
-    cy.expectLiInputValue(2, 'test');
-
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [
-        { name: prependVal },
-        { name: 'test1' },
-        { name: 'test' },
-        { name: 'test2' },
-        { name: appendVal },
-      ],
-    });
-
-    await cy.click('#move');
-    cy.expectLiInputValue(0, 'test');
-    cy.expectLiInputValue(1, prependVal);
-
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [
-        { name: 'test' },
-        { name: prependVal },
-        { name: 'test1' },
-        { name: 'test2' },
-        { name: appendVal },
-      ],
-    });
-
-    const insertVal = await cy.clickFieldArray('#insert', 1);
-    cy.expectLiInputValue(1, insertVal);
-
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [
-        { name: 'test' },
-        { name: insertVal },
-        { name: prependVal },
-        { name: 'test1' },
-        { name: 'test2' },
-        { name: appendVal },
-      ],
-    });
-
-    await cy.click('#remove');
-    cy.expectLiInputValue(0, 'test');
-    cy.expectLiInputValue(1, prependVal);
-
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [
-        { name: 'test' },
-        { name: prependVal },
-        { name: 'test1' },
-        { name: 'test2' },
-        { name: appendVal },
-      ],
-    });
-
-    await cy.click('#delete2');
-
-    cy.expectLength('ul > li', 4);
-
-    cy.expectLiInputValue(0, 'test');
-    cy.expectLiInputValue(1, prependVal);
-    cy.expectLiInputValue(2, 'test2');
-    cy.expectLiInputValue(3, appendVal);
-
-    await cy.click('#delete3');
-
-    cy.expectLength('ul > li', 3);
-
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [{ name: 'test' }, { name: prependVal }, { name: 'test2' }],
-    });
-
-    await cy.click('#removeAll');
-    cy.expectLength('ul > li', 0);
-
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [],
-    });
-
-    const finalAppend = await cy.clickFieldArray('#append', 0);
-
-    cy.expectLiInputValue(0, finalAppend);
-
-    const finalPrepend = await cy.clickFieldArray('#prepend', 0);
-
-    cy.expectLiInputValue(0, finalPrepend);
-
-    expectRenderCountDelta(renderCountStart, 32);
-  });
-
-  it('should behaviour correctly with defaultValue and without auto focus', async () => {
-    await renderApp(
-      'http://localhost:3000/useFieldArray/defaultAndWithoutFocus',
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: '3' }],
+      }),
     );
-    const renderCountStart = getRenderCount();
 
-    cy.expectLength('ul > li', 3);
+    cy.get('#prepend').click();
+    cy.get('ul > li').its('length').should('equal', 2);
 
-    cy.expectLiInputValue(0, 'test');
+    cy.get('ul > li').eq(0).get('input').should('have.value', '6');
 
-    cy.expectLiInputValue(1, 'test1');
+    cy.get('#append').click();
+    cy.get('ul > li').its('length').should('equal', 3);
 
-    cy.expectLiInputValue(2, 'test2');
+    cy.get('ul > li').eq(2).find('input').should('have.value', '7');
 
-    const appendVal = await cy.clickFieldArray('#append', 3);
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: '6' }, { name: '3' }, { name: '7' }],
+      }),
+    );
 
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [
-        { name: 'test' },
-        { name: 'test1' },
-        { name: 'test2' },
-        { name: appendVal },
-      ],
-    });
+    cy.get('#swap').click();
+    cy.get('ul > li').eq(1).find('input').should('have.value', '7');
+    cy.get('ul > li').eq(2).find('input').should('have.value', '3');
 
-    const prependVal = await cy.clickFieldArray('#prepend', 0);
-    cy.expectLength('ul > li', 5);
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: '6' }, { name: '7' }, { name: '3' }],
+      }),
+    );
 
-    cy.expectLiInputValue(0, prependVal);
+    cy.get('#move').click();
+    cy.get('ul > li').eq(0).find('input').should('have.value', '3');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
 
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [
-        { name: prependVal },
-        { name: 'test' },
-        { name: 'test1' },
-        { name: 'test2' },
-        { name: appendVal },
-      ],
-    });
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: '3' }, { name: '6' }, { name: '7' }],
+      }),
+    );
 
-    await cy.click('#swap');
-    cy.expectLiInputValue(1, 'test1');
-    cy.expectLiInputValue(2, 'test');
+    cy.get('#insert').click();
+    cy.get('ul > li').eq(1).find('input').should('have.value', '14');
 
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [
-        { name: prependVal },
-        { name: 'test1' },
-        { name: 'test' },
-        { name: 'test2' },
-        { name: appendVal },
-      ],
-    });
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: '3' }, { name: '14' }, { name: '6' }, { name: '7' }],
+      }),
+    );
 
-    await cy.click('#move');
-    cy.expectLiInputValue(0, 'test');
-    cy.expectLiInputValue(1, prependVal);
+    cy.get('#remove').click();
+    cy.get('ul > li').eq(0).find('input').should('have.value', '3');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
 
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [
-        { name: 'test' },
-        { name: prependVal },
-        { name: 'test1' },
-        { name: 'test2' },
-        { name: appendVal },
-      ],
-    });
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: '3' }, { name: '6' }, { name: '7' }],
+      }),
+    );
 
-    const insertVal = await cy.clickFieldArray('#insert', 1);
-    cy.expectLiInputValue(1, insertVal);
+    cy.get('#delete1').click();
 
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [
-        { name: 'test' },
-        { name: insertVal },
-        { name: prependVal },
-        { name: 'test1' },
-        { name: 'test2' },
-        { name: appendVal },
-      ],
-    });
+    cy.get('ul > li').its('length').should('equal', 2);
 
-    await cy.click('#remove');
-    cy.expectLiInputValue(0, 'test');
-    cy.expectLiInputValue(1, prependVal);
+    cy.get('ul > li').eq(0).find('input').should('have.value', '3');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '7');
 
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [
-        { name: 'test' },
-        { name: prependVal },
-        { name: 'test1' },
-        { name: 'test2' },
-        { name: appendVal },
-      ],
-    });
+    cy.get('#delete1').click();
 
-    await cy.click('#delete2');
+    cy.get('ul > li').its('length').should('equal', 1);
 
-    cy.expectLength('ul > li', 4);
+    cy.get('ul > li').eq(0).find('input').should('have.value', '3');
 
-    cy.expectLiInputValue(0, 'test');
-    cy.expectLiInputValue(1, prependVal);
-    cy.expectLiInputValue(2, 'test2');
-    cy.expectLiInputValue(3, appendVal);
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: '3' }],
+      }),
+    );
 
-    await cy.click('#delete3');
+    cy.get('#update').click();
 
-    cy.expectLength('ul > li', 3);
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'changed');
 
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [{ name: 'test' }, { name: prependVal }, { name: 'test2' }],
-    });
+    cy.get('#removeAll').click();
+    cy.get('ul > li').should('have.length', 0);
 
-    await cy.click('#removeAll');
-    cy.expectLength('ul > li', 0);
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [],
+      }),
+    );
 
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: [],
-    });
+    cy.get('#append').click();
+    cy.get('#append').click();
+    cy.get('#append').click();
 
-    const finalAppend = await cy.clickFieldArray('#append', 0);
+    cy.get('#removeAsync').click();
+    cy.get('#removeAsync').click();
 
-    cy.expectLiInputValue(0, finalAppend);
+    cy.get('input').should('have.length', 1);
 
-    const finalPrepend = await cy.clickFieldArray('#prepend', 0);
+    cy.get('#submit').click();
 
-    cy.expectLiInputValue(0, finalPrepend);
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: '27' }],
+      }),
+    );
 
-    expectRenderCountDelta(renderCountStart, 28);
+    cy.get('#renderCount').contains('34');
   });
 
-  it('should replace fields with new values', async () => {
-    await renderApp('http://localhost:3000/useFieldArray/normal');
-    const renderCountStart = getRenderCount();
-    await cy.click('#replace');
-    const replaceValues = cy.getReplaceFieldValues();
-    cy.expectLiInputValue(0, replaceValues[0]);
-    cy.expectLiInputValue(1, replaceValues[1]);
-    cy.expectLiInputValue(2, replaceValues[2]);
-    cy.expectLiInputValue(3, replaceValues[3]);
+  it('should behaviour correctly with defaultValue', () => {
+    cy.visit('http://localhost:3000/useFieldArray/default');
 
-    await cy.click('#submit');
-    cy.expectJson('#result', {
-      data: replaceValues.map((name) => ({ name })),
-    });
+    cy.get('ul > li').its('length').should('equal', 3);
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
+
+    cy.get('ul > li').eq(1).find('input').should('have.value', 'test1');
+
+    cy.get('ul > li').eq(2).find('input').should('have.value', 'test2');
+
+    cy.get('#append').click();
+
+    cy.get('ul > li').eq(3).find('input').should('have.value', '3');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: 'test' },
+          { name: 'test1' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      }),
+    );
+
+    cy.get('#prepend').click();
+    cy.get('ul > li').its('length').should('equal', 5);
+
+    cy.get('ul > li').eq(0).get('input').should('have.value', '6');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: '6' },
+          { name: 'test' },
+          { name: 'test1' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      }),
+    );
+
+    cy.get('#swap').click();
+    cy.get('ul > li').eq(1).find('input').should('have.value', 'test1');
+    cy.get('ul > li').eq(2).find('input').should('have.value', 'test');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: '6' },
+          { name: 'test1' },
+          { name: 'test' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      }),
+    );
+
+    cy.get('#move').click();
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: 'test' },
+          { name: '6' },
+          { name: 'test1' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      }),
+    );
+
+    cy.get('#insert').click();
+    cy.get('ul > li').eq(1).find('input').should('have.value', '13');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: 'test' },
+          { name: '13' },
+          { name: '6' },
+          { name: 'test1' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      }),
+    );
+
+    cy.get('#remove').click();
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: 'test' },
+          { name: '6' },
+          { name: 'test1' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      }),
+    );
+
+    cy.get('#delete2').click();
+
+    cy.get('ul > li').its('length').should('equal', 4);
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
+    cy.get('ul > li').eq(2).find('input').should('have.value', 'test2');
+    cy.get('ul > li').eq(3).find('input').should('have.value', '3');
+
+    cy.get('#delete3').click();
+
+    cy.get('ul > li').its('length').should('equal', 3);
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: 'test' }, { name: '6' }, { name: 'test2' }],
+      }),
+    );
+
+    cy.get('#removeAll').click();
+    cy.get('ul > li').should('have.length', 0);
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [],
+      }),
+    );
+
+    cy.get('#append').click();
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', '25');
+
+    cy.get('#prepend').click();
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', '26');
+
+    cy.get('#renderCount').contains('27');
   });
 
-  it('should display the correct dirty value with default value', async () => {
-    await renderApp('http://localhost:3000/useFieldArray/default');
-    const renderCountStart = getRenderCount();
-    cy.expectContains('#dirty', 'no');
-    await cy.click('#update');
-    cy.expectJson('#dirtyFields', {
-      data: [{ name: true }, null, null],
-    });
-    cy.expectContains('#dirty', 'yes');
-    await cy.click('#updateRevert');
-    cy.expectContains('#dirty', 'no');
-    await cy.click('#append');
-    await cy.type('#field1', 'test');
-    await cy.click('#prepend');
-    await cy.click('#delete2');
-    cy.expectJson('#dirtyFields', {
-      data: [{ name: true }, { name: true }, null, { name: true }],
-    });
-    await cy.click('#delete2');
-    cy.expectJson('#dirtyFields', {
-      data: [{ name: true }, { name: true }, { name: true }],
-    });
-    await cy.click('#delete1');
-    cy.expectJson('#dirtyFields', {
-      data: [{ name: true }, { name: true }, { name: true }],
-    });
-    await cy.click('#delete1');
-    cy.expectJson('#dirtyFields', {
-      data: [{ name: true }, { name: true }, { name: true }],
-    });
-    await cy.click('#delete0');
-    cy.expectJson('#dirtyFields', {
-      data: [{ name: true }, { name: true }, { name: true }],
-    });
-    cy.expectContains('#dirty', 'yes');
-    expectRenderCountDelta(renderCountStart, 14);
+  it('should behaviour correctly with defaultValue and without auto focus', () => {
+    cy.visit('http://localhost:3000/useFieldArray/defaultAndWithoutFocus');
+
+    cy.get('ul > li').its('length').should('equal', 3);
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
+
+    cy.get('ul > li').eq(1).find('input').should('have.value', 'test1');
+
+    cy.get('ul > li').eq(2).find('input').should('have.value', 'test2');
+
+    cy.get('#append').click();
+
+    cy.get('ul > li').eq(3).find('input').should('have.value', '3');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: 'test' },
+          { name: 'test1' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      }),
+    );
+
+    cy.get('#prepend').click();
+    cy.get('ul > li').its('length').should('equal', 5);
+
+    cy.get('ul > li').eq(0).get('input').should('have.value', '5');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: '5' },
+          { name: 'test' },
+          { name: 'test1' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      }),
+    );
+
+    cy.get('#swap').click();
+    cy.get('ul > li').eq(1).find('input').should('have.value', 'test1');
+    cy.get('ul > li').eq(2).find('input').should('have.value', 'test');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: '5' },
+          { name: 'test1' },
+          { name: 'test' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      }),
+    );
+
+    cy.get('#move').click();
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '5');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: 'test' },
+          { name: '5' },
+          { name: 'test1' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      }),
+    );
+
+    cy.get('#insert').click();
+    cy.get('ul > li').eq(1).find('input').should('have.value', '11');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: 'test' },
+          { name: '11' },
+          { name: '5' },
+          { name: 'test1' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      }),
+    );
+
+    cy.get('#remove').click();
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '5');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: 'test' },
+          { name: '5' },
+          { name: 'test1' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      }),
+    );
+
+    cy.get('#delete2').click();
+
+    cy.get('ul > li').its('length').should('equal', 4);
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '5');
+    cy.get('ul > li').eq(2).find('input').should('have.value', 'test2');
+    cy.get('ul > li').eq(3).find('input').should('have.value', '3');
+
+    cy.get('#delete3').click();
+
+    cy.get('ul > li').its('length').should('equal', 3);
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: 'test' }, { name: '5' }, { name: 'test2' }],
+      }),
+    );
+
+    cy.get('#removeAll').click();
+    cy.get('ul > li').should('have.length', 0);
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [],
+      }),
+    );
+
+    cy.get('#append').click();
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', '22');
+
+    cy.get('#prepend').click();
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', '23');
+
+    cy.get('#renderCount').contains('24');
   });
 
-  it('should display the correct dirty value without default value', async () => {
-    await renderApp('http://localhost:3000/useFieldArray/normal');
-    const renderCountStart = getRenderCount();
-    cy.expectContains('#dirty', 'no');
-    await cy.click('#append');
-    cy.expectContains('#dirty', 'yes');
-    await cy.focus('#field0');
-    await cy.blur('#field0');
-    cy.expectJson('#dirtyFields', {
-      data: [{ name: true }],
-    });
-    cy.expectContains('#dirty', 'yes');
-    await cy.type('#field0', 'test');
-    await cy.blur('#field0');
-    cy.expectContains('#dirty', 'yes');
-    await cy.click('#prepend');
-    await cy.click('#prepend');
-    cy.expectJson('#dirtyFields', {
-      data: [{ name: true }, { name: true }, { name: true }],
-    });
-    await cy.click('#delete0');
-    cy.expectJson('#dirtyFields', {
-      data: [{ name: true }, { name: true }],
-    });
+  it('should replace fields with new values', () => {
+    cy.visit('http://localhost:3000/useFieldArray/normal');
+    cy.get('#replace').click();
+    cy.get('ul > li').eq(0).find('input').should('have.value', '3. lorem');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '3. ipsum');
+    cy.get('ul > li').eq(2).find('input').should('have.value', '3. dolor');
+    cy.get('ul > li').eq(3).find('input').should('have.value', '3. sit amet');
 
-    await cy.click('#delete1');
-    cy.expectJson('#dirtyFields', {
-      data: [{ name: true }],
-    });
-
-    await cy.click('#delete0');
-    cy.expectJson('#dirtyFields', {});
-
-    cy.expectContains('#dirty', 'yes');
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: '3. lorem' },
+          { name: '3. ipsum' },
+          { name: '3. dolor' },
+          { name: '3. sit amet' },
+        ],
+      }),
+    );
   });
 
-  it('should display the correct dirty value with default value', async () => {
-    await renderApp('http://localhost:3000/useFieldArray/default');
-    const renderCountStart = getRenderCount();
-    cy.expectContains('#dirty', 'no');
-    await cy.focus('#field0');
-    await cy.blur('#field0');
-    cy.expectContains('#dirty', 'no');
-    await cy.type('#field0', 'test');
-    cy.expectContains('#dirty', 'yes');
-    await cy.blur('#field0');
-    cy.expectContains('#dirty', 'yes');
-    await cy.focus('#field0');
-    await cy.blur('#field0');
-    cy.expectContains('#dirty', 'yes');
-    await cy.clear('#field0');
-    await cy.type('#field0', 'test');
-    cy.expectContains('#dirty', 'no');
-    await cy.click('#delete1');
-    cy.expectContains('#dirty', 'yes');
-    await cy.click('#append');
-    await cy.clearAndType('#field0', 'test');
-    await cy.clearAndType('#field1', 'test1');
-    await cy.clearAndType('#field2', 'test2');
-    cy.expectContains('#dirty', 'no');
+  it('should display the correct dirty value with default value', () => {
+    cy.visit('http://localhost:3000/useFieldArray/default');
+    cy.get('#dirty').contains('no');
+    cy.get('#update').click();
+    cy.get('#dirtyFields').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: true }, null, null],
+      }),
+    );
+    cy.get('#dirty').contains('yes');
+    cy.get('#updateRevert').click();
+    cy.get('#dirty').contains('no');
+    cy.get('#append').click();
+    cy.get('#field1').type('test');
+    cy.get('#prepend').click();
+    cy.get('#delete2').click();
+    cy.get('#dirtyFields').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: true }, { name: true }, null, { name: true }],
+      }),
+    );
+    cy.get('#delete2').click();
+    cy.get('#dirtyFields').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: true }, { name: true }, { name: true }],
+      }),
+    );
+    cy.get('#delete1').click();
+    cy.get('#dirtyFields').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: true }, { name: true }, { name: true }],
+      }),
+    );
+    cy.get('#delete1').click();
+    cy.get('#dirtyFields').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: true }, { name: true }, { name: true }],
+      }),
+    );
+    cy.get('#delete0').click();
+    cy.get('#dirtyFields').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: true }, { name: true }, { name: true }],
+      }),
+    );
+    cy.get('#dirty').contains('yes');
+    cy.get('#renderCount').contains('19');
   });
 
-  it('should display the correct dirty value with async default value', async () => {
-    await renderApp('http://localhost:3000/useFieldArray/asyncReset');
-    const renderCountStart = getRenderCount();
-    await cy.waitFor(() => cy.expectExist('#field0'));
-    cy.expectContains('#dirty', 'no');
-    await cy.focus('#field0');
-    await cy.blur('#field0');
-    cy.expectContains('#dirty', 'no');
-    await cy.type('#field0', 'test');
-    cy.expectContains('#dirty', 'yes');
-    await cy.blur('#field0');
-    cy.expectContains('#dirty', 'yes');
-    await cy.focus('#field0');
-    await cy.blur('#field0');
-    cy.expectContains('#dirty', 'yes');
-    await cy.clear('#field0');
-    await cy.type('#field0', 'test');
-    cy.expectContains('#dirty', 'no');
-    await cy.click('#delete1');
-    cy.expectContains('#dirty', 'yes');
-    await cy.click('#append');
-    await cy.clearAndType('#field0', 'test');
-    await cy.clearAndType('#field1', 'test1');
-    await cy.clearAndType('#field2', 'test2');
-    cy.expectContains('#dirty', 'no');
+  it('should display the correct dirty value without default value', () => {
+    cy.visit('http://localhost:3000/useFieldArray/normal');
+    cy.get('#dirty').contains('no');
+    cy.get('#append').click();
+    cy.get('#dirty').contains('yes');
+    cy.get('#field0').focus();
+    cy.get('#field0').blur();
+    cy.get('#dirtyFields').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: true }],
+      }),
+    );
+    cy.get('#dirty').contains('yes');
+    cy.get('#field0').type('test');
+    cy.get('#field0').blur();
+    cy.get('#dirty').contains('yes');
+    cy.get('#prepend').click();
+    cy.get('#prepend').click();
+    cy.get('#dirtyFields').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: true }, { name: true }, { name: true }],
+      }),
+    );
+    cy.get('#delete0').click();
+    cy.get('#dirtyFields').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: true }, { name: true }],
+      }),
+    );
+
+    cy.get('#delete1').click();
+    cy.get('#dirtyFields').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: true }],
+      }),
+    );
+
+    cy.get('#delete0').click();
+    cy.get('#dirtyFields').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({}),
+    );
+
+    cy.get('#dirty').contains('yes');
   });
 
-  it('should display correct error with the inputs', async () => {
-    await renderApp('http://localhost:3000/useFieldArray/default');
-    const renderCountStart = getRenderCount();
-    await cy.click('#prepend');
-    await cy.clear('#field1');
-    await cy.clear('#field2');
-    await cy.clear('#field3');
-    await cy.click('#append');
-    await cy.click('#submit');
-    cy.expectContains('#error1', 'This is required');
-    cy.expectContains('#error2', 'This is required');
-    cy.expectContains('#error3', 'This is required');
-    await cy.type('#field1', 'test');
-    cy.expectNotExist('#error1');
-    cy.expectContains('#error2', 'This is required');
-    cy.expectContains('#error3', 'This is required');
-    await cy.click('#move');
-    cy.expectContains('#error0', 'This is required');
-    cy.expectNotExist('#error2');
-    await cy.click('#prepend');
-    cy.expectNotExist('#error0');
-    cy.expectContains('#error1', 'This is required');
+  it('should display the correct dirty value with default value', () => {
+    cy.visit('http://localhost:3000/useFieldArray/default');
+    cy.get('#dirty').contains('no');
+    cy.get('#field0').focus();
+    cy.get('#field0').blur();
+    cy.get('#dirty').contains('no');
+    cy.get('#field0').type('test');
+    cy.get('#dirty').contains('yes');
+    cy.get('#field0').blur();
+    cy.get('#dirty').contains('yes');
+    cy.get('#field0').focus();
+    cy.get('#field0').blur();
+    cy.get('#dirty').contains('yes');
+    cy.get('#field0').clear();
+    cy.get('#field0').type('test');
+    cy.get('#dirty').contains('no');
+    cy.get('#delete1').click();
+    cy.get('#dirty').contains('yes');
+    cy.get('#append').click();
+    cy.get('#field0').clear().type('test');
+    cy.get('#field1').clear().type('test1');
+    cy.get('#field2').clear().type('test2');
+    cy.get('#dirty').contains('no');
   });
 
-  it('should return correct touched values', async () => {
-    await renderApp('http://localhost:3000/useFieldArray/default');
-    const renderCountStart = getRenderCount();
-    await cy.type('#field0', '1');
-    await cy.type('#field1', '1');
-    await cy.type('#field2', '1');
-    cy.expectContains('#touched', '[{"name":true},{"name":true}]');
-    await cy.click('#append');
-    await cy.click('#prepend');
-    cy.expectContains(
-      '#touched',
+  it('should display the correct dirty value with async default value', () => {
+    cy.visit('http://localhost:3000/useFieldArray/asyncReset');
+    cy.get('#dirty').contains('no');
+    cy.get('#field0').focus();
+    cy.get('#field0').blur();
+    cy.get('#dirty').contains('no');
+    cy.get('#field0').type('test');
+    cy.get('#dirty').contains('yes');
+    cy.get('#field0').blur();
+    cy.get('#dirty').contains('yes');
+    cy.get('#field0').focus();
+    cy.get('#field0').blur();
+    cy.get('#dirty').contains('yes');
+    cy.get('#field0').clear();
+    cy.get('#field0').type('test');
+    cy.get('#dirty').contains('no');
+    cy.get('#delete1').click();
+    cy.get('#dirty').contains('yes');
+    cy.get('#append').click();
+    cy.get('#field0').clear().type('test');
+    cy.get('#field1').clear().type('test1');
+    cy.get('#field2').clear().type('test2');
+    cy.get('#dirty').contains('no');
+  });
+
+  it('should display correct error with the inputs', () => {
+    cy.visit('http://localhost:3000/useFieldArray/default');
+    cy.get('#prepend').click();
+    cy.get('#field1').clear();
+    cy.get('#field2').clear();
+    cy.get('#field3').clear();
+    cy.get('#append').click();
+    cy.get('#submit').click();
+    cy.get('#error1').contains('This is required');
+    cy.get('#error2').contains('This is required');
+    cy.get('#error3').contains('This is required');
+    cy.get('#field1').type('test');
+    cy.get('#error1').should('not.exist');
+    cy.get('#error2').contains('This is required');
+    cy.get('#error3').contains('This is required');
+    cy.get('#move').click();
+    cy.get('#error0').contains('This is required');
+    cy.get('#error2').should('not.exist');
+    cy.get('#prepend').click();
+    cy.get('#error0').should('not.exist');
+    cy.get('#error1').contains('This is required');
+  });
+
+  it('should return correct touched values', () => {
+    cy.visit('http://localhost:3000/useFieldArray/default');
+    cy.get('#field0').type('1');
+    cy.get('#field1').type('1');
+    cy.get('#field2').type('1');
+    cy.get('#touched').contains('[{"name":true},{"name":true}]');
+    cy.get('#append').click();
+    cy.get('#prepend').click();
+    cy.get('#touched').contains(
       '[null,{"name":true},{"name":true},{"name":true},{"name":true}]',
     );
-    await cy.click('#insert');
-    cy.expectContains(
-      '#touched',
+    cy.get('#insert').click();
+    cy.get('#touched').contains(
       '[{"name":true},null,{"name":true},{"name":true},{"name":true},{"name":true}]',
     );
-    await cy.click('#swap');
-    cy.expectContains(
-      '#touched',
+    cy.get('#swap').click();
+    cy.get('#touched').contains(
       '[{"name":true},{"name":true},{"name":true},{"name":true},{"name":true},{"name":true}]',
     );
-    await cy.click('#move');
-    cy.expectContains(
-      '#touched',
+    cy.get('#move').click();
+    cy.get('#touched').contains(
       '[{"name":true},{"name":true},{"name":true},{"name":true},{"name":true},{"name":true}]',
     );
-    await cy.click('#insert');
-    cy.expectContains(
-      '#touched',
+    cy.get('#insert').click();
+    cy.get('#touched').contains(
       '[{"name":true},null,{"name":true},{"name":true},{"name":true},{"name":true},{"name":true}]',
     );
-    await cy.click('#delete4');
-    cy.expectContains(
-      '#touched',
+    cy.get('#delete4').click();
+    cy.get('#touched').contains(
       '[{"name":true},{"name":true},{"name":true},{"name":true},{"name":true},{"name":true}]',
     );
   });
 
-  it('should return correct touched values without autoFocus', async () => {
-    await renderApp(
-      'http://localhost:3000/useFieldArray/defaultAndWithoutFocus',
-    );
-    const renderCountStart = getRenderCount();
-    await cy.type('#field0', '1');
-    await cy.type('#field1', '1');
-    await cy.type('#field2', '1');
-    cy.expectContains('#touched', '[{"name":true},{"name":true}]');
-    await cy.click('#append');
-    await cy.click('#prepend');
-    cy.expectContains(
-      '#touched',
+  it('should return correct touched values without autoFocus', () => {
+    cy.visit('http://localhost:3000/useFieldArray/defaultAndWithoutFocus');
+    cy.get('#field0').type('1');
+    cy.get('#field1').type('1');
+    cy.get('#field2').type('1');
+    cy.get('#touched').contains('[{"name":true},{"name":true}]');
+    cy.get('#append').click();
+    cy.get('#prepend').click();
+    cy.get('#touched').contains(
       '[null,{"name":true},{"name":true},{"name":true},null]',
     );
-    await cy.click('#insert');
-    cy.expectContains(
-      '#touched',
+    cy.get('#insert').click();
+    cy.get('#touched').contains(
       '[null,null,{"name":true},{"name":true},{"name":true},null]',
     );
-    await cy.click('#swap');
-    cy.expectContains(
-      '#touched',
+    cy.get('#swap').click();
+    cy.get('#touched').contains(
       '[null,{"name":true},null,{"name":true},{"name":true},null]',
     );
-    await cy.click('#move');
-    cy.expectContains(
-      '#touched',
+    cy.get('#move').click();
+    cy.get('#touched').contains(
       '[null,null,{"name":true},{"name":true},{"name":true},null]',
     );
-    await cy.click('#insert');
-    cy.expectContains(
-      '#touched',
+    cy.get('#insert').click();
+    cy.get('#touched').contains(
       '[null,null,null,{"name":true},{"name":true},{"name":true},null]',
     );
-    await cy.click('#delete4');
-    cy.expectContains(
-      '#touched',
+    cy.get('#delete4').click();
+    cy.get('#touched').contains(
       '[null,null,null,{"name":true},{"name":true},null]',
     );
   });
 
-  it('should return correct isValid formState', async () => {
-    await renderApp('http://localhost:3000/useFieldArray/formState');
-    const renderCountStart = getRenderCount();
-    await cy.waitFor(() => cy.expectContains('#isValid', 'yes'));
-    await cy.click('#append');
-    await cy.click('#append');
-    await cy.click('#append');
+  it('should return correct isValid formState', () => {
+    cy.visit('http://localhost:3000/useFieldArray/formState');
+    cy.get('#isValid').get('#isValid').contains('yes');
+    cy.get('#append').click();
+    cy.get('#append').click();
+    cy.get('#append').click();
 
-    cy.expectContains('#isValid', 'yes');
+    cy.get('#isValid').get('#isValid').contains('yes');
 
-    await cy.clear('#field0');
+    cy.get('#field0').clear();
 
-    cy.expectContains('#isValid', 'no');
+    cy.get('#isValid').get('#isValid').contains('no');
 
-    await cy.click('#delete0');
-    await cy.type('#field1', '1');
+    cy.get('#delete0').click();
+    cy.get('#field1').type('1');
 
-    cy.expectContains('#isValid', 'yes');
+    cy.get('#isValid').get('#isValid').contains('yes');
 
-    await cy.clear('#field0');
+    cy.get('#field0').clear();
 
-    cy.expectContains('#isValid', 'no');
+    cy.get('#isValid').get('#isValid').contains('no');
 
     // introduced by react 19 with race condition with blur and useEffect action
-    await cy.blur('#field0');
-    await cy.wait(100);
+    cy.get('#field0').blur();
 
-    await cy.click('#delete0');
-    await cy.wait(100);
+    cy.get('#delete0').click();
 
-    const emptyField = document.querySelector(
-      'ul > li input[id^="field"]',
-    ) as HTMLInputElement | null;
+    cy.get('#isValid').get('#isValid').contains('yes');
 
-    if (emptyField && !emptyField.value) {
-      await cy.type(`#${emptyField.id}`, '1');
-    }
+    cy.get('#append').click();
+    cy.get('#field0').clear();
 
-    await cy.waitFor(() => cy.expectContains('#isValid', 'yes'));
+    cy.get('#isValid').get('#isValid').contains('no');
 
-    await cy.click('#append');
-    await cy.clear('#field0');
+    cy.get('#delete0').click();
 
-    cy.expectContains('#isValid', 'no');
+    cy.get('#isValid').get('#isValid').contains('yes');
 
-    await cy.click('#delete0');
+    cy.get('#append').click();
+    cy.get('#append').click();
 
-    await cy.waitFor(() => cy.expectContains('#isValid', 'yes'));
+    cy.get('#field1').clear();
+    cy.get('#field2').clear();
 
-    await cy.click('#append');
-    await cy.click('#append');
+    cy.get('#isValid').get('#isValid').contains('no');
 
-    await cy.clear('#field1');
-    await cy.clear('#field2');
+    cy.get('#delete1').click();
+    cy.get('#delete1').click();
 
-    cy.expectContains('#isValid', 'no');
-
-    await cy.click('#delete1');
-    await cy.click('#delete1');
-
-    await cy.waitFor(() => cy.expectContains('#isValid', 'yes'));
+    cy.get('#isValid').get('#isValid').contains('yes');
   });
 });

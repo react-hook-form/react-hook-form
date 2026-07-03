@@ -1,92 +1,79 @@
-import { describe, expect, it } from 'vitest';
-
-import * as cy from '../support/cy';
-import {
-  expectRenderCountDelta,
-  getRenderCount,
-  renderApp,
-} from '../support/renderApp';
-
 describe('controller basic form validation', () => {
-  it('should validate the form and reset the form', async () => {
-    await renderApp('http://localhost:3000/controller/onSubmit');
-    const renderCountStart = getRenderCount();
-    await cy.click('#submit');
+  it('should validate the form and reset the form', () => {
+    cy.visit('http://localhost:3000/controller/onSubmit');
+    cy.get('#submit').click();
 
-    cy.expectContains('#TextField', 'TextField Error');
-    cy.expectContains('#RadioGroup', 'RadioGroup Error');
-    cy.expectContains('#Checkbox', 'Checkbox Error');
-    cy.expectContains('#Select', 'Select Error');
-    cy.expectContains('#switch', 'switch Error');
+    cy.get('#TextField').contains('TextField Error');
+    cy.get('#RadioGroup').contains('RadioGroup Error');
+    cy.get('#Checkbox').contains('Checkbox Error');
+    cy.get('#RadioGroup').contains('RadioGroup Error');
+    cy.get('#Select').contains('Select Error');
+    cy.get('#switch').contains('switch Error');
 
-    await cy.click('#input-checkbox input');
-    await cy.clickAt('input[name="gender1"]', 0);
-    await cy.type('#input-textField input', 'test');
-    await cy.click('#input-select > div > div');
-    await cy.clickFirstMuiPopoverOption();
-    await cy.click('#input-switch input');
-    await cy.click('#input-ReactSelect > div');
-    await cy.clickAt('#input-ReactSelect > div > div', 1);
+    cy.get('#input-checkbox input').click();
+    cy.get('input[name="gender1"]').first().click();
+    cy.get('#input-textField input').type('test');
+    cy.get('#input-select > div > div').click();
+    cy.get('.MuiPopover-root ul > li:first-child').click();
+    cy.get('#input-switch input').click();
+    cy.get('#input-ReactSelect > div').click();
+    cy.get('#input-ReactSelect > div > div').eq(1).click();
 
-    expect(
-      Array.from(document.querySelectorAll('.container > p')).filter((p) =>
-        p.textContent?.includes('Error'),
-      ),
-    ).toHaveLength(0);
-    expectRenderCountDelta(renderCountStart, 8);
+    cy.get('.container > p').should('have.length', 0);
+    cy.get('#renderCount').contains('9');
   });
 
-  it('should validate the form with onBlur mode and reset the form', async () => {
-    await renderApp('http://localhost:3000/controller/onBlur');
-    const renderCountStart = getRenderCount();
-    cy.expectNoParagraphs();
-    await cy.focus('#input-checkbox input');
-    await cy.blur('#input-checkbox input');
-    await cy.waitFor(() => cy.expectContains('#Checkbox', 'Checkbox Error'));
+  it('should validate the form with onBlur mode and reset the form', () => {
+    cy.visit('http://localhost:3000/controller/onBlur');
 
-    await cy.focus('#input-textField input');
-    await cy.blur('#input-textField input');
-    cy.expectContains('#TextField', 'TextField Error');
+    cy.get('p').should('have.length', 0);
+    cy.get('#input-checkbox input').focus();
+    cy.get('#input-checkbox input').blur();
+    cy.get('#Checkbox').contains('Checkbox Error');
 
-    await cy.focusMuiSelect('#input-select > div > div');
-    await cy.blurMuiSelect('#input-select > div > div');
-    await cy.waitFor(() => cy.expectContains('#Select', 'Select Error'));
+    cy.get('#input-textField input').focus();
+    cy.get('#input-textField input').blur();
+    cy.get('#TextField').contains('TextField Error');
 
-    await cy.focus('#input-switch input');
-    await cy.blur('#input-switch input');
-    await cy.waitFor(() => cy.expectContains('#switch', 'switch Error'));
+    cy.get('#input-select > div > div').focus();
+    cy.get('#input-select > div > div').blur();
+    cy.get('#Select').contains('Select Error');
 
-    await cy.click('#input-checkbox input');
-    await cy.type('#input-textField input', 'test');
-    await cy.click('#input-select > div > div');
-    await cy.clickFirstMuiPopoverOption();
-    await cy.click('#input-switch input');
-    await cy.blur('#input-switch input');
+    cy.get('#input-switch input').focus();
+    cy.get('#input-switch input').blur();
+    cy.get('#switch').contains('switch Error');
 
-    cy.expectNoParagraphs();
-    expectRenderCountDelta(renderCountStart, 9);
+    cy.get('#input-checkbox input').click();
+    cy.get('#input-textField input').type('test');
+    cy.get('#input-select > div > div').click();
+    cy.get('.MuiPopover-root ul > li:first-child').click();
+    cy.get('#input-switch input').click();
+    cy.get('#input-switch input').blur();
+
+    cy.get('p').should('have.length', 0);
+    cy.get('#renderCount').contains('10');
   });
 
-  it('should validate the form with onChange mode and reset the form', async () => {
-    await renderApp('http://localhost:3000/controller/onChange');
-    const renderCountStart = getRenderCount();
-    await cy.click('#input-checkbox input');
-    await cy.click('#input-checkbox input');
-    cy.expectContains('#Checkbox', 'Checkbox Error');
+  it('should validate the form with onChange mode and reset the form', () => {
+    cy.visit('http://localhost:3000/controller/onChange');
 
-    await cy.type('#input-textField input', 'test');
-    await cy.clear('#input-textField input');
-    cy.expectContains('#TextField', 'TextField Error');
+    cy.get('#input-checkbox input').click();
+    cy.get('#input-checkbox input').click();
+    cy.get('#Checkbox').contains('Checkbox Error');
 
-    await cy.click('#input-switch input');
-    await cy.click('#input-switch input');
-    cy.expectContains('#switch', 'switch Error');
+    cy.get('#input-textField input').type('test');
+    cy.get('#input-textField input').clear();
+    cy.get('#TextField').contains('TextField Error');
 
-    await cy.click('#input-checkbox input');
-    await cy.type('#input-textField input', 'test');
-    await cy.click('#input-switch input');
+    cy.get('#input-switch input').click();
+    cy.get('#input-switch input').click();
+    cy.get('#switch').contains('switch Error');
 
-    cy.expectNoParagraphs();
-    expectRenderCountDelta(renderCountStart, 7);
+    cy.get('#input-checkbox input').click();
+    cy.get('#input-textField input').type('test');
+    cy.get('#input-switch input').click();
+
+    cy.get('p').should('have.length', 0);
+    cy.get('#renderCount').contains('8');
   });
 });

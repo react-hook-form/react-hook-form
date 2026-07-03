@@ -1,75 +1,65 @@
-import { describe, it } from 'vitest';
-
-import * as cy from '../support/cy';
-import {
-  expectRenderCountDelta,
-  getRenderCount,
-  renderApp,
-} from '../support/renderApp';
-
 describe('validate field criteria', () => {
-  it('should validate the form, show all errors and clear all', async () => {
-    await renderApp('http://localhost:3000/validate-field-criteria');
-    const renderCountStart = getRenderCount();
-    await cy.click('button#submit');
-    cy.expectInputError('input[name="firstName"]', 'firstName required');
-    await cy.type('input[name="firstName"]', 'te');
-    cy.expectInputError('input[name="firstName"]', 'firstName minLength');
-    await cy.type('input[name="firstName"]', 'testtesttest');
+  it('should validate the form, show all errors and clear all', () => {
+    cy.visit('http://localhost:3000/validate-field-criteria');
+    cy.get('button#submit').click();
+    cy.get('input[name="firstName"] + p').contains('firstName required');
+    cy.get('input[name="firstName"]').type('te');
+    cy.get('input[name="firstName"] + p').contains('firstName minLength');
+    cy.get('input[name="firstName"]').type('testtesttest');
 
-    cy.expectInputError('input[name="min"]', 'min required');
-    await cy.type('input[name="min"]', '2');
-    cy.expectInputError('input[name="min"]', 'min min');
-    await cy.type('input[name="min"]', '32');
-    cy.expectInputError('input[name="min"]', 'min max');
-    await cy.clear('input[name="min"]');
-    await cy.type('input[name="min"]', '10');
+    cy.get('input[name="min"] + p').contains('min required');
+    cy.get('input[name="min"]').type('2');
+    cy.get('input[name="min"] + p').contains('min min');
+    cy.get('input[name="min"]').type('32');
+    cy.get('input[name="min"] + p').contains('min max');
+    cy.get('input[name="min"]').clear();
+    cy.get('input[name="min"]').type('10');
 
-    cy.expectInputError('input[name="minDate"]', 'minDate required');
-    await cy.type('input[name="minDate"]', '2019-07-01');
-    cy.expectInputError('input[name="minDate"]', 'minDate min');
-    await cy.type('input[name="minDate"]', '2019-08-01');
+    cy.get('input[name="minDate"] + p').contains('minDate required');
+    cy.get('input[name="minDate"]').type('2019-07-01');
+    cy.get('input[name="minDate"] + p').contains('minDate min');
+    cy.get('input[name="minDate"]').type('2019-08-01');
 
-    cy.expectInputError('input[name="maxDate"]', 'maxDate required');
-    await cy.type('input[name="maxDate"]', '2019-09-01');
-    cy.expectInputError('input[name="maxDate"]', 'maxDate max');
-    await cy.type('input[name="maxDate"]', '2019-08-01');
+    cy.get('input[name="maxDate"] + p').contains('maxDate required');
+    cy.get('input[name="maxDate"]').type('2019-09-01');
+    cy.get('input[name="maxDate"] + p').contains('maxDate max');
+    cy.get('input[name="maxDate"]').type('2019-08-01');
 
-    cy.expectInputError('input[name="minLength"]', 'minLength required');
-    await cy.type('input[name="minLength"]', '1');
-    cy.expectInputError('input[name="minLength"]', 'minLength minLength');
-    await cy.type('input[name="minLength"]', '12');
+    cy.get('input[name="minLength"] + p').contains('minLength required');
+    cy.get('input[name="minLength"]').type('1');
+    cy.get('input[name="minLength"] + p').contains('minLength minLength');
+    cy.get('input[name="minLength"]').type('12');
 
-    cy.expectInputError('select[name="selectNumber"]', 'selectNumber required');
-    await cy.selectOption('select[name="selectNumber"]', '12');
+    cy.get('select[name="selectNumber"] + p').contains('selectNumber required');
+    cy.get('select[name="selectNumber"]').select('12');
 
-    cy.expectInputError('input[name="pattern"]', 'pattern required');
-    await cy.type('input[name="pattern"]', 't');
-    cy.expectInputError('input[name="pattern"]', 'pattern pattern');
-    cy.expectContains('input[name="pattern"] + p + p', 'pattern minLength');
-    await cy.clear('input[name="pattern"]');
-    await cy.type('input[name="pattern"]', '12345');
+    cy.get('input[name="pattern"] + p').contains('pattern required');
+    cy.get('input[name="pattern"]').type('t');
+    cy.get('input[name="pattern"] + p').contains('pattern pattern');
+    cy.get('input[name="pattern"] + p + p').contains('pattern minLength');
+    cy.get('input[name="pattern"]').clear();
+    cy.get('input[name="pattern"]').type('12345');
 
-    cy.expectInputError('select[name="multiple"]', 'multiple required');
-    cy.expectContains('select[name="multiple"] + p + p', 'multiple validate');
-    await cy.selectOption('select[name="multiple"]', 'optionA');
-    await cy.selectOption('select[name="multiple"]', 'optionB');
+    cy.get('select[name="multiple"] + p').contains('multiple required');
+    cy.get('select[name="multiple"] + p + p').contains('multiple validate');
+    cy.get('select[name="multiple"]').select('optionA');
+    cy.get('select[name="multiple"]').select('optionB');
 
-    cy.expectInputError('input[name="validate"]', 'validate test');
-    cy.expectContains('input[name="validate"] + p + p', 'validate test1');
-    cy.expectContains('input[name="validate"] + p + p + p', 'validate test2');
-    await cy.type('input[name="validate"]', 'test');
+    cy.get('input[name="validate"] + p').contains('validate test');
+    cy.get('input[name="validate"] + p + p').contains('validate test1');
+    cy.get('input[name="validate"] + p + p + p').contains('validate test2');
+    cy.get('input[name="validate"]').type('test');
 
-    cy.expectNoParagraphs();
+    cy.get('p').should('have.length', 0);
 
-    await cy.click('#trigger');
-    cy.expectParagraphCount(2);
-    cy.expectBoldCount(2);
+    cy.get('#trigger').click();
+    cy.get('p').should('have.length', 2);
+    cy.get('b').should('have.length', 2);
 
-    await cy.click('#clear');
-    cy.expectNoParagraphs();
-    cy.expectBoldCount(0);
+    cy.get('#clear').click();
+    cy.get('p').should('have.length', 0);
+    cy.get('b').should('have.length', 0);
 
-    expectRenderCountDelta(renderCountStart, 27);
+    cy.get('#renderCount').contains('28');
   });
 });

@@ -1,39 +1,29 @@
-import { describe, it } from 'vitest';
-import { userEvent } from 'vitest/browser';
-
-import * as cy from '../support/cy';
-import { renderApp } from '../support/renderApp';
-
 describe('form setFocus', () => {
-  it('should focus input', async () => {
-    await renderApp('http://localhost:3000/setFocus');
-    await cy.clickButtonWithText('Focus Input');
-    cy.expectFocused('input[name="focusInput"]');
+  it('should focus input', () => {
+    cy.visit('http://localhost:3000/setFocus');
+    cy.get('button:contains("Focus Input")').click();
+    cy.get('input[name="focusInput"]').should('be.focused');
   });
 
-  it('should select input content', async () => {
-    await renderApp('http://localhost:3000/setFocus');
-    await cy.clickButtonWithText('Select Input Content');
-    await userEvent.type(
-      document.querySelector('input[name="selectInputContent"]')!,
-      'New Value',
-    );
-    cy.expectValue('input[name="selectInputContent"]', 'New Value');
+  it('should select input content', () => {
+    cy.visit('http://localhost:3000/setFocus');
+    cy.get('button:contains("Select Input Content")').click();
+    cy.get('input[name="selectInputContent"]')
+      .type('New Value')
+      .should('have.value', 'New Value');
   });
 
-  it('should focus textarea', async () => {
-    await renderApp('http://localhost:3000/setFocus');
-    await cy.clickButtonWithText('Focus Textarea');
-    cy.expectFocused('textarea[name="focusTextarea"]');
+  it('should focus textarea', () => {
+    cy.visit('http://localhost:3000/setFocus');
+    cy.get('button:contains("Focus Textarea")').click();
+    cy.get('textarea[name="focusTextarea"]').should('be.focused');
   });
 
-  it('should select textarea content', async () => {
-    await renderApp('http://localhost:3000/setFocus');
-    await cy.clickButtonWithText('Select Textarea Content');
-    await userEvent.type(
-      document.querySelector('textarea[name="selectTextareaContent"]')!,
-      'New Value',
-    );
-    cy.expectValue('textarea[name="selectTextareaContent"]', 'New Value');
+  it('should select input content', () => {
+    cy.visit('http://localhost:3000/setFocus');
+    cy.get('button:contains("Select Textarea Content")').click();
+    cy.get('textarea[name="selectTextareaContent"]')
+      .type('New Value')
+      .should('have.value', 'New Value');
   });
 });

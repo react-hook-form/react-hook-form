@@ -1,40 +1,47 @@
-import * as cy from '../support/cy';
-import { renderApp } from '../support/renderApp';
-
 describe('form reset', () => {
-  it('should be able to re-populate the form while reset', async () => {
-    await renderApp('http://localhost:3000/reset');
-    await cy.type('input[name="firstName"]', '0 wrong');
-    await cy.type('input[name="array.1"]', '1 wrong');
-    await cy.type('input[name="objectData.test"]', '2 wrong');
-    await cy.type('input[name="lastName"]', 'lastName');
-    await cy.type('input[name="deepNest.level1.level2.data"]', 'whatever');
+  it('should be able to re-populate the form while reset', () => {
+    cy.visit('http://localhost:3000/reset');
 
-    await cy.click('button');
+    cy.get('input[name="firstName"]').type('0 wrong');
+    cy.get('input[name="array.1"]').type('1 wrong');
+    cy.get('input[name="objectData.test"]').type('2 wrong');
+    cy.get('input[name="lastName"]').type('lastName');
+    cy.get('input[name="deepNest.level1.level2.data"]').type('whatever');
 
-    cy.expectValue('input[name="firstName"]', 'bill');
-    cy.expectValue('input[name="lastName"]', 'luo');
-    cy.expectValue('input[name="array.1"]', 'test');
-    cy.expectValue('input[name="objectData.test"]', 'data');
-    cy.expectValue('input[name="deepNest.level1.level2.data"]', 'hey');
+    cy.get('button').click();
+
+    cy.get('input[name="firstName"]').should('have.value', 'bill');
+    cy.get('input[name="lastName"]').should('have.value', 'luo');
+    cy.get('input[name="array.1"]').should('have.value', 'test');
+    cy.get('input[name="objectData.test"]').should('have.value', 'data');
+    cy.get('input[name="deepNest.level1.level2.data"]').should(
+      'have.value',
+      'hey',
+    );
   });
 
-  it('should be able to re-populate the form while reset keeping dirty values', async () => {
-    await renderApp('http://localhost:3000/resetKeepDirty');
-    cy.expectValue('input[name="firstName"]', '');
-    cy.expectValue('input[name="users"]', 'users#0');
-    cy.expectValue('input[name="objectData.test"]', '');
-    cy.expectValue('input[name="lastName"]', '');
-    cy.expectValue('input[name="deepNest.level1.level2.data"]', '');
+  it('should be able to re-populate the form while reset keeping dirty values', () => {
+    cy.visit('http://localhost:3000/resetKeepDirty');
+    cy.get('input[name="firstName"]').should('have.value', '');
+    cy.get('input[name="users"]').should('have.value', 'users#0');
+    cy.get('input[name="objectData.test"]').should('have.value', '');
+    cy.get('input[name="lastName"]').should('have.value', '');
+    cy.get('input[name="deepNest.level1.level2.data"]').should(
+      'have.value',
+      '',
+    );
 
-    await cy.clickButtonContaining('Add item');
-    cy.expectValue('input[name="users"]', 'users#1');
-    await cy.clickButtonContaining('button');
+    cy.contains('button', 'Add item').click();
+    cy.get('input[name="users"]').should('have.value', 'users#1');
+    cy.contains('button', 'button').click();
 
-    cy.expectValue('input[name="firstName"]', 'bill');
-    cy.expectValue('input[name="lastName"]', 'luo');
-    cy.expectValue('input[name="users"]', 'users#1');
-    cy.expectValue('input[name="objectData.test"]', 'data');
-    cy.expectValue('input[name="deepNest.level1.level2.data"]', 'hey');
+    cy.get('input[name="firstName"]').should('have.value', 'bill');
+    cy.get('input[name="lastName"]').should('have.value', 'luo');
+    cy.get('input[name="users"]').should('have.value', 'users#1');
+    cy.get('input[name="objectData.test"]').should('have.value', 'data');
+    cy.get('input[name="deepNest.level1.level2.data"]').should(
+      'have.value',
+      'hey',
+    );
   });
 });

@@ -1,20 +1,15 @@
-import { describe, it } from 'vitest';
-
-import * as cy from '../support/cy';
-import { renderApp } from '../support/renderApp';
-
 describe('watchDefaultValues', () => {
-  it('should return default value with watch', async () => {
-    await renderApp('http://localhost:3000/watch-default-values');
+  it('should return default value with watch', () => {
+    cy.visit('http://localhost:3000/watch-default-values');
 
-    cy.expectContains(
-      '#watchAll',
+    cy.get('#watchAll').should(
+      'have.text',
       '{"test":"test","test1":{"firstName":"firstName","lastName":["lastName0","lastName1"],"deep":{"nest":"nest"}},"flatName[1]":{"whatever":"flat"}}',
     );
-    cy.expectContains('#array', '["test",{"whatever":"flat"}]');
-    cy.expectContains('#getArray', '["lastName0","lastName1"]');
-    cy.expectContains('#object', '["test","firstName"]');
-    cy.expectContains('#single', '"firstName"');
-    cy.expectContains('#singleDeepArray', '"lastName0"');
+    cy.get('#array').should('have.text', '["test",{"whatever":"flat"}]');
+    cy.get('#getArray').should('have.text', '["lastName0","lastName1"]');
+    cy.get('#object').should('have.text', '["test","firstName"]');
+    cy.get('#single').should('have.text', '"firstName"');
+    cy.get('#singleDeepArray').should('have.text', '"lastName0"');
   });
 });

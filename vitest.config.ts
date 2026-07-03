@@ -70,7 +70,12 @@ export default defineConfig({
         test: {
           name: 'browser',
           include: ['cypress/e2e/**/*.cy.ts', 'src/**/*.browser.test.tsx'],
+          setupFiles: ['scripts/vitest/browser-setup.ts'],
           testTimeout: 30000,
+          fileParallelism: false,
+          sequence: {
+            concurrent: false,
+          },
           browser: {
             enabled: true,
             provider: playwright(),

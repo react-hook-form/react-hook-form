@@ -1,144 +1,177 @@
-import { describe, it } from 'vitest';
-
-import * as cy from '../support/cy';
-import {
-  expectRenderCountDelta,
-  getRenderCount,
-  renderApp,
-} from '../support/renderApp';
-
 describe('useFieldArrayUnregister', () => {
-  it('should behaviour correctly', async () => {
-    await renderApp('http://localhost:3000/UseFieldArrayUnregister');
-    const renderCountStart = getRenderCount();
-    await cy.clearAndType('#field0', 'bill');
+  it('should behaviour correctly', () => {
+    cy.visit('http://localhost:3000/UseFieldArrayUnregister');
 
-    await cy.type('input[name="data.0.conditional"]', 'test');
+    cy.get('#field0').clear().type('bill');
 
-    cy.expectJson('#dirtyFields', {
-      data: [{ name: true, conditional: true }, null, null],
-    });
+    cy.get('input[name="data.0.conditional"]').type('test');
 
-    await cy.blur('input[name="data.0.conditional"]');
+    cy.get('#dirtyFields').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: true, conditional: true }, null, null],
+      }),
+    );
 
-    cy.expectJson('#touched', [{ name: true, conditional: true }]);
+    cy.get('input[name="data.0.conditional"]').blur();
 
-    await cy.click('#prepend');
-
-    cy.expectNotExist('input[name="data.0.conditional"]');
-    cy.expectValue('input[name="data.1.conditional"]', '');
-
-    cy.expectJson('#dirtyFields', {
-      data: [
+    cy.get('#touched').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal([
         { name: true, conditional: true },
+      ]),
+    );
+
+    cy.get('#prepend').click();
+
+    cy.get('input[name="data.0.conditional"]').should('not.exist');
+    cy.get('input[name="data.1.conditional"]').should('has.value', '');
+
+    cy.get('#dirtyFields').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: true, conditional: true },
+          { name: true, conditional: true },
+          { name: true },
+          { name: true },
+        ],
+      }),
+    );
+
+    cy.get('#touched').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal([
+        null,
         { name: true, conditional: true },
-        { name: true },
-        { name: true },
-      ],
-    });
+      ]),
+    );
 
-    cy.expectJson('#touched', [null, { name: true, conditional: true }]);
+    cy.get('input[name="data.0.name"]').blur();
 
-    await cy.blur('input[name="data.0.name"]');
+    cy.get('#swap').click();
 
-    await cy.click('#swap');
+    cy.get('input[name="data.1.conditional"]').should('not.exist');
+    cy.get('input[name="data.2.conditional"]').should('has.value', '');
 
-    cy.expectNotExist('input[name="data.1.conditional"]');
-    cy.expectValue('input[name="data.2.conditional"]', '');
+    cy.get('#dirtyFields').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: true },
+          null,
+          { name: true, conditional: true },
+          { name: true },
+        ],
+      }),
+    );
 
-    cy.expectJson('#dirtyFields', {
-      data: [
+    cy.get('#touched').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal([
         { name: true },
         null,
         { name: true, conditional: true },
+      ]),
+    );
+
+    cy.get('#insert').click();
+
+    cy.get('#insert').click();
+
+    cy.get('input[name="data.4.name"]').type('test');
+
+    cy.get('#dirtyFields').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: true },
+          { name: true, conditional: true },
+          { name: true },
+          { name: true },
+          { name: true, conditional: true },
+          { name: true },
+        ],
+      }),
+    );
+
+    cy.get('#touched').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal([
         { name: true },
-      ],
-    });
+        { name: true },
+        { name: true },
+        null,
+        { name: true, conditional: true },
+      ]),
+    );
 
-    cy.expectJson('#touched', [
-      { name: true },
-      null,
-      { name: true, conditional: true },
-      { name: true },
-    ]);
+    cy.get('#move').click();
 
-    await cy.click('#insert');
+    cy.get('input[name="data.2.name"]').clear().type('bill');
 
-    await cy.click('#insert');
+    cy.get('#dirtyFields').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: true },
+          { name: true },
+          { name: true, conditional: true },
+          { name: true },
+          { name: true },
+          { name: true },
+        ],
+      }),
+    );
 
-    await cy.type('input[name="data.4.name"]', 'test');
-
-    cy.expectJson('#dirtyFields', {
-      data: [
+    cy.get('#touched').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal([
+        { name: true },
         { name: true },
         { name: true, conditional: true },
         { name: true },
-        { name: true },
-        { name: true, conditional: true },
-        { name: true },
-      ],
-    });
+        null,
+      ]),
+    );
 
-    cy.expectJson('#touched', [
-      { name: true },
-      { name: true },
-      { name: true },
-      null,
-      { name: true, conditional: true },
-      { name: true },
-    ]);
+    cy.get('#delete1').click();
 
-    await cy.click('#move');
+    cy.get('#submit').click();
 
-    await cy.clearAndType('input[name="data.2.name"]', 'bill');
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: '6' },
+          { name: 'bill', conditional: '' },
+          { name: '11' },
+          { name: 'test1' },
+          { name: 'test2' },
+        ],
+      }),
+    );
 
-    cy.expectJson('#dirtyFields', {
-      data: [
-        { name: true },
-        { name: true },
-        { name: true, conditional: true },
-        { name: true },
-        { name: true },
-        { name: true },
-      ],
-    });
+    cy.get('input[name="data.3.name"]').type('test');
 
-    cy.expectJson('#touched', [
-      { name: true },
-      { name: true },
-      { name: true, conditional: true },
-      { name: true },
-      null,
-      { name: true },
-    ]);
+    cy.get('#submit').click();
 
-    await cy.click('#delete1');
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: '6' },
+          { name: 'bill', conditional: '' },
+          { name: '11' },
+          { name: 'test1test' },
+          { name: 'test2' },
+        ],
+      }),
+    );
 
-    const submitData = cy.getFieldArraySubmitData();
-    await cy.click('#submit');
+    cy.get('#delete3').click();
 
-    cy.expectJson('#result', {
-      data: submitData,
-    });
+    cy.get('#submit').click();
 
-    await cy.type('input[name="data.3.name"]', 'test');
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: '6' },
+          { name: 'bill', conditional: '' },
+          { name: '11' },
+          { name: 'test2' },
+        ],
+      }),
+    );
 
-    const submitData2 = cy.getFieldArraySubmitData();
-    await cy.click('#submit');
-
-    cy.expectJson('#result', {
-      data: submitData2,
-    });
-
-    await cy.click('#delete3');
-
-    const submitData3 = cy.getFieldArraySubmitData();
-    await cy.click('#submit');
-
-    cy.expectJson('#result', {
-      data: submitData3,
-    });
-
-    expectRenderCountDelta(renderCountStart, 29);
+    cy.get('#renderCount').contains('26');
   });
 });

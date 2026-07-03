@@ -1,30 +1,28 @@
-import * as cy from '../support/cy';
-import { renderApp } from '../support/renderApp';
-
 describe('defaultValues async', () => {
-  it('should populate defaultValue async for inputs', async () => {
-    await renderApp('http://localhost:3000/default-values-async');
-    await cy.wait(10);
+  it('should populate defaultValue async for inputs', () => {
+    cy.visit('http://localhost:3000/default-values-async');
 
-    await cy.waitFor(() => cy.expectValue('input[name="test"]', 'test'));
-    cy.expectValue('input[name="test1.firstName"]', 'firstName');
-    cy.expectValue('input[name="test1.lastName.0"]', 'lastName0');
-    cy.expectValue('input[name="test1.lastName.1"]', 'lastName1');
-    cy.expectCheckedAt('input[name="checkbox"]', 0);
-    cy.expectCheckedAt('input[name="checkbox"]', 1);
+    cy.wait(10);
 
-    await cy.clickAt('input[name="checkbox"]', 0);
-    await cy.click('#toggle');
-    await cy.click('#toggle');
+    cy.get('input[name="test"]').should('have.value', 'test');
+    cy.get('input[name="test1.firstName"]').should('have.value', 'firstName');
+    cy.get('input[name="test1.lastName.0"]').should('have.value', 'lastName0');
+    cy.get('input[name="test1.lastName.1"]').should('have.value', 'lastName1');
+    cy.get('input[name="checkbox"]').eq(0).should('have.checked');
+    cy.get('input[name="checkbox"]').eq(1).should('have.checked');
 
-    cy.expectNotCheckedAt('input[name="checkbox"]', 0);
-    cy.expectCheckedAt('input[name="checkbox"]', 1);
-    await cy.clickAt('input[name="checkbox"]', 1);
+    cy.get('input[name="checkbox"]').eq(0).click();
+    cy.get('#toggle').click();
+    cy.get('#toggle').click();
 
-    await cy.click('#toggle');
-    await cy.click('#toggle');
+    cy.get('input[name="checkbox"]').eq(0).should('not.have.checked');
+    cy.get('input[name="checkbox"]').eq(1).should('have.checked');
+    cy.get('input[name="checkbox"]').eq(1).click();
 
-    cy.expectNotCheckedAt('input[name="checkbox"]', 0);
-    cy.expectNotCheckedAt('input[name="checkbox"]', 1);
+    cy.get('#toggle').click();
+    cy.get('#toggle').click();
+
+    cy.get('input[name="checkbox"]').eq(0).should('not.have.checked');
+    cy.get('input[name="checkbox"]').eq(1).should('not.have.checked');
   });
 });

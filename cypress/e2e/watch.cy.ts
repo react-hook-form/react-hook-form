@@ -1,63 +1,77 @@
-import * as cy from '../support/cy';
-import { renderApp } from '../support/renderApp';
-
 describe('watch form validation', () => {
-  it('should watch all inputs', async () => {
-    await renderApp('http://localhost:3000/watch');
-    cy.expectPreJson('#watchAll', {
-      testSingle: '',
-      test: ['', ''],
-      testObject: { firstName: '', lastName: '' },
-      toggle: false,
-    });
+  it('should watch all inputs', () => {
+    cy.visit('http://localhost:3000/watch');
 
-    cy.expectNotExist('#HideTestSingle');
-    await cy.type('input[name="testSingle"]', 'testSingle');
-    cy.expectContains('#HideTestSingle', 'Hide Content TestSingle');
-    cy.expectPreJson('#watchAll', {
-      testSingle: 'testSingle',
-      test: ['', ''],
-      testObject: { firstName: '', lastName: '' },
-      toggle: false,
-    });
+    cy.get('#watchAll').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        testSingle: '',
+        test: ['', ''],
+        testObject: { firstName: '', lastName: '' },
+        toggle: false,
+      }),
+    );
 
-    await cy.type('input[name="test.0"]', 'bill');
-    await cy.type('input[name="test.1"]', 'luo');
-    cy.expectContains('#testData', '["bill","luo"]');
-    cy.expectPreJson('#testArray', ['bill', 'luo']);
+    cy.get('#HideTestSingle').should('not.exist');
+    cy.get('input[name="testSingle"]').type('testSingle');
+    cy.get('#HideTestSingle').contains('Hide Content TestSingle');
+    cy.get('#watchAll').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        testSingle: 'testSingle',
+        test: ['', ''],
+        testObject: { firstName: '', lastName: '' },
+        toggle: false,
+      }),
+    );
 
-    cy.expectPreJson('#watchAll', {
-      testSingle: 'testSingle',
-      test: ['bill', 'luo'],
-      testObject: { firstName: '', lastName: '' },
-      toggle: false,
-    });
+    cy.get('input[name="test.0"]').type('bill');
+    cy.get('input[name="test.1"]').type('luo');
+    cy.get('#testData').contains('["bill","luo"]');
+    cy.get('#testArray').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal(['bill', 'luo']),
+    );
 
-    await cy.type('input[name="testObject.firstName"]', 'bill');
-    await cy.type('input[name="testObject.lastName"]', 'luo');
-    cy.expectPreJson('#testObject', {
-      firstName: 'bill',
-      lastName: 'luo',
-    });
+    cy.get('#watchAll').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        testSingle: 'testSingle',
+        test: ['bill', 'luo'],
+        testObject: { firstName: '', lastName: '' },
+        toggle: false,
+      }),
+    );
 
-    cy.expectPreJson('#testArray', ['bill', 'luo']);
+    cy.get('input[name="testObject.firstName"').type('bill');
+    cy.get('input[name="testObject.lastName"').type('luo');
+    cy.get('#testObject').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        firstName: 'bill',
+        lastName: 'luo',
+      }),
+    );
 
-    cy.expectPreJson('#watchAll', {
-      testSingle: 'testSingle',
-      test: ['bill', 'luo'],
-      testObject: { firstName: 'bill', lastName: 'luo' },
-      toggle: false,
-    });
+    cy.get('#testArray').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal(['bill', 'luo']),
+    );
 
-    cy.expectNotExist('#hideContent');
-    await cy.check('input[name="toggle"]');
-    cy.expectContains('#hideContent', 'Hide Content');
+    cy.get('#watchAll').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        testSingle: 'testSingle',
+        test: ['bill', 'luo'],
+        testObject: { firstName: 'bill', lastName: 'luo' },
+        toggle: false,
+      }),
+    );
 
-    cy.expectPreJson('#watchAll', {
-      testSingle: 'testSingle',
-      test: ['bill', 'luo'],
-      testObject: { firstName: 'bill', lastName: 'luo' },
-      toggle: true,
-    });
+    cy.get('#hideContent').should('not.exist');
+    cy.get('input[name="toggle"').check();
+    cy.get('#hideContent').contains('Hide Content');
+
+    cy.get('#watchAll').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        testSingle: 'testSingle',
+        test: ['bill', 'luo'],
+        testObject: { firstName: 'bill', lastName: 'luo' },
+        toggle: true,
+      }),
+    );
   });
 });

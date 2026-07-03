@@ -1,70 +1,56 @@
-import { describe, it } from 'vitest';
-
-import * as cy from '../support/cy';
-import {
-  expectRenderCountDelta,
-  getRenderCount,
-  renderApp,
-} from '../support/renderApp';
-
 describe('watchUseFieldArray', () => {
-  it('should behaviour correctly when watching the field array', async () => {
-    await renderApp('http://localhost:3000/watch-field-array/normal');
-    const renderCountStart = getRenderCount();
-    await cy.click('#append');
-    cy.expectContains('#result', '[{"name":"2"}]');
+  it('should behaviour correctly when watching the field array', () => {
+    cy.visit('http://localhost:3000/watch-field-array/normal');
 
-    await cy.type('#field0', 'test');
-    cy.expectContains('#result', '[{"name":"2test"}]');
+    cy.get('#append').click();
+    cy.get('#result').contains('[{"name":"2"}]');
 
-    await cy.click('#prepend');
-    cy.expectContains('#result', '[{"name":"8"},{"name":"2test"}]');
+    cy.get('#field0').type('test');
+    cy.get('#result').contains('[{"name":"2test"}]');
 
-    await cy.click('#append');
-    await cy.click('#append');
-    await cy.click('#append');
-    await cy.click('#update');
-    cy.expectContains(
-      '#result',
+    cy.get('#prepend').click();
+    cy.get('#result').contains('[{"name":"8"},{"name":"2test"}]');
+
+    cy.get('#append').click();
+    cy.get('#append').click();
+    cy.get('#append').click();
+    cy.get('#update').click();
+    cy.get('#result').contains(
       '[{"name":"8"},{"name":"2test"},{"name":"10"},{"name":"updated value"},{"name":"14"}]',
     );
 
-    await cy.click('#swap');
-    cy.expectContains(
-      '#result',
+    cy.get('#swap').click();
+    cy.get('#result').contains(
       '[{"name":"8"},{"name":"10"},{"name":"2test"},{"name":"updated value"},{"name":"14"}]',
     );
 
-    await cy.click('#move');
-    cy.expectContains(
-      '#result',
+    cy.get('#move').click();
+    cy.get('#result').contains(
       '[{"name":"2test"},{"name":"8"},{"name":"10"},{"name":"updated value"},{"name":"14"}]',
     );
 
-    await cy.click('#insert');
-    cy.expectContains(
-      '#result',
+    cy.get('#insert').click();
+    cy.get('#result').contains(
       '[{"name":"2test"},{"name":"22"},{"name":"8"},{"name":"10"},{"name":"updated value"},{"name":"14"}]',
     );
 
-    await cy.click('#remove');
-    cy.expectContains(
-      '#result',
+    cy.get('#remove').click();
+    cy.get('#result').contains(
       '[{"name":"2test"},{"name":"8"},{"name":"10"},{"name":"updated value"},{"name":"14"}]',
     );
 
-    await cy.click('#removeAll');
-    cy.expectContains('#result', '[]');
-    expectRenderCountDelta(renderCountStart, 27);
+    cy.get('#removeAll').click();
+    cy.get('#result').contains('[]');
+    cy.get('#renderCount').contains('28');
   });
 
-  it('should return empty when items been removed and defaultValues are supplied', async () => {
-    await renderApp('http://localhost:3000/watch-field-array/default');
-    const renderCountStart = getRenderCount();
-    await cy.click('#delete0');
-    await cy.click('#delete0');
-    await cy.click('#delete0');
+  it('should return empty when items been removed and defaultValues are supplied', () => {
+    cy.visit('http://localhost:3000/watch-field-array/default');
 
-    cy.expectContains('#result', '[]');
+    cy.get('#delete0').click();
+    cy.get('#delete0').click();
+    cy.get('#delete0').click();
+
+    cy.get('#result').contains('[]');
   });
 });

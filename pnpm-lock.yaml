@@ -32,6 +32,9 @@ importers:
       '@testing-library/react':
         specifier: ^16.3.2
         version: 16.3.2(@testing-library/dom@10.4.0)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@types/chai':
+        specifier: ^5.2.3
+        version: 5.2.3
       '@types/node':
         specifier: ^25.9.3
         version: 25.9.3
@@ -56,6 +59,9 @@ importers:
       bundlewatch:
         specifier: ^0.4.2
         version: 0.4.2
+      chai:
+        specifier: ^6.2.2
+        version: 6.2.2
       eslint:
         specifier: ^9.39.4
         version: 9.39.4

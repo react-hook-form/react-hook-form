@@ -1,78 +1,57 @@
-import * as cy from '../support/cy';
-import { renderApp } from '../support/renderApp';
-
 describe('useWatch', () => {
-  it('should only trigger render when interact with input 1', async () => {
-    await renderApp('http://localhost:3000/useWatch');
-    const parentStart = cy.getCounterText('#parentCounter');
-    const childStart = cy.getCounterText('#childCounter');
-    const grandChildStart = cy.getCounterText('#grandChildCounter');
-    const grandChild1Start = cy.getCounterText('#grandChild1Counter');
-    const grandChild2Start = cy.getCounterText('#grandChild2Counter');
+  it('should only trigger render when interact with input 1', () => {
+    cy.visit('http://localhost:3000/useWatch');
+    cy.get('input[name="test"]').type('t');
 
-    await cy.type('input[name="test"]', 't');
+    cy.get('#parentCounter').contains('2');
+    cy.get('#childCounter').contains('2');
+    cy.get('#grandChildCounter').contains('3');
+    cy.get('#grandChild1Counter').contains('3');
+    cy.get('#grandChild2Counter').contains('3');
+    cy.get('#grandchild01').contains('t');
+    cy.get('#grandchild00').contains('t');
 
-    cy.expectCounterDelta('#parentCounter', parentStart, 1);
-    cy.expectCounterDelta('#childCounter', childStart, 1);
-    cy.expectCounterDelta('#grandChildCounter', grandChildStart, 1);
-    cy.expectCounterDelta('#grandChild1Counter', grandChild1Start, 1);
-    cy.expectCounterDelta('#grandChild2Counter', grandChild2Start, 1);
-    cy.expectContains('#grandchild01', 't');
-    cy.expectContains('#grandchild00', 't');
-
-    await cy.type('input[name="test"]', 'h');
-    cy.expectContains('#grandchild00', 'th');
-    cy.expectContains('#grandchild01', 'th');
-    cy.expectContains('#grandchild2', 't');
+    cy.get('input[name="test"]').type('h');
+    cy.get('#grandchild00').contains('th');
+    cy.get('#grandchild01').contains('th');
+    cy.get('#grandchild2').contains('t');
   });
 
-  it('should only trigger render when interact with input 2', async () => {
-    await renderApp('http://localhost:3000/useWatch');
-    const parentStart = cy.getCounterText('#parentCounter');
-    const childStart = cy.getCounterText('#childCounter');
-    const grandChildStart = cy.getCounterText('#grandChildCounter');
-    const grandChild1Start = cy.getCounterText('#grandChild1Counter');
-    const grandChild2Start = cy.getCounterText('#grandChild2Counter');
+  it('should only trigger render when interact with input 2', () => {
+    cy.visit('http://localhost:3000/useWatch');
+    cy.get('input[name="test1"]').type('h');
 
-    await cy.type('input[name="test1"]', 'h');
+    cy.get('#parentCounter').contains('2');
+    cy.get('#childCounter').contains('2');
+    cy.get('#grandChildCounter').contains('3');
+    cy.get('#grandChild1Counter').contains('3');
+    cy.get('#grandChild2Counter').contains('3');
 
-    cy.expectCounterDelta('#parentCounter', parentStart, 1);
-    cy.expectCounterDelta('#childCounter', childStart, 1);
-    cy.expectCounterDelta('#grandChildCounter', grandChildStart, 1);
-    cy.expectCounterDelta('#grandChild1Counter', grandChild1Start, 1);
-    cy.expectCounterDelta('#grandChild2Counter', grandChild2Start, 1);
-
-    await cy.type('input[name="test1"]', 'h');
-    await cy.type('input[name="test"]', 'h');
-    cy.expectContains('#grandchild00', 'h');
-    cy.expectContains('#grandchild01', 'h');
-    cy.expectContains('#grandchild1', 'hh');
-    cy.expectContains('#grandchild2', 'hhh');
+    cy.get('input[name="test1"]').type('h');
+    cy.get('input[name="test"]').type('h');
+    cy.get('#grandchild00').contains('h');
+    cy.get('#grandchild01').contains('h');
+    cy.get('#grandchild1').contains('hh');
+    cy.get('#grandchild2').contains('hhh');
   });
 
-  it('should only trigger render when interact with input 3', async () => {
-    await renderApp('http://localhost:3000/useWatch');
-    const parentStart = cy.getCounterText('#parentCounter');
-    const childStart = cy.getCounterText('#childCounter');
-    const grandChildStart = cy.getCounterText('#grandChildCounter');
-    const grandChild1Start = cy.getCounterText('#grandChild1Counter');
-    const grandChild2Start = cy.getCounterText('#grandChild2Counter');
+  it('should only trigger render when interact with input 3', () => {
+    cy.visit('http://localhost:3000/useWatch');
+    cy.get('input[name="test2"]').type('e');
 
-    await cy.type('input[name="test2"]', 'e');
+    cy.get('#parentCounter').contains('2');
+    cy.get('#childCounter').contains('2');
+    cy.get('#grandChildCounter').contains('3');
+    cy.get('#grandChild1Counter').contains('3');
+    cy.get('#grandChild2Counter').contains('3');
 
-    cy.expectCounterDelta('#parentCounter', parentStart, 1);
-    cy.expectCounterDelta('#childCounter', childStart, 1);
-    cy.expectCounterDelta('#grandChildCounter', grandChildStart, 1);
-    cy.expectCounterDelta('#grandChild1Counter', grandChild1Start, 1);
-    cy.expectCounterDelta('#grandChild2Counter', grandChild2Start, 1);
+    cy.get('input[name="test2"]').type('eh');
 
-    await cy.type('input[name="test2"]', 'eh');
-
-    await cy.type('input[name="test1"]', 'eh');
-    await cy.type('input[name="test"]', 'eh');
-    cy.expectContains('#grandchild00', 'eh');
-    cy.expectContains('#grandchild01', 'eh');
-    cy.expectContains('#grandchild1', 'eh');
-    cy.expectContains('#grandchild2', 'eheheeh');
+    cy.get('input[name="test1"]').type('eh');
+    cy.get('input[name="test"]').type('eh');
+    cy.get('#grandchild00').contains('eh');
+    cy.get('#grandchild01').contains('eh');
+    cy.get('#grandchild1').contains('eh');
+    cy.get('#grandchild2').contains('eheheeh');
   });
 });

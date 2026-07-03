@@ -1,28 +1,22 @@
-import * as cy from '../support/cy';
-import { renderApp } from '../support/renderApp';
-
 describe('autoUnregister', () => {
-  it('should keep all inputs data when inputs get unmounted', async () => {
-    await renderApp('http://localhost:3000/autoUnregister');
-    await cy.type('input[name="test"]', 'test');
-    await cy.type('input[name="test1"]', 'test1');
-    await cy.check('input[name="test2"]');
-    await cy.check('input[name="test3"]');
-    await cy.selectOption('select[name="test4"]', 'Bill');
-    await cy.click('#input-ReactSelect > div');
-    await cy.clickAt('#input-ReactSelect > div > div', 1);
+  it('should keep all inputs data when inputs get unmounted', () => {
+    cy.visit('http://localhost:3000/autoUnregister');
+    cy.get('input[name="test"]').type('test');
+    cy.get('input[name="test1"]').type('test1');
+    cy.get('input[name="test2"]').check();
+    cy.get('input[name="test3"]').check();
+    cy.get('select[name="test4"]').select('Bill');
+    cy.get('#input-ReactSelect > div').click();
+    cy.get('#input-ReactSelect > div > div').eq(1).click();
 
-    await cy.click('button');
-    await cy.click('button');
+    cy.get('button').click();
+    cy.get('button').click();
 
-    cy.expectValue('input[name="test"]', 'test');
-    cy.expectValue('input[name="test1"]', 'test1');
-    cy.expectChecked('input[name="test2"]');
-    cy.expectChecked('input[name="test3"]');
-    cy.expectValue('select[name="test4"]', 'bill');
-    cy.expectContains(
-      '#input-ReactSelect > div > div > div > div',
-      'Strawberry',
-    );
+    cy.get('input[name="test"]').should('has.value', 'test');
+    cy.get('input[name="test1"]').should('has.value', 'test1');
+    cy.get('input[name="test2"]').should('be.checked');
+    cy.get('input[name="test3"]').should('be.checked');
+    cy.get('select[name="test4"]').should('has.value', 'bill');
+    cy.get('#input-ReactSelect > div > div > div > div').contains('Strawberry');
   });
 });

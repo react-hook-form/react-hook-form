@@ -1,30 +1,21 @@
-import { describe, it } from 'vitest';
-
-import * as cy from '../support/cy';
-import {
-  expectRenderCountDelta,
-  getRenderCount,
-  renderApp,
-} from '../support/renderApp';
-
 describe('form setValue with trigger', () => {
-  it('should set input value and trigger validation', async () => {
-    await renderApp('http://localhost:3000/setValueWithTrigger');
-    const renderCountStart = getRenderCount();
-    await cy.type('input[name="firstName"]', 'a');
-    cy.expectInputError('input[name="firstName"]', 'minLength 10');
-    await cy.clear('input[name="firstName"]');
-    cy.expectInputError('input[name="firstName"]', 'required');
-    await cy.type('input[name="firstName"]', 'clear1234567');
+  it('should set input value and trigger validation', () => {
+    cy.visit('http://localhost:3000/setValueWithTrigger');
 
-    await cy.type('input[name="lastName"]', 'a');
-    cy.expectInputError('input[name="lastName"]', 'too short');
-    await cy.type('input[name="lastName"]', 'fsdfsdfsd');
-    cy.expectInputError('input[name="lastName"]', 'error message');
-    await cy.clear('input[name="lastName"]');
-    await cy.type('input[name="lastName"]', 'bill');
+    cy.get('input[name="firstName"]').type('a');
+    cy.get('input[name="firstName"] + p').contains('minLength 10');
+    cy.get('input[name="firstName"]').clear();
+    cy.get('input[name="firstName"] + p').contains('required');
+    cy.get('input[name="firstName"]').type('clear1234567');
 
-    cy.expectNoParagraphs();
-    expectRenderCountDelta(renderCountStart, 30);
+    cy.get('input[name="lastName"]').type('a');
+    cy.get('input[name="lastName"] + p').contains('too short');
+    cy.get('input[name="lastName"]').type('fsdfsdfsd');
+    cy.get('input[name="lastName"] + p').contains('error message');
+    cy.get('input[name="lastName"]').clear();
+    cy.get('input[name="lastName"]').type('bill');
+
+    cy.get('p').should('have.length', 0);
+    cy.get('#renderCount').contains('31');
   });
 });

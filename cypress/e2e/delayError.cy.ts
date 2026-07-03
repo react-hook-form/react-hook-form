@@ -1,48 +1,49 @@
-import * as cy from '../support/cy';
-import { renderApp } from '../support/renderApp';
-
 describe('delayError', () => {
-  it('should delay from errors appear', async () => {
-    await renderApp('http://localhost:3000/delayError');
-    await cy.type('input[name="first"]', '123');
-    await cy.wait(100);
-    cy.expectInputError('input[name="first"]', 'First too long.');
+  it('should delay from errors appear', () => {
+    cy.visit('http://localhost:3000/delayError');
 
-    await cy.type('input[name="last"]', '123567');
-    await cy.wait(100);
-    cy.expectInputError('input[name="last"]', 'Last too long.');
+    const firstInput = () => cy.get('input[name="first"]');
+    const firstInputError = () => cy.get('input[name="first"] + p');
+    const lastInput = () => cy.get('input[name="last"]');
+    const lastInputError = () => cy.get('input[name="last"] + p');
 
-    await cy.blur('input[name="last"]');
-    await cy.click('button');
+    firstInput().type('123');
+    cy.wait(100);
+    firstInputError().contains('First too long.');
 
-    await cy.clearAndType('input[name="first"]', '123');
-    await cy.clearAndType('input[name="last"]', '123567');
+    lastInput().type('123567');
+    cy.wait(100);
+    lastInputError().contains('Last too long.');
 
-    await cy.waitFor(() => {
-      cy.expectInputError('input[name="first"]', 'First too long.');
-      cy.expectInputError('input[name="last"]', 'Last too long.');
-    });
+    lastInput().blur();
+    cy.get('button').click();
 
-    await cy.clearAndType('input[name="first"]', '1');
-    await cy.clearAndType('input[name="last"]', '12');
-    await cy.blur('input[name="last"]');
+    firstInput().type('123');
+    lastInput().type('123567');
 
-    cy.expectNoErrorMessages();
+    firstInputError().contains('First too long.');
+    lastInputError().contains('Last too long.');
 
-    await cy.click('button');
+    firstInput().clear().type('1');
+    lastInput().clear().type('12');
 
-    await cy.clearAndType('input[name="first"]', 'aa');
-    await cy.clearAndType('input[name="last"]', 'a');
+    lastInput().blur();
 
-    await cy.waitFor(() => {
-      cy.expectInputError('input[name="first"]', 'First too long.');
-      cy.expectInputError('input[name="last"]', 'Last too long.');
-    });
+    cy.get('p').should('have.length', 0);
 
-    await cy.clearAndType('input[name="first"]', '1');
-    await cy.clearAndType('input[name="last"]', '12');
-    await cy.blur('input[name="last"]');
+    cy.get('button').click();
 
-    cy.expectNoErrorMessages();
+    firstInput().type('aa');
+    lastInput().type('a');
+
+    firstInputError().contains('First too long.');
+    lastInputError().contains('Last too long.');
+
+    firstInput().clear().type('1');
+    lastInput().clear().type('12');
+
+    lastInput().blur();
+
+    cy.get('p').should('have.length', 0);
   });
 });

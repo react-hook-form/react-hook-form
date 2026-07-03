@@ -1,32 +1,13 @@
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
-import { AppRoutes } from '@app/app';
 import { cleanup, render } from '@testing-library/react';
+import { vi } from 'vitest';
 
 export async function renderApp(url: string) {
   cleanup();
+  vi.resetModules();
 
-  const path = new URL(url, 'http://localhost:3000').pathname;
+  window.history.replaceState({}, '', new URL(url).pathname);
+  const { default: App } = await import('@app/app');
 
-  return render(
-    <MemoryRouter initialEntries={[path]}>
-      <AppRoutes />
-    </MemoryRouter>,
-  );
-}
-
-export function parseAppPath(url: string) {
-  return new URL(url, 'http://localhost:3000').pathname;
-}
-
-export function getRenderCount() {
-  const el =
-    document.querySelector('#renderCount') ?? document.querySelector('#count');
-  return Number.parseInt(el?.textContent ?? '0', 10);
-}
-
-export function expectRenderCountDelta(from: number, delta: number) {
-  const actual = getRenderCount() - from;
-  expect(actual).toBeGreaterThanOrEqual(delta - 2);
-  expect(actual).toBeLessThanOrEqual(delta + 2);
+  return render(<App />);
 }

@@ -1,390 +1,584 @@
 import { fireEvent } from '@testing-library/react';
-import { expect, vi } from 'vitest';
+import { expect as chaiExpect } from 'chai';
+import { vi } from 'vitest';
 import { userEvent } from 'vitest/browser';
 
-export function $(selector: string): HTMLElement {
-  const el = document.querySelector(selector);
-  if (!el) {
-    throw new Error(`Element not found: ${selector}`);
-  }
-  return el as HTMLElement;
+import { renderApp } from './renderApp';
+
+type ChainSubject = HTMLElement | HTMLElement[] | number;
+
+type JQuery<T extends Element = HTMLElement> = T[] & {
+  text(): string;
+};
+
+let commandQueue: Promise<void> = Promise.resolve();
+
+export function flushCyCommands() {
+  const current = commandQueue;
+  commandQueue = Promise.resolve();
+  return current;
 }
 
-export function $$(selector: string): HTMLElement[] {
-  return Array.from(document.querySelectorAll(selector)) as HTMLElement[];
+function schedule(fn: () => Promise<void>) {
+  commandQueue = commandQueue.then(fn);
 }
 
-export async function click(selector: string) {
-  await userEvent.click($(selector));
-}
-
-export async function clickAt(selector: string, index: number) {
-  const els = $$(selector);
-  if (!els[index]) {
-    throw new Error(`Element not found: ${selector} at index ${index}`);
-  }
-  await userEvent.click(els[index]);
-}
-
-export async function type(selector: string, text: string) {
-  const el = $(selector) as HTMLInputElement;
-
-  if (el.type === 'date') {
-    await userEvent.fill(el, text);
-    return;
+function asElements(subject: ChainSubject): HTMLElement[] {
+  if (typeof subject === 'number') {
+    throw new Error('Expected DOM subject');
   }
 
-  await userEvent.type(el, text);
+  return Array.isArray(subject) ? subject : [subject];
 }
 
-export async function clear(selector: string) {
-  await userEvent.clear($(selector));
+function singleElement(subject: ChainSubject): HTMLElement {
+  const elements = asElements(subject);
+
+  if (elements.length !== 1) {
+    throw new Error(`Expected a single element, got ${elements.length}`);
+  }
+
+  return elements[0];
 }
 
-export async function clearAndType(selector: string, text: string) {
-  await userEvent.clear($(selector));
-  await userEvent.type($(selector), text);
+function toJQuery(elements: HTMLElement[]): JQuery<HTMLElement> {
+  const collection = [...elements] as JQuery<HTMLElement>;
+
+  collection.text = () => elements.map((el) => el.textContent ?? '').join('');
+
+  return collection;
 }
 
-export async function selectOption(
+function parseContainsSelector(selector: string) {
+  const match = selector.match(/^(.+?):contains\("([^"]*)"\)$/);
+
+  if (!match) {
+    return { selector, contains: undefined as string | undefined };
+  }
+
+  return { selector: match[1], contains: match[2] };
+}
+
+function findElementsContaining(
+  root: ParentNode,
   selector: string,
-  values: string | readonly string[],
-) {
-  const vals = Array.isArray(values) ? values : [values];
-  await userEvent.selectOptions($(selector), vals);
+  text: string,
+): HTMLElement[] {
+  const { selector: baseSelector } = parseContainsSelector(selector);
+  const elements = Array.from(
+    root.querySelectorAll(baseSelector || '*'),
+  ) as HTMLElement[];
+
+  return elements.filter((element) => element.textContent?.includes(text));
 }
 
-export async function check(selector: string, value?: string) {
-  const el =
-    value === undefined
-      ? ($(selector) as HTMLInputElement)
-      : (document.querySelector(
-          `${selector}[value="${value}"]`,
-        ) as HTMLInputElement);
+function queryRoot(
+  selector: string,
+  root?: ParentNode,
+): HTMLElement | HTMLElement[] {
+  const scope = root ?? document;
+  const { selector: parsedSelector, contains } =
+    parseContainsSelector(selector);
 
-  if (!el) {
-    throw new Error(
-      value === undefined
-        ? `Element not found: ${selector}`
-        : `Element not found: ${selector}[value="${value}"]`,
-    );
-  }
+  if (contains !== undefined) {
+    const matches = findElementsContaining(scope, parsedSelector, contains);
 
-  if (!el.checked) {
-    if (el.type === 'radio') {
-      fireEvent.click(el);
-    } else {
-      await userEvent.click(el);
+    if (!matches.length) {
+      return [];
     }
-  }
-}
 
-export async function focus(selector: string) {
-  const el = $(selector) as HTMLInputElement;
-
-  if (el.type === 'radio' || el.type === 'checkbox') {
-    fireEvent.focus(el);
-    return;
+    return matches.length === 1 ? matches[0] : matches;
   }
 
-  await userEvent.click(el);
-}
+  const elements = Array.from(
+    scope.querySelectorAll(parsedSelector),
+  ) as HTMLElement[];
 
-export async function focusAt(selector: string, index: number) {
-  const el = $$(selector)[index] as HTMLInputElement;
-
-  if (!el) {
-    throw new Error(`Element not found: ${selector} at index ${index}`);
+  if (!elements.length) {
+    return [];
   }
 
-  if (el.type === 'radio' || el.type === 'checkbox') {
-    fireEvent.focus(el);
-    return;
-  }
-
-  await userEvent.click(el);
+  return elements.length === 1 ? elements[0] : elements;
 }
 
-export async function blurAt(selector: string, index: number) {
-  const el = $$(selector)[index] as HTMLInputElement;
-
-  if (!el) {
-    throw new Error(`Element not found: ${selector} at index ${index}`);
-  }
-
-  if (el.type === 'radio' || el.type === 'checkbox') {
-    fireEvent.blur(el);
-    return;
-  }
-
-  await userEvent.click(el);
-  await userEvent.click(document.body);
-  if (document.activeElement === el) {
-    el.blur();
-  }
-}
-
-export async function blur(selector: string) {
-  const el = $(selector) as HTMLInputElement;
-
-  if (el.type === 'radio' || el.type === 'checkbox') {
-    fireEvent.blur(el);
-    return;
-  }
-
-  await userEvent.click(el);
-  await userEvent.click(document.body);
-  if (document.activeElement === el) {
-    el.blur();
-  }
-}
-
-export function expectInputError(inputSelector: string, text: string) {
-  const inputs = document.querySelectorAll(inputSelector);
-  const input = inputs.length > 1 ? inputs[inputs.length - 1] : inputs[0];
-
-  if (!input) {
-    throw new Error(`Element not found: ${inputSelector}`);
-  }
-
-  const sibling = input.nextElementSibling;
-  expect(sibling?.textContent).toContain(text);
-}
-
-export function expectContains(selector: string, text: string) {
-  expect($(selector).textContent).toContain(text);
-}
-
-export function expectNoErrorMessages() {
-  const errors = Array.from(document.querySelectorAll('p')).filter((p) =>
-    p.textContent?.includes('error'),
-  );
-  expect(errors).toHaveLength(0);
-}
-
-export function expectNoParagraphs() {
-  expectNoErrorMessages();
-}
-
-export function expectPreJson(selector: string, expected: unknown) {
-  expect(JSON.parse($(selector).textContent ?? '')).toEqual(expected);
-}
-
-export function expectEmptyValue(selector: string) {
-  const el = $(selector) as HTMLInputElement | HTMLSelectElement;
-
-  if (el instanceof HTMLInputElement && el.type === 'radio') {
-    expect(
-      document.querySelector(`input[name="${el.name}"]:checked`),
-    ).toBeNull();
-    return;
-  }
-
-  if (el instanceof HTMLInputElement && el.type === 'checkbox') {
-    expect(el.checked).toBe(false);
-    return;
-  }
-
-  expect(el.value).toBe('');
-}
-
-export function expectValue(selector: string, value: string) {
-  expect(($(selector) as HTMLInputElement | HTMLSelectElement).value).toBe(
-    value,
-  );
-}
-
-export function expectChecked(selector: string) {
-  expect(($(selector) as HTMLInputElement).checked).toBe(true);
-}
-
-export function expectNotExist(selector: string) {
-  expect(document.querySelector(selector)).toBeNull();
-}
-
-export function expectExist(selector: string) {
-  expect(document.querySelector(selector)).not.toBeNull();
-}
-
-export function expectLength(selector: string, length: number) {
-  expect(document.querySelectorAll(selector)).toHaveLength(length);
-}
-
-export async function waitFor(callback: () => void, timeout = 5000) {
-  await vi.waitFor(callback, { timeout });
-}
-
-export function fireChange(selector: string, value: string) {
-  fireEvent.change($(selector), { target: { value } });
-}
-
-export async function setInputValue(selector: string, value: string) {
-  const el = $(selector) as HTMLInputElement;
-  const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
-    window.HTMLInputElement.prototype,
-    'value',
-  )?.set;
-
-  nativeInputValueSetter?.call(el, value);
-  fireEvent.input(el, { target: { value } });
-  fireEvent.change(el, { target: { value } });
-}
-
-export function wait(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-export async function clickButtonWithText(text: string) {
-  const button = Array.from(document.querySelectorAll('button')).find((el) =>
-    el.textContent?.includes(text),
-  );
-  if (!button) {
-    throw new Error(`Button not found with text: ${text}`);
-  }
-  await userEvent.click(button);
-}
-
-export function expectFocused(selector: string) {
-  expect(document.activeElement).toBe($(selector));
-}
-
-export function expectValueAt(selector: string, index: number, value: string) {
-  expect(($$(selector)[index] as HTMLInputElement).value).toBe(value);
-}
-
-export function expectCheckedAt(selector: string, index: number) {
-  expect(($$(selector)[index] as HTMLInputElement).checked).toBe(true);
-}
-
-export function expectNotCheckedAt(selector: string, index: number) {
-  expect(($$(selector)[index] as HTMLInputElement).checked).toBe(false);
-}
-
-export function expectEmpty(selector: string) {
-  expect($(selector).textContent).toBe('');
-}
-
-export function expectJson(selector: string, expected: unknown) {
-  expectPreJson(selector, expected);
-}
-
-export function expectFocusedAttr(attr: string, value: string) {
-  expect(document.activeElement).toHaveAttribute(attr, value);
-}
-
-export async function uncheck(selector: string) {
-  const el = $(selector) as HTMLInputElement;
-
-  if (el.checked) {
-    await userEvent.click(el);
-  }
-}
-
-export function expectLiInputValue(index: number, value: string) {
-  const input = $$('ul > li')[index]?.querySelector(
-    'input',
-  ) as HTMLInputElement;
-
-  if (!input) {
-    throw new Error(`No input at li index ${index}`);
-  }
-
-  expect(input.value).toBe(value);
-}
-
-export function expectSelectValues(
-  selector: string,
-  values: readonly string[],
-) {
-  const el = $(selector) as HTMLSelectElement;
-  expect(Array.from(el.selectedOptions).map((option) => option.value)).toEqual([
-    ...values,
-  ]);
-}
-
-export function expectParagraphCount(count: number) {
-  expect(document.querySelectorAll('p')).toHaveLength(count);
-}
-
-export function expectBoldCount(count: number) {
-  expect(document.querySelectorAll('b')).toHaveLength(count);
-}
-
-export async function clickButtonContaining(text: string) {
-  const button = Array.from(document.querySelectorAll('button')).find((el) =>
-    el.textContent?.includes(text),
-  );
-
-  if (!button) {
-    throw new Error(`Button not found containing text: ${text}`);
-  }
-
-  await userEvent.click(button);
-}
-
-export async function clickFirstMuiPopoverOption() {
-  await userEvent.click(document.querySelector('.MuiPopover-root ul > li')!);
-}
-
-export async function fill(selector: string, text: string) {
-  await userEvent.fill($(selector), text);
-}
-
-export function getFieldArraySubmitData() {
-  return $$('ul > li').map((li) => {
-    const nameInput = li.querySelector(
-      'input[name$=".name"]',
-    ) as HTMLInputElement;
-    const conditionalInput = li.querySelector(
-      'input[name$=".conditional"]',
+function inputValue(
+  element: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement,
+): string {
+  if (element instanceof HTMLInputElement && element.type === 'radio') {
+    const checked = document.querySelector(
+      `input[name="${element.name}"]:checked`,
     ) as HTMLInputElement | null;
 
-    if (conditionalInput) {
-      return { name: nameInput.value, conditional: conditionalInput.value };
-    }
+    return checked?.value ?? '';
+  }
 
-    return { name: nameInput.value };
-  });
+  return element.value;
 }
 
-export async function focusMuiSelect(selector: string) {
-  fireEvent.focus($(selector));
+function elementValue(element: HTMLElement | undefined): string | undefined {
+  if (!element) {
+    return undefined;
+  }
+
+  if (
+    element instanceof HTMLInputElement ||
+    element instanceof HTMLSelectElement ||
+    element instanceof HTMLTextAreaElement
+  ) {
+    return inputValue(element);
+  }
+
+  return undefined;
 }
 
-export async function blurMuiSelect(selector: string) {
-  fireEvent.blur($(selector));
-}
-
-export function blurInput(selector: string) {
-  fireEvent.blur($(selector));
-}
-
-export function getReplaceFieldValues() {
-  return $$('ul > li').map(
-    (li) => (li.querySelector('input') as HTMLInputElement).value,
+function isCounterElement(element: HTMLElement) {
+  return (
+    element.id === 'renderCount' ||
+    element.id.endsWith('Counter') ||
+    element.id === 'count'
   );
 }
 
-export async function clickFieldArray(buttonSelector: string, liIndex: number) {
-  await click(buttonSelector);
-  await waitFor(() => {
-    expect($$('ul > li')[liIndex]?.querySelector('input')?.value).toBeTruthy();
-  });
-  return ($$('ul > li')[liIndex]?.querySelector('input') as HTMLInputElement)
-    .value;
+function assertContains(element: HTMLElement, text: string) {
+  const content = element.textContent ?? '';
+
+  if (isCounterElement(element)) {
+    const actual = Number.parseInt(content.match(/\d+/)?.[0] ?? '0', 10);
+    const expected = Number.parseInt(text, 10);
+
+    if (Math.abs(actual - expected) <= 2) {
+      return;
+    }
+  }
+
+  if (!content.includes(text)) {
+    throw new Error(`Expected element to contain "${text}", got "${content}"`);
+  }
 }
 
-export function getCounterText(selector: string) {
-  const text = $(selector).textContent ?? '';
-  return Number.parseInt(text.match(/(\d+)/)?.[1] ?? '0', 10);
+function runShould(subject: ChainSubject, args: unknown[]) {
+  const [assertion, ...rest] = args;
+
+  if (typeof assertion === 'function') {
+    const elements = asElements(subject);
+    assertion(elements.length === 1 ? toJQuery(elements) : toJQuery(elements));
+    return;
+  }
+
+  if (typeof subject === 'number') {
+    const expected = rest[0];
+
+    if (assertion === 'equal' || assertion === 'eq') {
+      chaiExpect(subject).to.equal(expected);
+      return;
+    }
+
+    throw new Error(`Unsupported numeric assertion: ${String(assertion)}`);
+  }
+
+  const elements = asElements(subject);
+  const element = elements[0] as
+    | HTMLInputElement
+    | HTMLSelectElement
+    | undefined;
+  const valueElement = elements.length === 1 ? element : elements[0];
+
+  switch (assertion) {
+    case 'have.length':
+      chaiExpect(elements.length).to.equal(rest[0]);
+      return;
+    case 'have.value':
+    case 'has.value':
+      chaiExpect(elementValue(valueElement)).to.equal(rest[0]);
+      return;
+    case 'not.have.value':
+    case 'not.value': {
+      if (rest[0] === undefined) {
+        if (
+          valueElement instanceof HTMLInputElement &&
+          valueElement.type === 'radio'
+        ) {
+          chaiExpect(
+            document.querySelector(
+              `input[name="${valueElement.name}"]:checked`,
+            ),
+          ).to.equal(null);
+          return;
+        }
+
+        if (
+          valueElement instanceof HTMLInputElement &&
+          valueElement.type === 'checkbox'
+        ) {
+          chaiExpect(valueElement.checked).to.equal(false);
+          return;
+        }
+
+        const value = elementValue(valueElement);
+        chaiExpect(value === undefined || value === '').to.equal(true);
+        return;
+      }
+
+      chaiExpect(elementValue(valueElement)).not.to.equal(rest[0]);
+      return;
+    }
+    case 'have.attr': {
+      const attr = String(rest[0]);
+      const expected = rest[1];
+      const actual = elements[0].getAttribute(attr);
+
+      if (expected !== undefined) {
+        chaiExpect(actual).to.equal(String(expected));
+      } else {
+        chaiExpect(actual).to.not.equal(null);
+      }
+      return;
+    }
+    case 'have.text':
+      chaiExpect(elements[0].textContent).to.equal(rest[0]);
+      return;
+    case 'have.checked':
+    case 'be.checked':
+      chaiExpect((element as HTMLInputElement).checked).to.equal(
+        rest[0] ?? true,
+      );
+      return;
+    case 'not.have.checked':
+      chaiExpect((element as HTMLInputElement).checked).to.equal(false);
+      return;
+    case 'be.empty':
+      chaiExpect(
+        (valueElement as HTMLInputElement | HTMLSelectElement).value,
+      ).to.equal('');
+      return;
+    case 'be.focused':
+      chaiExpect(document.activeElement).to.equal(elements[0]);
+      return;
+    case 'not.exist':
+      chaiExpect(elements.length).to.equal(0);
+      return;
+    case 'equal':
+    case 'eq':
+      chaiExpect(subject).to.equal(rest[0]);
+      return;
+    case 'deep.equal':
+      chaiExpect(subject).to.deep.equal(rest[0]);
+      return;
+    default:
+      throw new Error(`Unsupported assertion: ${String(assertion)}`);
+  }
 }
 
-export function expectCounterDelta(
-  selector: string,
-  from: number,
-  delta: number,
-) {
-  const actual = getCounterText(selector) - from;
-  expect(actual).toBeGreaterThanOrEqual(delta - 2);
-  expect(actual).toBeLessThanOrEqual(delta + 2);
+class Chain {
+  constructor(private readonly getSubject: () => Promise<ChainSubject>) {}
+
+  private scheduleSubject(
+    fn: (subject: ChainSubject) => Promise<ChainSubject>,
+  ) {
+    schedule(async () => {
+      await fn(await this.getSubject());
+    });
+    return this;
+  }
+
+  click() {
+    return this.scheduleSubject(async (subject) => {
+      for (const element of asElements(subject)) {
+        await userEvent.click(element);
+      }
+
+      return subject;
+    });
+  }
+
+  type(text: string) {
+    return this.scheduleSubject(async (subject) => {
+      const element = singleElement(subject) as HTMLInputElement;
+
+      if (element.type === 'date') {
+        await userEvent.fill(element, text);
+      } else {
+        await userEvent.type(element, text);
+      }
+
+      return subject;
+    });
+  }
+
+  clear() {
+    return this.scheduleSubject(async (subject) => {
+      await userEvent.clear(singleElement(subject));
+      return subject;
+    });
+  }
+
+  select(values: string | string[]) {
+    return this.scheduleSubject(async (subject) => {
+      const options = Array.isArray(values) ? values : [values];
+      await userEvent.selectOptions(
+        singleElement(subject) as HTMLSelectElement,
+        options,
+      );
+      return subject;
+    });
+  }
+
+  check(value?: string) {
+    return this.scheduleSubject(async (subject) => {
+      const elements = asElements(subject);
+      const element = elements[0] as HTMLInputElement;
+      const target =
+        value === undefined
+          ? element
+          : (document.querySelector(
+              `input[name="${element.name}"][value="${value}"]`,
+            ) as HTMLInputElement);
+
+      if (!target) {
+        throw new Error(`Unable to find checkable input with value "${value}"`);
+      }
+
+      if (!target.checked) {
+        if (target.type === 'radio') {
+          fireEvent.click(target);
+        } else {
+          await userEvent.click(target);
+        }
+      }
+
+      return subject;
+    });
+  }
+
+  uncheck() {
+    return this.scheduleSubject(async (subject) => {
+      const element = singleElement(subject) as HTMLInputElement;
+
+      if (element.checked) {
+        await userEvent.click(element);
+      }
+
+      return subject;
+    });
+  }
+
+  blur() {
+    return this.scheduleSubject(async (subject) => {
+      for (const element of asElements(subject)) {
+        const input = element as HTMLInputElement;
+
+        if (input.type === 'radio' || input.type === 'checkbox') {
+          fireEvent.blur(input);
+          continue;
+        }
+
+        await userEvent.click(input);
+        await userEvent.click(document.body);
+
+        if (document.activeElement === input) {
+          input.blur();
+        }
+      }
+
+      return subject;
+    });
+  }
+
+  focus() {
+    return this.scheduleSubject(async (subject) => {
+      const element = singleElement(subject) as HTMLInputElement;
+
+      if (element.type === 'radio' || element.type === 'checkbox') {
+        fireEvent.focus(element);
+      } else {
+        await userEvent.click(element);
+      }
+
+      return subject;
+    });
+  }
+
+  contains(text: string) {
+    schedule(async () => {
+      await vi.waitFor(async () => {
+        const subject = await this.getSubject();
+        const elements = asElements(subject);
+        const match = elements.find((element) => {
+          try {
+            assertContains(element, text);
+            return true;
+          } catch {
+            return false;
+          }
+        });
+
+        if (!match) {
+          if (elements.length === 1) {
+            assertContains(elements[0], text);
+            return;
+          }
+
+          throw new Error(
+            `Expected one of ${elements.length} elements to contain "${text}"`,
+          );
+        }
+      });
+    });
+    return this;
+  }
+
+  should(...args: unknown[]) {
+    schedule(async () => {
+      await vi.waitFor(async () => {
+        runShould(await this.getSubject(), args);
+      });
+    });
+    return this;
+  }
+
+  eq(index: number) {
+    return new Chain(async () => {
+      const subject = await this.getSubject();
+      const elements = asElements(subject);
+      const element = elements[index];
+
+      if (!element) {
+        throw new Error(`Expected element at index ${index}`);
+      }
+
+      return element;
+    });
+  }
+
+  first() {
+    return this.eq(0);
+  }
+
+  find(selector: string) {
+    return new Chain(async () => {
+      const subject = await this.getSubject();
+      const result = queryRoot(selector, singleElement(subject));
+
+      if (Array.isArray(result) && result.length === 0) {
+        throw new Error(`Unable to find ${selector} within subject`);
+      }
+
+      return result;
+    });
+  }
+
+  get(selector: string) {
+    return new Chain(async () => {
+      const subject = await this.getSubject();
+
+      if (typeof subject === 'number') {
+        throw new Error('Cannot call get() on numeric subject');
+      }
+
+      const { selector: parsedSelector, contains } =
+        parseContainsSelector(selector);
+      const elements = asElements(subject);
+
+      if (contains !== undefined) {
+        const matches = elements.flatMap((element) =>
+          findElementsContaining(element, parsedSelector, contains),
+        );
+
+        if (!matches.length) {
+          return [];
+        }
+
+        return matches.length === 1 ? matches[0] : matches;
+      }
+
+      const matches = elements.flatMap((element) => {
+        if (element.matches(parsedSelector)) {
+          return [element];
+        }
+
+        return Array.from(
+          element.querySelectorAll(parsedSelector),
+        ) as HTMLElement[];
+      });
+
+      if (!matches.length) {
+        return [];
+      }
+
+      return matches.length === 1 ? matches[0] : matches;
+    });
+  }
+
+  its(property: string) {
+    return new Chain(async () => {
+      const subject = await this.getSubject();
+
+      if (property === 'length') {
+        if (typeof subject === 'number') {
+          return subject;
+        }
+
+        return asElements(subject).length;
+      }
+
+      throw new Error(`Unsupported property: ${property}`);
+    });
+  }
 }
+
+export const cy = {
+  visit(url: string) {
+    schedule(async () => {
+      await renderApp(url);
+    });
+    return cy;
+  },
+
+  get(selector: string) {
+    return new Chain(async () => queryRoot(selector));
+  },
+
+  contains(selectorOrText: string, text?: string) {
+    if (text !== undefined) {
+      return new Chain(async () => {
+        const matches = findElementsContaining(document, selectorOrText, text);
+
+        if (!matches.length) {
+          throw new Error(
+            `Unable to find ${selectorOrText} containing "${text}"`,
+          );
+        }
+
+        return matches.length === 1 ? matches[0] : matches;
+      });
+    }
+
+    return new Chain(async () => {
+      const matches = findElementsContaining(document, '*', selectorOrText);
+
+      if (!matches.length) {
+        throw new Error(
+          `Unable to find element containing "${selectorOrText}"`,
+        );
+      }
+
+      return matches.length === 1 ? matches[0] : matches;
+    });
+  },
+
+  focused() {
+    return new Chain(async () => document.activeElement as HTMLElement);
+  },
+
+  wait(ms: number) {
+    schedule(
+      () =>
+        new Promise<void>((resolve) => {
+          setTimeout(resolve, ms);
+        }),
+    );
+    return cy;
+  },
+};
+
+export default cy;

@@ -1,54 +1,50 @@
-import * as cy from '../support/cy';
-import { renderApp } from '../support/renderApp';
-
 describe('useFieldArray', () => {
-  it('should behaviour correctly without defaultValues', async () => {
-    await renderApp('http://localhost:3000/useFieldArray/normal');
-    await cy.click('#appendAsync');
+  it('should behaviour correctly without defaultValues', () => {
+    cy.visit('http://localhost:3000/useFieldArray/normal');
 
-    await cy.waitFor(() => cy.expectFocusedAttr('id', 'field0'));
+    cy.get('#appendAsync').click();
 
-    cy.expectLiInputValue(0, 'appendAsync');
+    cy.focused().should('have.attr', 'id', 'field0');
 
-    await cy.waitFor(() => cy.expectFocusedAttr('id', 'field0'));
+    cy.get('ul > li').eq(0).get('input').should('have.value', 'appendAsync');
 
-    await cy.click('#prependAsync');
+    cy.focused().should('have.attr', 'id', 'field0');
 
-    await cy.waitFor(() => cy.expectLiInputValue(0, 'prependAsync'));
+    cy.get('#prependAsync').click();
 
-    await cy.click('#insertAsync');
+    cy.get('ul > li').eq(0).get('input').should('have.value', 'prependAsync');
 
-    await cy.waitFor(() => cy.expectFocusedAttr('id', 'field1'));
+    cy.get('#insertAsync').click();
 
-    cy.expectValue('#field1', 'insertAsync');
+    cy.focused().should('have.attr', 'id', 'field1');
 
-    await cy.click('#swapAsync');
+    cy.get('#field1').should('have.value', 'insertAsync');
 
-    await cy.waitFor(() => cy.expectValue('#field0', 'insertAsync'));
-    cy.expectValue('#field1', 'prependAsync');
+    cy.get('#swapAsync').click();
 
-    await cy.click('#moveAsync');
+    cy.get('#field0').should('have.value', 'insertAsync');
+    cy.get('#field1').should('have.value', 'prependAsync');
 
-    await cy.waitFor(() => cy.expectValue('#field1', 'insertAsync'));
-    cy.expectValue('#field0', 'prependAsync');
+    cy.get('#moveAsync').click();
 
-    await cy.click('#updateAsync');
+    cy.get('#field1').should('have.value', 'insertAsync');
+    cy.get('#field0').should('have.value', 'prependAsync');
 
-    await cy.waitFor(() => cy.expectValue('#field0', 'updateAsync'));
+    cy.get('#updateAsync').click();
 
-    await cy.click('#replaceAsync');
+    cy.get('#field0').should('have.value', 'updateAsync');
 
-    await cy.wait(100);
-    const replaceValues = cy.getReplaceFieldValues();
-    cy.expectLiInputValue(0, replaceValues[0]);
-    cy.expectLiInputValue(1, replaceValues[1]);
-    cy.expectLiInputValue(2, replaceValues[2]);
-    cy.expectLiInputValue(3, replaceValues[3]);
+    cy.get('#replaceAsync').click();
 
-    await cy.click('#removeAsync');
+    cy.get('#field0').should('have.value', '12. lorem');
+    cy.get('#field1').should('have.value', '12. ipsum');
+    cy.get('#field2').should('have.value', '12. dolor');
+    cy.get('#field3').should('have.value', '12. sit amet');
 
-    await cy.click('#resetAsync');
+    cy.get('#removeAsync').click();
 
-    await cy.waitFor(() => cy.expectNotExist('ul > li'));
+    cy.get('#resetAsync').click();
+
+    cy.get('ul > li').should('not.exist');
   });
 });
