@@ -37,7 +37,7 @@ export default defineConfig({
           fileParallelism: false,
           maxWorkers: 1,
           include: ['src/__tests__/**/*.test.ts?(x)'],
-          exclude: ['**/*.server.test.ts?(x)', '**/*.browser.test.tsx'],
+          exclude: ['**/*.server.test.ts?(x)', 'cypress/**'],
           setupFiles: ['scripts/vitest/setup.ts'],
           environmentOptions: {
             jsdom: {
@@ -63,7 +63,7 @@ export default defineConfig({
         },
         test: {
           name: 'browser',
-          include: ['cypress/e2e/**/*.browser.test.tsx'],
+          include: ['cypress/e2e/**/*.browser.cy.ts'],
           testTimeout: 30000,
           browser: {
             enabled: true,
