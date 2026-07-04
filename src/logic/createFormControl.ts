@@ -1855,11 +1855,22 @@ export function createFormControl<
   };
 
   const _setFormState = (
-    updatedFormState: Partial<FormState<TFieldValues>>,
+    updatedFormState: Partial<FormState<TFieldValues>> & {
+      name?: InternalFieldName;
+      type?: EventType;
+      values?: TFieldValues;
+    },
   ) => {
+    // `name`, `type`, and `values` describe the event that produced this
+    // update, not the form's persisted state (they aren't part of
+    // `FormState`). Merging them in would leak a stale `name`/`type` from
+    // one event into a later, unrelated notification that doesn't specify
+    // its own.
+    const { name, type, values, ...formState } = updatedFormState;
+
     _formState = {
       ..._formState,
-      ...updatedFormState,
+      ...formState,
     };
   };
 
