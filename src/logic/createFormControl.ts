@@ -1782,8 +1782,6 @@ export function createFormControl<
     }
 
     _subjects.state.next({
-      name: undefined,
-      type: undefined,
       submitCount: keepStateOptions.keepSubmitCount
         ? _formState.submitCount
         : 0,
