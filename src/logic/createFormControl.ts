@@ -1750,6 +1750,8 @@ export function createFormControl<
       });
 
       _subjects.state.next({
+        name: undefined,
+        type: undefined,
         values: { ...values } as TFieldValues,
       });
     }
