@@ -1,5 +1,11 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 
 import type { UseFormSubscribe } from '../../types';
 import { useForm } from '../../useForm';
@@ -322,6 +328,49 @@ describe('subscribe', () => {
     fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
     expect(names).toEqual([undefined, 'firstName', undefined]);
+  });
+
+  it('should not leak a clearErrors field name into a later unrelated callback', async () => {
+    const names: (string | undefined)[] = [];
+
+    const App = () => {
+      const { register, handleSubmit, subscribe, clearErrors } = useForm({
+        defaultValues: {
+          firstName: '',
+        },
+      });
+
+      React.useEffect(() => {
+        return subscribe({
+          formState: {
+            isSubmitting: true,
+          },
+          callback: ({ name }) => {
+            names.push(name);
+          },
+        });
+      }, [subscribe]);
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <input {...register('firstName')} />
+          <button type="button" onClick={() => clearErrors('firstName')}>
+            clear
+          </button>
+          <input type="submit" />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'clear' }));
+
+    await act(async () => {
+      fireEvent.submit(document.querySelector('form')!);
+    });
+
+    expect(names.at(-1)).toBeUndefined();
   });
 
   it('should keep isDirty true when reset keeps values and updates defaultValues', async () => {
