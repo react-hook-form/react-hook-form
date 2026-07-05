@@ -303,9 +303,8 @@ export type FieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> =
     FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
 > = {
   render: (
-    fieldArray: UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName>,
+    fieldArray: UseFieldArrayReturn<TFieldValues, TFieldArrayName>,
   ) => React.ReactElement;
-} & UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>;
+} & UseFieldArrayProps<TFieldValues, TFieldArrayName>;
