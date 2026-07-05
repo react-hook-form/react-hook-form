@@ -13,6 +13,7 @@
     "@emotion/styled": "^11.14.0",
     "@hookform/resolvers": "3.9.0",
     "@mui/material": "^5.16.13",
+    "@remix-run/router": "1.23.2",
     "joi": "^18.2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
