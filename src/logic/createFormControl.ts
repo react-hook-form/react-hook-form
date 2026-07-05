@@ -1290,7 +1290,17 @@ export function createFormControl<
   };
 
   const watch: UseFormWatch<TFieldValues> = (
-    name?: FieldPath<TFieldValues> | ReadonlyArray<FieldPath<TFieldValues>>,
+    name?:
+      | FieldPath<TFieldValues>
+      | ReadonlyArray<FieldPath<TFieldValues>>
+      | ((
+          value: TFieldValues,
+          info: {
+            name?: FieldPath<TFieldValues>;
+            type?: EventType;
+            value?: unknown;
+          },
+        ) => void),
     defaultValue?: DeepPartial<TFieldValues>,
   ) => {
     if (isFunction(name)) {
