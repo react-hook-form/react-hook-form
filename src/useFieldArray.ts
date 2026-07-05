@@ -447,10 +447,14 @@ export function useFieldArray<
       }
     }
 
-    control._subjects.state.next({
-      name,
-      values: cloneObject(control._formValues) as TFieldValues,
-    });
+    // External updates that change `fields` (e.g. reset() or setValue() on
+    // the array) already notify subscribers with the up-to-date values
+    // themselves, so only re-broadcast here for genuine array method calls.
+    _actioned.current &&
+      control._subjects.state.next({
+        name,
+        values: cloneObject(control._formValues) as TFieldValues,
+      });
 
     control._names.focus &&
       iterateFieldsByAction(control._fields, (ref, key: string) => {

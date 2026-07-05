@@ -58,6 +58,7 @@ import convertToArrayPayload from '../utils/convertToArrayPayload';
 import createSubject from '../utils/createSubject';
 import deepEqual from '../utils/deepEqual';
 import extractFormValues from '../utils/extractFormValues';
+import { flatten } from '../utils/flatten';
 import get from '../utils/get';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
@@ -960,14 +961,18 @@ export function createFormControl<
         ...updatedFormValues,
       };
 
+      const flattenedUpdates = flatten(updatedFormValues as FieldValues);
+
       for (const fieldName of _names.mount) {
-        _setValue(
-          fieldName as FieldPath<TFieldValues>,
-          get(updatedFormValues, fieldName),
-          options,
-          true,
-          true,
-        );
+        if (fieldName in flattenedUpdates) {
+          _setValue(
+            fieldName as FieldPath<TFieldValues>,
+            flattenedUpdates[fieldName],
+            options,
+            true,
+            true,
+          );
+        }
       }
 
       _subjects.state.next({
@@ -1717,6 +1722,8 @@ export function createFormControl<
       });
 
       _subjects.state.next({
+        name: undefined,
+        type: undefined,
         values: { ...values } as TFieldValues,
       });
     }
@@ -1815,11 +1822,22 @@ export function createFormControl<
   };
 
   const _setFormState = (
-    updatedFormState: Partial<FormState<TFieldValues>>,
+    updatedFormState: Partial<FormState<TFieldValues>> & {
+      name?: InternalFieldName;
+      type?: EventType;
+      values?: TFieldValues;
+    },
   ) => {
+    // `name`, `type`, and `values` describe the event that produced this
+    // update, not the form's persisted state (they aren't part of
+    // `FormState`). Merging them in would leak a stale `name`/`type` from
+    // one event into a later, unrelated notification that doesn't specify
+    // its own.
+    const { name, type, values, ...formState } = updatedFormState;
+
     _formState = {
       ..._formState,
-      ...updatedFormState,
+      ...formState,
     };
   };
 
