@@ -32,7 +32,10 @@ type Expect<T extends true> = T;
     });
 
     type _fields1 = Expect<
-      Equal<typeof fields1, (string[][] & { key: string })[]>
+      Equal<
+        typeof fields1,
+        (string[][] & { key: string } & { disabled?: boolean })[]
+      >
     >;
 
     append1([['a', 'b'], ['c']]);
@@ -53,7 +56,10 @@ type Expect<T extends true> = T;
     });
 
     type _fields2 = Expect<
-      Equal<typeof fields2, (string[] & { key: string })[]>
+      Equal<
+        typeof fields2,
+        (string[] & { key: string } & { disabled?: boolean })[]
+      >
     >;
 
     append2(['a', 'b']);
@@ -72,7 +78,12 @@ type Expect<T extends true> = T;
       name: 'items.0.0',
     });
 
-    type _fields3 = Expect<Equal<typeof fields3, (string & { key: string })[]>>;
+    type _fields3 = Expect<
+      Equal<
+        typeof fields3,
+        (string & { key: string } & { disabled?: boolean })[]
+      >
+    >;
 
     append3('a');
     append3(['a', 'b']);
@@ -108,7 +119,7 @@ type Expect<T extends true> = T;
         typeof itemFields,
         ({ name: string; tags: string[]; categories: number[] } & {
           key: string;
-        })[]
+        } & { disabled?: boolean })[]
       >
     >;
 
@@ -146,7 +157,10 @@ type Expect<T extends true> = T;
     });
 
     type _tagFields = Expect<
-      Equal<typeof tagFields, (string & { key: string })[]>
+      Equal<
+        typeof tagFields,
+        (string & { key: string } & { disabled?: boolean })[]
+      >
     >;
 
     appendTag('newTag');
@@ -166,7 +180,10 @@ type Expect<T extends true> = T;
     });
 
     type _categoryFields = Expect<
-      Equal<typeof categoryFields, (number & { key: string })[]>
+      Equal<
+        typeof categoryFields,
+        (number & { key: string } & { disabled?: boolean })[]
+      >
     >;
 
     appendCategory(5);
@@ -202,7 +219,7 @@ type Expect<T extends true> = T;
         ({
           name: string;
           users: { username: string; permissions: string[] }[];
-        } & { key: string })[]
+        } & { key: string } & { disabled?: boolean })[]
       >
     >;
 
@@ -225,7 +242,9 @@ type Expect<T extends true> = T;
     type _userFields = Expect<
       Equal<
         typeof userFields,
-        ({ username: string; permissions: string[] } & { key: string })[]
+        ({ username: string; permissions: string[] } & { key: string } & {
+          disabled?: boolean;
+        })[]
       >
     >;
 
@@ -254,7 +273,10 @@ type Expect<T extends true> = T;
     });
 
     type _permissionFields = Expect<
-      Equal<typeof permissionFields, (string & { key: string })[]>
+      Equal<
+        typeof permissionFields,
+        (string & { key: string } & { disabled?: boolean })[]
+      >
     >;
 
     appendPermission('delete');
@@ -349,7 +371,9 @@ type Expect<T extends true> = T;
     type _items = Expect<
       Equal<
         typeof items,
-        ({ name: string; tags: string[] } & { key: string })[]
+        ({ name: string; tags: string[] } & { key: string } & {
+          disabled?: boolean;
+        })[]
       >
     >;
 
@@ -365,7 +389,10 @@ type Expect<T extends true> = T;
     });
 
     type _tagFields = Expect<
-      Equal<typeof tagFields, (string & { key: string })[]>
+      Equal<
+        typeof tagFields,
+        (string & { key: string } & { disabled?: boolean })[]
+      >
     >;
 
     appendTag('newTag');
@@ -399,7 +426,7 @@ type Expect<T extends true> = T;
         ({
           name: string;
           users: { username: string; roles: string[] }[];
-        } & { key: string })[]
+        } & { key: string } & { disabled?: boolean })[]
       >
     >;
 
@@ -416,7 +443,9 @@ type Expect<T extends true> = T;
     type _userFields = Expect<
       Equal<
         typeof userFields,
-        ({ username: string; roles: string[] } & { key: string })[]
+        ({ username: string; roles: string[] } & { key: string } & {
+          disabled?: boolean;
+        })[]
       >
     >;
 
@@ -428,7 +457,10 @@ type Expect<T extends true> = T;
     });
 
     type _roleFields = Expect<
-      Equal<typeof roleFields, (string & { key: string })[]>
+      Equal<
+        typeof roleFields,
+        (string & { key: string } & { disabled?: boolean })[]
+      >
     >;
 
     appendRole('moderator');
@@ -461,7 +493,7 @@ type Expect<T extends true> = T;
         ({
           title: string;
           tasks: { description: string; tags: string[] }[];
-        } & { key: string })[]
+        } & { key: string } & { disabled?: boolean })[]
       >
     >;
 
@@ -478,7 +510,9 @@ type Expect<T extends true> = T;
     type _taskFields = Expect<
       Equal<
         typeof taskFields,
-        ({ description: string; tags: string[] } & { key: string })[]
+        ({ description: string; tags: string[] } & { key: string } & {
+          disabled?: boolean;
+        })[]
       >
     >;
 
@@ -490,7 +524,10 @@ type Expect<T extends true> = T;
     });
 
     type _tagFields1 = Expect<
-      Equal<typeof tagFields1, (string & { key: string })[]>
+      Equal<
+        typeof tagFields1,
+        (string & { key: string } & { disabled?: boolean })[]
+      >
     >;
 
     appendTag1('tag1');
@@ -501,7 +538,10 @@ type Expect<T extends true> = T;
     });
 
     type _tagFields2 = Expect<
-      Equal<typeof tagFields2, (string & { key: string })[]>
+      Equal<
+        typeof tagFields2,
+        (string & { key: string } & { disabled?: boolean })[]
+      >
     >;
 
     appendTag2('tag2');
