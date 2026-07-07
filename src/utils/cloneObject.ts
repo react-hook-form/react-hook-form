@@ -4,6 +4,10 @@ import isWeb from './isWeb';
 
 export default function cloneObject<T>(data: T): T {
   if (data instanceof Date) {
+    if (data.constructor !== Date) {
+      const CustomDate = data.constructor as typeof Date;
+      return new CustomDate(data) as any;
+    }
     return new Date(data) as any;
   }
 
