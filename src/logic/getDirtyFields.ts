@@ -11,10 +11,6 @@ function isTraversable<T>(value: T): boolean {
   return Array.isArray(value) || (isObject(value) && !objectHasFunction(value));
 }
 
-// An array is only diffed element-by-element (as with a field array) when
-// nothing is registered directly against its own path. When the path itself
-// is a registered field (e.g. a multi-select bound with `register`), the
-// array is that field's single value and must be diffed as a whole.
 function isRegisteredLeaf(
   fields: FieldRefs | undefined,
   path: string,
