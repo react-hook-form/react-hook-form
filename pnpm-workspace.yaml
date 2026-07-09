@@ -1,0 +1,5 @@
+allowBuilds:
+  '@swc/core': false
+  cypress: false
+  esbuild: false
+  unrs-resolver: false

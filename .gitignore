@@ -44,4 +44,3 @@ package-lock.json
 /cypress/parallel-weights.json
 /cypress/screenshots
 /cypress/fixtures
-pnpm-workspace.yaml
