@@ -1,4 +1,6 @@
+import type { FieldRefs } from '../types';
 import deepEqual from '../utils/deepEqual';
+import get from '../utils/get';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isObject from '../utils/isObject';
 import isPrimitive from '../utils/isPrimitive';
@@ -9,13 +11,34 @@ function isTraversable<T>(value: T): boolean {
   return Array.isArray(value) || (isObject(value) && !objectHasFunction(value));
 }
 
-function markFieldsDirty<T>(data: T, fields: Record<string, any> = {}) {
+// An array is only diffed element-by-element (as with a field array) when
+// nothing is registered directly against its own path. When the path itself
+// is a registered field (e.g. a multi-select bound with `register`), the
+// array is that field's single value and must be diffed as a whole.
+function isRegisteredLeaf(
+  fields: FieldRefs | undefined,
+  path: string,
+): boolean {
+  const field = fields && get(fields, path);
+  return !!(field && '_f' in field);
+}
+
+function markFieldsDirty<T>(
+  data: T,
+  fields: Record<string, any> = {},
+  fieldRefs?: FieldRefs,
+  path = '',
+) {
   for (const key in data) {
     const value = data[key];
+    const currentPath = path ? `${path}.${key}` : key;
 
-    if (isTraversable(value)) {
+    if (
+      isTraversable(value) &&
+      (!Array.isArray(value) || !isRegisteredLeaf(fieldRefs, currentPath))
+    ) {
       fields[key] = Array.isArray(value) ? [] : {};
-      markFieldsDirty(value, fields[key]);
+      markFieldsDirty(value, fields[key], fieldRefs, currentPath);
     } else if (!isUndefined(value)) {
       fields[key] = true;
     }
@@ -64,25 +87,35 @@ export default function getDirtyFields<T>(
     Extract<keyof T, string>,
     ReturnType<typeof markFieldsDirty> | boolean
   >,
+  fieldRefs?: FieldRefs,
+  path = '',
 ) {
   if (!dirtyFieldsFromValues) {
-    dirtyFieldsFromValues = markFieldsDirty(formValues);
+    dirtyFieldsFromValues = markFieldsDirty(formValues, {}, fieldRefs);
   }
 
   for (const key in data) {
     const value = data[key];
+    const currentPath = path ? `${path}.${key}` : key;
 
-    if (isTraversable(value)) {
+    if (
+      isTraversable(value) &&
+      (!Array.isArray(value) || !isRegisteredLeaf(fieldRefs, currentPath))
+    ) {
       if (isUndefined(formValues) || isPrimitive(dirtyFieldsFromValues[key])) {
         dirtyFieldsFromValues[key] = markFieldsDirty(
           value,
           Array.isArray(value) ? [] : {},
+          fieldRefs,
+          currentPath,
         );
       } else {
         getDirtyFields(
           value,
           isNullOrUndefined(formValues) ? {} : formValues[key],
           dirtyFieldsFromValues[key],
+          fieldRefs,
+          currentPath,
         );
       }
     } else {
