@@ -712,6 +712,128 @@ describe('formState', () => {
     expect(dirtyFieldsState).toEqual({});
   });
 
+  it('should keep dirtyFields as boolean for a registered multiple select with isDirty', async () => {
+    let dirtyFieldsState: Record<string, unknown> = {};
+    let isDirtyState = false;
+
+    function App() {
+      const {
+        register,
+        formState: { dirtyFields, isDirty },
+      } = useForm<{ fruits: string[] }>({
+        defaultValues: {
+          fruits: [],
+        },
+      });
+
+      dirtyFieldsState = dirtyFields;
+      isDirtyState = isDirty;
+
+      return (
+        <select
+          multiple
+          data-testid="fruits"
+          {...register('fruits', {
+            validate: (value) =>
+              value.length > 0 || 'Please select at least one fruit',
+          })}
+        >
+          <option value="apple">Apple</option>
+          <option value="banana">Banana</option>
+          <option value="orange">Orange</option>
+        </select>
+      );
+    }
+
+    render(<App />);
+
+    const fruits = screen.getByTestId('fruits') as HTMLSelectElement;
+
+    // Multiple select values are read from selectedOptions during change.
+    fruits.options[0].selected = true;
+    fireEvent.change(fruits);
+
+    await waitFor(() => {
+      expect(isDirtyState).toBe(true);
+      expect(dirtyFieldsState).toEqual({ fruits: true });
+    });
+  });
+
+  it('should keep all dirty registered multiple selects as booleans with isDirty', async () => {
+    let dirtyFieldsState: Record<string, unknown> = {};
+    let isDirtyState = false;
+
+    function App() {
+      const {
+        register,
+        formState: { dirtyFields, isDirty },
+      } = useForm<{ colors: string[]; fruits: string[] }>({
+        defaultValues: {
+          colors: [],
+          fruits: [],
+        },
+      });
+
+      dirtyFieldsState = dirtyFields;
+      isDirtyState = isDirty;
+
+      return (
+        <>
+          <select
+            multiple
+            data-testid="fruits"
+            {...register('fruits', {
+              validate: (value) =>
+                value.length > 0 || 'Please select at least one fruit',
+            })}
+          >
+            <option value="apple">Apple</option>
+            <option value="banana">Banana</option>
+            <option value="orange">Orange</option>
+          </select>
+          <select
+            multiple
+            data-testid="colors"
+            {...register('colors', {
+              validate: (value) =>
+                value.length > 0 || 'Please select at least one color',
+            })}
+          >
+            <option value="red">Red</option>
+            <option value="green">Green</option>
+            <option value="blue">Blue</option>
+          </select>
+        </>
+      );
+    }
+
+    render(<App />);
+
+    const fruits = screen.getByTestId('fruits') as HTMLSelectElement;
+    const colors = screen.getByTestId('colors') as HTMLSelectElement;
+
+    // Multiple select values are read from selectedOptions during change.
+    fruits.options[0].selected = true;
+    fireEvent.change(fruits);
+
+    await waitFor(() => {
+      expect(isDirtyState).toBe(true);
+      expect(dirtyFieldsState).toEqual({ fruits: true });
+    });
+
+    // A second array-valued field should not reshape the first dirty field.
+    colors.options[0].selected = true;
+    fireEvent.change(colors);
+
+    await waitFor(() => {
+      expect(isDirtyState).toBe(true);
+      expect(dirtyFieldsState).toEqual({
+        colors: true,
+        fruits: true,
+      });
+    });
+  });
+
   it('should update isDirty with getFieldState at child component', () => {
     type FormValues = {
       test?: string;
