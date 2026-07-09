@@ -712,6 +712,40 @@ describe('formState', () => {
     expect(dirtyFieldsState).toEqual({});
   });
 
+  it('should mark an array-valued registered field dirty as a boolean rather than diffing its elements (#13584)', async () => {
+    function App() {
+      const {
+        register,
+        formState: { isDirty, dirtyFields },
+      } = useForm({
+        defaultValues: { fruits: [] as string[] },
+      });
+
+      return (
+        <div>
+          <select multiple {...register('fruits')}>
+            <option value="apple">apple</option>
+            <option value="banana">banana</option>
+          </select>
+          <p>{isDirty ? 'dirty' : 'notDirty'}</p>
+          <p>{JSON.stringify(dirtyFields)}</p>
+        </div>
+      );
+    }
+
+    render(<App />);
+
+    const select = screen.getAllByRole('listbox')[0] as HTMLSelectElement;
+
+    await act(async () => {
+      select.options[0].selected = true;
+      fireEvent.change(select);
+    });
+
+    expect(await screen.findByText('dirty')).toBeVisible();
+    expect(screen.getByText(JSON.stringify({ fruits: true }))).toBeVisible();
+  });
+
   it('should update isDirty with getFieldState at child component', () => {
     type FormValues = {
       test?: string;
