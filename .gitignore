@@ -45,3 +45,7 @@ package-lock.json
 /cypress/screenshots
 /cypress/fixtures
 pnpm-workspace.yaml
+
+# Vitest browser-mode failure screenshots
+**/__screenshots__/
+.vitest-attachments/
