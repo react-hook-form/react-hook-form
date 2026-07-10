@@ -82,7 +82,7 @@ import stringToPath from '../utils/stringToPath';
 import unset from '../utils/unset';
 
 import generateWatchOutput from './generateWatchOutput';
-import getDirtyFields from './getDirtyFields';
+import getDirtyFields, { isTraversable } from './getDirtyFields';
 import getEventValue from './getEventValue';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
@@ -166,6 +166,7 @@ export function createFormControl<
     mount: false,
     watch: false,
     keepIsValid: false,
+    dirtyFieldsDesynced: false,
   };
   let _names: Names = {
     mount: new Set(),
@@ -456,13 +457,14 @@ export function createFormControl<
 
         isPreviousDirty = !!get(_formState.dirtyFields, name);
 
-        if (isCurrentFieldPristine !== _formState.isDirty) {
+        if (_state.dirtyFieldsDesynced || isTraversable(fieldValue)) {
           _formState.dirtyFields = getDirtyFields(
             _defaultValues,
             _formValues,
             undefined,
             _fields,
           );
+          _state.dirtyFieldsDesynced = false;
         } else {
           isCurrentFieldPristine
             ? unset(_formState.dirtyFields, name)
@@ -906,6 +908,16 @@ export function createFormControl<
 
     if (!isValueUnchanged) {
       set(_formValues, name, cloneValue);
+
+      if (
+        !options.shouldDirty &&
+        (_proxyFormState.isDirty ||
+          _proxyFormState.dirtyFields ||
+          _proxySubscribeFormState.isDirty ||
+          _proxySubscribeFormState.dirtyFields)
+      ) {
+        _state.dirtyFieldsDesynced = true;
+      }
     }
 
     if (isFieldArray) {
@@ -1794,6 +1806,7 @@ export function createFormControl<
     _state.watch = !!_options.shouldUnregister;
     _state.keepIsValid = !!keepStateOptions.keepIsValid;
     _state.action = false;
+    _state.dirtyFieldsDesynced = false;
 
     if (!keepStateOptions.keepErrors) {
       _formState.errors = {};
