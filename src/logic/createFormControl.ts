@@ -60,6 +60,7 @@ import convertToArrayPayload from '../utils/convertToArrayPayload';
 import createSubject from '../utils/createSubject';
 import deepEqual from '../utils/deepEqual';
 import extractFormValues from '../utils/extractFormValues';
+import { flatten } from '../utils/flatten';
 import get from '../utils/get';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
@@ -263,7 +264,12 @@ export function createFormControl<
   };
 
   const _updateDirtyFields = () => {
-    _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
+    _formState.dirtyFields = getDirtyFields(
+      _defaultValues,
+      _formValues,
+      undefined,
+      _fields,
+    );
   };
 
   const _setFieldArray: BatchFieldArrayUpdate = (
@@ -452,7 +458,12 @@ export function createFormControl<
         isPreviousDirty = !!get(_formState.dirtyFields, name);
 
         if (isCurrentFieldPristine !== _formState.isDirty) {
-          _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
+          _formState.dirtyFields = getDirtyFields(
+            _defaultValues,
+            _formValues,
+            undefined,
+            _fields,
+          );
         } else {
           isCurrentFieldPristine
             ? unset(_formState.dirtyFields, name)
@@ -968,14 +979,18 @@ export function createFormControl<
         ...updatedFormValues,
       };
 
+      const flattenedUpdates = flatten(updatedFormValues as FieldValues);
+
       for (const fieldName of _names.mount) {
-        _setValue(
-          fieldName as FieldPath<TFieldValues>,
-          get(updatedFormValues, fieldName),
-          options,
-          true,
-          true,
-        );
+        if (fieldName in flattenedUpdates) {
+          _setValue(
+            fieldName as FieldPath<TFieldValues>,
+            flattenedUpdates[fieldName],
+            options,
+            true,
+            true,
+          );
+        }
       }
 
       _subjects.state.next({
@@ -1699,6 +1714,7 @@ export function createFormControl<
     const cloneUpdatedValues = cloneObject(updatedValues);
     const isEmptyResetValues = isEmptyObject(formValues);
     const values = cloneUpdatedValues;
+    const fieldRefs = _fields;
 
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = updatedValues;
@@ -1708,7 +1724,9 @@ export function createFormControl<
       if (keepStateOptions.keepDirtyValues) {
         const fieldsToCheck = new Set([
           ..._names.mount,
-          ...Object.keys(getDirtyFields(_defaultValues, _formValues)),
+          ...Object.keys(
+            getDirtyFields(_defaultValues, _formValues, undefined, fieldRefs),
+          ),
         ]);
         for (const fieldName of Array.from(fieldsToCheck)) {
           const isDirty = get(_formState.dirtyFields, fieldName);
@@ -1772,6 +1790,8 @@ export function createFormControl<
       });
 
       _subjects.state.next({
+        name: undefined,
+        type: undefined,
         values: { ...values } as TFieldValues,
       });
     }
@@ -1822,10 +1842,10 @@ export function createFormControl<
         ? {}
         : keepStateOptions.keepDirtyValues
           ? keepStateOptions.keepDefaultValues && _formValues
-            ? getDirtyFields(_defaultValues, _formValues)
+            ? getDirtyFields(_defaultValues, _formValues, undefined, fieldRefs)
             : _formState.dirtyFields
           : keepStateOptions.keepDefaultValues && formValues
-            ? getDirtyFields(_defaultValues, formValues)
+            ? getDirtyFields(_defaultValues, formValues, undefined, fieldRefs)
             : keepStateOptions.keepDirty
               ? _formState.dirtyFields
               : {},
@@ -1870,11 +1890,22 @@ export function createFormControl<
   };
 
   const _setFormState = (
-    updatedFormState: Partial<FormState<TFieldValues>>,
+    updatedFormState: Partial<FormState<TFieldValues>> & {
+      name?: InternalFieldName;
+      type?: EventType;
+      values?: TFieldValues;
+    },
   ) => {
+    // `name`, `type`, and `values` describe the event that produced this
+    // update, not the form's persisted state (they aren't part of
+    // `FormState`). Merging them in would leak a stale `name`/`type` from
+    // one event into a later, unrelated notification that doesn't specify
+    // its own.
+    const { name, type, values, ...formState } = updatedFormState;
+
     _formState = {
       ..._formState,
-      ...updatedFormState,
+      ...formState,
     };
   };
 
@@ -1894,7 +1925,12 @@ export function createFormControl<
     _defaultValues = cloneObject(values) as Partial<typeof _defaultValues>;
 
     if (!options.keepDirty) {
-      const newDirtyFields = getDirtyFields(_defaultValues, _formValues);
+      const newDirtyFields = getDirtyFields(
+        _defaultValues,
+        _formValues,
+        undefined,
+        _fields,
+      );
       _formState.dirtyFields = newDirtyFields as typeof _formState.dirtyFields;
       _formState.isDirty = !isEmptyObject(newDirtyFields);
     }
