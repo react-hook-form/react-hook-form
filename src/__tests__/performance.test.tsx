@@ -12,6 +12,19 @@ import type { Control } from '../types';
 import { useForm } from '../useForm';
 import { useWatch } from '../useWatch';
 
+const getDirtyFieldsSpy = jest.fn();
+jest.mock('../logic/getDirtyFields', () => {
+  const actual = jest.requireActual('../logic/getDirtyFields');
+  return {
+    __esModule: true,
+    ...actual,
+    default: (...args: unknown[]) => {
+      getDirtyFieldsSpy(...args);
+      return actual.default(...args);
+    },
+  };
+});
+
 function changeEmits(spy: jest.SpyInstance): Record<string, unknown>[] {
   return spy.mock.calls
     .map(([payload]) => payload)
@@ -312,6 +325,144 @@ describe('_getDirty optimization', () => {
 
     expect(capturedIsDirty).toBe(true);
     expect(capturedDirtyFields).toHaveProperty('a');
+  });
+});
+
+describe('dirtyFields recompute optimization', () => {
+  const BUDGET_MS = 3_000;
+
+  beforeEach(() => {
+    getDirtyFieldsSpy.mockClear();
+  });
+
+  it('does not rebuild the full dirtyFields tree on repeated keystrokes in a scalar field', () => {
+    function Form() {
+      const { register, formState } = useForm({
+        defaultValues: { a: '', b: '', c: '' },
+      });
+      void formState.isDirty;
+      void formState.dirtyFields;
+      return (
+        <form>
+          <input {...register('a')} data-testid="a" />
+          <input {...register('b')} data-testid="b" />
+          <input {...register('c')} data-testid="c" />
+        </form>
+      );
+    }
+
+    render(<Form />);
+    const input = screen.getByTestId('a');
+
+    let value = '';
+    for (const char of 'hello world'.split('')) {
+      value += char;
+      fireEvent.change(input, { target: { value } });
+    }
+
+    // A scalar field's dirty state is always a flat boolean, so every one of
+    // these 11 keystrokes should take the O(1) set/unset path — zero calls
+    // to the full-tree recompute.
+    expect(getDirtyFieldsSpy).not.toHaveBeenCalled();
+  });
+
+  it('still rebuilds the full tree for non-primitive (object/array) values', () => {
+    type FormValues = { data: { id: number; name: string }[] };
+
+    const { result } = renderHook(() =>
+      useForm<FormValues>({
+        defaultValues: { data: [{ id: 1, name: 'a' }] },
+      }),
+    );
+    result.current.register('data.0.name');
+    void result.current.formState.isDirty;
+
+    act(() => {
+      result.current.setValue('data', [], { shouldDirty: true });
+    });
+
+    // An array/object value can't be represented by a flat boolean leaf, so
+    // the recompute must run to produce the correct nested shape.
+    expect(getDirtyFieldsSpy).toHaveBeenCalled();
+    expect(result.current.formState.dirtyFields).toEqual({
+      data: [{ id: true, name: true }],
+    });
+  });
+
+  it('recomputes once after an out-of-band setValue desyncs dirtyFields, then returns to the fast path', () => {
+    function Form() {
+      const { register, setValue, formState } = useForm({
+        defaultValues: { a: '', b: '' },
+      });
+      void formState.isDirty;
+      void formState.dirtyFields;
+      (window as any).__setValueA = () => setValue('a', 'changed');
+      return (
+        <form>
+          <input {...register('a')} data-testid="a" />
+          <input {...register('b')} data-testid="b" />
+        </form>
+      );
+    }
+
+    render(<Form />);
+
+    // Bypasses updateTouchAndDirty (no shouldDirty), desyncing dirtyFields
+    // from the actual value of 'a'.
+    act(() => {
+      (window as any).__setValueA();
+    });
+
+    expect(getDirtyFieldsSpy).not.toHaveBeenCalled();
+
+    const input = screen.getByTestId('b');
+
+    fireEvent.change(input, { target: { value: 'x' } });
+
+    // First edit after the desync must reconcile the whole tree so 'a'
+    // surfaces in dirtyFields too.
+    expect(getDirtyFieldsSpy).toHaveBeenCalledTimes(1);
+
+    getDirtyFieldsSpy.mockClear();
+
+    for (const char of 'yz'.split('')) {
+      fireEvent.change(input, { target: { value: 'x' + char } });
+    }
+
+    // Once resynced, further scalar edits go back to the O(1) fast path.
+    expect(getDirtyFieldsSpy).not.toHaveBeenCalled();
+  });
+
+  it('handles 300 keystrokes on one field of a 100-field form within budget regardless of form size', () => {
+    const names = Array.from({ length: 100 }, (_, i) => `f${i}`);
+
+    function Form() {
+      const { register, formState } = useForm({
+        defaultValues: Object.fromEntries(names.map((n) => [n, ''])) as Record<
+          string,
+          string
+        >,
+      });
+      void formState.isDirty;
+      void formState.dirtyFields;
+      return (
+        <form>
+          {names.map((n) => (
+            <input key={n} {...register(n as any)} data-testid={n} />
+          ))}
+        </form>
+      );
+    }
+
+    render(<Form />);
+    const input = screen.getByTestId('f0');
+
+    const t0 = performance.now();
+    for (let i = 0; i < 300; i++) {
+      fireEvent.change(input, { target: { value: String(i) } });
+    }
+    expect(performance.now() - t0).toBeLessThan(BUDGET_MS);
+    expect(getDirtyFieldsSpy).not.toHaveBeenCalled();
   });
 });
 
