@@ -251,6 +251,48 @@ describe('Throughput', () => {
 describe('_getDirty optimization', () => {
   const BUDGET_MS = 3_000;
 
+  it('handles repeated pristine/dirty toggles on one field within budget regardless of other dirty fields', () => {
+    const names = Array.from({ length: 1000 }, (_, i) => `f${i}`);
+
+    function Form() {
+      const { register, formState } = useForm({
+        defaultValues: Object.fromEntries(names.map((n) => [n, ''])) as Record<
+          string,
+          string
+        >,
+      });
+      void formState.isDirty;
+      return (
+        <form>
+          {names.map((n) => (
+            <input key={n} {...register(n as any)} data-testid={n} />
+          ))}
+        </form>
+      );
+    }
+
+    render(<Form />);
+
+    // Dirty every other field so a whole-form comparison has real work to
+    // do, and so isDirty can never trivially settle to a cached `false`.
+    for (let i = 1; i < names.length; i += 2) {
+      fireEvent.change(screen.getByTestId(`f${i}`), {
+        target: { value: 'dirty' },
+      });
+    }
+
+    const input = screen.getByTestId('f0');
+    const t0 = performance.now();
+    // Each cycle returns f0 to pristine then makes it dirty again — the
+    // pristine-return is exactly the case that used to force a full
+    // deepEqual of the entire 1000-field form.
+    for (let i = 0; i < 150; i++) {
+      fireEvent.change(input, { target: { value: '' } });
+      fireEvent.change(input, { target: { value: 'x' } });
+    }
+    expect(performance.now() - t0).toBeLessThan(BUDGET_MS);
+  });
+
   it('tracks isDirty efficiently when multiple fields stay dirty (O(1) fast path)', () => {
     const names = Array.from({ length: 50 }, (_, i) => `f${i}`);
 
@@ -354,15 +396,24 @@ describe('dirtyFields recompute optimization', () => {
     render(<Form />);
     const input = screen.getByTestId('a');
 
-    let value = '';
-    for (const char of 'hello world'.split('')) {
+    // Registration leaves the separate _getDirty dirty-name cache desynced
+    // (it can't cheaply know register()'s initial values are pristine), so
+    // useForm's isDirty-sync effect pays exactly one resync the first time
+    // isDirty settles after mount. Let that one-time cost happen and clear
+    // it before checking the property this test cares about: further
+    // keystrokes shouldn't cause additional rebuilds.
+    fireEvent.change(input, { target: { value: 'h' } });
+    getDirtyFieldsSpy.mockClear();
+
+    let value = 'h';
+    for (const char of 'ello world'.split('')) {
       value += char;
       fireEvent.change(input, { target: { value } });
     }
 
     // A scalar field's dirty state is always a flat boolean, so every one of
-    // these 11 keystrokes should take the O(1) set/unset path — zero calls
-    // to the full-tree recompute.
+    // these keystrokes should take the O(1) set/unset path — zero calls to
+    // the full-tree recompute.
     expect(getDirtyFieldsSpy).not.toHaveBeenCalled();
   });
 
@@ -407,6 +458,15 @@ describe('dirtyFields recompute optimization', () => {
 
     render(<Form />);
 
+    // Registration leaves the separate _getDirty dirty-name cache desynced,
+    // so useForm's isDirty-sync effect pays one resync the first time
+    // isDirty settles. Let that happen and clear it here so it doesn't
+    // conflate with the desync scenario below.
+    const settleInput = screen.getByTestId('b');
+    fireEvent.change(settleInput, { target: { value: 'settle' } });
+    fireEvent.change(settleInput, { target: { value: '' } });
+    getDirtyFieldsSpy.mockClear();
+
     // Bypasses updateTouchAndDirty (no shouldDirty), desyncing dirtyFields
     // from the actual value of 'a'.
     act(() => {
@@ -420,8 +480,10 @@ describe('dirtyFields recompute optimization', () => {
     fireEvent.change(input, { target: { value: 'x' } });
 
     // First edit after the desync must reconcile the whole tree so 'a'
-    // surfaces in dirtyFields too.
-    expect(getDirtyFieldsSpy).toHaveBeenCalledTimes(1);
+    // surfaces in dirtyFields too. This form subscribes to both isDirty and
+    // dirtyFields, and the out-of-band setValue desynced both of their
+    // independent caches, so both rebuild here (2 calls, not 1).
+    expect(getDirtyFieldsSpy).toHaveBeenCalledTimes(2);
 
     getDirtyFieldsSpy.mockClear();
 
@@ -496,8 +558,14 @@ describe('dirtyFields recompute optimization', () => {
     render(<Form />);
     const input = screen.getByTestId('f0');
 
+    // Registration leaves the separate _getDirty dirty-name cache desynced,
+    // so useForm's isDirty-sync effect pays one resync the first time
+    // isDirty settles after mount — exclude that one-time cost below.
+    fireEvent.change(input, { target: { value: '0' } });
+    getDirtyFieldsSpy.mockClear();
+
     const t0 = performance.now();
-    for (let i = 0; i < 300; i++) {
+    for (let i = 1; i < 300; i++) {
       fireEvent.change(input, { target: { value: String(i) } });
     }
     expect(performance.now() - t0).toBeLessThan(BUDGET_MS);

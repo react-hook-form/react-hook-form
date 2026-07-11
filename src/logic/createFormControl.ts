@@ -168,6 +168,8 @@ export function createFormControl<
     watch: false,
     keepIsValid: false,
     dirtyFieldsDesynced: false,
+    dirtyFieldNames: new Set<InternalFieldName>(),
+    dirtyFieldNamesDesynced: false,
   };
   let _names: Names = {
     mount: new Set(),
@@ -328,6 +330,7 @@ export function createFormControl<
       });
     } else {
       set(_formValues, name, values);
+      _state.dirtyFieldNamesDesynced = true;
     }
   };
 
@@ -399,6 +402,9 @@ export function createFormControl<
           )
         : setFieldValue(name, defaultValue);
 
+      // This write bypasses updateTouchAndDirty's incremental cache update.
+      _state.dirtyFieldNamesDesynced = true;
+
       if (_state.mount && !_state.action) {
         _setValid();
 
@@ -447,6 +453,10 @@ export function createFormControl<
           get(_defaultValues, name),
           fieldValue,
         );
+
+        isCurrentFieldPristine
+          ? _state.dirtyFieldNames.delete(name)
+          : _state.dirtyFieldNames.add(name);
 
         if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
           isPreviousDirty = _formState.isDirty;
@@ -755,10 +765,35 @@ export function createFormControl<
     _names.unMount = new Set();
   };
 
-  const _getDirty: GetIsDirty = (name, data) =>
-    !_options.disabled &&
-    (name && data && set(_formValues, name, data),
-    !deepEqual(_state.mount ? _formValues : _defaultValues, _defaultValues));
+  const _getDirty: GetIsDirty = (name, data) => {
+    if (_options.disabled) {
+      return false;
+    }
+
+    if (name && data) {
+      set(_formValues, name, data);
+      // `data` may be a nested object/array (e.g. a field-array root), which
+      // the incremental per-leaf cache below can't cheaply account for.
+      _state.dirtyFieldNamesDesynced = true;
+    }
+
+    if (!_state.mount) {
+      return false;
+    }
+
+    if (_state.dirtyFieldNamesDesynced) {
+      _state.dirtyFieldNames = new Set(
+        Object.keys(
+          flatten(
+            getDirtyFields(_defaultValues, _formValues, undefined, _fields),
+          ),
+        ),
+      );
+      _state.dirtyFieldNamesDesynced = false;
+    }
+
+    return _state.dirtyFieldNames.size > 0;
+  };
 
   const _getWatch: WatchInternal<TFieldValues> = (
     names,
@@ -920,14 +955,11 @@ export function createFormControl<
     if (!isValueUnchanged) {
       set(_formValues, name, cloneValue);
 
-      if (
-        !options.shouldDirty &&
-        (_proxyFormState.isDirty ||
-          _proxyFormState.dirtyFields ||
-          _proxySubscribeFormState.isDirty ||
-          _proxySubscribeFormState.dirtyFields)
-      ) {
+      // Without shouldDirty, setFieldValue/setFieldValues below won't call
+      // updateTouchAndDirty, so its incremental cache updates are skipped.
+      if (!options.shouldDirty) {
         _state.dirtyFieldsDesynced = true;
+        _state.dirtyFieldNamesDesynced = true;
       }
     }
 
@@ -1464,6 +1496,8 @@ export function createFormControl<
         unset(_defaultValues, fieldName);
     }
 
+    _state.dirtyFieldNamesDesynced = true;
+
     _subjects.state.next({
       values: cloneObject(_formValues),
     });
@@ -1702,6 +1736,10 @@ export function createFormControl<
         set(_defaultValues, name, cloneObject(options.defaultValue));
       }
 
+      // The setValue calls above don't pass shouldDirty, so they bypass
+      // updateTouchAndDirty's incremental cache update.
+      _state.dirtyFieldNamesDesynced = true;
+
       if (!options.keepTouched) {
         unset(_formState.touchedFields, name);
       }
@@ -1731,6 +1769,10 @@ export function createFormControl<
     const isEmptyResetValues = isEmptyObject(formValues);
     const values = cloneUpdatedValues;
     const fieldRefs = _fields;
+
+    // A reset can change values/defaultValues/fields in bulk, well outside
+    // updateTouchAndDirty's incremental cache maintenance.
+    _state.dirtyFieldNamesDesynced = true;
 
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = updatedValues;
@@ -1940,6 +1982,7 @@ export function createFormControl<
     options = {},
   ) => {
     _defaultValues = cloneObject(values) as Partial<typeof _defaultValues>;
+    _state.dirtyFieldNamesDesynced = true;
 
     if (!options.keepDirty) {
       const newDirtyFields = getDirtyFields(
