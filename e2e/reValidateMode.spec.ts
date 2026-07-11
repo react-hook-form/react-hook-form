@@ -205,6 +205,12 @@ test.describe('re-validate mode', () => {
     await page.locator('input[name="lastName"]').clear();
 
     await page.locator('button#submit').click();
+    await expect(page.locator('input[name="firstName"] + p')).toContainText(
+      'firstName error',
+    );
+    await expect(page.locator('input[name="lastName"] + p')).toContainText(
+      'lastName error',
+    );
 
     await type(page.locator('input[name="firstName"]'), 'luo123456');
     await type(page.locator('input[name="lastName"]'), 'luo12');

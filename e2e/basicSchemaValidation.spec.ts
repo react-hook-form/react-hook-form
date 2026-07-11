@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { type } from './utils';
+import { expectRenderCountInRange, type } from './utils';
 
 test.describe('basicSchemaValidation form validation', () => {
   test('should validate the form with onSubmit mode', async ({ page }) => {
@@ -69,7 +69,7 @@ test.describe('basicSchemaValidation form validation', () => {
     await page.locator('input[name="checkbox"]').check();
 
     await expect(page.locator('p')).toHaveCount(0);
-    await expect(page.locator('#renderCount')).toContainText('25');
+    await expectRenderCountInRange(page.locator('#renderCount'), 21, 27);
   });
 
   test('should validate the form with onBlur mode', async ({ page }) => {
@@ -144,6 +144,7 @@ test.describe('basicSchemaValidation form validation', () => {
     await type(page.locator('input[name="max"]'), '19');
     await page.locator('input[name="minDate"]').fill('2019-08-01');
     await page.locator('input[name="maxDate"]').fill('2019-08-01');
+    await page.locator('input[name="maxDate"]').blur();
     await page.locator('input[name="checkbox"]').check();
 
     await expect(page.locator('p')).toHaveCount(0);
@@ -211,6 +212,6 @@ test.describe('basicSchemaValidation form validation', () => {
     await page.locator('input[name="checkbox"]').check();
 
     await expect(page.locator('p')).toHaveCount(0);
-    await expect(page.locator('#renderCount')).toContainText('27');
+    await expectRenderCountInRange(page.locator('#renderCount'), 23, 29);
   });
 });

@@ -168,14 +168,222 @@ test.describe('useFieldArray', () => {
         JSON.parse((await page.locator('#result').textContent()) || 'null'),
       )
       .toEqual({
-        data: [{ name: '27' }],
+        data: [{ name: '34' }],
       });
 
-    await expect(page.locator('#renderCount')).toContainText('34');
+    await expect(page.locator('#renderCount')).toContainText('44');
   });
 
   test('should behaviour correctly with defaultValue', async ({ page }) => {
     await page.goto('/useFieldArray/default');
+
+    await expect(page.locator('ul > li')).toHaveCount(3);
+
+    await expect(page.locator('ul > li').nth(0).locator('input')).toHaveValue(
+      'test',
+    );
+
+    await expect(page.locator('ul > li').nth(1).locator('input')).toHaveValue(
+      'test1',
+    );
+
+    await expect(page.locator('ul > li').nth(2).locator('input')).toHaveValue(
+      'test2',
+    );
+
+    await page.locator('#append').click();
+
+    await expect(page.locator('ul > li').nth(3).locator('input')).toHaveValue(
+      '3',
+    );
+
+    await page.locator('#submit').click();
+    await expect
+      .poll(async () =>
+        JSON.parse((await page.locator('#result').textContent()) || 'null'),
+      )
+      .toEqual({
+        data: [
+          { name: 'test' },
+          { name: 'test1' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      });
+
+    await page.locator('#prepend').click();
+    await expect(page.locator('ul > li')).toHaveCount(5);
+
+    await expect(page.locator('ul > li').nth(0).locator('input')).toHaveValue(
+      '7',
+    );
+
+    await page.locator('#submit').click();
+    await expect
+      .poll(async () =>
+        JSON.parse((await page.locator('#result').textContent()) || 'null'),
+      )
+      .toEqual({
+        data: [
+          { name: '7' },
+          { name: 'test' },
+          { name: 'test1' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      });
+
+    await page.locator('#swap').click();
+    await expect(page.locator('ul > li').nth(1).locator('input')).toHaveValue(
+      'test1',
+    );
+    await expect(page.locator('ul > li').nth(2).locator('input')).toHaveValue(
+      'test',
+    );
+
+    await page.locator('#submit').click();
+    await expect
+      .poll(async () =>
+        JSON.parse((await page.locator('#result').textContent()) || 'null'),
+      )
+      .toEqual({
+        data: [
+          { name: '7' },
+          { name: 'test1' },
+          { name: 'test' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      });
+
+    await page.locator('#move').click();
+    await expect(page.locator('ul > li').nth(0).locator('input')).toHaveValue(
+      'test',
+    );
+    await expect(page.locator('ul > li').nth(1).locator('input')).toHaveValue(
+      '7',
+    );
+
+    await page.locator('#submit').click();
+    await expect
+      .poll(async () =>
+        JSON.parse((await page.locator('#result').textContent()) || 'null'),
+      )
+      .toEqual({
+        data: [
+          { name: 'test' },
+          { name: '7' },
+          { name: 'test1' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      });
+
+    await page.locator('#insert').click();
+    await expect(page.locator('ul > li').nth(1).locator('input')).toHaveValue(
+      '17',
+    );
+
+    await page.locator('#submit').click();
+    await expect
+      .poll(async () =>
+        JSON.parse((await page.locator('#result').textContent()) || 'null'),
+      )
+      .toEqual({
+        data: [
+          { name: 'test' },
+          { name: '17' },
+          { name: '7' },
+          { name: 'test1' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      });
+
+    await page.locator('#remove').click();
+    await expect(page.locator('ul > li').nth(0).locator('input')).toHaveValue(
+      'test',
+    );
+    await expect(page.locator('ul > li').nth(1).locator('input')).toHaveValue(
+      '7',
+    );
+
+    await page.locator('#submit').click();
+    await expect
+      .poll(async () =>
+        JSON.parse((await page.locator('#result').textContent()) || 'null'),
+      )
+      .toEqual({
+        data: [
+          { name: 'test' },
+          { name: '7' },
+          { name: 'test1' },
+          { name: 'test2' },
+          { name: '3' },
+        ],
+      });
+
+    await page.locator('#delete2').click();
+
+    await expect(page.locator('ul > li')).toHaveCount(4);
+
+    await expect(page.locator('ul > li').nth(0).locator('input')).toHaveValue(
+      'test',
+    );
+    await expect(page.locator('ul > li').nth(1).locator('input')).toHaveValue(
+      '7',
+    );
+    await expect(page.locator('ul > li').nth(2).locator('input')).toHaveValue(
+      'test2',
+    );
+    await expect(page.locator('ul > li').nth(3).locator('input')).toHaveValue(
+      '3',
+    );
+
+    await page.locator('#delete3').click();
+
+    await expect(page.locator('ul > li')).toHaveCount(3);
+
+    await page.locator('#submit').click();
+    await expect
+      .poll(async () =>
+        JSON.parse((await page.locator('#result').textContent()) || 'null'),
+      )
+      .toEqual({
+        data: [{ name: 'test' }, { name: '7' }, { name: 'test2' }],
+      });
+
+    await page.locator('#removeAll').click();
+    await expect(page.locator('ul > li')).toHaveCount(0);
+
+    await page.locator('#submit').click();
+    await expect
+      .poll(async () =>
+        JSON.parse((await page.locator('#result').textContent()) || 'null'),
+      )
+      .toEqual({
+        data: [],
+      });
+
+    await page.locator('#append').click();
+
+    await expect(page.locator('ul > li').nth(0).locator('input')).toHaveValue(
+      '31',
+    );
+
+    await page.locator('#prepend').click();
+
+    await expect(page.locator('ul > li').nth(0).locator('input')).toHaveValue(
+      '33',
+    );
+
+    await expect(page.locator('#renderCount')).toContainText('34');
+  });
+
+  test('should behaviour correctly with defaultValue and without auto focus', async ({
+    page,
+  }) => {
+    await page.goto('/useFieldArray/defaultAndWithoutFocus');
 
     await expect(page.locator('ul > li')).toHaveCount(3);
 
@@ -281,7 +489,7 @@ test.describe('useFieldArray', () => {
 
     await page.locator('#insert').click();
     await expect(page.locator('ul > li').nth(1).locator('input')).toHaveValue(
-      '13',
+      '15',
     );
 
     await page.locator('#submit').click();
@@ -292,7 +500,7 @@ test.describe('useFieldArray', () => {
       .toEqual({
         data: [
           { name: 'test' },
-          { name: '13' },
+          { name: '15' },
           { name: '6' },
           { name: 'test1' },
           { name: 'test2' },
@@ -368,224 +576,16 @@ test.describe('useFieldArray', () => {
     await page.locator('#append').click();
 
     await expect(page.locator('ul > li').nth(0).locator('input')).toHaveValue(
-      '25',
+      '28',
     );
 
     await page.locator('#prepend').click();
 
     await expect(page.locator('ul > li').nth(0).locator('input')).toHaveValue(
-      '26',
+      '29',
     );
 
-    await expect(page.locator('#renderCount')).toContainText('27');
-  });
-
-  test('should behaviour correctly with defaultValue and without auto focus', async ({
-    page,
-  }) => {
-    await page.goto('/useFieldArray/defaultAndWithoutFocus');
-
-    await expect(page.locator('ul > li')).toHaveCount(3);
-
-    await expect(page.locator('ul > li').nth(0).locator('input')).toHaveValue(
-      'test',
-    );
-
-    await expect(page.locator('ul > li').nth(1).locator('input')).toHaveValue(
-      'test1',
-    );
-
-    await expect(page.locator('ul > li').nth(2).locator('input')).toHaveValue(
-      'test2',
-    );
-
-    await page.locator('#append').click();
-
-    await expect(page.locator('ul > li').nth(3).locator('input')).toHaveValue(
-      '3',
-    );
-
-    await page.locator('#submit').click();
-    await expect
-      .poll(async () =>
-        JSON.parse((await page.locator('#result').textContent()) || 'null'),
-      )
-      .toEqual({
-        data: [
-          { name: 'test' },
-          { name: 'test1' },
-          { name: 'test2' },
-          { name: '3' },
-        ],
-      });
-
-    await page.locator('#prepend').click();
-    await expect(page.locator('ul > li')).toHaveCount(5);
-
-    await expect(page.locator('ul > li').nth(0).locator('input')).toHaveValue(
-      '5',
-    );
-
-    await page.locator('#submit').click();
-    await expect
-      .poll(async () =>
-        JSON.parse((await page.locator('#result').textContent()) || 'null'),
-      )
-      .toEqual({
-        data: [
-          { name: '5' },
-          { name: 'test' },
-          { name: 'test1' },
-          { name: 'test2' },
-          { name: '3' },
-        ],
-      });
-
-    await page.locator('#swap').click();
-    await expect(page.locator('ul > li').nth(1).locator('input')).toHaveValue(
-      'test1',
-    );
-    await expect(page.locator('ul > li').nth(2).locator('input')).toHaveValue(
-      'test',
-    );
-
-    await page.locator('#submit').click();
-    await expect
-      .poll(async () =>
-        JSON.parse((await page.locator('#result').textContent()) || 'null'),
-      )
-      .toEqual({
-        data: [
-          { name: '5' },
-          { name: 'test1' },
-          { name: 'test' },
-          { name: 'test2' },
-          { name: '3' },
-        ],
-      });
-
-    await page.locator('#move').click();
-    await expect(page.locator('ul > li').nth(0).locator('input')).toHaveValue(
-      'test',
-    );
-    await expect(page.locator('ul > li').nth(1).locator('input')).toHaveValue(
-      '5',
-    );
-
-    await page.locator('#submit').click();
-    await expect
-      .poll(async () =>
-        JSON.parse((await page.locator('#result').textContent()) || 'null'),
-      )
-      .toEqual({
-        data: [
-          { name: 'test' },
-          { name: '5' },
-          { name: 'test1' },
-          { name: 'test2' },
-          { name: '3' },
-        ],
-      });
-
-    await page.locator('#insert').click();
-    await expect(page.locator('ul > li').nth(1).locator('input')).toHaveValue(
-      '11',
-    );
-
-    await page.locator('#submit').click();
-    await expect
-      .poll(async () =>
-        JSON.parse((await page.locator('#result').textContent()) || 'null'),
-      )
-      .toEqual({
-        data: [
-          { name: 'test' },
-          { name: '11' },
-          { name: '5' },
-          { name: 'test1' },
-          { name: 'test2' },
-          { name: '3' },
-        ],
-      });
-
-    await page.locator('#remove').click();
-    await expect(page.locator('ul > li').nth(0).locator('input')).toHaveValue(
-      'test',
-    );
-    await expect(page.locator('ul > li').nth(1).locator('input')).toHaveValue(
-      '5',
-    );
-
-    await page.locator('#submit').click();
-    await expect
-      .poll(async () =>
-        JSON.parse((await page.locator('#result').textContent()) || 'null'),
-      )
-      .toEqual({
-        data: [
-          { name: 'test' },
-          { name: '5' },
-          { name: 'test1' },
-          { name: 'test2' },
-          { name: '3' },
-        ],
-      });
-
-    await page.locator('#delete2').click();
-
-    await expect(page.locator('ul > li')).toHaveCount(4);
-
-    await expect(page.locator('ul > li').nth(0).locator('input')).toHaveValue(
-      'test',
-    );
-    await expect(page.locator('ul > li').nth(1).locator('input')).toHaveValue(
-      '5',
-    );
-    await expect(page.locator('ul > li').nth(2).locator('input')).toHaveValue(
-      'test2',
-    );
-    await expect(page.locator('ul > li').nth(3).locator('input')).toHaveValue(
-      '3',
-    );
-
-    await page.locator('#delete3').click();
-
-    await expect(page.locator('ul > li')).toHaveCount(3);
-
-    await page.locator('#submit').click();
-    await expect
-      .poll(async () =>
-        JSON.parse((await page.locator('#result').textContent()) || 'null'),
-      )
-      .toEqual({
-        data: [{ name: 'test' }, { name: '5' }, { name: 'test2' }],
-      });
-
-    await page.locator('#removeAll').click();
-    await expect(page.locator('ul > li')).toHaveCount(0);
-
-    await page.locator('#submit').click();
-    await expect
-      .poll(async () =>
-        JSON.parse((await page.locator('#result').textContent()) || 'null'),
-      )
-      .toEqual({
-        data: [],
-      });
-
-    await page.locator('#append').click();
-
-    await expect(page.locator('ul > li').nth(0).locator('input')).toHaveValue(
-      '22',
-    );
-
-    await page.locator('#prepend').click();
-
-    await expect(page.locator('ul > li').nth(0).locator('input')).toHaveValue(
-      '23',
-    );
-
-    await expect(page.locator('#renderCount')).toContainText('24');
+    await expect(page.locator('#renderCount')).toContainText('30');
   });
 
   test('should replace fields with new values', async ({ page }) => {
@@ -691,7 +691,7 @@ test.describe('useFieldArray', () => {
         data: [{ name: true }, { name: true }, { name: true }],
       });
     await expect(page.locator('#dirty')).toContainText('yes');
-    await expect(page.locator('#renderCount')).toContainText('19');
+    await expect(page.locator('#renderCount')).toContainText('16');
   });
 
   test('should display the correct dirty value without default value', async ({
