@@ -179,8 +179,9 @@ export function createFormControl<
     watch: new Set(),
     registerName: new Set(),
   };
-  let delayErrorCallback: DelayCallback | null;
-  let timer = 0;
+  const delayErrorCallbacks: Partial<Record<InternalFieldName, DelayCallback>> =
+    {};
+  const timers: Partial<Record<InternalFieldName, number>> = {};
   let _valuesSubscriberCount = 0;
   let _validationModeBeforeSubmit = getValidationModes(_options.mode);
   let _validationModeAfterSubmit = getValidationModes(_options.reValidateMode);
@@ -208,10 +209,10 @@ export function createFormControl<
     _options.criteriaMode === VALIDATION_MODE.all;
 
   const debounce =
-    <T extends Function>(callback: T) =>
+    <T extends Function>(name: InternalFieldName, callback: T) =>
     (wait: number) => {
-      clearTimeout(timer);
-      timer = setTimeout(callback, wait);
+      clearTimeout(timers[name]);
+      timers[name] = setTimeout(callback, wait);
     };
 
   const _setValid = async (shouldUpdateValid?: boolean) => {
@@ -531,11 +532,13 @@ export function createFormControl<
       _formState.isValid !== isValid;
 
     if (_options.delayError && error) {
-      delayErrorCallback = debounce(() => updateErrors(name, error));
-      delayErrorCallback(_options.delayError);
+      delayErrorCallbacks[name] = debounce(name, () =>
+        updateErrors(name, error),
+      );
+      delayErrorCallbacks[name](_options.delayError);
     } else {
-      clearTimeout(timer);
-      delayErrorCallback = null;
+      clearTimeout(timers[name]);
+      delete delayErrorCallbacks[name];
       error
         ? set(_formState.errors, name, error)
         : unset(_formState.errors, name);
@@ -1097,7 +1100,8 @@ export function createFormControl<
       if (isBlurEvent) {
         if (!target || !target.readOnly) {
           field._f.onBlur && field._f.onBlur(event);
-          delayErrorCallback && delayErrorCallback(0);
+          const pendingDelayError = delayErrorCallbacks[name];
+          pendingDelayError && pendingDelayError(0);
         }
       } else if (field._f.onChange) {
         field._f.onChange(event);
@@ -1266,11 +1270,13 @@ export function createFormControl<
       const error = get(_formState.errors, name);
       if (error) {
         unset(_formState.errors, name);
-        delayErrorCallback = debounce(() => updateErrors(name, error));
-        delayErrorCallback(_options.delayError);
+        delayErrorCallbacks[name] = debounce(name, () =>
+          updateErrors(name, error),
+        );
+        delayErrorCallbacks[name](_options.delayError);
       } else {
-        clearTimeout(timer);
-        delayErrorCallback = null;
+        clearTimeout(timers[name]);
+        delete delayErrorCallbacks[name];
       }
     }
 
