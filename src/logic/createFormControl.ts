@@ -483,10 +483,6 @@ export function createFormControl<
         const isPreviousFieldTouched = get(_formState.touchedFields, name);
 
         if (!isPreviousFieldTouched) {
-          if (name === 'select') {
-            // eslint-disable-next-line no-console
-            console.log('DEBUGTRACE select touched now');
-          }
           set(_formState.touchedFields, name, isBlurEvent);
           output.touchedFields = _formState.touchedFields;
           shouldUpdateField =
@@ -556,13 +552,7 @@ export function createFormControl<
 
   const _runSchema = async (name?: InternalFieldName[]) => {
     _updateIsValidating(name, true);
-    // eslint-disable-next-line no-console
-    console.log(
-      'DEBUGTRACE _runSchema called with name=',
-      JSON.stringify(name),
-      new Error('trace').stack?.split('\n').slice(1, 4).join(' | '),
-    );
-    const result = await _options.resolver!(
+    return await _options.resolver!(
       _formValues as TFieldValues,
       _options.context,
       getResolverOptions(
@@ -572,12 +562,6 @@ export function createFormControl<
         _options.shouldUseNativeValidation,
       ),
     );
-    // eslint-disable-next-line no-console
-    console.log(
-      'DEBUGTRACE _runSchema resolved, errors keys=',
-      JSON.stringify(Object.keys(result.errors)),
-    );
-    return result;
   };
 
   const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
@@ -1190,15 +1174,6 @@ export function createFormControl<
 
   const _focusInput = (ref: Ref, key: string) => {
     if (get(_formState.errors, key) && ref.focus) {
-      // eslint-disable-next-line no-console
-      console.log(
-        'DEBUGTRACE _focusInput focusing',
-        key,
-        'wasActive=',
-        (document.activeElement as HTMLElement)?.getAttribute?.('name'),
-        'errorKeys=',
-        JSON.stringify(Object.keys(_formState.errors)),
-      );
       ref.focus();
       return 1;
     }
@@ -1689,20 +1664,8 @@ export function createFormControl<
           await onInvalid({ ..._formState.errors }, e);
         }
 
-        // eslint-disable-next-line no-console
-        console.log(
-          'DEBUGTRACE calling _focusError SYNC, errorKeys=',
-          JSON.stringify(Object.keys(_formState.errors)),
-        );
         _focusError();
-        setTimeout(() => {
-          // eslint-disable-next-line no-console
-          console.log(
-            'DEBUGTRACE calling _focusError DELAYED, errorKeys=',
-            JSON.stringify(Object.keys(_formState.errors)),
-          );
-          _focusError();
-        });
+        setTimeout(_focusError);
       }
 
       _subjects.state.next({
