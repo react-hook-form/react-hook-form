@@ -77,7 +77,7 @@ test.describe('useFieldArray', () => {
 
     await page.locator('#insert').click();
     await expect(page.locator('ul > li').nth(1).locator('input')).toHaveValue(
-      '14',
+      '19',
     );
 
     await page.locator('#submit').click();
@@ -86,7 +86,7 @@ test.describe('useFieldArray', () => {
         JSON.parse((await page.locator('#result').textContent()) || 'null'),
       )
       .toEqual({
-        data: [{ name: '3' }, { name: '14' }, { name: '6' }, { name: '7' }],
+        data: [{ name: '3' }, { name: '19' }, { name: '7' }, { name: '9' }],
       });
 
     await page.locator('#remove').click();
@@ -94,7 +94,7 @@ test.describe('useFieldArray', () => {
       '3',
     );
     await expect(page.locator('ul > li').nth(1).locator('input')).toHaveValue(
-      '6',
+      '7',
     );
 
     await page.locator('#submit').click();
@@ -103,7 +103,7 @@ test.describe('useFieldArray', () => {
         JSON.parse((await page.locator('#result').textContent()) || 'null'),
       )
       .toEqual({
-        data: [{ name: '3' }, { name: '6' }, { name: '7' }],
+        data: [{ name: '3' }, { name: '7' }, { name: '9' }],
       });
 
     await page.locator('#delete1').click();
@@ -114,7 +114,7 @@ test.describe('useFieldArray', () => {
       '3',
     );
     await expect(page.locator('ul > li').nth(1).locator('input')).toHaveValue(
-      '7',
+      '9',
     );
 
     await page.locator('#delete1').click();
