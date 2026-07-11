@@ -458,7 +458,10 @@ export function createFormControl<
 
         isPreviousDirty = !!get(_formState.dirtyFields, name);
 
-        if (_state.dirtyFieldsDesynced || isTraversable(fieldValue)) {
+        const shouldRecomputeDirtyFields =
+          _state.dirtyFieldsDesynced || isTraversable(fieldValue);
+
+        if (shouldRecomputeDirtyFields) {
           _formState.dirtyFields = getDirtyFields(
             _defaultValues,
             _formValues,
@@ -477,7 +480,8 @@ export function createFormControl<
           shouldUpdateField ||
           ((_proxyFormState.dirtyFields ||
             _proxySubscribeFormState.dirtyFields) &&
-            isPreviousDirty !== !isCurrentFieldPristine);
+            (shouldRecomputeDirtyFields ||
+              isPreviousDirty !== !isCurrentFieldPristine));
       }
 
       if (isBlurEvent) {

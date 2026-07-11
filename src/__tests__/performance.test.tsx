@@ -433,6 +433,45 @@ describe('dirtyFields recompute optimization', () => {
     expect(getDirtyFieldsSpy).not.toHaveBeenCalled();
   });
 
+  it('notifies dirtyFields subscribers when a recompute reconciles another field, even if the edited field stays dirty', () => {
+    let capturedDirtyFields: Record<string, unknown> = {};
+
+    function Form() {
+      const { register, setValue, formState } = useForm({
+        defaultValues: { a: '', b: '' },
+      });
+      capturedDirtyFields = formState.dirtyFields;
+      (window as any).__setValueB = () => setValue('b', 'changed');
+      return (
+        <form>
+          <input {...register('a')} data-testid="a" />
+          <input {...register('b')} data-testid="b" />
+        </form>
+      );
+    }
+
+    render(<Form />);
+
+    // Make 'a' dirty first — its own dirty flag will stay `true` through
+    // the next edit below, so a naive per-field comparison sees no change.
+    fireEvent.change(screen.getByTestId('a'), { target: { value: 'x' } });
+    expect(capturedDirtyFields).toHaveProperty('a');
+    expect(capturedDirtyFields).not.toHaveProperty('b');
+
+    // Desyncs 'b' from dirtyFields without going through updateTouchAndDirty.
+    act(() => {
+      (window as any).__setValueB();
+    });
+
+    // Edit 'a' again: isCurrentFieldPristine is false both before and after,
+    // so the per-field fast-path comparison alone would see no change — the
+    // recompute must still be treated as an update so 'b' reaches the render.
+    fireEvent.change(screen.getByTestId('a'), { target: { value: 'xy' } });
+
+    expect(capturedDirtyFields).toHaveProperty('a');
+    expect(capturedDirtyFields).toHaveProperty('b');
+  });
+
   it('handles 300 keystrokes on one field of a 100-field form within budget regardless of form size', () => {
     const names = Array.from({ length: 100 }, (_, i) => `f${i}`);
 
