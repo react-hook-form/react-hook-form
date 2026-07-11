@@ -43,6 +43,10 @@ function markFieldsDirty<T>(
     ) {
       fields[key] = Array.isArray(value) ? [] : {};
       markFieldsDirty(value, fields[key], fieldRef);
+
+      if (isEmptyDirtyContainer(fields[key])) {
+        clearDirtyField(fields, key);
+      }
     } else if (!isUndefined(value)) {
       fields[key] = true;
     }
