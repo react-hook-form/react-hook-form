@@ -1,6 +1,5 @@
 import type { FieldRefs } from '../types';
 import deepEqual from '../utils/deepEqual';
-import get from '../utils/get';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isObject from '../utils/isObject';
 import isPrimitive from '../utils/isPrimitive';
@@ -11,69 +10,49 @@ function isTraversable<T>(value: T): boolean {
   return Array.isArray(value) || (isObject(value) && !objectHasFunction(value));
 }
 
-function isRegisteredLeaf(
-  fields: FieldRefs | undefined,
-  path: string,
-): boolean {
-  const field = fields && get(fields, path);
-  return !!(field && '_f' in field);
+function isRegisteredLeaf(fieldRef: unknown): boolean {
+  return !!(fieldRef && '_f' in (fieldRef as object));
+}
+
+function isEmptyDirtyContainer(value: Record<string, any>): boolean {
+  return Array.isArray(value)
+    ? !value.some((item) => !isUndefined(item))
+    : !Object.keys(value).length;
+}
+
+function clearDirtyField(container: Record<string, any>, key: string) {
+  if (Array.isArray(container)) {
+    (container as any)[key] = undefined;
+  } else {
+    delete container[key];
+  }
 }
 
 function markFieldsDirty<T>(
   data: T,
   fields: Record<string, any> = {},
-  fieldRefs?: FieldRefs,
-  path = '',
+  fieldRefs?: Record<string, any>,
 ) {
   for (const key in data) {
     const value = data[key];
-    const currentPath = path ? `${path}.${key}` : key;
+    const fieldRef = fieldRefs && fieldRefs[key];
 
     if (
       isTraversable(value) &&
-      (!Array.isArray(value) || !isRegisteredLeaf(fieldRefs, currentPath))
+      (!Array.isArray(value) || !isRegisteredLeaf(fieldRef))
     ) {
       fields[key] = Array.isArray(value) ? [] : {};
-      markFieldsDirty(value, fields[key], fieldRefs, currentPath);
+      markFieldsDirty(value, fields[key], fieldRef);
+
+      if (isEmptyDirtyContainer(fields[key])) {
+        clearDirtyField(fields, key);
+      }
     } else if (!isUndefined(value)) {
       fields[key] = true;
     }
   }
 
   return fields;
-}
-
-function pruneDirtyFields<T>(value: T): T {
-  if (value === false) {
-    return undefined as T;
-  }
-
-  if (value === true) {
-    return true as T;
-  }
-
-  if (Array.isArray(value)) {
-    const result = value.map((value) => pruneDirtyFields(value));
-    return (
-      result.some((value) => value !== undefined) ? result : undefined
-    ) as T;
-  }
-
-  if (isObject(value)) {
-    const result: Record<string, unknown> = {};
-
-    for (const key in value) {
-      const pruned = pruneDirtyFields(value[key]);
-
-      if (!isUndefined(pruned)) {
-        result[key] = pruned;
-      }
-    }
-
-    return (Object.keys(result).length ? result : undefined) as T;
-  }
-
-  return undefined as T;
 }
 
 export default function getDirtyFields<T>(
@@ -84,7 +63,6 @@ export default function getDirtyFields<T>(
     ReturnType<typeof markFieldsDirty> | boolean
   >,
   fieldRefs?: FieldRefs,
-  path = '',
 ) {
   if (!dirtyFieldsFromValues) {
     dirtyFieldsFromValues = markFieldsDirty(formValues, {}, fieldRefs);
@@ -92,33 +70,36 @@ export default function getDirtyFields<T>(
 
   for (const key in data) {
     const value = data[key];
-    const currentPath = path ? `${path}.${key}` : key;
+    const fieldRef = fieldRefs && (fieldRefs as Record<string, any>)[key];
 
     if (
       isTraversable(value) &&
-      (!Array.isArray(value) || !isRegisteredLeaf(fieldRefs, currentPath))
+      (!Array.isArray(value) || !isRegisteredLeaf(fieldRef))
     ) {
       if (isUndefined(formValues) || isPrimitive(dirtyFieldsFromValues[key])) {
         dirtyFieldsFromValues[key] = markFieldsDirty(
           value,
           Array.isArray(value) ? [] : {},
-          fieldRefs,
-          currentPath,
+          fieldRef,
         );
       } else {
         getDirtyFields(
           value,
           isNullOrUndefined(formValues) ? {} : formValues[key],
           dirtyFieldsFromValues[key],
-          fieldRefs,
-          currentPath,
+          fieldRef,
         );
       }
+
+      if (isEmptyDirtyContainer(dirtyFieldsFromValues[key])) {
+        clearDirtyField(dirtyFieldsFromValues, key);
+      }
+    } else if (deepEqual(value, formValues[key])) {
+      clearDirtyField(dirtyFieldsFromValues, key);
     } else {
-      const formValue = formValues[key];
-      dirtyFieldsFromValues[key] = !deepEqual(value, formValue);
+      dirtyFieldsFromValues[key] = true;
     }
   }
 
-  return pruneDirtyFields(dirtyFieldsFromValues) || {};
+  return dirtyFieldsFromValues;
 }
