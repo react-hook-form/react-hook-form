@@ -441,7 +441,9 @@ export function createFormControl<
       name,
     };
 
-    if (!_options.disabled) {
+    // an explicit programmatic update (e.g. setValue with shouldDirty: true)
+    // opts into dirty tracking even when the form is disabled
+    if (!_options.disabled || shouldDirty === true) {
       if (!isBlurEvent || shouldDirty) {
         const isCurrentFieldPristine = deepEqual(
           get(_defaultValues, name),
@@ -752,10 +754,10 @@ export function createFormControl<
     _names.unMount = new Set();
   };
 
-  const _getDirty: GetIsDirty = (name, data) =>
-    !_options.disabled &&
-    (name && data && set(_formValues, name, data),
-    !deepEqual(_state.mount ? _formValues : _defaultValues, _defaultValues));
+  const _getDirty: GetIsDirty = (name, data) => (
+    name && data && set(_formValues, name, data),
+    !deepEqual(_state.mount ? _formValues : _defaultValues, _defaultValues)
+  );
 
   const _getWatch: WatchInternal<TFieldValues> = (
     names,
