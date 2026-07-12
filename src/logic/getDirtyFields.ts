@@ -14,7 +14,7 @@ function isRegisteredLeaf(fieldRef: unknown): boolean {
   return !!(fieldRef && '_f' in (fieldRef as object));
 }
 
-function isEmptyDirtyContainer(value: Record<string, any>): boolean {
+export function isEmptyDirtyContainer(value: Record<string, any>): boolean {
   return Array.isArray(value)
     ? !value.some((item) => !isUndefined(item))
     : !Object.keys(value).length;
@@ -65,7 +65,11 @@ export default function getDirtyFields<T>(
   fieldRefs?: FieldRefs,
 ) {
   if (!dirtyFieldsFromValues) {
-    dirtyFieldsFromValues = markFieldsDirty(formValues, {}, fieldRefs);
+    dirtyFieldsFromValues = markFieldsDirty(
+      formValues,
+      Array.isArray(formValues) ? [] : {},
+      fieldRefs,
+    );
   }
 
   for (const key in data) {
