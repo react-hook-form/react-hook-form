@@ -880,6 +880,57 @@ describe('formState', () => {
     await screen.getByText('0');
   });
 
+  it('should mark field and form as dirty with setValue shouldDirty when the form is disabled', () => {
+    const { result } = renderHook(() =>
+      useForm({
+        disabled: true,
+        defaultValues: {
+          test: 'a',
+        },
+      }),
+    );
+
+    result.current.formState.isDirty;
+    result.current.formState.dirtyFields;
+
+    act(() => {
+      result.current.register('test');
+      result.current.setValue('test', 'b', { shouldDirty: true });
+    });
+
+    expect(result.current.getFieldState('test').isDirty).toBe(true);
+    expect(result.current.formState.isDirty).toBe(true);
+    expect(result.current.formState.dirtyFields).toEqual({ test: true });
+  });
+
+  it('should clear dirty state when setValue restores the default value on a disabled form', () => {
+    const { result } = renderHook(() =>
+      useForm({
+        disabled: true,
+        defaultValues: {
+          test: 'a',
+        },
+      }),
+    );
+
+    result.current.formState.isDirty;
+    result.current.formState.dirtyFields;
+
+    act(() => {
+      result.current.register('test');
+      result.current.setValue('test', 'b', { shouldDirty: true });
+    });
+
+    expect(result.current.formState.isDirty).toBe(true);
+
+    act(() => {
+      result.current.setValue('test', 'a', { shouldDirty: true });
+    });
+
+    expect(result.current.getFieldState('test').isDirty).toBe(false);
+    expect(result.current.formState.isDirty).toBe(false);
+  });
+
   describe('when delay config is set', () => {
     const message = 'required.';
 
