@@ -12,6 +12,19 @@ import type { Control } from '../types';
 import { useForm } from '../useForm';
 import { useWatch } from '../useWatch';
 
+const getDirtyFieldsSpy = jest.fn();
+jest.mock('../logic/getDirtyFields', () => {
+  const actual = jest.requireActual('../logic/getDirtyFields');
+  return {
+    __esModule: true,
+    ...actual,
+    default: (...args: unknown[]) => {
+      getDirtyFieldsSpy(...args);
+      return actual.default(...args);
+    },
+  };
+});
+
 function changeEmits(spy: jest.SpyInstance): Record<string, unknown>[] {
   return spy.mock.calls
     .map(([payload]) => payload)
@@ -238,6 +251,48 @@ describe('Throughput', () => {
 describe('_getDirty optimization', () => {
   const BUDGET_MS = 3_000;
 
+  it('handles repeated pristine/dirty toggles on one field within budget regardless of other dirty fields', () => {
+    const names = Array.from({ length: 1000 }, (_, i) => `f${i}`);
+
+    function Form() {
+      const { register, formState } = useForm({
+        defaultValues: Object.fromEntries(names.map((n) => [n, ''])) as Record<
+          string,
+          string
+        >,
+      });
+      void formState.isDirty;
+      return (
+        <form>
+          {names.map((n) => (
+            <input key={n} {...register(n as any)} data-testid={n} />
+          ))}
+        </form>
+      );
+    }
+
+    render(<Form />);
+
+    // Dirty every other field so a whole-form comparison has real work to
+    // do, and so isDirty can never trivially settle to a cached `false`.
+    for (let i = 1; i < names.length; i += 2) {
+      fireEvent.change(screen.getByTestId(`f${i}`), {
+        target: { value: 'dirty' },
+      });
+    }
+
+    const input = screen.getByTestId('f0');
+    const t0 = performance.now();
+    // Each cycle returns f0 to pristine then makes it dirty again — the
+    // pristine-return is exactly the case that used to force a full
+    // deepEqual of the entire 1000-field form.
+    for (let i = 0; i < 150; i++) {
+      fireEvent.change(input, { target: { value: '' } });
+      fireEvent.change(input, { target: { value: 'x' } });
+    }
+    expect(performance.now() - t0).toBeLessThan(BUDGET_MS);
+  });
+
   it('tracks isDirty efficiently when multiple fields stay dirty (O(1) fast path)', () => {
     const names = Array.from({ length: 50 }, (_, i) => `f${i}`);
 
@@ -312,6 +367,209 @@ describe('_getDirty optimization', () => {
 
     expect(capturedIsDirty).toBe(true);
     expect(capturedDirtyFields).toHaveProperty('a');
+  });
+});
+
+describe('dirtyFields recompute optimization', () => {
+  const BUDGET_MS = 3_000;
+
+  beforeEach(() => {
+    getDirtyFieldsSpy.mockClear();
+  });
+
+  it('does not rebuild the full dirtyFields tree on repeated keystrokes in a scalar field', () => {
+    function Form() {
+      const { register, formState } = useForm({
+        defaultValues: { a: '', b: '', c: '' },
+      });
+      void formState.isDirty;
+      void formState.dirtyFields;
+      return (
+        <form>
+          <input {...register('a')} data-testid="a" />
+          <input {...register('b')} data-testid="b" />
+          <input {...register('c')} data-testid="c" />
+        </form>
+      );
+    }
+
+    render(<Form />);
+    const input = screen.getByTestId('a');
+
+    // Registration leaves the separate _getDirty dirty-name cache desynced
+    // (it can't cheaply know register()'s initial values are pristine), so
+    // useForm's isDirty-sync effect pays exactly one resync the first time
+    // isDirty settles after mount. Let that one-time cost happen and clear
+    // it before checking the property this test cares about: further
+    // keystrokes shouldn't cause additional rebuilds.
+    fireEvent.change(input, { target: { value: 'h' } });
+    getDirtyFieldsSpy.mockClear();
+
+    let value = 'h';
+    for (const char of 'ello world'.split('')) {
+      value += char;
+      fireEvent.change(input, { target: { value } });
+    }
+
+    // A scalar field's dirty state is always a flat boolean, so every one of
+    // these keystrokes should take the O(1) set/unset path — zero calls to
+    // the full-tree recompute.
+    expect(getDirtyFieldsSpy).not.toHaveBeenCalled();
+  });
+
+  it('still rebuilds the full tree for non-primitive (object/array) values', () => {
+    type FormValues = { data: { id: number; name: string }[] };
+
+    const { result } = renderHook(() =>
+      useForm<FormValues>({
+        defaultValues: { data: [{ id: 1, name: 'a' }] },
+      }),
+    );
+    result.current.register('data.0.name');
+    void result.current.formState.isDirty;
+
+    act(() => {
+      result.current.setValue('data', [], { shouldDirty: true });
+    });
+
+    // An array/object value can't be represented by a flat boolean leaf, so
+    // the recompute must run to produce the correct nested shape.
+    expect(getDirtyFieldsSpy).toHaveBeenCalled();
+    expect(result.current.formState.dirtyFields).toEqual({
+      data: [{ id: true, name: true }],
+    });
+  });
+
+  it('recomputes once after an out-of-band setValue desyncs dirtyFields, then returns to the fast path', () => {
+    function Form() {
+      const { register, setValue, formState } = useForm({
+        defaultValues: { a: '', b: '' },
+      });
+      void formState.isDirty;
+      void formState.dirtyFields;
+      (window as any).__setValueA = () => setValue('a', 'changed');
+      return (
+        <form>
+          <input {...register('a')} data-testid="a" />
+          <input {...register('b')} data-testid="b" />
+        </form>
+      );
+    }
+
+    render(<Form />);
+
+    // Registration leaves the separate _getDirty dirty-name cache desynced,
+    // so useForm's isDirty-sync effect pays one resync the first time
+    // isDirty settles. Let that happen and clear it here so it doesn't
+    // conflate with the desync scenario below.
+    const settleInput = screen.getByTestId('b');
+    fireEvent.change(settleInput, { target: { value: 'settle' } });
+    fireEvent.change(settleInput, { target: { value: '' } });
+    getDirtyFieldsSpy.mockClear();
+
+    // Bypasses updateTouchAndDirty (no shouldDirty), desyncing dirtyFields
+    // from the actual value of 'a'.
+    act(() => {
+      (window as any).__setValueA();
+    });
+
+    expect(getDirtyFieldsSpy).not.toHaveBeenCalled();
+
+    const input = screen.getByTestId('b');
+
+    fireEvent.change(input, { target: { value: 'x' } });
+
+    // First edit after the desync must reconcile the whole tree so 'a'
+    // surfaces in dirtyFields too. This form subscribes to both isDirty and
+    // dirtyFields, and the out-of-band setValue desynced both of their
+    // independent caches, so both rebuild here (2 calls, not 1).
+    expect(getDirtyFieldsSpy).toHaveBeenCalledTimes(2);
+
+    getDirtyFieldsSpy.mockClear();
+
+    for (const char of 'yz'.split('')) {
+      fireEvent.change(input, { target: { value: 'x' + char } });
+    }
+
+    // Once resynced, further scalar edits go back to the O(1) fast path.
+    expect(getDirtyFieldsSpy).not.toHaveBeenCalled();
+  });
+
+  it('notifies dirtyFields subscribers when a recompute reconciles another field, even if the edited field stays dirty', () => {
+    let capturedDirtyFields: Record<string, unknown> = {};
+
+    function Form() {
+      const { register, setValue, formState } = useForm({
+        defaultValues: { a: '', b: '' },
+      });
+      capturedDirtyFields = formState.dirtyFields;
+      (window as any).__setValueB = () => setValue('b', 'changed');
+      return (
+        <form>
+          <input {...register('a')} data-testid="a" />
+          <input {...register('b')} data-testid="b" />
+        </form>
+      );
+    }
+
+    render(<Form />);
+
+    // Make 'a' dirty first — its own dirty flag will stay `true` through
+    // the next edit below, so a naive per-field comparison sees no change.
+    fireEvent.change(screen.getByTestId('a'), { target: { value: 'x' } });
+    expect(capturedDirtyFields).toHaveProperty('a');
+    expect(capturedDirtyFields).not.toHaveProperty('b');
+
+    // Desyncs 'b' from dirtyFields without going through updateTouchAndDirty.
+    act(() => {
+      (window as any).__setValueB();
+    });
+
+    // Edit 'a' again: isCurrentFieldPristine is false both before and after,
+    // so the per-field fast-path comparison alone would see no change — the
+    // recompute must still be treated as an update so 'b' reaches the render.
+    fireEvent.change(screen.getByTestId('a'), { target: { value: 'xy' } });
+
+    expect(capturedDirtyFields).toHaveProperty('a');
+    expect(capturedDirtyFields).toHaveProperty('b');
+  });
+
+  it('handles 300 keystrokes on one field of a 100-field form within budget regardless of form size', () => {
+    const names = Array.from({ length: 100 }, (_, i) => `f${i}`);
+
+    function Form() {
+      const { register, formState } = useForm({
+        defaultValues: Object.fromEntries(names.map((n) => [n, ''])) as Record<
+          string,
+          string
+        >,
+      });
+      void formState.isDirty;
+      void formState.dirtyFields;
+      return (
+        <form>
+          {names.map((n) => (
+            <input key={n} {...register(n as any)} data-testid={n} />
+          ))}
+        </form>
+      );
+    }
+
+    render(<Form />);
+    const input = screen.getByTestId('f0');
+
+    // Registration leaves the separate _getDirty dirty-name cache desynced,
+    // so useForm's isDirty-sync effect pays one resync the first time
+    // isDirty settles after mount — exclude that one-time cost below.
+    fireEvent.change(input, { target: { value: '0' } });
+    getDirtyFieldsSpy.mockClear();
+
+    const t0 = performance.now();
+    for (let i = 1; i < 300; i++) {
+      fireEvent.change(input, { target: { value: String(i) } });
+    }
+    expect(performance.now() - t0).toBeLessThan(BUDGET_MS);
+    expect(getDirtyFieldsSpy).not.toHaveBeenCalled();
   });
 });
 

@@ -83,7 +83,10 @@ import stringToPath from '../utils/stringToPath';
 import unset from '../utils/unset';
 
 import generateWatchOutput from './generateWatchOutput';
-import getDirtyFields from './getDirtyFields';
+import getDirtyFields, {
+  isEmptyDirtyContainer,
+  isTraversable,
+} from './getDirtyFields';
 import getEventValue from './getEventValue';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
@@ -124,6 +127,47 @@ export const DEFAULT_FORM_STATE = {
   dirtyFields: {},
   validatingFields: {},
 };
+
+// A field array's length (or mere existence) can differ from defaultValues
+// even when every element's own value matches — a shape difference
+// getDirtyFields' pruned output can't represent, since it only tracks leaf
+// value differences. Only append/remove/insert/swap/move/replace change an
+// array's length, so this only needs recomputing at those call sites.
+function isArrayShapeDirty(
+  currentArray: unknown,
+  defaultArray: unknown,
+): boolean {
+  return (
+    !Array.isArray(defaultArray) ||
+    !Array.isArray(currentArray) ||
+    currentArray.length !== defaultArray.length
+  );
+}
+
+// A single `set(dirtyFields, name, true)` on a leaf can only ever create an
+// array container just long enough to hold that one index — it has no way
+// to know the array's real length, so sibling slots that should render as
+// explicit `undefined` placeholders are simply absent instead. Recomputing
+// from the nearest registered field-array root instead of the leaf itself
+// gives getDirtyFields the real array to diff against, producing a
+// correctly-shaped (dense) result.
+function findEnclosingArrayRoot(
+  name: InternalFieldName,
+  arrayNames: Set<InternalFieldName>,
+): InternalFieldName | undefined {
+  let match: InternalFieldName | undefined;
+
+  for (const arrayName of arrayNames) {
+    if (
+      (name === arrayName || name.startsWith(`${arrayName}.`)) &&
+      (!match || arrayName.length < match.length)
+    ) {
+      match = arrayName;
+    }
+  }
+
+  return match;
+}
 
 export function createFormControl<
   TFieldValues extends FieldValues = FieldValues,
@@ -167,6 +211,14 @@ export function createFormControl<
     mount: false,
     watch: false,
     keepIsValid: false,
+    dirtyFieldsDesynced: false,
+    dirtyFieldNames: new Set<InternalFieldName>(),
+    dirtyFieldNamesDesynced: false,
+    // Tracks field-array roots whose current length (or existence) differs
+    // from defaultValues — a shape difference that can hold even when no
+    // individual leaf value differs, which getDirtyFields' pruned output
+    // can't represent (see #13600 follow-up).
+    dirtyArrayNames: new Set<InternalFieldName>(),
   };
   let _names: Names = {
     mount: new Set(),
@@ -328,6 +380,7 @@ export function createFormControl<
       });
     } else {
       set(_formValues, name, values);
+      _state.dirtyFieldNamesDesynced = true;
     }
   };
 
@@ -399,6 +452,9 @@ export function createFormControl<
           )
         : setFieldValue(name, defaultValue);
 
+      // This write bypasses updateTouchAndDirty's incremental cache update.
+      _state.dirtyFieldNamesDesynced = true;
+
       if (_state.mount && !_state.action) {
         _setValid();
 
@@ -448,23 +504,93 @@ export function createFormControl<
           fieldValue,
         );
 
+        isCurrentFieldPristine
+          ? _state.dirtyFieldNames.delete(name)
+          : _state.dirtyFieldNames.add(name);
+
+        // A field with no defaultValue at all is dirty as soon as it has any
+        // defined value (see getDirtyFields), even before it's ever changed —
+        // the only way to discover that for fields the incremental path
+        // hasn't touched yet is a full recompute, so one is forced the one
+        // time the form's overall isDirty value actually flips (not on every
+        // keystroke into an already-dirty field, which would defeat the
+        // point of the incremental path).
+        let formIsDirtyFlip = false;
+
         if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
-          isPreviousDirty = _formState.isDirty;
+          const wasFormDirty = _formState.isDirty;
 
           _formState.isDirty = output.isDirty =
             !isCurrentFieldPristine || _getDirty();
-          shouldUpdateField = isPreviousDirty !== output.isDirty;
+          formIsDirtyFlip = wasFormDirty !== output.isDirty;
+          shouldUpdateField = formIsDirtyFlip;
         }
 
         isPreviousDirty = !!get(_formState.dirtyFields, name);
 
-        if (isCurrentFieldPristine !== _formState.isDirty) {
+        let dirtyFieldsRecomputed = false;
+        const fieldRef = get(_fields, name);
+        // A registered array-valued leaf (e.g. a multi-select) is dirty as a
+        // single boolean, not diffed element-by-element — mirrors
+        // getDirtyFields' own isRegisteredLeaf rule, which only applies when
+        // deciding whether to recurse into a *child* from its parent, so it
+        // can't be reproduced by recomputing starting at this field's value.
+        const isRegisteredArrayLeaf =
+          Array.isArray(fieldValue) && !!fieldRef && '_f' in fieldRef;
+        const arrayRoot = isRegisteredArrayLeaf
+          ? undefined
+          : findEnclosingArrayRoot(name, _names.array);
+        // A single `set(dirtyFields, name, true)` can only create an array
+        // container just long enough to hold this one index, losing the
+        // dense/full-length shape (with `undefined` placeholders for
+        // untouched siblings) that getDirtyFields produces — but only when
+        // that container doesn't already exist with the right length; once
+        // it does, a plain leaf-level set/unset preserves it just fine, so
+        // this shouldn't force a recompute (and a render) on every keystroke.
+        const arrayRootNeedsReshape =
+          arrayRoot !== undefined &&
+          (() => {
+            const existing = get(_formState.dirtyFields, arrayRoot);
+            const current = get(_formValues, arrayRoot);
+            return (
+              !Array.isArray(existing) ||
+              !Array.isArray(current) ||
+              existing.length !== current.length
+            );
+          })();
+        const recomputeScope = arrayRootNeedsReshape
+          ? arrayRoot
+          : !arrayRoot && !isRegisteredArrayLeaf && isTraversable(fieldValue)
+            ? name
+            : undefined;
+
+        if (_state.dirtyFieldsDesynced || formIsDirtyFlip) {
+          // Bulk changes (reset, setValue without shouldDirty, etc.) can
+          // touch values/defaultValues/fields well outside this one field,
+          // so only a full recompute can be trusted here.
           _formState.dirtyFields = getDirtyFields(
             _defaultValues,
             _formValues,
             undefined,
             _fields,
           );
+          _state.dirtyFieldsDesynced = false;
+          dirtyFieldsRecomputed = true;
+        } else if (recomputeScope) {
+          // A single boolean can't capture per-leaf dirty state for an
+          // object/array value, but the recompute is scoped to just this
+          // subtree so unrelated fields are never touched.
+          const subtreeDirtyFields = getDirtyFields(
+            get(_defaultValues, recomputeScope),
+            get(_formValues, recomputeScope),
+            undefined,
+            get(_fields, recomputeScope),
+          );
+
+          isEmptyDirtyContainer(subtreeDirtyFields)
+            ? unset(_formState.dirtyFields, recomputeScope)
+            : set(_formState.dirtyFields, recomputeScope, subtreeDirtyFields);
+          dirtyFieldsRecomputed = true;
         } else {
           isCurrentFieldPristine
             ? unset(_formState.dirtyFields, name)
@@ -476,7 +602,8 @@ export function createFormControl<
           shouldUpdateField ||
           ((_proxyFormState.dirtyFields ||
             _proxySubscribeFormState.dirtyFields) &&
-            isPreviousDirty !== !isCurrentFieldPristine);
+            (dirtyFieldsRecomputed ||
+              isPreviousDirty !== !isCurrentFieldPristine));
       }
 
       if (isBlurEvent) {
@@ -752,10 +879,50 @@ export function createFormControl<
     _names.unMount = new Set();
   };
 
-  const _getDirty: GetIsDirty = (name, data) =>
-    !_options.disabled &&
-    (name && data && set(_formValues, name, data),
-    !deepEqual(_state.mount ? _formValues : _defaultValues, _defaultValues));
+  const _getDirty: GetIsDirty = (name, data) => {
+    if (_options.disabled) {
+      return false;
+    }
+
+    if (name && data) {
+      set(_formValues, name, data);
+      // `data` may be a nested object/array (e.g. a field-array root), which
+      // the incremental per-leaf cache below can't cheaply account for.
+      _state.dirtyFieldNamesDesynced = true;
+    }
+
+    if (!_state.mount) {
+      return false;
+    }
+
+    if (_state.dirtyFieldNamesDesynced) {
+      const flattenedDirtyFields = flatten(
+        getDirtyFields(_defaultValues, _formValues, undefined, _fields),
+      );
+      // getDirtyFields prunes non-dirty array slots to an explicit
+      // `undefined` (not a hole), so flatten carries that key through too —
+      // Object.keys would otherwise treat those pruned slots as dirty.
+      _state.dirtyFieldNames = new Set(
+        Object.keys(flattenedDirtyFields).filter(
+          (key) => !isUndefined(flattenedDirtyFields[key]),
+        ),
+      );
+      // getDirtyFields only reports leaf value differences, so a field
+      // array whose length (or existence) differs from defaultValues but
+      // whose current elements all happen to match needs a separate check.
+      _state.dirtyArrayNames = new Set(
+        Array.from(_names.array).filter((arrayName) =>
+          isArrayShapeDirty(
+            get(_formValues, arrayName),
+            get(_defaultValues, arrayName),
+          ),
+        ),
+      );
+      _state.dirtyFieldNamesDesynced = false;
+    }
+
+    return _state.dirtyFieldNames.size > 0 || _state.dirtyArrayNames.size > 0;
+  };
 
   const _getWatch: WatchInternal<TFieldValues> = (
     names,
@@ -916,6 +1083,13 @@ export function createFormControl<
 
     if (!isValueUnchanged) {
       set(_formValues, name, cloneValue);
+
+      // Without shouldDirty, setFieldValue/setFieldValues below won't call
+      // updateTouchAndDirty, so its incremental cache updates are skipped.
+      if (!options.shouldDirty) {
+        _state.dirtyFieldsDesynced = true;
+        _state.dirtyFieldNamesDesynced = true;
+      }
     }
 
     if (isFieldArray) {
@@ -1454,6 +1628,8 @@ export function createFormControl<
         unset(_defaultValues, fieldName);
     }
 
+    _state.dirtyFieldNamesDesynced = true;
+
     _subjects.state.next({
       values: cloneObject(_formValues),
     });
@@ -1692,6 +1868,10 @@ export function createFormControl<
         set(_defaultValues, name, cloneObject(options.defaultValue));
       }
 
+      // The setValue calls above don't pass shouldDirty, so they bypass
+      // updateTouchAndDirty's incremental cache update.
+      _state.dirtyFieldNamesDesynced = true;
+
       if (!options.keepTouched) {
         unset(_formState.touchedFields, name);
       }
@@ -1721,6 +1901,10 @@ export function createFormControl<
     const isEmptyResetValues = isEmptyObject(formValues);
     const values = cloneUpdatedValues;
     const fieldRefs = _fields;
+
+    // A reset can change values/defaultValues/fields in bulk, well outside
+    // updateTouchAndDirty's incremental cache maintenance.
+    _state.dirtyFieldNamesDesynced = true;
 
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = updatedValues;
@@ -1822,6 +2006,7 @@ export function createFormControl<
     _state.watch = !!_options.shouldUnregister;
     _state.keepIsValid = !!keepStateOptions.keepIsValid;
     _state.action = false;
+    _state.dirtyFieldsDesynced = false;
 
     if (!keepStateOptions.keepErrors) {
       _formState.errors = {};
@@ -1929,6 +2114,7 @@ export function createFormControl<
     options = {},
   ) => {
     _defaultValues = cloneObject(values) as Partial<typeof _defaultValues>;
+    _state.dirtyFieldNamesDesynced = true;
 
     if (!options.keepDirty) {
       const newDirtyFields = getDirtyFields(

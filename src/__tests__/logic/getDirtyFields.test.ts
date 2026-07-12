@@ -381,6 +381,15 @@ describe('getDirtyFields', () => {
     });
   });
 
+  it('should build an array-shaped result when called with an array at the top level (e.g. a scoped subtree recompute)', () => {
+    expect(
+      getDirtyFields(
+        [{ value: 'a' }, { value: 'b' }],
+        [{ value: 'a' }, { value: 'changed' }],
+      ),
+    ).toEqual([undefined, { value: true }]);
+  });
+
   it('should mark null values as dirty when comparing with defaultValues', () => {
     expect(
       getDirtyFields(
