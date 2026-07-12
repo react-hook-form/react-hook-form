@@ -364,6 +364,23 @@ describe('getDirtyFields', () => {
     ).toEqual({});
   });
 
+  it('should not leave a stray empty array for a field array with no default value once all items are removed (#13600)', () => {
+    expect(getDirtyFields({}, { data: [] })).toEqual({});
+  });
+
+  it('should not leave a stray empty array for a nested field array with no default value once all items are removed (#13600)', () => {
+    expect(
+      getDirtyFields(
+        { test: [{ firstName: 'bill' }, { firstName: 'bill' }] },
+        {
+          test: [{ firstName: 'luo' }, { firstName: 'luo', keyValue: [] }],
+        },
+      ),
+    ).toEqual({
+      test: [{ firstName: true }, { firstName: true }],
+    });
+  });
+
   it('should mark null values as dirty when comparing with defaultValues', () => {
     expect(
       getDirtyFields(
