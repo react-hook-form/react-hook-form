@@ -16,8 +16,7 @@ export default <T extends FieldValues, K extends ReadFormState>(
   isRoot?: boolean,
 ) => {
   updateFormState(formStateData);
-  const { name, ...formState } = formStateData;
-  const keys = Object.keys(formState);
+  const keys = Object.keys(formStateData).filter((key) => key !== 'name');
 
   return (
     !keys.length ||
