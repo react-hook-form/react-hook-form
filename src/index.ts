@@ -1,4 +1,5 @@
 export * from './controller';
+export * from './fieldArraycomponent';
 export * from './form';
 export * from './formStateSubscribe';
 export * from './logic';

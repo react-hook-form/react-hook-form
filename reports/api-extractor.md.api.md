@@ -192,6 +192,9 @@ export type Field = {
 export type FieldArray<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = FieldArrayPathValue<TFieldValues, TFieldArrayName> extends ReadonlyArray<infer U> | null | undefined ? U : never;
 
 // @public
+export const FieldArrayComponent: <TFieldValues extends FieldValues = FieldValues, TName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = "id">(props: FieldArrayProps<TFieldValues, TName, TKeyName>) => ReactElement<unknown, string | JSXElementConstructor<any>>;
+
+// @public
 export type FieldArrayMethodProps = {
     shouldFocus?: boolean;
     focusIndex?: number;

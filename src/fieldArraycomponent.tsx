@@ -19,7 +19,7 @@ import { useFieldArray } from './useFieldArray';
  *
  *   return (
  *     <form>
- *       <FieldArray
+ *       <FieldArrayComponent
  *         control={control}
  *         name="test"
  *         render={({ fields }) =>
@@ -33,7 +33,7 @@ import { useFieldArray } from './useFieldArray';
  * }
  * ```
  */
-const FieldArray = <
+const FieldArrayComponent = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
@@ -41,4 +41,4 @@ const FieldArray = <
   props: FieldArrayProps<TFieldValues, TName, TKeyName>,
 ) => props.render(useFieldArray<TFieldValues, TName, TKeyName>(props));
 
-export { FieldArray };
+export { FieldArrayComponent };
