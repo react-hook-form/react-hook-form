@@ -202,6 +202,8 @@ export function createFormControl<
     state: createSubject(),
   };
 
+  let _setValidCallId = 0;
+
   const shouldDisplayAllAssociatedErrors =
     _options.criteriaMode === VALIDATION_MODE.all;
 
@@ -222,6 +224,13 @@ export function createFormControl<
         _proxySubscribeFormState.isValid ||
         shouldUpdateValid)
     ) {
+      // _setValid is fired-and-forget from many call sites and never
+      // cancelled, so an earlier call can still be awaiting validation when
+      // a later one starts. Track which call is the most recent so a call
+      // that's been superseded by the time its validation resolves doesn't
+      // commit a stale result over a newer one, mirroring the staleness
+      // check onChange already does per-field via _updateIsFieldValueUpdated.
+      const callId = ++_setValidCallId;
       let isValid: boolean;
       if (_options.resolver) {
         isValid = isEmptyObject((await _runSchema()).errors);
@@ -233,7 +242,7 @@ export function createFormControl<
           eventType: EVENTS.VALID,
         });
       }
-      if (isValid !== _formState.isValid) {
+      if (callId === _setValidCallId && isValid !== _formState.isValid) {
         _subjects.state.next({
           isValid,
         });
