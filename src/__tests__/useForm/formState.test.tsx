@@ -333,6 +333,59 @@ describe('formState', () => {
 
       expect(screen.getByText('valid')).toBeVisible();
     });
+
+    it('should not let a stale resolver pass report isValidating as false while a newer one is pending', async () => {
+      type FormValues = {
+        username: string;
+      };
+
+      const pending: Array<() => void> = [];
+
+      const App = () => {
+        const {
+          register,
+          resetField,
+          formState: { isValid, isValidating },
+        } = useForm<FormValues>({
+          mode: 'onChange',
+          resolver: async () =>
+            new Promise((resolve) => {
+              pending.push(() => resolve({ values: {}, errors: {} }));
+            }),
+        });
+        void isValid;
+
+        return (
+          <div>
+            <input data-testid="username" {...register('username')} />
+            <button type="button" onClick={() => resetField('username')}>
+              reset
+            </button>
+            <p>{isValidating ? 'validating' : 'idle'}</p>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      // mount fires the first (soon-to-be-superseded) resolver pass, via
+      // _setValid's own resolver branch
+      await waitFor(() => expect(pending.length).toBe(1));
+      await waitFor(() => expect(screen.getByText('validating')).toBeVisible());
+
+      // resetField also calls _setValid directly (not onChange's separate
+      // resolver path), firing a second, overlapping pass
+      fireEvent.click(screen.getByText('reset'));
+      await waitFor(() => expect(pending.length).toBe(2));
+
+      // only the FIRST (now-superseded) pass resolves; the second, current
+      // pass is still in flight
+      await act(async () => {
+        pending[0]();
+      });
+
+      expect(screen.getByText('validating')).toBeVisible();
+    });
   });
 
   it('should be a proxy object that returns undefined for unknown properties', () => {

@@ -234,7 +234,11 @@ export function createFormControl<
       let isValid: boolean;
       if (_options.resolver) {
         isValid = isEmptyObject((await _runSchema()).errors);
-        _updateIsValidating();
+        // Same staleness concern as the isValid commit below: a superseded
+        // call finishing here would otherwise unconditionally clear
+        // validatingFields and report isValidating: false, even while a
+        // newer call is still genuinely in flight.
+        callId === _setValidCallId && _updateIsValidating();
       } else {
         isValid = await executeBuiltInValidation({
           fields: _fields,
