@@ -202,6 +202,8 @@ export function createFormControl<
     state: createSubject(),
   };
 
+  let _setValidCallId = 0;
+
   const shouldDisplayAllAssociatedErrors =
     _options.criteriaMode === VALIDATION_MODE.all;
 
@@ -222,10 +224,11 @@ export function createFormControl<
         _proxySubscribeFormState.isValid ||
         shouldUpdateValid)
     ) {
+      const callId = ++_setValidCallId;
       let isValid: boolean;
       if (_options.resolver) {
         isValid = isEmptyObject((await _runSchema()).errors);
-        _updateIsValidating();
+        callId === _setValidCallId && _updateIsValidating();
       } else {
         isValid = await executeBuiltInValidation({
           fields: _fields,
@@ -233,7 +236,7 @@ export function createFormControl<
           eventType: EVENTS.VALID,
         });
       }
-      if (isValid !== _formState.isValid) {
+      if (callId === _setValidCallId && isValid !== _formState.isValid) {
         _subjects.state.next({
           isValid,
         });

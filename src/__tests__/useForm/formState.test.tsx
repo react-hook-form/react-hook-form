@@ -268,6 +268,124 @@ describe('formState', () => {
       await waitFor(() => expect(screen.getByText('valid')).toBeVisible());
       jest.useRealTimers();
     });
+
+    it('should not let a stale whole-form validity check overwrite a newer one', async () => {
+      type FormValues = {
+        username: string;
+        bio: string;
+      };
+
+      const pending: Array<(valid: boolean) => void> = [];
+
+      const App = () => {
+        const {
+          register,
+          formState: { isValid },
+        } = useForm<FormValues>({
+          mode: 'onChange',
+        });
+
+        return (
+          <form>
+            <input
+              data-testid="username"
+              {...register('username', {
+                validate: () =>
+                  new Promise<boolean>((resolve) => {
+                    pending.push(resolve);
+                  }),
+              })}
+            />
+            <input data-testid="bio" {...register('bio')} />
+            <p>{isValid ? 'valid' : 'invalid'}</p>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      // mount starts the first (soon-to-be-stale) whole-form validity check,
+      // which is waiting on username's validate() to resolve
+      await waitFor(() => expect(pending.length).toBe(1));
+
+      // bio has no validation rules of its own, so this re-triggers another
+      // whole-form validity check while the mount-time one is still pending
+      fireEvent.change(screen.getByTestId('bio'), {
+        target: { value: 'hello' },
+      });
+
+      await waitFor(() => expect(pending.length).toBe(2));
+
+      // the newer check resolves first, correctly reporting the form valid
+      await act(async () => {
+        pending[1](true);
+      });
+      await waitFor(() => expect(screen.getByText('valid')).toBeVisible());
+
+      // the mount-time check was superseded, but its own validate() call
+      // was never told to stop; it resolves after and reports invalid.
+      // Flush with a real macrotask (not just act's microtask draining) so
+      // a stale commit has every chance to land before the final assertion.
+      await act(async () => {
+        pending[0](false);
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      expect(screen.getByText('valid')).toBeVisible();
+    });
+
+    it('should not let a stale resolver pass report isValidating as false while a newer one is pending', async () => {
+      type FormValues = {
+        username: string;
+      };
+
+      const pending: Array<() => void> = [];
+
+      const App = () => {
+        const {
+          register,
+          resetField,
+          formState: { isValid, isValidating },
+        } = useForm<FormValues>({
+          mode: 'onChange',
+          resolver: async () =>
+            new Promise((resolve) => {
+              pending.push(() => resolve({ values: {}, errors: {} }));
+            }),
+        });
+        void isValid;
+
+        return (
+          <div>
+            <input data-testid="username" {...register('username')} />
+            <button type="button" onClick={() => resetField('username')}>
+              reset
+            </button>
+            <p>{isValidating ? 'validating' : 'idle'}</p>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      // mount fires the first (soon-to-be-superseded) resolver pass, via
+      // _setValid's own resolver branch
+      await waitFor(() => expect(pending.length).toBe(1));
+      await waitFor(() => expect(screen.getByText('validating')).toBeVisible());
+
+      // resetField also calls _setValid directly (not onChange's separate
+      // resolver path), firing a second, overlapping pass
+      fireEvent.click(screen.getByText('reset'));
+      await waitFor(() => expect(pending.length).toBe(2));
+
+      // only the FIRST (now-superseded) pass resolves; the second, current
+      // pass is still in flight
+      await act(async () => {
+        pending[0]();
+      });
+
+      expect(screen.getByText('validating')).toBeVisible();
+    });
   });
 
   it('should be a proxy object that returns undefined for unknown properties', () => {
