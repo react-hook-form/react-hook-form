@@ -224,12 +224,6 @@ export function createFormControl<
         _proxySubscribeFormState.isValid ||
         shouldUpdateValid)
     ) {
-      // _setValid is fired-and-forget from many call sites and never
-      // cancelled, so an earlier call can still be awaiting validation when
-      // a later one starts. Track which call is the most recent so a call
-      // that's been superseded by the time its validation resolves doesn't
-      // commit a stale result over a newer one, mirroring the staleness
-      // check onChange already does per-field via _updateIsFieldValueUpdated.
       const callId = ++_setValidCallId;
       let isValid: boolean;
       if (_options.resolver) {
