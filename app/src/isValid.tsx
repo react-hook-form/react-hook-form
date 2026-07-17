@@ -1,10 +1,10 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useParams } from 'react-router-dom';
+import { yupResolver } from '@hookform/resolvers/yup'
+import React from 'react'
+import { useForm } from 'react-hook-form'
+import { useParams } from 'react-router-dom'
+import * as yup from 'yup'
 
-let renderCounter = 0;
+let renderCounter = 0
 
 const validationSchema = yup
   .object()
@@ -12,26 +12,26 @@ const validationSchema = yup
     firstName: yup.string().required(),
     lastName: yup.string().max(5).required(),
   })
-  .required();
+  .required()
 
 const IsValid: React.FC = () => {
-  const { mode, defaultValues } = useParams();
-  const isBuildInValidation = mode === 'build-in';
-  const [show, setShow] = React.useState(true);
+  const { mode, defaultValues } = useParams()
+  const isBuildInValidation = mode === 'build-in'
+  const [show, setShow] = React.useState(true)
   const {
     register,
     handleSubmit,
     unregister,
     formState: { isValid },
   } = useForm<{
-    firstName: string;
-    lastName: string;
-    hidden: string;
-    age: string;
-    location: string;
-    select: string;
-    radio: string;
-    checkbox: string;
+    firstName: string
+    lastName: string
+    hidden: string
+    age: string
+    location: string
+    select: string
+    radio: string
+    checkbox: string
   }>({
     mode: 'onChange',
     ...(isBuildInValidation ? {} : { resolver: yupResolver(validationSchema) }),
@@ -43,21 +43,21 @@ const IsValid: React.FC = () => {
           },
         }
       : {}),
-  });
+  })
 
   React.useEffect(() => {
     if (isBuildInValidation) {
       if (show) {
-        unregister('hidden');
+        unregister('hidden')
       }
     } else {
       if (!show) {
-        unregister('firstName');
+        unregister('firstName')
       }
     }
-  }, [show, isBuildInValidation, unregister]);
+  }, [show, isBuildInValidation, unregister])
 
-  renderCounter++;
+  renderCounter++
 
   return (
     <form onSubmit={handleSubmit(() => {})}>
@@ -95,13 +95,13 @@ const IsValid: React.FC = () => {
         type="button"
         id="toggle"
         onClick={() => {
-          setShow(!show);
+          setShow(!show)
         }}
       >
         Toggle
       </button>
     </form>
-  );
-};
+  )
+}
 
-export default IsValid;
+export default IsValid

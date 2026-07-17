@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
 
-let renderCounter = 0;
+let renderCounter = 0
 
 const SetValueCustomRegister: React.FC = () => {
   const {
@@ -10,18 +10,18 @@ const SetValueCustomRegister: React.FC = () => {
     handleSubmit,
     formState: { touchedFields, isDirty, errors },
   } = useForm<{
-    firstName: string;
-    lastName: string;
-  }>();
+    firstName: string
+    lastName: string
+  }>()
 
   useEffect(() => {
-    register('firstName', { required: true });
-    register('lastName', { required: true });
-  }, [register]);
+    register('firstName', { required: true })
+    register('lastName', { required: true })
+  }, [register])
 
-  renderCounter++;
+  renderCounter++
 
-  console.log(errors);
+  console.log(errors)
 
   return (
     <form onSubmit={handleSubmit(() => {})}>
@@ -65,7 +65,7 @@ const SetValueCustomRegister: React.FC = () => {
       <div id="touched">{Object.keys(touchedFields).map((touch) => touch)}</div>
       <div id="renderCount">{renderCounter}</div>
     </form>
-  );
-};
+  )
+}
 
-export default SetValueCustomRegister;
+export default SetValueCustomRegister

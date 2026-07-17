@@ -1,6 +1,6 @@
-import type { DeepPartial, FieldValues, Names } from '../types';
-import get from '../utils/get';
-import isString from '../utils/isString';
+import type { DeepPartial, FieldValues, Names } from '../types'
+import get from '../utils/get'
+import isString from '../utils/isString'
 
 export default <T>(
   names: string | string[] | undefined,
@@ -10,20 +10,19 @@ export default <T>(
   defaultValue?: DeepPartial<T> | unknown,
 ) => {
   if (isString(names)) {
-    isGlobal && _names.watch.add(names);
-    return get(formValues, names, defaultValue);
+    isGlobal && _names.watch.add(names)
+    return get(formValues, names, defaultValue)
   }
 
   if (Array.isArray(names)) {
     return names.map(
       (fieldName) => (
-        isGlobal && _names.watch.add(fieldName),
-        get(formValues, fieldName)
+        isGlobal && _names.watch.add(fieldName), get(formValues, fieldName)
       ),
-    );
+    )
   }
 
-  isGlobal && (_names.watchAll = true);
+  isGlobal && (_names.watchAll = true)
 
-  return formValues;
-};
+  return formValues
+}

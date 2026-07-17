@@ -1,26 +1,26 @@
-import React from 'react';
-import { useFormState, useForm, Control } from 'react-hook-form';
+import React from 'react'
+import { Control, useForm, useFormState } from 'react-hook-form'
 
-let renderCounter = 0;
+let renderCounter = 0
 
 type FormInputs = {
-  firstName: string;
-  lastName: string;
-  min: string;
-  max: string;
-  minDate: string;
-  maxDate: string;
-  minLength: string;
-  minRequiredLength: string;
-  selectNumber: string;
-  pattern: string;
+  firstName: string
+  lastName: string
+  min: string
+  max: string
+  minDate: string
+  maxDate: string
+  minLength: string
+  minRequiredLength: string
+  selectNumber: string
+  pattern: string
   nestItem: {
-    nest1: string;
-  };
+    nest1: string
+  }
   arrayItem: {
-    test1: string;
-  }[];
-};
+    test1: string
+  }[]
+}
 
 const SubForm = ({ control }: { control: Control<FormInputs> }) => {
   const {
@@ -33,7 +33,7 @@ const SubForm = ({ control }: { control: Control<FormInputs> }) => {
     isValid,
   } = useFormState({
     control,
-  });
+  })
 
   return (
     <p id="state">
@@ -47,16 +47,16 @@ const SubForm = ({ control }: { control: Control<FormInputs> }) => {
         isValid,
       })}
     </p>
-  );
-};
+  )
+}
 
 export const UseFormState: React.FC = () => {
   const { register, handleSubmit, control, reset } = useForm<FormInputs>({
     mode: 'onChange',
-  });
-  const onValid = () => {};
+  })
+  const onValid = () => {}
 
-  renderCounter++;
+  renderCounter++
 
   return (
     <form onSubmit={handleSubmit(onValid)}>
@@ -120,5 +120,5 @@ export const UseFormState: React.FC = () => {
       <div id="renderCount">{renderCounter}</div>
       <SubForm control={control} />
     </form>
-  );
-};
+  )
+}

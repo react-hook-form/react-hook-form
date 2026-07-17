@@ -1,38 +1,38 @@
-import React from 'react';
-import { useForm, useWatch } from 'react-hook-form';
+import React from 'react'
+import { useForm, useWatch } from 'react-hook-form'
 
 function useInputCache(values, causeField, effectField, callback) {
-  const [effectCache, setEffectCache] = React.useState(values[effectField]);
+  const [effectCache, setEffectCache] = React.useState(values[effectField])
 
   const evaluateRegStatus = (vals, currentState) => {
     // check if field is registered (naive implementation for demonstration)
-    const isRegistered = !!vals[causeField];
+    const isRegistered = !!vals[causeField]
     return {
       isRegistered,
       registrationStatusChanged: isRegistered !== currentState,
       hasValue: vals[effectField] !== undefined,
-    };
-  };
+    }
+  }
 
   // use ref to track registration state across renders
-  const currentRegState = React.useRef(false);
+  const currentRegState = React.useRef(false)
 
   React.useEffect(() => {
     const { isRegistered, registrationStatusChanged, hasValue } =
-      evaluateRegStatus(values, currentRegState.current);
+      evaluateRegStatus(values, currentRegState.current)
 
     if (registrationStatusChanged && hasValue) {
-      if (isRegistered && !!effectCache) {
-        console.debug('Deploying cache');
-        callback(effectField, effectCache);
+      if (isRegistered && effectCache) {
+        console.debug('Deploying cache')
+        callback(effectField, effectCache)
       } else if (!isRegistered) {
-        console.debug('Caching before unmount');
-        setEffectCache(values[effectField]);
+        console.debug('Caching before unmount')
+        setEffectCache(values[effectField])
       }
-      currentRegState.current = !!isRegistered;
+      currentRegState.current = !!isRegistered
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values, causeField, effectField, callback]);
+  }, [values, causeField, effectField, callback])
 }
 
 export default function App() {
@@ -43,12 +43,12 @@ export default function App() {
       check: false,
       optionalText: '',
     },
-  });
+  })
 
   const values = useWatch({
     control,
-  });
-  useInputCache(values, 'check', 'optionalText', setValue);
+  })
+  useInputCache(values, 'check', 'optionalText', setValue)
 
   return (
     <div className="App">
@@ -79,5 +79,5 @@ export default function App() {
         )}
       </form>
     </div>
-  );
+  )
 }

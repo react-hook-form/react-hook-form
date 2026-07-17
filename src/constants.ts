@@ -5,7 +5,7 @@ export const EVENTS = {
   SUBMIT: 'submit',
   TRIGGER: 'trigger',
   VALID: 'valid',
-} as const;
+} as const
 
 export const VALIDATION_MODE = {
   onBlur: 'onBlur',
@@ -13,7 +13,7 @@ export const VALIDATION_MODE = {
   onSubmit: 'onSubmit',
   onTouched: 'onTouched',
   all: 'all',
-} as const;
+} as const
 
 export const INPUT_VALIDATION_RULES = {
   max: 'max',
@@ -23,8 +23,8 @@ export const INPUT_VALIDATION_RULES = {
   pattern: 'pattern',
   required: 'required',
   validate: 'validate',
-} as const;
+} as const
 
-export const ROOT_ERROR_TYPE = 'root';
+export const ROOT_ERROR_TYPE = 'root'
 
-export const PROTOTYPE_KEYWORDS = ['__proto__', 'constructor', 'prototype'];
+export const PROTOTYPE_KEYWORDS = ['__proto__', 'constructor', 'prototype']

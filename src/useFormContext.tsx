@@ -1,15 +1,15 @@
-import React from 'react';
+import React from 'react'
 
 import type {
   Control,
   FieldValues,
   FormProviderProps,
   UseFormReturn,
-} from './types';
-import { HookFormControlContext } from './useFormControlContext';
+} from './types'
+import { HookFormControlContext } from './useFormControlContext'
 
-const HookFormContext = React.createContext<UseFormReturn | null>(null);
-HookFormContext.displayName = 'HookFormContext';
+const HookFormContext = React.createContext<UseFormReturn | null>(null)
+HookFormContext.displayName = 'HookFormContext'
 
 /**
  * This custom hook allows you to access the form context. useFormContext is intended to be used in deeply nested structures, where it would become inconvenient to pass the context as a prop. To be used with {@link FormProvider}.
@@ -50,7 +50,7 @@ export const useFormContext = <
     TFieldValues,
     TContext,
     TTransformedValues
-  >;
+  >
 
 /**
  * A provider component that propagates the `useForm` methods to all children components via [React Context](https://react.dev/reference/react/useContext) API. To be used with {@link useFormContext}.
@@ -150,7 +150,7 @@ export const FormProvider = <
       unregister,
       watch,
     ],
-  );
+  )
 
   return (
     <HookFormContext.Provider value={memoizedValue as unknown as UseFormReturn}>
@@ -158,5 +158,5 @@ export const FormProvider = <
         {children}
       </HookFormControlContext.Provider>
     </HookFormContext.Provider>
-  );
-};
+  )
+}

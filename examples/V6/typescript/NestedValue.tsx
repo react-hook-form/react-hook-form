@@ -1,44 +1,44 @@
-import React, { useEffect } from 'react';
-import { useForm, NestedValue } from 'react-hook-form';
 import {
-  TextField,
   FormControl,
-  Select,
-  MenuItem,
   FormHelperText,
-} from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
+  MenuItem,
+  Select,
+  TextField,
+} from '@material-ui/core'
+import { Autocomplete } from '@material-ui/lab'
+import React, { useEffect } from 'react'
+import { NestedValue, useForm } from 'react-hook-form'
 
 type Option = {
-  label: string;
-  value: string;
-};
+  label: string
+  value: string
+}
 
 const options = [
   { label: 'Chocolate', value: 'chocolate' },
   { label: 'Strawberry', value: 'strawberry' },
   { label: 'Vanilla', value: 'vanilla' },
-];
+]
 
 export default function App() {
   const { register, handleSubmit, watch, setValue, errors } = useForm<{
-    autocomplete: NestedValue<Option[]>;
-    select: NestedValue<number[]>;
+    autocomplete: NestedValue<Option[]>
+    select: NestedValue<number[]>
   }>({
     defaultValues: { autocomplete: [], select: [] },
-  });
-  const select = watch('select');
+  })
+  const select = watch('select')
 
-  const onSubmit = handleSubmit((data) => alert(JSON.stringify(data)));
+  const onSubmit = handleSubmit((data) => alert(JSON.stringify(data)))
 
   useEffect(() => {
     register('autocomplete', {
       validate: (value) => value.length || 'This is required.',
-    });
+    })
     register('select', {
       validate: (value) => value.length || 'This is required.',
-    });
-  }, [register]);
+    })
+  }, [register])
 
   return (
     <form onSubmit={onSubmit}>
@@ -79,5 +79,5 @@ export default function App() {
 
       <input type="submit" className="button" />
     </form>
-  );
+  )
 }

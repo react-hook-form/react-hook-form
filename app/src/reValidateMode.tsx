@@ -1,26 +1,26 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import { useForm, ValidationMode } from 'react-hook-form';
+import React from 'react'
+import { useForm, ValidationMode } from 'react-hook-form'
+import { useParams } from 'react-router-dom'
 
-type ReValidateMode = 'onBlur' | 'onChange' | 'onSubmit' | undefined;
-let renderCounter = 0;
+type ReValidateMode = 'onBlur' | 'onChange' | 'onSubmit' | undefined
+let renderCounter = 0
 
 const Basic: React.FC = () => {
-  const { mode, reValidateMode } = useParams();
+  const { mode, reValidateMode } = useParams()
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<{
-    firstName: string;
-    lastName: string;
+    firstName: string
+    lastName: string
   }>({
     mode: mode as keyof ValidationMode,
     reValidateMode: reValidateMode as keyof ReValidateMode,
-  });
-  const onSubmit = () => {};
+  })
+  const onSubmit = () => {}
 
-  renderCounter++;
+  renderCounter++
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -37,7 +37,7 @@ const Basic: React.FC = () => {
       <button id="submit">Submit</button>
       <div id="renderCount">{renderCounter}</div>
     </form>
-  );
-};
+  )
+}
 
-export default Basic;
+export default Basic

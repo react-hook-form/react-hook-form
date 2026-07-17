@@ -1,4 +1,4 @@
-import isWatched from '../../logic/isWatched';
+import isWatched from '../../logic/isWatched'
 
 describe('isWatched', () => {
   it('should return watched fields', () => {
@@ -13,7 +13,7 @@ describe('isWatched', () => {
         focus: '',
         watchAll: true,
       }),
-    ).toBeTruthy();
+    ).toBeTruthy()
 
     expect(
       isWatched('test', {
@@ -26,8 +26,8 @@ describe('isWatched', () => {
         focus: '',
         watchAll: false,
       }),
-    ).toBeTruthy();
-  });
+    ).toBeTruthy()
+  })
 
   it('should return true when watched with parent node', () => {
     expect(
@@ -41,7 +41,7 @@ describe('isWatched', () => {
         focus: '',
         watchAll: false,
       }),
-    ).toBeTruthy();
+    ).toBeTruthy()
 
     expect(
       isWatched('test.test.test', {
@@ -54,7 +54,7 @@ describe('isWatched', () => {
         focus: '',
         watchAll: false,
       }),
-    ).toBeTruthy();
+    ).toBeTruthy()
 
     expect(
       isWatched('test.test.test', {
@@ -67,7 +67,7 @@ describe('isWatched', () => {
         focus: '',
         watchAll: false,
       }),
-    ).toBeTruthy();
+    ).toBeTruthy()
 
     expect(
       isWatched('test.0', {
@@ -80,7 +80,7 @@ describe('isWatched', () => {
         focus: '',
         watchAll: false,
       }),
-    ).toBeTruthy();
+    ).toBeTruthy()
 
     expect(
       isWatched('test.0.test', {
@@ -93,8 +93,8 @@ describe('isWatched', () => {
         focus: '',
         watchAll: false,
       }),
-    ).toBeTruthy();
-  });
+    ).toBeTruthy()
+  })
 
   it("should return false when watched with parent node that doesn't match child name", () => {
     expect(
@@ -108,7 +108,7 @@ describe('isWatched', () => {
         focus: '',
         watchAll: false,
       }),
-    ).toBeFalsy();
+    ).toBeFalsy()
 
     expect(
       isWatched('test.test.test', {
@@ -121,11 +121,11 @@ describe('isWatched', () => {
         focus: '',
         watchAll: false,
       }),
-    ).toBeFalsy();
-  });
+    ).toBeFalsy()
+  })
 
   it('returns true on first prefix match without iterating the full Set', () => {
-    const watch = new Set(['a', 'b', 'c', 'd', 'e']);
+    const watch = new Set(['a', 'b', 'c', 'd', 'e'])
 
     expect(
       isWatched('a.child', {
@@ -138,7 +138,7 @@ describe('isWatched', () => {
         focus: '',
         watchAll: false,
       }),
-    ).toBeTruthy();
+    ).toBeTruthy()
 
     expect(
       isWatched('e.child', {
@@ -151,7 +151,7 @@ describe('isWatched', () => {
         focus: '',
         watchAll: false,
       }),
-    ).toBeTruthy();
+    ).toBeTruthy()
 
     expect(
       isWatched('z.child', {
@@ -164,8 +164,8 @@ describe('isWatched', () => {
         focus: '',
         watchAll: false,
       }),
-    ).toBeFalsy();
-  });
+    ).toBeFalsy()
+  })
 
   it('should return falsy for blur event', () => {
     expect(
@@ -183,6 +183,6 @@ describe('isWatched', () => {
         },
         true,
       ),
-    ).toBeFalsy();
-  });
-});
+    ).toBeFalsy()
+  })
+})

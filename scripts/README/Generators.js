@@ -1,5 +1,5 @@
-import Previews from 'Previews';
 import Data from 'Data';
+import Previews from 'Previews';
 
 function Helpers() {
   return toPreviews('helpers');

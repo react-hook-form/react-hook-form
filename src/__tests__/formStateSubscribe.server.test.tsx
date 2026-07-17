@@ -1,15 +1,15 @@
-import React from 'react';
-import { renderToString } from 'react-dom/server';
+import React from 'react'
+import { renderToString } from 'react-dom/server'
 
-import { FormStateSubscribe } from '../formStateSubscribe';
-import { useForm } from '../useForm';
+import { FormStateSubscribe } from '../formStateSubscribe'
+import { useForm } from '../useForm'
 
 describe('FormStateSubscribe with SSR', () => {
   it('should render correctly', () => {
     const Component = () => {
       const { control } = useForm<{
-        test: string;
-      }>();
+        test: string
+      }>()
 
       return (
         <FormStateSubscribe
@@ -17,9 +17,9 @@ describe('FormStateSubscribe with SSR', () => {
           name="test"
           render={(state) => <span>{state.errors.test?.message}</span>}
         />
-      );
-    };
+      )
+    }
 
-    renderToString(<Component />);
-  });
-});
+    renderToString(<Component />)
+  })
+})

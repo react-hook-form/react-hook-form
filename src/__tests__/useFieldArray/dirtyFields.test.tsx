@@ -1,42 +1,42 @@
-import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import React from 'react'
 
-import { useFieldArray } from '../../useFieldArray';
-import { useForm } from '../../useForm';
+import { useFieldArray } from '../../useFieldArray'
+import { useForm } from '../../useForm'
 
-let i = 0;
+let i = 0
 
-jest.mock('../../logic/generateId', () => () => String(i++));
+jest.mock('../../logic/generateId', () => () => String(i++))
 
 describe('useFieldArray dirtyFields isolation', () => {
   beforeEach(() => {
-    i = 0;
-  });
+    i = 0
+  })
 
   it('should only mark items dirty when only items field array is appended', async () => {
-    let dirtyResult = {};
+    let dirtyResult = {}
     const Component = () => {
       const {
         register,
         control,
         formState: { dirtyFields },
       } = useForm<{
-        name: string;
-        age: number;
-        items: { value: string }[];
+        name: string
+        age: number
+        items: { value: string }[]
       }>({
         defaultValues: {
           name: 'John',
           age: 30,
           items: [],
         },
-      });
+      })
       const { fields, append } = useFieldArray({
         control,
         name: 'items',
-      });
+      })
 
-      dirtyResult = dirtyFields;
+      dirtyResult = dirtyFields
 
       return (
         <form>
@@ -49,46 +49,46 @@ describe('useFieldArray dirtyFields isolation', () => {
             append
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
-    fireEvent.click(screen.getByRole('button', { name: /append/ }));
+    fireEvent.click(screen.getByRole('button', { name: /append/ }))
 
     await waitFor(() => {
       expect(dirtyResult).toEqual({
         items: [{ value: true }],
-      });
-      expect(dirtyResult).not.toHaveProperty('name');
-      expect(dirtyResult).not.toHaveProperty('age');
-    });
-  });
+      })
+      expect(dirtyResult).not.toHaveProperty('name')
+      expect(dirtyResult).not.toHaveProperty('age')
+    })
+  })
 
   it('should mark both name and items dirty when both are modified', async () => {
-    let dirtyResult = {};
+    let dirtyResult = {}
     const Component = () => {
       const {
         register,
         control,
         formState: { dirtyFields },
       } = useForm<{
-        name: string;
-        age: number;
-        items: { value: string }[];
+        name: string
+        age: number
+        items: { value: string }[]
       }>({
         defaultValues: {
           name: 'John',
           age: 30,
           items: [],
         },
-      });
+      })
       const { fields, append } = useFieldArray({
         control,
         name: 'items',
-      });
+      })
 
-      dirtyResult = dirtyFields;
+      dirtyResult = dirtyFields
 
       return (
         <form>
@@ -101,36 +101,36 @@ describe('useFieldArray dirtyFields isolation', () => {
             append
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
     fireEvent.input(screen.getAllByRole('textbox')[0], {
       target: { value: 'Bob' },
-    });
+    })
 
-    fireEvent.click(screen.getByRole('button', { name: /append/ }));
+    fireEvent.click(screen.getByRole('button', { name: /append/ }))
 
     await waitFor(() => {
-      expect(dirtyResult).toHaveProperty('name', true);
-      expect(dirtyResult).toHaveProperty('items');
-      expect(dirtyResult).not.toHaveProperty('age');
-    });
-  });
+      expect(dirtyResult).toHaveProperty('name', true)
+      expect(dirtyResult).toHaveProperty('items')
+      expect(dirtyResult).not.toHaveProperty('age')
+    })
+  })
 
   it('should only mark items_copy dirty when only items_copy is appended (multiple field arrays)', async () => {
-    let dirtyResult = {};
+    let dirtyResult = {}
     const Component = () => {
       const {
         register,
         control,
         formState: { dirtyFields },
       } = useForm<{
-        name: string;
-        age: number;
-        items: { value: string }[];
-        items_copy: { value: string; value2: string }[];
+        name: string
+        age: number
+        items: { value: string }[]
+        items_copy: { value: string; value2: string }[]
       }>({
         defaultValues: {
           name: 'John',
@@ -138,11 +138,11 @@ describe('useFieldArray dirtyFields isolation', () => {
           items: [],
           items_copy: [],
         },
-      });
-      const itemsArray = useFieldArray({ control, name: 'items' });
-      const itemsCopyArray = useFieldArray({ control, name: 'items_copy' });
+      })
+      const itemsArray = useFieldArray({ control, name: 'items' })
+      const itemsCopyArray = useFieldArray({ control, name: 'items_copy' })
 
-      dirtyResult = dirtyFields;
+      dirtyResult = dirtyFields
 
       return (
         <form>
@@ -166,35 +166,35 @@ describe('useFieldArray dirtyFields isolation', () => {
             appendCopy
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
-    fireEvent.click(screen.getByRole('button', { name: /appendCopy/ }));
+    fireEvent.click(screen.getByRole('button', { name: /appendCopy/ }))
 
     await waitFor(() => {
       expect(dirtyResult).toEqual({
         items_copy: [{ value: true, value2: true }],
-      });
-      expect(dirtyResult).not.toHaveProperty('name');
-      expect(dirtyResult).not.toHaveProperty('age');
-      expect(dirtyResult).not.toHaveProperty('items');
-    });
-  });
+      })
+      expect(dirtyResult).not.toHaveProperty('name')
+      expect(dirtyResult).not.toHaveProperty('age')
+      expect(dirtyResult).not.toHaveProperty('items')
+    })
+  })
 
   it('should mark both field arrays dirty when both are appended', async () => {
-    let dirtyResult = {};
+    let dirtyResult = {}
     const Component = () => {
       const {
         register,
         control,
         formState: { dirtyFields },
       } = useForm<{
-        name: string;
-        age: number;
-        items: { value: string }[];
-        items_copy: { value: string; value2: string }[];
+        name: string
+        age: number
+        items: { value: string }[]
+        items_copy: { value: string; value2: string }[]
       }>({
         defaultValues: {
           name: 'John',
@@ -202,11 +202,11 @@ describe('useFieldArray dirtyFields isolation', () => {
           items: [],
           items_copy: [],
         },
-      });
-      const itemsArray = useFieldArray({ control, name: 'items' });
-      const itemsCopyArray = useFieldArray({ control, name: 'items_copy' });
+      })
+      const itemsArray = useFieldArray({ control, name: 'items' })
+      const itemsCopyArray = useFieldArray({ control, name: 'items_copy' })
 
-      dirtyResult = dirtyFields;
+      dirtyResult = dirtyFields
 
       return (
         <form>
@@ -236,34 +236,34 @@ describe('useFieldArray dirtyFields isolation', () => {
             appendCopy
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
-    fireEvent.click(screen.getByRole('button', { name: /appendItems/ }));
-    fireEvent.click(screen.getByRole('button', { name: /appendCopy/ }));
+    fireEvent.click(screen.getByRole('button', { name: /appendItems/ }))
+    fireEvent.click(screen.getByRole('button', { name: /appendCopy/ }))
 
     await waitFor(() => {
-      expect(dirtyResult).toHaveProperty('items');
-      expect(dirtyResult).toHaveProperty('items_copy');
-      expect(dirtyResult).not.toHaveProperty('name');
-      expect(dirtyResult).not.toHaveProperty('age');
-    });
-  });
+      expect(dirtyResult).toHaveProperty('items')
+      expect(dirtyResult).toHaveProperty('items_copy')
+      expect(dirtyResult).not.toHaveProperty('name')
+      expect(dirtyResult).not.toHaveProperty('age')
+    })
+  })
 
   it('should mark name and items_copy dirty when both are modified, leaving age and items clean', async () => {
-    let dirtyResult = {};
+    let dirtyResult = {}
     const Component = () => {
       const {
         register,
         control,
         formState: { dirtyFields },
       } = useForm<{
-        name: string;
-        age: number;
-        items: { value: string }[];
-        items_copy: { value: string; value2: string }[];
+        name: string
+        age: number
+        items: { value: string }[]
+        items_copy: { value: string; value2: string }[]
       }>({
         defaultValues: {
           name: 'John',
@@ -271,11 +271,11 @@ describe('useFieldArray dirtyFields isolation', () => {
           items: [],
           items_copy: [],
         },
-      });
-      const itemsArray = useFieldArray({ control, name: 'items' });
-      const itemsCopyArray = useFieldArray({ control, name: 'items_copy' });
+      })
+      const itemsArray = useFieldArray({ control, name: 'items' })
+      const itemsCopyArray = useFieldArray({ control, name: 'items_copy' })
 
-      dirtyResult = dirtyFields;
+      dirtyResult = dirtyFields
 
       return (
         <form>
@@ -299,38 +299,38 @@ describe('useFieldArray dirtyFields isolation', () => {
             appendCopy
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
     fireEvent.input(screen.getByTestId('name'), {
       target: { value: 'Alice' },
-    });
+    })
 
-    fireEvent.click(screen.getByRole('button', { name: /appendCopy/ }));
+    fireEvent.click(screen.getByRole('button', { name: /appendCopy/ }))
 
     await waitFor(() => {
-      expect(dirtyResult).toHaveProperty('name', true);
-      expect(dirtyResult).toHaveProperty('items_copy');
-      expect(dirtyResult).not.toHaveProperty('age');
-      expect(dirtyResult).not.toHaveProperty('items');
-    });
-  });
+      expect(dirtyResult).toHaveProperty('name', true)
+      expect(dirtyResult).toHaveProperty('items_copy')
+      expect(dirtyResult).not.toHaveProperty('age')
+      expect(dirtyResult).not.toHaveProperty('items')
+    })
+  })
 
   it('should not mark unrelated fields dirty with nested field array path', async () => {
-    let dirtyResult = {};
+    let dirtyResult = {}
     const Component = () => {
       const {
         register,
         control,
         formState: { dirtyFields },
       } = useForm<{
-        name: string;
-        age: number;
+        name: string
+        age: number
         nonusservices: {
-          VATFiling_list: { id: string; value: string }[];
-        };
+          VATFiling_list: { id: string; value: string }[]
+        }
       }>({
         defaultValues: {
           name: 'John Doe',
@@ -339,13 +339,13 @@ describe('useFieldArray dirtyFields isolation', () => {
             VATFiling_list: [{ id: '1', value: 'Item 1' }],
           },
         },
-      });
+      })
       const { fields, append } = useFieldArray({
         control,
         name: 'nonusservices.VATFiling_list',
-      });
+      })
 
-      dirtyResult = dirtyFields;
+      dirtyResult = dirtyFields
 
       return (
         <form>
@@ -370,44 +370,44 @@ describe('useFieldArray dirtyFields isolation', () => {
             append
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
-    fireEvent.click(screen.getByRole('button', { name: /append/ }));
+    fireEvent.click(screen.getByRole('button', { name: /append/ }))
 
     await waitFor(() => {
-      expect(dirtyResult).not.toHaveProperty('name');
-      expect(dirtyResult).not.toHaveProperty('age');
-      expect(dirtyResult).toHaveProperty('nonusservices');
-    });
-  });
+      expect(dirtyResult).not.toHaveProperty('name')
+      expect(dirtyResult).not.toHaveProperty('age')
+      expect(dirtyResult).toHaveProperty('nonusservices')
+    })
+  })
 
   it('should not mark unrelated fields dirty after remove operation', async () => {
-    let dirtyResult = {};
+    let dirtyResult = {}
     const Component = () => {
       const {
         register,
         control,
         formState: { dirtyFields },
       } = useForm<{
-        title: string;
-        description: string;
-        tags: { label: string }[];
+        title: string
+        description: string
+        tags: { label: string }[]
       }>({
         defaultValues: {
           title: 'My Post',
           description: 'Some description',
           tags: [{ label: 'react' }, { label: 'typescript' }],
         },
-      });
+      })
       const { fields, remove } = useFieldArray({
         control,
         name: 'tags',
-      });
+      })
 
-      dirtyResult = dirtyFields;
+      dirtyResult = dirtyFields
 
       return (
         <form>
@@ -422,42 +422,42 @@ describe('useFieldArray dirtyFields isolation', () => {
             </div>
           ))}
         </form>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
-    fireEvent.click(screen.getByRole('button', { name: /remove0/ }));
+    fireEvent.click(screen.getByRole('button', { name: /remove0/ }))
 
     await waitFor(() => {
-      expect(dirtyResult).not.toHaveProperty('title');
-      expect(dirtyResult).not.toHaveProperty('description');
-      expect(dirtyResult).toHaveProperty('tags');
-    });
-  });
+      expect(dirtyResult).not.toHaveProperty('title')
+      expect(dirtyResult).not.toHaveProperty('description')
+      expect(dirtyResult).toHaveProperty('tags')
+    })
+  })
 
   it('should preserve name dirty state after append then remove reverts array', async () => {
-    let dirtyResult = {};
+    let dirtyResult = {}
     const Component = () => {
       const {
         register,
         control,
         formState: { dirtyFields },
       } = useForm<{
-        name: string;
-        items: { value: string }[];
+        name: string
+        items: { value: string }[]
       }>({
         defaultValues: {
           name: 'John',
           items: [{ value: 'original' }],
         },
-      });
+      })
       const { fields, append, remove } = useFieldArray({
         control,
         name: 'items',
-      });
+      })
 
-      dirtyResult = dirtyFields;
+      dirtyResult = dirtyFields
 
       return (
         <form>
@@ -472,57 +472,57 @@ describe('useFieldArray dirtyFields isolation', () => {
             removeLast
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
     fireEvent.input(screen.getByTestId('name'), {
       target: { value: 'Changed' },
-    });
+    })
 
     await waitFor(() => {
-      expect(dirtyResult).toHaveProperty('name', true);
-    });
+      expect(dirtyResult).toHaveProperty('name', true)
+    })
 
-    fireEvent.click(screen.getByRole('button', { name: /append/ }));
-
-    await waitFor(() => {
-      expect(dirtyResult).toHaveProperty('name', true);
-      expect(dirtyResult).toHaveProperty('items');
-    });
-
-    fireEvent.click(screen.getByRole('button', { name: /removeLast/ }));
+    fireEvent.click(screen.getByRole('button', { name: /append/ }))
 
     await waitFor(() => {
-      expect(dirtyResult).toHaveProperty('name', true);
-    });
-  });
+      expect(dirtyResult).toHaveProperty('name', true)
+      expect(dirtyResult).toHaveProperty('items')
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: /removeLast/ }))
+
+    await waitFor(() => {
+      expect(dirtyResult).toHaveProperty('name', true)
+    })
+  })
 
   it('should not pollute unrelated fields after multiple appends', async () => {
-    let dirtyResult = {};
+    let dirtyResult = {}
     const Component = () => {
       const {
         register,
         control,
         formState: { dirtyFields },
       } = useForm<{
-        email: string;
-        phone: string;
-        addresses: { street: string; city: string }[];
+        email: string
+        phone: string
+        addresses: { street: string; city: string }[]
       }>({
         defaultValues: {
           email: 'john@example.com',
           phone: '123-456',
           addresses: [],
         },
-      });
+      })
       const { fields, append } = useFieldArray({
         control,
         name: 'addresses',
-      });
+      })
 
-      dirtyResult = dirtyFields;
+      dirtyResult = dirtyFields
 
       return (
         <form>
@@ -541,37 +541,37 @@ describe('useFieldArray dirtyFields isolation', () => {
             addAddress
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
-    fireEvent.click(screen.getByRole('button', { name: /addAddress/ }));
-    fireEvent.click(screen.getByRole('button', { name: /addAddress/ }));
-    fireEvent.click(screen.getByRole('button', { name: /addAddress/ }));
+    fireEvent.click(screen.getByRole('button', { name: /addAddress/ }))
+    fireEvent.click(screen.getByRole('button', { name: /addAddress/ }))
+    fireEvent.click(screen.getByRole('button', { name: /addAddress/ }))
 
     await waitFor(() => {
-      expect(dirtyResult).not.toHaveProperty('email');
-      expect(dirtyResult).not.toHaveProperty('phone');
-      expect(dirtyResult).toHaveProperty('addresses');
-      expect((dirtyResult as any).addresses).toHaveLength(3);
-    });
-  });
+      expect(dirtyResult).not.toHaveProperty('email')
+      expect(dirtyResult).not.toHaveProperty('phone')
+      expect(dirtyResult).toHaveProperty('addresses')
+      expect((dirtyResult as any).addresses).toHaveLength(3)
+    })
+  })
 
   it('should isolate dirty state in large forms with many fields', async () => {
-    let dirtyResult = {};
+    let dirtyResult = {}
     const Component = () => {
       const {
         register,
         control,
         formState: { dirtyFields },
       } = useForm<{
-        firstName: string;
-        lastName: string;
-        email: string;
-        phone: string;
-        company: string;
-        todos: { task: string }[];
+        firstName: string
+        lastName: string
+        email: string
+        phone: string
+        company: string
+        todos: { task: string }[]
       }>({
         defaultValues: {
           firstName: 'John',
@@ -581,13 +581,13 @@ describe('useFieldArray dirtyFields isolation', () => {
           company: 'Acme',
           todos: [],
         },
-      });
+      })
       const { fields, append } = useFieldArray({
         control,
         name: 'todos',
-      });
+      })
 
-      dirtyResult = dirtyFields;
+      dirtyResult = dirtyFields
 
       return (
         <form>
@@ -603,37 +603,37 @@ describe('useFieldArray dirtyFields isolation', () => {
             addTodo
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
-    fireEvent.click(screen.getByRole('button', { name: /addTodo/ }));
+    fireEvent.click(screen.getByRole('button', { name: /addTodo/ }))
 
     await waitFor(() => {
-      expect(dirtyResult).not.toHaveProperty('firstName');
-      expect(dirtyResult).not.toHaveProperty('lastName');
-      expect(dirtyResult).not.toHaveProperty('email');
-      expect(dirtyResult).not.toHaveProperty('phone');
-      expect(dirtyResult).not.toHaveProperty('company');
-      expect(dirtyResult).toHaveProperty('todos');
-    });
-  });
+      expect(dirtyResult).not.toHaveProperty('firstName')
+      expect(dirtyResult).not.toHaveProperty('lastName')
+      expect(dirtyResult).not.toHaveProperty('email')
+      expect(dirtyResult).not.toHaveProperty('phone')
+      expect(dirtyResult).not.toHaveProperty('company')
+      expect(dirtyResult).toHaveProperty('todos')
+    })
+  })
 
   it('should only update root branch when nested useFieldArray with indexed name is appended', async () => {
-    let dirtyResult = {};
+    let dirtyResult = {}
     const Component = () => {
       const {
         register,
         control,
         formState: { dirtyFields },
       } = useForm<{
-        title: string;
+        title: string
         test: {
-          firstName: string;
-          lastName: string;
-          keyValue: { name: string }[];
-        }[];
+          firstName: string
+          lastName: string
+          keyValue: { name: string }[]
+        }[]
       }>({
         defaultValues: {
           title: 'My Form',
@@ -645,11 +645,11 @@ describe('useFieldArray dirtyFields isolation', () => {
             },
           ],
         },
-      });
+      })
       const { fields: testFields } = useFieldArray({
         control,
         name: 'test',
-      });
+      })
       const {
         fields: keyValueFields,
         append,
@@ -657,9 +657,9 @@ describe('useFieldArray dirtyFields isolation', () => {
       } = useFieldArray({
         control,
         name: 'test.0.keyValue',
-      });
+      })
 
-      dirtyResult = dirtyFields;
+      dirtyResult = dirtyFields
 
       return (
         <form>
@@ -686,30 +686,30 @@ describe('useFieldArray dirtyFields isolation', () => {
             nestRemove
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
-    fireEvent.click(screen.getByRole('button', { name: /nestAppend/ }));
-
-    await waitFor(() => {
-      expect(dirtyResult).not.toHaveProperty('title');
-      expect(dirtyResult).toHaveProperty('test');
-      const testArray = (dirtyResult as any).test;
-      expect(testArray[0]).toHaveProperty('keyValue');
-      expect(testArray[0].keyValue).toEqual([undefined, { name: true }]);
-    });
-
-    fireEvent.click(screen.getByRole('button', { name: /nestRemove/ }));
+    fireEvent.click(screen.getByRole('button', { name: /nestAppend/ }))
 
     await waitFor(() => {
-      expect(dirtyResult).not.toHaveProperty('title');
-    });
-  });
+      expect(dirtyResult).not.toHaveProperty('title')
+      expect(dirtyResult).toHaveProperty('test')
+      const testArray = (dirtyResult as any).test
+      expect(testArray[0]).toHaveProperty('keyValue')
+      expect(testArray[0].keyValue).toEqual([undefined, { name: true }])
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: /nestRemove/ }))
+
+    await waitFor(() => {
+      expect(dirtyResult).not.toHaveProperty('title')
+    })
+  })
 
   it('should not mark unrelated fields dirty when using setValue with shouldDirty on a field array', async () => {
-    let dirtyResult = {};
+    let dirtyResult = {}
     const Component = () => {
       const {
         register,
@@ -717,22 +717,22 @@ describe('useFieldArray dirtyFields isolation', () => {
         setValue,
         formState: { dirtyFields },
       } = useForm<{
-        name: string;
-        age: number;
-        items: { value: string }[];
+        name: string
+        age: number
+        items: { value: string }[]
       }>({
         defaultValues: {
           name: 'John',
           age: 30,
           items: [],
         },
-      });
+      })
       const { fields } = useFieldArray({
         control,
         name: 'items',
-      });
+      })
 
-      dirtyResult = dirtyFields;
+      dirtyResult = dirtyFields
 
       return (
         <form>
@@ -750,24 +750,24 @@ describe('useFieldArray dirtyFields isolation', () => {
             setItems
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
-    fireEvent.click(screen.getByRole('button', { name: /setItems/ }));
+    fireEvent.click(screen.getByRole('button', { name: /setItems/ }))
 
     await waitFor(() => {
       expect(dirtyResult).toEqual({
         items: [{ value: true }],
-      });
-      expect(dirtyResult).not.toHaveProperty('name');
-      expect(dirtyResult).not.toHaveProperty('age');
-    });
-  });
+      })
+      expect(dirtyResult).not.toHaveProperty('name')
+      expect(dirtyResult).not.toHaveProperty('age')
+    })
+  })
 
   it('should preserve other dirty fields when using setValue with shouldDirty on a field array', async () => {
-    let dirtyResult = {};
+    let dirtyResult = {}
     const Component = () => {
       const {
         register,
@@ -775,22 +775,22 @@ describe('useFieldArray dirtyFields isolation', () => {
         setValue,
         formState: { dirtyFields },
       } = useForm<{
-        name: string;
-        age: number;
-        items: { value: string }[];
+        name: string
+        age: number
+        items: { value: string }[]
       }>({
         defaultValues: {
           name: 'John',
           age: 30,
           items: [],
         },
-      });
+      })
       const { fields } = useFieldArray({
         control,
         name: 'items',
-      });
+      })
 
-      dirtyResult = dirtyFields;
+      dirtyResult = dirtyFields
 
       return (
         <form>
@@ -808,27 +808,27 @@ describe('useFieldArray dirtyFields isolation', () => {
             setItems
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
     fireEvent.input(screen.getByTestId('name'), {
       target: { value: 'Changed' },
-    });
+    })
 
     await waitFor(() => {
-      expect(dirtyResult).toHaveProperty('name', true);
-    });
+      expect(dirtyResult).toHaveProperty('name', true)
+    })
 
-    fireEvent.click(screen.getByRole('button', { name: /setItems/ }));
+    fireEvent.click(screen.getByRole('button', { name: /setItems/ }))
 
     await waitFor(() => {
-      expect(dirtyResult).toHaveProperty('name', true);
-      expect(dirtyResult).toHaveProperty('items');
-      expect(dirtyResult).not.toHaveProperty('age');
-    });
-  });
+      expect(dirtyResult).toHaveProperty('name', true)
+      expect(dirtyResult).toHaveProperty('items')
+      expect(dirtyResult).not.toHaveProperty('age')
+    })
+  })
 
   it('should revalidate dirty fields when dirty flag is not match field level dirty', async () => {
     function App() {
@@ -837,7 +837,7 @@ describe('useFieldArray dirtyFields isolation', () => {
           firstName: '',
           lastName: '',
         },
-      });
+      })
 
       return (
         <div>
@@ -863,30 +863,30 @@ describe('useFieldArray dirtyFields isolation', () => {
             <input type="submit" />
           </form>
         </div>
-      );
+      )
     }
 
-    render(<App />);
+    render(<App />)
 
-    fireEvent.click(screen.getByRole('button', { name: /set first name/i }));
+    fireEvent.click(screen.getByRole('button', { name: /set first name/i }))
 
-    const lastNameInput = screen.getByPlaceholderText(/last name/i);
-    fireEvent.change(lastNameInput, { target: { value: 'Doe' } });
-
-    await waitFor(() => {
-      expect(screen.getByText('lastName')).toBeInTheDocument();
-    });
-
-    fireEvent.change(lastNameInput, { target: { value: '' } });
+    const lastNameInput = screen.getByPlaceholderText(/last name/i)
+    fireEvent.change(lastNameInput, { target: { value: 'Doe' } })
 
     await waitFor(() => {
-      expect(screen.queryByText('lastName')).not.toBeInTheDocument();
-    });
+      expect(screen.getByText('lastName')).toBeInTheDocument()
+    })
 
-    expect(screen.getByText(/isDirty:/i)).toHaveTextContent('true');
+    fireEvent.change(lastNameInput, { target: { value: '' } })
 
     await waitFor(() => {
-      expect(screen.queryByText('firstName')).toBeInTheDocument();
-    });
-  });
-});
+      expect(screen.queryByText('lastName')).not.toBeInTheDocument()
+    })
+
+    expect(screen.getByText(/isDirty:/i)).toHaveTextContent('true')
+
+    await waitFor(() => {
+      expect(screen.queryByText('firstName')).toBeInTheDocument()
+    })
+  })
+})

@@ -1,13 +1,13 @@
-import { createFormControl } from '../../logic/createFormControl';
-import isEmptyObject from '../../utils/isEmptyObject';
+import { createFormControl } from '../../logic/createFormControl'
+import isEmptyObject from '../../utils/isEmptyObject'
 
 jest.mock('../../utils/isEmptyObject', () => {
-  const original = jest.requireActual('../../utils/isEmptyObject');
+  const original = jest.requireActual('../../utils/isEmptyObject')
   return {
     __esModule: true,
     default: jest.fn(original.default),
-  };
-});
+  }
+})
 
 describe('createFormControl', () => {
   it('should call `executeBuiltInValidation` once for a single field', async () => {
@@ -15,14 +15,14 @@ describe('createFormControl', () => {
       defaultValues: {
         foo: 'foo',
       },
-    });
+    })
 
-    register('foo', {});
+    register('foo', {})
 
-    await control._setValid(true);
+    await control._setValid(true)
 
-    expect(isEmptyObject).toHaveBeenCalledTimes(1);
-  });
+    expect(isEmptyObject).toHaveBeenCalledTimes(1)
+  })
 
   it('should call `executeBuiltInValidation` twice for a field as an object with a single sub-field', async () => {
     const { register, control } = createFormControl({
@@ -31,14 +31,14 @@ describe('createFormControl', () => {
           bar: 'bar',
         },
       },
-    });
+    })
 
-    register('foo.bar', {});
+    register('foo.bar', {})
 
-    await control._setValid(true);
+    await control._setValid(true)
 
-    expect(isEmptyObject).toHaveBeenCalledTimes(2);
-  });
+    expect(isEmptyObject).toHaveBeenCalledTimes(2)
+  })
 
   it('should call executeBuiltInValidation the correct number of times in case the field is an array', async () => {
     const { register, control } = createFormControl({
@@ -54,12 +54,12 @@ describe('createFormControl', () => {
           },
         ],
       },
-    });
+    })
 
-    register('foo.1.bar', {});
+    register('foo.1.bar', {})
 
-    await control._setValid(true);
+    await control._setValid(true)
 
-    expect(isEmptyObject).toHaveBeenCalledTimes(3);
-  });
-});
+    expect(isEmptyObject).toHaveBeenCalledTimes(3)
+  })
+})

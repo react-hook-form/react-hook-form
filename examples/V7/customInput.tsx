@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
-import Input from '@material-ui/core/Input';
-import Select from 'react-select';
-import { Input as StrapInput } from 'reactstrap';
+import Input from '@material-ui/core/Input'
+import React, { useEffect, useState } from 'react'
+import ReactDOM from 'react-dom'
+import { useForm } from 'react-hook-form'
+import Select from 'react-select'
+import { Input as StrapInput } from 'reactstrap'
 
 const options = [
   { value: 'chocolate', label: 'Chocolate' },
   { value: 'strawberry', label: 'Strawberry' },
   { value: 'vanilla', label: 'Vanilla' },
-];
+]
 
 const MyInput = ({ label, name, onChange, onBlur, ref }) => {
   return (
@@ -23,26 +23,26 @@ const MyInput = ({ label, name, onChange, onBlur, ref }) => {
         ref={ref}
       />
     </>
-  );
-};
+  )
+}
 
 export default function App() {
-  const { register, handleSubmit, setValue } = useForm();
+  const { register, handleSubmit, setValue } = useForm()
   const onSubmit = (data) => {
-    alert(JSON.stringify(data, null));
-  };
+    alert(JSON.stringify(data, null))
+  }
   const [values, setReactSelect] = useState({
     selectedOption: [],
-  });
+  })
 
   const handleMultiChange = (selectedOption) => {
-    setValue('reactSelect', selectedOption);
-    setReactSelect({ selectedOption });
-  };
+    setValue('reactSelect', selectedOption)
+    setReactSelect({ selectedOption })
+  }
 
   useEffect(() => {
-    register({ name: 'reactSelect' });
-  }, []);
+    register({ name: 'reactSelect' })
+  }, [])
 
   return (
     <div className="App">
@@ -102,5 +102,5 @@ export default function App() {
         <button type="submit">Submit</button>
       </form>
     </div>
-  );
+  )
 }

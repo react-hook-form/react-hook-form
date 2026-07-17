@@ -1,23 +1,23 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import React from 'react'
+import { useForm } from 'react-hook-form'
 
 const Watch: React.FC = () => {
   const { register, handleSubmit, watch } = useForm<{
-    testSingle: string;
-    test: string[];
+    testSingle: string
+    test: string[]
     testObject: {
-      firstName: string;
-      lastName: string;
-    };
-    toggle: string;
-  }>();
-  const onSubmit = () => {};
-  const test = watch('test');
-  const testObject = watch('testObject');
-  const testSingle = watch('testSingle');
-  const testArray = watch(['test.0', 'test.1']);
-  const toggle = watch('toggle');
-  const watchAll = watch();
+      firstName: string
+      lastName: string
+    }
+    toggle: string
+  }>()
+  const onSubmit = () => {}
+  const test = watch('test')
+  const testObject = watch('testObject')
+  const testSingle = watch('testSingle')
+  const testArray = watch(['test.0', 'test.1'])
+  const toggle = watch('toggle')
+  const watchAll = watch()
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -50,7 +50,7 @@ const Watch: React.FC = () => {
 
       <button>Submit</button>
     </form>
-  );
-};
+  )
+}
 
-export default Watch;
+export default Watch

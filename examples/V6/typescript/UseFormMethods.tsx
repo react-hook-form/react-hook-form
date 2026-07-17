@@ -1,24 +1,24 @@
-import React from 'react';
-import { useForm, UseFormMethods, SubmitHandler } from 'react-hook-form';
+import React from 'react'
+import { SubmitHandler, UseFormMethods, useForm } from 'react-hook-form'
 
 type InputProps = React.DetailedHTMLProps<
   React.InputHTMLAttributes<HTMLInputElement>,
   HTMLInputElement
->;
+>
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => (
   <input ref={ref} {...props} />
-));
+))
 
 type Option = {
-  label: React.ReactNode;
-  value: string | number | string[];
-};
+  label: React.ReactNode
+  value: string | number | string[]
+}
 
 type SelectProps = React.DetailedHTMLProps<
   React.SelectHTMLAttributes<HTMLSelectElement>,
   HTMLSelectElement
-> & { options: Option[] };
+> & { options: Option[] }
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ options, ...props }, ref) => (
@@ -28,31 +28,31 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
       ))}
     </select>
   ),
-);
+)
 
 type FormProps<TFormValues> = {
-  onSubmit: SubmitHandler<TFormValues>;
-  children: (methods: UseFormMethods<TFormValues>) => React.ReactNode;
-};
+  onSubmit: SubmitHandler<TFormValues>
+  children: (methods: UseFormMethods<TFormValues>) => React.ReactNode
+}
 
 const Form = <TFormValues extends Record<string, any> = Record<string, any>>({
   onSubmit,
   children,
 }: FormProps<TFormValues>) => {
-  const methods = useForm<TFormValues>();
+  const methods = useForm<TFormValues>()
   return (
     <form onSubmit={methods.handleSubmit(onSubmit)}>{children(methods)}</form>
-  );
-};
+  )
+}
 
 type FormValues = {
-  firstName: string;
-  lastName: string;
-  gender: string;
-};
+  firstName: string
+  lastName: string
+  gender: string
+}
 
 export default function App() {
-  const onSubmit = (data: FormValues) => alert(JSON.stringify(data));
+  const onSubmit = (data: FormValues) => alert(JSON.stringify(data))
 
   return (
     <Form<FormValues> onSubmit={onSubmit}>
@@ -73,5 +73,5 @@ export default function App() {
         </>
       )}
     </Form>
-  );
+  )
 }

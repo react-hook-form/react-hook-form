@@ -1,23 +1,23 @@
-import React from 'react';
+import React from 'react'
 import {
-  useForm,
-  UseFormReturn,
-  UseFormRegisterReturn,
   SubmitHandler,
-} from 'react-hook-form';
+  UseFormRegisterReturn,
+  UseFormReturn,
+  useForm,
+} from 'react-hook-form'
 
-import './styles.css';
+import './styles.css'
 
 const Input = (props: Partial<UseFormRegisterReturn> & { type?: string }) => (
   <input {...props} />
-);
+)
 
 type Option = {
-  label: React.ReactNode;
-  value: string | number | string[];
-};
+  label: React.ReactNode
+  value: string | number | string[]
+}
 
-type SelectProps = UseFormRegisterReturn & { options: Option[] };
+type SelectProps = UseFormRegisterReturn & { options: Option[] }
 
 const Select = ({ options, ...props }: SelectProps) => (
   <select {...props}>
@@ -25,31 +25,31 @@ const Select = ({ options, ...props }: SelectProps) => (
       <option value={value}>{label}</option>
     ))}
   </select>
-);
+)
 
 type FormProps<TFormValues> = {
-  onSubmit: SubmitHandler<TFormValues>;
-  children: (methods: UseFormReturn<TFormValues>) => React.ReactNode;
-};
+  onSubmit: SubmitHandler<TFormValues>
+  children: (methods: UseFormReturn<TFormValues>) => React.ReactNode
+}
 
 const Form = <TFormValues extends Record<string, any> = Record<string, any>>({
   onSubmit,
   children,
 }: FormProps<TFormValues>) => {
-  const methods = useForm<TFormValues>();
+  const methods = useForm<TFormValues>()
   return (
     <form onSubmit={methods.handleSubmit(onSubmit)}>{children(methods)}</form>
-  );
-};
+  )
+}
 
 type FormValues = {
-  firstName: string;
-  lastName: string;
-  sex: string;
-};
+  firstName: string
+  lastName: string
+  sex: string
+}
 
 export default function App() {
-  const onSubmit = (data: FormValues) => alert(JSON.stringify(data));
+  const onSubmit = (data: FormValues) => alert(JSON.stringify(data))
 
   return (
     <div className="App">
@@ -71,5 +71,5 @@ export default function App() {
         )}
       </Form>
     </div>
-  );
+  )
 }

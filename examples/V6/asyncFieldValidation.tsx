@@ -1,16 +1,16 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { useForm } from 'react-hook-form'
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export default function App() {
-  const { register, handleSubmit, errors } = useForm();
+  const { register, handleSubmit, errors } = useForm()
   const onSubmit = (data) => {
-    alert(JSON.stringify(data));
-  };
+    alert(JSON.stringify(data))
+  }
 
-  console.log(errors);
+  console.log(errors)
 
   return (
     <div className="App">
@@ -22,8 +22,8 @@ export default function App() {
             placeholder="Bill"
             ref={register({
               validate: async (value) => {
-                await sleep(3000);
-                return value === 'bill';
+                await sleep(3000)
+                return value === 'bill'
               },
             })}
           />
@@ -51,5 +51,5 @@ export default function App() {
         <button type="submit">Submit</button>
       </form>
     </div>
-  );
+  )
 }

@@ -1,15 +1,15 @@
-import React, { useEffect } from 'react';
-import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import React, { useEffect } from 'react'
+import ReactDOM from 'react-dom'
+import { useForm } from 'react-hook-form'
 
 export default function App() {
   const { register, handleSubmit, reset } = useForm({
     mode: 'onChange',
-  });
+  })
   const onSubmit = (data, e) => {
-    e.target.reset(); // reset after form submit
-    alert(JSON.stringify(data));
-  };
+    e.target.reset() // reset after form submit
+    alert(JSON.stringify(data))
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -62,7 +62,7 @@ export default function App() {
         value="Custom Reset Field Values & Errors"
       />
     </form>
-  );
+  )
 }
 
-ReactDOM.render(<Form />, rootElement);
+ReactDOM.render(<Form />, rootElement)

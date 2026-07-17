@@ -1,9 +1,9 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
-import type { FieldError, FieldValues, Resolver } from '../types';
-import { useForm } from '../useForm';
+import type { FieldError, FieldValues, Resolver } from '../types'
+import { useForm } from '../useForm'
 
-import type { Equal, Expect } from './__fixtures__';
+import type { Equal, Expect } from './__fixtures__'
 
 /** {@link UseFormHandleSubmit} */ {
   /** it should infer the correct defaultValues from useForm */ {
@@ -13,23 +13,23 @@ import type { Equal, Expect } from './__fixtures__';
         test: '',
         test1: 2,
       },
-    });
+    })
 
     handleSubmit((data) => {
-      type _t = Expect<Equal<typeof data, { test: string; test1: number }>>;
-    });
+      type _t = Expect<Equal<typeof data, { test: string; test1: number }>>
+    })
   }
 
   /** it should infer the correct defaultValues from useForm generic */ {
     /* eslint-disable react-hooks/rules-of-hooks */
     const { handleSubmit } = useForm<{
-      test: string;
-      test1: number;
-    }>();
+      test: string
+      test1: number
+    }>()
 
     handleSubmit((data) => {
-      type _t = Expect<Equal<typeof data, { test: string; test1: number }>>;
-    });
+      type _t = Expect<Equal<typeof data, { test: string; test1: number }>>
+    })
   }
 }
 
@@ -42,37 +42,37 @@ import type { Equal, Expect } from './__fixtures__';
         test1: z.number(),
       }),
     ),
-  });
+  })
 
   handleSubmit((data) => {
     type _t = Expect<
       Equal<
         typeof data,
         {
-          test: string;
-          test1: number;
+          test: string
+          test1: number
         }
       >
-    >;
-  });
+    >
+  })
 }
 
 const schema = z.object({
   id: z.number(),
-});
+})
 
 /** it should correctly infer the output type from a schema */ {
   /* eslint-disable react-hooks/rules-of-hooks */
   const form = useForm({
     resolver: mockZodResolver(schema),
-  });
+  })
 
-  const watchedId = form.watch('id');
-  type _t1 = Expect<Equal<typeof watchedId, number>>;
+  const watchedId = form.watch('id')
+  type _t1 = Expect<Equal<typeof watchedId, number>>
 
   form.handleSubmit((data) => {
-    type _t = Expect<Equal<typeof data, { id: number }>>;
-  });
+    type _t = Expect<Equal<typeof data, { id: number }>>
+  })
 }
 
 /** it should correctly infer the output type from a zod schema with a transform */ {
@@ -81,11 +81,11 @@ const schema = z.object({
     resolver: mockZodResolver(
       z.object({ id: z.number().transform((val) => String(val)) }),
     ),
-  });
+  })
 
   form.handleSubmit((data) => {
-    type _t = Expect<Equal<typeof data, { id: string }>>;
-  });
+    type _t = Expect<Equal<typeof data, { id: string }>>
+  })
 }
 
 /** it should infer the correct TTransformedValues from useForm generic */ {
@@ -94,15 +94,15 @@ const schema = z.object({
     { test: string },
     unknown,
     { test: string } | { test1: number }
-  >();
+  >()
 
   handleSubmit((data) => {
     // @ts-expect-error `data` should be union and thus should not be assignable to `{ test: string }`
-    type _t1 = Expect<Equal<typeof data, { test: string }>>;
+    type _t1 = Expect<Equal<typeof data, { test: string }>>
     // @ts-expect-error `data` should be union and thus should not be assignable to `{ test1: number }`
-    type _t2 = Expect<Equal<typeof data, { test1: number }>>;
-    type _t3 = Expect<Equal<typeof data, { test: string } | { test1: number }>>;
-  });
+    type _t2 = Expect<Equal<typeof data, { test1: number }>>
+    type _t3 = Expect<Equal<typeof data, { test: string } | { test1: number }>>
+  })
 }
 
 /** {@link UseFormGetFieldState} */ {
@@ -112,21 +112,21 @@ const schema = z.object({
       defaultValues: {
         test: '',
       },
-    });
+    })
 
-    const state = getFieldState('test');
+    const state = getFieldState('test')
     type _t = Expect<
       Equal<
         typeof state,
         {
-          invalid: boolean;
-          isDirty: boolean;
-          isTouched: boolean;
-          isValidating: boolean;
-          error?: FieldError;
+          invalid: boolean
+          isDirty: boolean
+          isTouched: boolean
+          isValidating: boolean
+          error?: FieldError
         }
       >
-    >;
+    >
   }
 
   /** it should return associated field state when formState is supplied */ {
@@ -135,21 +135,21 @@ const schema = z.object({
       defaultValues: {
         test: '',
       },
-    });
+    })
 
-    const state = getFieldState('test', formState);
+    const state = getFieldState('test', formState)
     type _t = Expect<
       Equal<
         typeof state,
         {
-          invalid: boolean;
-          isDirty: boolean;
-          isTouched: boolean;
-          isValidating: boolean;
-          error?: FieldError;
+          invalid: boolean
+          isDirty: boolean
+          isTouched: boolean
+          isValidating: boolean
+          error?: FieldError
         }
       >
-    >;
+    >
   }
 }
 
@@ -157,8 +157,8 @@ const schema = z.object({
   /** it should allow subscribing to submit state fields */ {
     /* eslint-disable react-hooks/rules-of-hooks */
     const { subscribe } = useForm<{
-      test: string;
-    }>();
+      test: string
+    }>()
 
     subscribe({
       formState: {
@@ -166,10 +166,10 @@ const schema = z.object({
         submitCount: true,
       },
       callback: (state) => {
-        type _t1 = Expect<Equal<typeof state.isSubmitted, boolean | undefined>>;
-        type _t2 = Expect<Equal<typeof state.submitCount, number | undefined>>;
+        type _t1 = Expect<Equal<typeof state.isSubmitted, boolean | undefined>>
+        type _t2 = Expect<Equal<typeof state.submitCount, number | undefined>>
       },
-    });
+    })
   }
 }
 
@@ -177,24 +177,24 @@ export function mockZodResolver<Input extends FieldValues, Context, Output>(
   schema: z.ZodSchema<Output, any, Input>,
   schemaOptions?: Partial<z.ParseParams>,
   resolverOptions?: {
-    mode?: 'async' | 'sync';
-    raw?: false;
+    mode?: 'async' | 'sync'
+    raw?: false
   },
-): Resolver<Input, Context, Output>;
+): Resolver<Input, Context, Output>
 // passing `resolverOptions.raw: true` you get back the input type
 export function mockZodResolver<Input extends FieldValues, Context, Output>(
   schema: z.ZodSchema<Output, any, Input>,
   schemaOptions: Partial<z.ParseParams> | undefined,
   resolverOptions: {
-    mode?: 'async' | 'sync';
-    raw: true;
+    mode?: 'async' | 'sync'
+    raw: true
   },
-): Resolver<Input, Context, Input>;
+): Resolver<Input, Context, Input>
 
 export function mockZodResolver<
   Input extends FieldValues,
   Context,
   Output,
 >(): Resolver<Input, Context, Output | Input> {
-  return {} as any;
+  return {} as any
 }

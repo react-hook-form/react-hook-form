@@ -1,59 +1,59 @@
-import { PROTOTYPE_KEYWORDS } from '../constants';
+import { PROTOTYPE_KEYWORDS } from '../constants'
 
-import isEmptyObject from './isEmptyObject';
-import isKey from './isKey';
-import isNullOrUndefined from './isNullOrUndefined';
-import isObject from './isObject';
-import isString from './isString';
-import isUndefined from './isUndefined';
-import stringToPath from './stringToPath';
+import isEmptyObject from './isEmptyObject'
+import isKey from './isKey'
+import isNullOrUndefined from './isNullOrUndefined'
+import isObject from './isObject'
+import isString from './isString'
+import isUndefined from './isUndefined'
+import stringToPath from './stringToPath'
 
 function baseGet(object: any, updatePath: (string | number)[]) {
-  const length = updatePath.slice(0, -1).length;
-  let index = 0;
+  const length = updatePath.slice(0, -1).length
+  let index = 0
 
   while (index < length) {
     if (isNullOrUndefined(object)) {
-      object = undefined;
-      break;
+      object = undefined
+      break
     }
-    object = object[updatePath[index]];
-    index++;
+    object = object[updatePath[index]]
+    index++
   }
 
-  return object;
+  return object
 }
 
 function isEmptyArray(obj: unknown[]) {
   for (const key in obj) {
     if (obj.hasOwnProperty(key) && !isUndefined(obj[key])) {
-      return false;
+      return false
     }
   }
-  return true;
+  return true
 }
 
 export default function unset(object: any, path: string | (string | number)[]) {
   if (isString(path) && Object.prototype.hasOwnProperty.call(object, path)) {
-    delete object[path];
-    return object;
+    delete object[path]
+    return object
   }
 
   const paths = Array.isArray(path)
     ? path
     : isKey(path)
       ? [path]
-      : stringToPath(path);
+      : stringToPath(path)
   if (paths.some((segment) => PROTOTYPE_KEYWORDS.includes(String(segment)))) {
-    return object;
+    return object
   }
-  const childObject = paths.length === 1 ? object : baseGet(object, paths);
+  const childObject = paths.length === 1 ? object : baseGet(object, paths)
 
-  const index = paths.length - 1;
-  const key = paths[index];
+  const index = paths.length - 1
+  const key = paths[index]
 
   if (childObject) {
-    delete childObject[key];
+    delete childObject[key]
   }
 
   if (
@@ -61,8 +61,8 @@ export default function unset(object: any, path: string | (string | number)[]) {
     ((isObject(childObject) && isEmptyObject(childObject)) ||
       (Array.isArray(childObject) && isEmptyArray(childObject)))
   ) {
-    unset(object, paths.slice(0, -1));
+    unset(object, paths.slice(0, -1))
   }
 
-  return object;
+  return object
 }

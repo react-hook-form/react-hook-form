@@ -1,11 +1,11 @@
-import React from 'react';
-import { useForm, ValidationMode } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
+import React from 'react'
+import { useForm, ValidationMode } from 'react-hook-form'
+import { useParams } from 'react-router-dom'
 
-let renderCounter = 0;
+let renderCounter = 0
 
 const FormStateWithNestedFields = () => {
-  const { mode } = useParams();
+  const { mode } = useParams()
   const {
     register,
     handleSubmit,
@@ -22,13 +22,13 @@ const FormStateWithNestedFields = () => {
     reset,
   } = useForm<{
     left: {
-      test1: string;
-      test2: string;
-    };
+      test1: string
+      test2: string
+    }
     right: {
-      test1: string;
-      test2: string;
-    };
+      test1: string
+      test2: string
+    }
   }>({
     mode: mode as keyof ValidationMode,
     defaultValues: {
@@ -41,9 +41,9 @@ const FormStateWithNestedFields = () => {
         test2: '',
       },
     },
-  });
+  })
 
-  renderCounter++;
+  renderCounter++
 
   return (
     <form onSubmit={handleSubmit(() => {})}>
@@ -101,7 +101,7 @@ const FormStateWithNestedFields = () => {
       </button>
       <div id="renderCount">{renderCounter}</div>
     </form>
-  );
-};
+  )
+}
 
-export default FormStateWithNestedFields;
+export default FormStateWithNestedFields

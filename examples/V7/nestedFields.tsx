@@ -1,5 +1,5 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import React from 'react'
+import { useForm } from 'react-hook-form'
 
 export function FormSection1({ register }) {
   return (
@@ -19,7 +19,7 @@ export function FormSection1({ register }) {
         />
       </div>
     </>
-  );
+  )
 }
 
 export function FormSection2({ register }) {
@@ -69,14 +69,14 @@ export function FormSection2({ register }) {
         />
       </div>
     </>
-  );
+  )
 }
 
 export default function App() {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit } = useForm()
   const onSubmit = (data) => {
-    alert(JSON.stringify(data));
-  };
+    alert(JSON.stringify(data))
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -84,5 +84,5 @@ export default function App() {
       <FormSection2 register={register} />
       <input type="submit" />
     </form>
-  );
+  )
 }

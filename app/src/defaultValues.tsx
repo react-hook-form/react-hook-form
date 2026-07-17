@@ -1,17 +1,17 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import React from 'react'
+import { useForm } from 'react-hook-form'
 
 function DefaultValues() {
   const { register } = useForm<{
-    test: string;
+    test: string
     test1: {
-      firstName: string;
-      lastName: string[];
+      firstName: string
+      lastName: string[]
       deep: {
-        nest: string;
-      };
-    };
-    checkbox: string[];
+        nest: string
+      }
+    }
+    checkbox: string[]
   }>({
     defaultValues: {
       test: 'test',
@@ -24,8 +24,8 @@ function DefaultValues() {
         },
       },
     },
-  });
-  const [show, setShow] = React.useState(true);
+  })
+  const [show, setShow] = React.useState(true)
 
   return (
     <>
@@ -45,7 +45,7 @@ function DefaultValues() {
         toggle
       </button>
     </>
-  );
+  )
 }
 
-export default DefaultValues;
+export default DefaultValues

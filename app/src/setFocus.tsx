@@ -1,25 +1,25 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import type { DefaultValues } from 'react-hook-form';
+import React from 'react'
+import type { DefaultValues } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 
 type FormValues = {
-  focusInput: string;
-  selectInputContent: string;
-  focusTextarea: string;
-  selectTextareaContent: string;
-};
+  focusInput: string
+  selectInputContent: string
+  focusTextarea: string
+  selectTextareaContent: string
+}
 
 const defaultValues: DefaultValues<FormValues> = {
   focusInput: 'Input should be focused',
   selectInputContent: 'Content should be selected',
   focusTextarea: 'Textarea should be focused',
   selectTextareaContent: 'Content should be selected',
-};
+}
 
 const SetFocus = () => {
   const { register, setFocus } = useForm<FormValues>({
     defaultValues,
-  });
+  })
 
   return (
     <form>
@@ -67,7 +67,7 @@ const SetFocus = () => {
         </button>
       </fieldset>
     </form>
-  );
-};
+  )
+}
 
-export default SetFocus;
+export default SetFocus

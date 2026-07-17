@@ -1,25 +1,25 @@
-import React from 'react';
-import { useForm, Controller, ValidationMode } from 'react-hook-form';
-import ReactSelect from 'react-select';
 import {
-  TextField,
   Checkbox,
-  Select,
-  MenuItem,
-  Switch,
-  RadioGroup,
   FormControlLabel,
+  MenuItem,
   Radio,
-} from '@mui/material';
-import { useParams } from 'react-router-dom';
+  RadioGroup,
+  Select,
+  Switch,
+  TextField,
+} from '@mui/material'
+import React from 'react'
+import { Controller, useForm, ValidationMode } from 'react-hook-form'
+import { useParams } from 'react-router-dom'
+import ReactSelect from 'react-select'
 
-let renderCount = 0;
+let renderCount = 0
 
 const options = [
   { value: 'chocolate', label: 'Chocolate' },
   { value: 'strawberry', label: 'Strawberry' },
   { value: 'vanilla', label: 'Vanilla' },
-] as const;
+] as const
 
 const defaultValues = {
   Native: '',
@@ -29,37 +29,37 @@ const defaultValues = {
   Checkbox: false,
   switch: false,
   RadioGroup: '',
-};
+}
 
 type Form = {
-  Native: string;
-  TextField: string;
-  Select: string;
-  ReactSelect: string;
-  Checkbox: boolean;
-  switch: boolean;
-  RadioGroup: string;
-};
+  Native: string
+  TextField: string
+  Select: string
+  ReactSelect: string
+  Checkbox: boolean
+  switch: boolean
+  RadioGroup: string
+}
 
-const PureReactSelect = React.memo(ReactSelect);
+const PureReactSelect = React.memo(ReactSelect)
 
 export default function Field() {
-  const { mode } = useParams();
+  const { mode } = useParams()
   const methods = useForm<Form>({
     defaultValues,
     mode: mode as keyof ValidationMode,
-  });
+  })
   const {
     handleSubmit,
     formState: { errors },
     reset,
     control,
-  } = methods;
+  } = methods
 
-  const [, setRerender] = React.useState(0);
-  renderCount++;
+  const [, setRerender] = React.useState(0)
+  renderCount++
 
-  const rerender = () => setRerender(Math.random());
+  const rerender = () => setRerender(Math.random())
 
   return (
     <form onSubmit={handleSubmit(() => {})}>
@@ -190,12 +190,12 @@ export default function Field() {
             Checkbox: false,
             switch: false,
             RadioGroup: '',
-          });
+          })
         }}
       >
         Reset Form
       </button>
       <button id="submit">submit</button>
     </form>
-  );
+  )
 }

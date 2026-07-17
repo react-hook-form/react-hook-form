@@ -1,19 +1,19 @@
-import React from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import React from 'react'
+import { useFieldArray, useForm } from 'react-hook-form'
 
 export default function UseFieldArraySimpleExample() {
   const { register, control, handleSubmit } = useForm({
     defaultValues: {
       users: [{ name: '' }],
     },
-  });
+  })
 
   const { fields, append } = useFieldArray({
     control,
     name: 'users',
-  });
+  })
 
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = (data) => console.log(data)
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -29,5 +29,5 @@ export default function UseFieldArraySimpleExample() {
       </button>
       <input type="submit" />
     </form>
-  );
+  )
 }

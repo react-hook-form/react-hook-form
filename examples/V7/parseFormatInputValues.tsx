@@ -1,24 +1,24 @@
-import React from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import React from 'react'
+import { Controller, useForm } from 'react-hook-form'
 
 const ParseFormatTextarea = ({ value = [], onChange }) => {
-  const [text, setText] = React.useState(value);
+  const [text, setText] = React.useState(value)
 
   const handleChange = (e) => {
-    const value = e.target.value.split('\n');
+    const value = e.target.value.split('\n')
 
-    setText(e.target.value);
-    onChange(value);
-  };
+    setText(e.target.value)
+    onChange(value)
+  }
 
-  return <textarea onChange={handleChange} value={text} />;
-};
+  return <textarea onChange={handleChange} value={text} />
+}
 
 export default function App() {
-  const { control, handleSubmit } = useForm();
+  const { control, handleSubmit } = useForm()
   const onSubmit = (data) => {
-    console.log(data);
-  };
+    console.log(data)
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -44,5 +44,5 @@ export default function App() {
 
       <button type="submit">Submit</button>
     </form>
-  );
+  )
 }

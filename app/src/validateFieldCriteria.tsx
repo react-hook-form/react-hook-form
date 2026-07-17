@@ -1,7 +1,7 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import React from 'react'
+import { useForm } from 'react-hook-form'
 
-let renderCounter = 0;
+let renderCounter = 0
 
 const ValidateFieldCriteria: React.FC = () => {
   const {
@@ -11,26 +11,26 @@ const ValidateFieldCriteria: React.FC = () => {
     setError,
     clearErrors,
   } = useForm<{
-    firstName: string;
-    lastName: string;
-    min: string;
-    max: string;
-    minDate: string;
-    maxDate: string;
-    minLength: string;
-    minRequiredLength: string;
-    selectNumber: string;
-    pattern: string;
-    radio: string;
-    checkbox: string;
-    multiple: string;
-    validate: string;
+    firstName: string
+    lastName: string
+    min: string
+    max: string
+    minDate: string
+    maxDate: string
+    minLength: string
+    minRequiredLength: string
+    selectNumber: string
+    pattern: string
+    radio: string
+    checkbox: string
+    multiple: string
+    validate: string
   }>({
     criteriaMode: 'all',
-  });
-  const onSubmit = () => {};
+  })
+  const onSubmit = () => {}
 
-  renderCounter++;
+  renderCounter++
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -170,7 +170,7 @@ const ValidateFieldCriteria: React.FC = () => {
               minLength: 'test1',
               required: 'test2',
             },
-          });
+          })
         }}
       >
         Trigger Error
@@ -180,14 +180,14 @@ const ValidateFieldCriteria: React.FC = () => {
         type="button"
         id="clear"
         onClick={() => {
-          clearErrors('firstName');
+          clearErrors('firstName')
         }}
       >
         Clear Error
       </button>
       <div id="renderCount">{renderCounter}</div>
     </form>
-  );
-};
+  )
+}
 
-export default ValidateFieldCriteria;
+export default ValidateFieldCriteria

@@ -1,4 +1,4 @@
-import convertToArrayPayload from '../utils/convertToArrayPayload';
+import convertToArrayPayload from '../utils/convertToArrayPayload'
 
 export default <T extends string | readonly string[] | undefined>(
   name?: T,
@@ -15,4 +15,4 @@ export default <T extends string | readonly string[] | undefined>(
         ? currentName === signalName || currentName.startsWith(signalName + '.')
         : currentName.startsWith(signalName) ||
           signalName.startsWith(currentName)),
-  );
+  )

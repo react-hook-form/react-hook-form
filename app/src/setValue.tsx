@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
 
-let renderCounter = 0;
+let renderCounter = 0
 
 const SetValue: React.FC = () => {
   const {
@@ -10,40 +10,40 @@ const SetValue: React.FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<{
-    firstName: string;
-    lastName: string;
-    age: string;
-    trigger: string;
-    checkbox: boolean;
-    checkboxArray: string[];
-    radio: string;
-    select: string;
-    multiple: string[];
-    array: string[];
+    firstName: string
+    lastName: string
+    age: string
+    trigger: string
+    checkbox: boolean
+    checkboxArray: string[]
+    radio: string
+    select: string
+    multiple: string[]
+    array: string[]
     object: {
-      firstName: string;
-      lastName: string;
-      middleName: string;
-    };
-    nestedValue: string[];
-  }>();
+      firstName: string
+      lastName: string
+      middleName: string
+    }
+    nestedValue: string[]
+  }>()
 
   useEffect(() => {
-    register('lastName', { required: true });
-    setValue('firstName', 'wrong', { shouldDirty: true });
-    setValue('age', '2', { shouldDirty: true });
-    setValue('trigger', '', { shouldDirty: true, shouldValidate: true });
-    setValue('checkbox', true, { shouldDirty: true });
+    register('lastName', { required: true })
+    setValue('firstName', 'wrong', { shouldDirty: true })
+    setValue('age', '2', { shouldDirty: true })
+    setValue('trigger', '', { shouldDirty: true, shouldValidate: true })
+    setValue('checkbox', true, { shouldDirty: true })
     setValue('checkboxArray', ['2', '3'], {
       shouldDirty: true,
       shouldValidate: true,
-    });
-    setValue('radio', 'radio', { shouldDirty: true });
-    setValue('select', 'a', { shouldDirty: true });
-    setValue('multiple', ['a', 'b'], { shouldDirty: true });
+    })
+    setValue('radio', 'radio', { shouldDirty: true })
+    setValue('select', 'a', { shouldDirty: true })
+    setValue('multiple', ['a', 'b'], { shouldDirty: true })
     setValue('array', ['array.0', 'array.1', 'array.2'], {
       shouldDirty: true,
-    });
+    })
     setValue(
       'object',
       {
@@ -52,14 +52,14 @@ const SetValue: React.FC = () => {
         middleName: 'middleName',
       },
       { shouldDirty: true },
-    );
+    )
     setValue('nestedValue', [], {
       shouldValidate: true,
       shouldDirty: true,
-    });
-  }, [register, setValue]);
+    })
+  }, [register, setValue])
 
-  renderCounter++;
+  renderCounter++
 
   return (
     <form onSubmit={handleSubmit(() => {})}>
@@ -94,7 +94,7 @@ const SetValue: React.FC = () => {
         name="lastName"
         placeholder="lastName"
         onChange={() => {
-          setValue('lastName', 'test');
+          setValue('lastName', 'test')
         }}
       />
       {errors.lastName && <p id="lastName">Last name error</p>}
@@ -125,11 +125,11 @@ const SetValue: React.FC = () => {
               middleName: 'middleName1',
             },
             { shouldDirty: true },
-          );
+          )
           setValue('array', ['array[0]1', 'array[1]1', 'array[2]1'], {
             shouldDirty: true,
-          });
-          setValue('nestedValue', ['a', 'b'], { shouldDirty: true });
+          })
+          setValue('nestedValue', ['a', 'b'], { shouldDirty: true })
         }}
       >
         Set Multiple Values
@@ -138,7 +138,7 @@ const SetValue: React.FC = () => {
       <button id="submit">Submit</button>
       <div id="renderCount">{renderCounter}</div>
     </form>
-  );
-};
+  )
+}
 
-export default SetValue;
+export default SetValue

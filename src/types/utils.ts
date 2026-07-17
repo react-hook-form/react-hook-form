@@ -1,4 +1,4 @@
-import type { NestedValue } from './form';
+import type { NestedValue } from './form'
 
 /*
 Projects that React Hook Form installed don't include the DOM library need these interfaces to compile.
@@ -9,17 +9,17 @@ Warning: all of these interfaces are empty.
 If you want type definitions for various properties, you need to add `--lib DOM` (via command line or tsconfig.json).
 */
 
-export type Noop = () => void;
+export type Noop = () => void
 
 interface File extends Blob {
-  readonly lastModified: number;
-  readonly name: string;
+  readonly lastModified: number
+  readonly name: string
 }
 
 interface FileList {
-  readonly length: number;
-  item(index: number): File | null;
-  [index: number]: File;
+  readonly length: number
+  item(index: number): File | null
+  [index: number]: File
 }
 
 export type Primitive =
@@ -29,29 +29,29 @@ export type Primitive =
   | number
   | boolean
   | symbol
-  | bigint;
+  | bigint
 
-export type BrowserNativeObject = Date | FileList | File;
+export type BrowserNativeObject = Date | FileList | File
 
-export type EmptyObject = { [K in string | number]: never };
+export type EmptyObject = { [K in string | number]: never }
 
-export type NonUndefined<T> = T extends undefined ? never : T;
+export type NonUndefined<T> = T extends undefined ? never : T
 
 export type LiteralUnion<T extends U, U extends Primitive> =
   | T
-  | (U & { _?: never });
+  | (U & { _?: never })
 
 export type ExtractObjects<T> = T extends infer U
   ? U extends object
     ? U
     : never
-  : never;
+  : never
 
 type IsPrimitiveLike<T> = T extends Primitive
   ? true
   : T extends Primitive & object
     ? true
-    : false;
+    : false
 
 export type DeepPartial<T> =
   IsPrimitiveLike<T> extends true
@@ -61,8 +61,8 @@ export type DeepPartial<T> =
       : {
           [K in keyof T]?: ExtractObjects<T[K]> extends never
             ? T[K]
-            : DeepPartial<T[K]>;
-        };
+            : DeepPartial<T[K]>
+        }
 
 export type DeepPartialSkipArrayKey<T> =
   IsPrimitiveLike<T> extends true
@@ -71,7 +71,7 @@ export type DeepPartialSkipArrayKey<T> =
       ? T
       : T extends ReadonlyArray<any>
         ? { [K in keyof T]: DeepPartialSkipArrayKey<T[K]> }
-        : { [K in keyof T]?: DeepPartialSkipArrayKey<T[K]> };
+        : { [K in keyof T]?: DeepPartialSkipArrayKey<T[K]> }
 
 /**
  * Checks whether the type is any
@@ -82,7 +82,7 @@ export type DeepPartialSkipArrayKey<T> =
  * IsAny<string> = false
  * ```
  */
-export type IsAny<T> = 0 extends 1 & T ? true : false;
+export type IsAny<T> = 0 extends 1 & T ? true : false
 
 /**
  * Checks whether the type is never
@@ -92,7 +92,7 @@ export type IsAny<T> = 0 extends 1 & T ? true : false;
  * IsNever<string> = false
  * ```
  */
-export type IsNever<T> = [T] extends [never] ? true : false;
+export type IsNever<T> = [T] extends [never] ? true : false
 
 /**
  * Checks whether T1 can be exactly (mutually) assigned to T2
@@ -112,7 +112,7 @@ export type IsEqual<T1, T2> = T1 extends T2
   ? (<G>() => G extends T1 ? 1 : 2) extends <G>() => G extends T2 ? 1 : 2
     ? true
     : false
-  : false;
+  : false
 
 export type DeepMap<T, TValue> =
   IsAny<T> extends true
@@ -123,7 +123,7 @@ export type DeepMap<T, TValue> =
         ? Array<DeepMap<NonUndefined<U>, TValue> | undefined>
         : T extends object
           ? { [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue> }
-          : TValue;
+          : TValue
 
 export type IsFlatObject<T extends object> =
   Extract<
@@ -131,7 +131,7 @@ export type IsFlatObject<T extends object> =
     any[] | object
   > extends never
     ? true
-    : false;
+    : false
 
 export type Merge<A, B> = {
   [K in keyof A | keyof B]?: K extends keyof A & keyof B
@@ -142,5 +142,5 @@ export type Merge<A, B> = {
       ? A[K]
       : K extends keyof B
         ? B[K]
-        : never;
-};
+        : never
+}

@@ -1,12 +1,12 @@
-import schemaErrorLookup from '../../logic/schemaErrorLookup';
+import schemaErrorLookup from '../../logic/schemaErrorLookup'
 
 describe('errorsLookup', () => {
   it('should be able to look up the error', () => {
     expect(
       schemaErrorLookup<{
         test: {
-          deep: string;
-        };
+          deep: string
+        }
       }>(
         {
           test: {
@@ -27,7 +27,7 @@ describe('errorsLookup', () => {
         message: 'error',
       },
       name: 'test.deep',
-    });
+    })
 
     expect(
       schemaErrorLookup(
@@ -46,7 +46,7 @@ describe('errorsLookup', () => {
         message: 'error',
       },
       name: 'test',
-    });
+    })
 
     expect(
       schemaErrorLookup(
@@ -65,18 +65,18 @@ describe('errorsLookup', () => {
         message: 'error',
       },
       name: 'test',
-    });
+    })
 
     expect(
       schemaErrorLookup<{
         test: {
-          deep: string;
-        };
+          deep: string
+        }
         test1: {
           nested: {
-            deepNested: string;
-          };
-        };
+            deepNested: string
+          }
+        }
       }>(
         {
           test: {
@@ -102,8 +102,8 @@ describe('errorsLookup', () => {
     ).toEqual({
       error: { message: 'error', type: 'deepNested' },
       name: 'test1.nested.deepNested',
-    });
-  });
+    })
+  })
 
   it('should return undefined when not found', () => {
     expect(
@@ -117,7 +117,7 @@ describe('errorsLookup', () => {
         {},
         'test1234',
       ),
-    ).toEqual({ error: undefined, name: 'test1234' });
+    ).toEqual({ error: undefined, name: 'test1234' })
 
     expect(
       schemaErrorLookup(
@@ -132,14 +132,14 @@ describe('errorsLookup', () => {
       ),
     ).toEqual({
       name: 'testX.1.test',
-    });
+    })
 
     expect(
       schemaErrorLookup<{
         test: {
-          test: string;
-          test1: string;
-        };
+          test: string
+          test1: string
+        }
       }>(
         {
           test: {
@@ -158,16 +158,16 @@ describe('errorsLookup', () => {
       ),
     ).toEqual({
       name: 'test.test2',
-    });
-  });
+    })
+  })
 
   it('should prevent error from reported when field is identified', () => {
     expect(
       schemaErrorLookup<{
         test: {
-          test: string;
-          test1: string;
-        };
+          test: string
+          test1: string
+        }
       }>(
         {
           test: {
@@ -195,14 +195,14 @@ describe('errorsLookup', () => {
       ),
     ).toEqual({
       name: 'test.test1.whatever',
-    });
+    })
 
     expect(
       schemaErrorLookup<{
         test: {
-          test: string;
-          test1: string;
-        };
+          test: string
+          test1: string
+        }
       }>(
         {
           test: {
@@ -230,8 +230,8 @@ describe('errorsLookup', () => {
       ),
     ).toEqual({
       name: 'test.testXYZ',
-    });
-  });
+    })
+  })
 
   it('should find the nearest root error', () => {
     const errors = {
@@ -255,7 +255,7 @@ describe('errorsLookup', () => {
           },
         },
       },
-    };
+    }
 
     expect(
       schemaErrorLookup<{ test: { nested: { deepNested: string }[] }[] }>(
@@ -266,7 +266,7 @@ describe('errorsLookup', () => {
     ).toEqual({
       error: { message: 'correct-root', type: 'root' },
       name: 'test.0.nested.root',
-    });
+    })
 
     expect(
       schemaErrorLookup<{ test: { nested: { deepNested: string }[] }[] }>(
@@ -277,6 +277,6 @@ describe('errorsLookup', () => {
     ).toEqual({
       error: { message: 'error', type: 'deepNested' },
       name: 'test.0.nested.0.deepNested',
-    });
-  });
-});
+    })
+  })
+})

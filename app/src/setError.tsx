@@ -1,16 +1,16 @@
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { FieldPath } from '../../src/types';
+import React, { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { FieldPath } from '../../src/types'
 
 type FormInputs = {
-  firstName: string;
-  lastName: string;
-  age: string;
-  test: string;
-  test1: string;
-  test2: string;
-  username: string;
-};
+  firstName: string
+  lastName: string
+  age: string
+  test: string
+  test1: string
+  test2: string
+  username: string
+}
 
 const SetError: React.FC = () => {
   const {
@@ -18,22 +18,22 @@ const SetError: React.FC = () => {
     setError,
     clearErrors,
     formState: { errors },
-  } = useForm<FormInputs>();
+  } = useForm<FormInputs>()
 
   useEffect(() => {
-    register('firstName');
-    register('lastName');
-    register('age');
-    register('test');
-    register('test1');
-    register('username');
-    register('test2');
+    register('firstName')
+    register('lastName')
+    register('age')
+    register('test')
+    register('test1')
+    register('username')
+    register('test2')
 
-    setError('firstName', { type: 'wrong' });
-    setError('lastName', { type: 'wrong' });
-    setError('age', { type: 'wrong' });
-    setError('test', { type: 'test', message: 'testMessage' });
-    [
+    setError('firstName', { type: 'wrong' })
+    setError('lastName', { type: 'wrong' })
+    setError('age', { type: 'wrong' })
+    setError('test', { type: 'test', message: 'testMessage' })
+    ;[
       {
         type: 'required',
         name: 'test1',
@@ -46,14 +46,14 @@ const SetError: React.FC = () => {
       },
     ].forEach(({ name, type, message }) =>
       setError(name as FieldPath<FormInputs>, { type, message }),
-    );
+    )
     setError('username', {
       types: {
         required: 'This is required',
         minLength: 'This is minLength',
       },
-    });
-  }, [register, setError]);
+    })
+  }, [register, setError])
 
   return (
     <div>
@@ -82,7 +82,7 @@ const SetError: React.FC = () => {
         value="clearError1"
         type="button"
         onClick={() => {
-          clearErrors('firstName');
+          clearErrors('firstName')
         }}
       />
 
@@ -91,7 +91,7 @@ const SetError: React.FC = () => {
         value="clearError2"
         type="button"
         onClick={() => {
-          clearErrors('lastName');
+          clearErrors('lastName')
         }}
       />
 
@@ -100,7 +100,7 @@ const SetError: React.FC = () => {
         value="clearErrorArray"
         type="button"
         onClick={() => {
-          clearErrors(['firstName', 'lastName']);
+          clearErrors(['firstName', 'lastName'])
         }}
       />
 
@@ -109,11 +109,11 @@ const SetError: React.FC = () => {
         value="clearError"
         type="button"
         onClick={() => {
-          clearErrors();
+          clearErrors()
         }}
       />
     </div>
-  );
-};
+  )
+}
 
-export default SetError;
+export default SetError

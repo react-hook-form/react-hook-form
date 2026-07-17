@@ -1,1 +1,1 @@
-export default <T>(value: T) => (Array.isArray(value) ? value : [value]);
+export default <T>(value: T) => (Array.isArray(value) ? value : [value])

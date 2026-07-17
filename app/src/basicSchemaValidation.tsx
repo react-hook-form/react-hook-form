@@ -1,10 +1,10 @@
-import React from 'react';
-import { useForm, ValidationMode } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { useParams } from 'react-router-dom';
+import { yupResolver } from '@hookform/resolvers/yup'
+import React from 'react'
+import { useForm, ValidationMode } from 'react-hook-form'
+import { useParams } from 'react-router-dom'
+import * as yup from 'yup'
 
-let renderCounter = 0;
+let renderCounter = 0
 
 const validationSchema = yup
   .object()
@@ -35,36 +35,36 @@ const validationSchema = yup
     },
     [['exclusivelyRequiredOne', 'exclusivelyRequiredTwo']],
   )
-  .required();
+  .required()
 
 const BasicSchemaValidation: React.FC = () => {
-  const { mode } = useParams();
+  const { mode } = useParams()
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<{
-    firstName: string;
-    lastName: string;
-    min: string;
-    max: string;
-    minDate: string;
-    maxDate: string;
-    minLength: string;
-    minRequiredLength: string;
-    selectNumber: string;
-    pattern: string;
-    radio: string;
-    checkbox: string;
-    multiple: string;
-    validate: string;
+    firstName: string
+    lastName: string
+    min: string
+    max: string
+    minDate: string
+    maxDate: string
+    minLength: string
+    minRequiredLength: string
+    selectNumber: string
+    pattern: string
+    radio: string
+    checkbox: string
+    multiple: string
+    validate: string
   }>({
     resolver: yupResolver(validationSchema),
     mode: mode as keyof ValidationMode,
-  });
-  const onSubmit = () => {};
+  })
+  const onSubmit = () => {}
 
-  renderCounter++;
+  renderCounter++
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -107,7 +107,7 @@ const BasicSchemaValidation: React.FC = () => {
       <button>Submit</button>
       <div id="renderCount">{renderCounter}</div>
     </form>
-  );
-};
+  )
+}
 
-export default BasicSchemaValidation;
+export default BasicSchemaValidation

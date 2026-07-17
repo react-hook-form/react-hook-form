@@ -1,29 +1,28 @@
-import React from 'react';
-import { useForm, Control, useWatch, Controller } from 'react-hook-form';
-import { useRef } from 'react';
+import React, { useRef } from 'react'
+import { Control, Controller, useForm, useWatch } from 'react-hook-form'
 
 type FormInputs = {
-  test: string;
-  test1: string;
-  test2: string;
-};
+  test: string
+  test1: string
+  test2: string
+}
 
-let counter = 0;
+let counter = 0
 
 const GrandChild = ({
   control,
   index = 0,
 }: {
-  control: Control<FormInputs>;
-  index?: number;
+  control: Control<FormInputs>
+  index?: number
 }) => {
-  const counter1 = useRef(0);
+  const counter1 = useRef(0)
   const output = useWatch({
     name: 'test',
     control,
-  });
+  })
 
-  counter1.current++;
+  counter1.current++
 
   return (
     <div style={{ border: '2px solid blue', padding: 10, margin: 5 }}>
@@ -31,17 +30,17 @@ const GrandChild = ({
       <p id={`grandchild0${index}`}>{output}</p>
       <p id="grandChildCounter">Render counter: {counter1.current}</p>
     </div>
-  );
-};
+  )
+}
 
 const GrandChild1 = ({ control }: { control: Control<FormInputs> }) => {
-  const counter = useRef(0);
+  const counter = useRef(0)
   const output = useWatch<FormInputs>({
     name: ['test', 'test1'],
     control,
-  });
+  })
 
-  counter.current++;
+  counter.current++
 
   return (
     <div style={{ border: '2px solid blue', padding: 10, margin: 5 }}>
@@ -52,28 +51,28 @@ const GrandChild1 = ({ control }: { control: Control<FormInputs> }) => {
       </p>
       <p id="grandChild1Counter">Render counter: {counter.current}</p>
     </div>
-  );
-};
+  )
+}
 
 const GrandChild2 = ({
   control,
 }: {
   control: Control<{
-    test: string;
-    test1: string;
-    test2: string;
-  }>;
+    test: string
+    test1: string
+    test2: string
+  }>
 }) => {
-  const counter = useRef(0);
+  const counter = useRef(0)
   const output = useWatch<{
-    test: string;
-    test1: string;
-    test2: string;
+    test: string
+    test1: string
+    test2: string
   }>({
     control,
-  });
+  })
 
-  counter.current++;
+  counter.current++
 
   return (
     <div style={{ border: '2px solid blue', padding: 10, margin: 5 }}>
@@ -85,12 +84,12 @@ const GrandChild2 = ({
       </p>
       <p id="grandChild2Counter">Render counter: {counter.current}</p>
     </div>
-  );
-};
+  )
+}
 
 const Child = ({ control }: { control: Control<FormInputs> }) => {
-  const counter1 = useRef(0);
-  counter1.current++;
+  const counter1 = useRef(0)
+  counter1.current++
 
   return (
     <div style={{ border: '2px solid green', padding: 10, margin: 5 }}>
@@ -100,13 +99,13 @@ const Child = ({ control }: { control: Control<FormInputs> }) => {
         <b>Render counter: {counter1.current} 👀</b>
       </p>
     </div>
-  );
-};
+  )
+}
 
 export default () => {
-  const { register, control } = useForm<FormInputs>();
+  const { register, control } = useForm<FormInputs>()
 
-  counter++;
+  counter++
 
   return (
     <div style={{ border: '2px solid red', padding: 10, margin: 5 }}>
@@ -149,5 +148,5 @@ export default () => {
         <b>Render counter: {counter} 👀</b>
       </p>
     </div>
-  );
-};
+  )
+}

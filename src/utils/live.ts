@@ -1,5 +1,5 @@
-import type { Ref } from '../types';
+import type { Ref } from '../types'
 
-import isHTMLElement from './isHTMLElement';
+import isHTMLElement from './isHTMLElement'
 
-export default (ref: Ref) => isHTMLElement(ref) && ref.isConnected;
+export default (ref: Ref) => isHTMLElement(ref) && ref.isConnected

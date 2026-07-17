@@ -1,47 +1,47 @@
-import React from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import AutoUnregister from './autoUnregister';
-import Basic from './basic';
-import Watch from './watch';
-import BasicSchemaValidation from './basicSchemaValidation';
-import CrossFrameForm from './crossFrameForm';
-import SetError from './setError';
-import SetFocus from './setFocus';
-import SetValue from './setValue';
-import FormState from './formState';
-import ManualRegisterForm from './manualRegisterForm';
-import DefaultValues from './defaultValues';
-import DefaultValuesAsync from './defaultValuesAsync';
-import WatchDefaultValues from './watchDefaultValues';
-import Reset from './reset';
-import TriggerValidation from './triggerValidation';
-import ReValidateMode from './reValidateMode';
-import ValidateFieldCriteria from './validateFieldCriteria';
-import SetValueCustomRegister from './setValueCustomRegister';
-import ConditionalField from './conditionalField';
-import FormStateWithSchema from './formStateWithSchema';
-import SetValueWithSchema from './setValueWithSchema';
-import SetValueWithTrigger from './setValueWithTrigger';
-import IsValid from './isValid';
-import Controller from './controller';
-import UseFieldArray from './useFieldArray';
-import UseFieldArrayNested from './useFieldArrayNested';
-import CustomSchemaValidation from './customSchemaValidation';
-import WatchFieldArray from './watchUseFieldArray';
-import UseWatch from './useWatch';
-import FormStateWithNestedFields from './formStateWithNestedFields';
-import UseFieldArrayUnregister from './useFieldArrayUnregister';
-import WatchUseFieldArrayNested from './watchUseFieldArrayNested';
-import UseWatchUseFieldArrayNested from './useWatchUseFieldArrayNested';
-import Test from './test';
-import Welcome from './welcome';
-import { UseFormState } from './useFormState';
-import SetValueAsyncStrictMode from './setValueStrictMode';
-import { DelayError } from './delayError';
-import './style.css';
-import FormComponent from './form';
-import DisabledFields from './disabledFields';
-import ResetKeepDirty from './resetKeepDirty';
+import React from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import AutoUnregister from './autoUnregister'
+import Basic from './basic'
+import BasicSchemaValidation from './basicSchemaValidation'
+import ConditionalField from './conditionalField'
+import Controller from './controller'
+import CrossFrameForm from './crossFrameForm'
+import CustomSchemaValidation from './customSchemaValidation'
+import DefaultValues from './defaultValues'
+import DefaultValuesAsync from './defaultValuesAsync'
+import { DelayError } from './delayError'
+import FormState from './formState'
+import FormStateWithNestedFields from './formStateWithNestedFields'
+import FormStateWithSchema from './formStateWithSchema'
+import IsValid from './isValid'
+import ManualRegisterForm from './manualRegisterForm'
+import Reset from './reset'
+import ReValidateMode from './reValidateMode'
+import SetError from './setError'
+import SetFocus from './setFocus'
+import SetValue from './setValue'
+import SetValueCustomRegister from './setValueCustomRegister'
+import SetValueAsyncStrictMode from './setValueStrictMode'
+import SetValueWithSchema from './setValueWithSchema'
+import SetValueWithTrigger from './setValueWithTrigger'
+import Test from './test'
+import TriggerValidation from './triggerValidation'
+import UseFieldArray from './useFieldArray'
+import UseFieldArrayNested from './useFieldArrayNested'
+import UseFieldArrayUnregister from './useFieldArrayUnregister'
+import { UseFormState } from './useFormState'
+import UseWatch from './useWatch'
+import UseWatchUseFieldArrayNested from './useWatchUseFieldArrayNested'
+import ValidateFieldCriteria from './validateFieldCriteria'
+import Watch from './watch'
+import WatchDefaultValues from './watchDefaultValues'
+import WatchFieldArray from './watchUseFieldArray'
+import WatchUseFieldArrayNested from './watchUseFieldArrayNested'
+import Welcome from './welcome'
+import './style.css'
+import DisabledFields from './disabledFields'
+import FormComponent from './form'
+import ResetKeepDirty from './resetKeepDirty'
 
 const App = () => {
   return (
@@ -123,7 +123,7 @@ const App = () => {
         <Route path="/disabled" element={<DisabledFields />} />
       </Routes>
     </BrowserRouter>
-  );
-};
+  )
+}
 
-export default App;
+export default App

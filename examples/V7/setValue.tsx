@@ -1,12 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { useForm } from 'react-hook-form'
 
 export default function App() {
-  const { register, handleSubmit, setValue } = useForm();
+  const { register, handleSubmit, setValue } = useForm()
   const onSubmit = (data) => {
-    alert(JSON.stringify(data));
-  };
+    alert(JSON.stringify(data))
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -44,14 +44,14 @@ export default function App() {
       <button
         type="button"
         onClick={() => {
-          setValue('firstName', 'Set value by action');
-          setValue('ageGroup', '1');
-          setValue('isDeveloper', true);
+          setValue('firstName', 'Set value by action')
+          setValue('ageGroup', '1')
+          setValue('isDeveloper', true)
         }}
       >
         Set All Values
       </button>
       <button type="submit">Submit</button>
     </form>
-  );
+  )
 }

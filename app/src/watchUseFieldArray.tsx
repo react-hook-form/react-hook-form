@@ -1,15 +1,15 @@
-import React from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
+import React from 'react'
+import { useFieldArray, useForm } from 'react-hook-form'
+import { useParams } from 'react-router-dom'
 
-let renderCount = 0;
+let renderCount = 0
 
 type FormInputs = {
-  data: { name: string }[];
-};
+  data: { name: string }[]
+}
 
 const WatchUseFieldArray: React.FC = () => {
-  const { mode } = useParams();
+  const { mode } = useParams()
   const { control, handleSubmit, reset, watch, register } = useForm<FormInputs>(
     {
       ...(mode === 'default'
@@ -21,26 +21,26 @@ const WatchUseFieldArray: React.FC = () => {
         : {}),
       mode: mode === 'formState' ? 'onChange' : 'onSubmit',
     },
-  );
+  )
   const { fields, append, prepend, swap, move, insert, remove, update } =
     useFieldArray({
       control,
       name: 'data',
-    });
-  const onSubmit = () => {};
-  const watchAll = watch('data') || [];
+    })
+  const onSubmit = () => {}
+  const watchAll = watch('data') || []
 
   React.useEffect(() => {
     setTimeout(() => {
       if (mode === 'asyncReset') {
         reset({
           data: [{ name: 'test' }, { name: 'test1' }, { name: 'test2' }],
-        });
+        })
       }
-    }, 10);
-  }, [reset, mode]);
+    }, 10)
+  }, [reset, mode])
 
-  renderCount++;
+  renderCount++
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -110,7 +110,7 @@ const WatchUseFieldArray: React.FC = () => {
       <div id="renderCount">{renderCount}</div>
       <div id="result">{JSON.stringify(watchAll)}</div>
     </form>
-  );
-};
+  )
+}
 
-export default WatchUseFieldArray;
+export default WatchUseFieldArray

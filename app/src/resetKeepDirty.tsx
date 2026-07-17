@@ -1,25 +1,25 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import React from 'react'
+import { useForm } from 'react-hook-form'
 
 function ResetKeepDirty() {
   const { register, reset, setValue, watch } = useForm<{
-    firstName: string;
-    lastName: string;
+    firstName: string
+    lastName: string
     objectData: {
-      test: string;
-    };
-    users: { firstName: string; lastName: string }[];
+      test: string
+    }
+    users: { firstName: string; lastName: string }[]
     deepNest: {
       level1: {
         level2: {
-          data: string;
-        };
-      };
-    };
+          data: string
+        }
+      }
+    }
   }>({
     defaultValues: { users: [] },
-  });
-  const users = watch('users');
+  })
+  const users = watch('users')
   return (
     <>
       <input {...register('firstName')} />
@@ -33,7 +33,7 @@ function ResetKeepDirty() {
             'users',
             [...users, { firstName: 'John', lastName: 'Doe' }],
             { shouldDirty: true },
-          );
+          )
         }}
         type="button"
       >
@@ -63,7 +63,7 @@ function ResetKeepDirty() {
         button
       </button>
     </>
-  );
+  )
 }
 
-export default ResetKeepDirty;
+export default ResetKeepDirty

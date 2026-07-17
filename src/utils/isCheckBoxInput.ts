@@ -1,4 +1,4 @@
-import type { FieldElement } from '../types';
+import type { FieldElement } from '../types'
 
 export default (element: FieldElement): element is HTMLInputElement =>
-  element.type === 'checkbox';
+  element.type === 'checkbox'

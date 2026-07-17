@@ -1,215 +1,215 @@
-import type React from 'react';
+import type React from 'react'
 
-import type { VALIDATION_MODE } from '../constants';
-import type { Subject, Subscription } from '../utils/createSubject';
+import type { VALIDATION_MODE } from '../constants'
+import type { Subject, Subscription } from '../utils/createSubject'
 
-import type { ErrorOption, FieldError, FieldErrors } from './errors';
-import type { EventType } from './events';
-import type { FieldArray } from './fieldArray';
+import type { ErrorOption, FieldError, FieldErrors } from './errors'
+import type { EventType } from './events'
+import type { FieldArray } from './fieldArray'
 import type {
   FieldName,
   FieldRefs,
   FieldValue,
   FieldValues,
   InternalFieldName,
-} from './fields';
+} from './fields'
 import type {
   FieldArrayPath,
   FieldPath,
   FieldPathValue,
   FieldPathValues,
-} from './path';
-import type { Resolver } from './resolvers';
+} from './path'
+import type { Resolver } from './resolvers'
 import type {
   DeepMap,
   DeepPartial,
   DeepPartialSkipArrayKey,
   Noop,
-} from './utils';
-import type { RegisterOptions, ValidateForm } from './validator';
+} from './utils'
+import type { RegisterOptions, ValidateForm } from './validator'
 
-declare const $NestedValue: unique symbol;
+declare const $NestedValue: unique symbol
 
 /**
  * @deprecated to be removed in the next major version
  */
 export type NestedValue<TValue extends object = object> = {
-  [$NestedValue]: never;
-} & TValue;
+  [$NestedValue]: never
+} & TValue
 
 export type DefaultValues<TFieldValues> =
   TFieldValues extends AsyncDefaultValues<TFieldValues>
     ? DeepPartial<Awaited<TFieldValues>>
-    : DeepPartial<TFieldValues>;
+    : DeepPartial<TFieldValues>
 
-export type InternalNameSet = Set<InternalFieldName>;
+export type InternalNameSet = Set<InternalFieldName>
 
-export type ValidationMode = typeof VALIDATION_MODE;
+export type ValidationMode = typeof VALIDATION_MODE
 
-export type Mode = keyof ValidationMode;
+export type Mode = keyof ValidationMode
 
 export type ValidationModeFlags = {
-  isOnSubmit: boolean;
-  isOnBlur: boolean;
-  isOnChange: boolean;
-  isOnAll: boolean;
-  isOnTouch: boolean;
-};
+  isOnSubmit: boolean
+  isOnBlur: boolean
+  isOnChange: boolean
+  isOnAll: boolean
+  isOnTouch: boolean
+}
 
-export type CriteriaMode = 'firstError' | 'all';
+export type CriteriaMode = 'firstError' | 'all'
 
 export type SubmitHandler<T> = (
   data: T,
   event?: React.BaseSyntheticEvent,
-) => unknown | Promise<unknown>;
+) => unknown | Promise<unknown>
 
 export type FormSubmitHandler<TTransformedValues> = (payload: {
-  data: TTransformedValues;
-  event?: React.BaseSyntheticEvent;
-  formData: FormData;
-  formDataJson: string;
-  method?: 'post' | 'put' | 'delete';
-}) => unknown | Promise<unknown>;
+  data: TTransformedValues
+  event?: React.BaseSyntheticEvent
+  formData: FormData
+  formDataJson: string
+  method?: 'post' | 'put' | 'delete'
+}) => unknown | Promise<unknown>
 
 export type SubmitErrorHandler<TFieldValues extends FieldValues> = (
   errors: FieldErrors<TFieldValues>,
   event?: React.BaseSyntheticEvent,
-) => unknown | Promise<unknown>;
+) => unknown | Promise<unknown>
 
 export type SetValueConfig = Partial<{
-  shouldValidate: boolean;
-  shouldDirty: boolean;
-  shouldTouch: boolean;
-  delayError: boolean;
-}>;
+  shouldValidate: boolean
+  shouldDirty: boolean
+  shouldTouch: boolean
+  delayError: boolean
+}>
 
 export type TriggerConfig = Partial<{
-  shouldFocus: boolean;
-}>;
+  shouldFocus: boolean
+}>
 
 export type ResetFieldConfig<
   TFieldValues extends FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = Partial<{
-  keepDirty: boolean;
-  keepTouched: boolean;
-  keepError: boolean;
-  defaultValue: FieldPathValue<TFieldValues, TFieldName>;
-}>;
+  keepDirty: boolean
+  keepTouched: boolean
+  keepError: boolean
+  defaultValue: FieldPathValue<TFieldValues, TFieldName>
+}>
 
 export type ChangeHandler = (event: {
-  target: any;
-  type?: any;
-}) => Promise<void | boolean>;
+  target: any
+  type?: any
+}) => Promise<void | boolean>
 
-export type DelayCallback = (wait: number) => void;
+export type DelayCallback = (wait: number) => void
 
 type AsyncDefaultValues<TFieldValues> = (
   payload?: unknown,
-) => Promise<TFieldValues>;
+) => Promise<TFieldValues>
 
 export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues = TFieldValues,
 > = Partial<{
-  mode: Mode;
-  disabled: boolean;
-  reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
-  defaultValues: DefaultValues<TFieldValues> | AsyncDefaultValues<TFieldValues>;
-  values: TFieldValues;
-  errors: FieldErrors<TFieldValues>;
-  resetOptions: Parameters<UseFormReset<TFieldValues>>[1];
-  resolver: Resolver<TFieldValues, TContext, TTransformedValues>;
-  context: TContext;
-  shouldFocusError: boolean;
-  shouldUnregister: boolean;
-  shouldUseNativeValidation: boolean;
-  progressive: boolean;
-  criteriaMode: CriteriaMode;
-  delayError: number;
+  mode: Mode
+  disabled: boolean
+  reValidateMode: Exclude<Mode, 'onTouched' | 'all'>
+  defaultValues: DefaultValues<TFieldValues> | AsyncDefaultValues<TFieldValues>
+  values: TFieldValues
+  errors: FieldErrors<TFieldValues>
+  resetOptions: Parameters<UseFormReset<TFieldValues>>[1]
+  resolver: Resolver<TFieldValues, TContext, TTransformedValues>
+  context: TContext
+  shouldFocusError: boolean
+  shouldUnregister: boolean
+  shouldUseNativeValidation: boolean
+  progressive: boolean
+  criteriaMode: CriteriaMode
+  delayError: number
   formControl?: Omit<
     UseFormReturn<TFieldValues, TContext, TTransformedValues>,
     'formState'
-  >;
-  validate: ValidateForm<TFieldValues>;
-}>;
+  >
+  validate: ValidateForm<TFieldValues>
+}>
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
   DeepPartial<TFieldValues>,
   boolean
->;
+>
 
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
-  isDirty: boolean;
-  isValidating: boolean;
-  dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
-  touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
-  validatingFields: FieldNamesMarkedBoolean<TFieldValues>;
-  errors: boolean;
-  isValid: boolean;
-};
+  isDirty: boolean
+  isValidating: boolean
+  dirtyFields: FieldNamesMarkedBoolean<TFieldValues>
+  touchedFields: FieldNamesMarkedBoolean<TFieldValues>
+  validatingFields: FieldNamesMarkedBoolean<TFieldValues>
+  errors: boolean
+  isValid: boolean
+}
 
 export type ReadFormState = { [K in keyof FormStateProxy]: boolean | 'all' } & {
-  values?: boolean;
-  defaultValues?: boolean | 'all';
-  isSubmitted?: boolean | 'all';
-  submitCount?: boolean | 'all';
-};
+  values?: boolean
+  defaultValues?: boolean | 'all'
+  isSubmitted?: boolean | 'all'
+  submitCount?: boolean | 'all'
+}
 
 export type FormState<TFieldValues extends FieldValues> = {
-  isDirty: boolean;
-  isLoading: boolean;
-  isSubmitted: boolean;
-  isSubmitSuccessful: boolean;
-  isSubmitting: boolean;
-  isValidating: boolean;
-  isValid: boolean;
-  disabled: boolean;
-  submitCount: number;
-  defaultValues?: undefined | Readonly<DeepPartial<TFieldValues>>;
-  dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
-  touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
-  validatingFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
-  errors: FieldErrors<TFieldValues>;
-  isReady: boolean;
-};
+  isDirty: boolean
+  isLoading: boolean
+  isSubmitted: boolean
+  isSubmitSuccessful: boolean
+  isSubmitting: boolean
+  isValidating: boolean
+  isValid: boolean
+  disabled: boolean
+  submitCount: number
+  defaultValues?: undefined | Readonly<DeepPartial<TFieldValues>>
+  dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>
+  touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>
+  validatingFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>
+  errors: FieldErrors<TFieldValues>
+  isReady: boolean
+}
 
 export type KeepStateOptions = Partial<{
-  keepDirtyValues: boolean;
-  keepErrors: boolean;
-  keepDirty: boolean;
-  keepValues: boolean;
-  keepDefaultValues: boolean;
-  keepIsSubmitted: boolean;
-  keepIsSubmitSuccessful: boolean;
-  keepTouched: boolean;
-  keepIsValidating: boolean;
-  keepIsValid: boolean;
-  keepSubmitCount: boolean;
-  keepFieldsRef: boolean;
-}>;
+  keepDirtyValues: boolean
+  keepErrors: boolean
+  keepDirty: boolean
+  keepValues: boolean
+  keepDefaultValues: boolean
+  keepIsSubmitted: boolean
+  keepIsSubmitSuccessful: boolean
+  keepTouched: boolean
+  keepIsValidating: boolean
+  keepIsValid: boolean
+  keepSubmitCount: boolean
+  keepFieldsRef: boolean
+}>
 
 export type SetFieldValue<TFieldValues extends FieldValues> =
-  FieldValue<TFieldValues>;
+  FieldValue<TFieldValues>
 
-export type RefCallBack = (instance: any) => void;
+export type RefCallBack = (instance: any) => void
 
 export type UseFormRegisterReturn<
   TFieldName extends InternalFieldName = InternalFieldName,
 > = {
-  onChange: ChangeHandler;
-  onBlur: ChangeHandler;
-  ref: RefCallBack;
-  name: TFieldName;
-  min?: string | number;
-  max?: string | number;
-  maxLength?: number;
-  minLength?: number;
-  pattern?: string;
-  required?: boolean;
-  disabled?: boolean;
-};
+  onChange: ChangeHandler
+  onBlur: ChangeHandler
+  ref: RefCallBack
+  name: TFieldName
+  min?: string | number
+  max?: string | number
+  maxLength?: number
+  minLength?: number
+  pattern?: string
+  required?: boolean
+  disabled?: boolean
+}
 
 /**
  * Register field into hook form with or without the actual DOM ref. You can invoke register anywhere in the component including at `useEffect`.
@@ -249,11 +249,11 @@ export type UseFormRegister<TFieldValues extends FieldValues> = <
 >(
   name: TFieldName,
   options?: RegisterOptions<TFieldValues, TFieldName>,
-) => UseFormRegisterReturn<TFieldName>;
+) => UseFormRegisterReturn<TFieldName>
 
 export type SetFocusOptions = Partial<{
-  shouldSelect: boolean;
-}>;
+  shouldSelect: boolean
+}>
 
 /**
  * Set focus on a registered field. You can start to invoke this method after all fields are mounted to the DOM.
@@ -278,18 +278,18 @@ export type UseFormSetFocus<TFieldValues extends FieldValues> = <
 >(
   name: TFieldName,
   options?: SetFocusOptions,
-) => void;
+) => void
 
 type EitherOption<T> = {
   [K in keyof T]: {
-    [P in K]: T[P];
-  } & Partial<Record<Exclude<keyof T, K>, never>>;
-}[keyof T];
+    [P in K]: T[P]
+  } & Partial<Record<Exclude<keyof T, K>, never>>
+}[keyof T]
 
 export type GetValuesConfig = EitherOption<{
-  dirtyFields: boolean;
-  touchedFields: boolean;
-}>;
+  dirtyFields: boolean
+  touchedFields: boolean
+}>
 
 export type UseFormGetValues<TFieldValues extends FieldValues> = {
   /**
@@ -309,7 +309,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    * })} />
    * ```
    */
-  (name?: undefined, config?: GetValuesConfig): TFieldValues;
+  (name?: undefined, config?: GetValuesConfig): TFieldValues
   /**
    * Get a single field value.
    *
@@ -333,7 +333,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
   <TFieldName extends FieldPath<TFieldValues>>(
     name: TFieldName,
     config?: GetValuesConfig,
-  ): FieldPathValue<TFieldValues, TFieldName>;
+  ): FieldPathValue<TFieldValues, TFieldName>
   /**
    * Get an array of field values.
    *
@@ -357,8 +357,8 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
   <TFieldNames extends FieldPath<TFieldValues>[]>(
     names: readonly [...TFieldNames],
     config?: GetValuesConfig,
-  ): [...FieldPathValues<TFieldValues, TFieldNames>];
-};
+  ): [...FieldPathValues<TFieldValues, TFieldNames>]
+}
 
 /**
  * This method will return individual field states. It will be useful when you are trying to retrieve the nested value field state in a typesafe approach.
@@ -390,12 +390,12 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
   name: TFieldName,
   formState?: FormState<TFieldValues>,
 ) => {
-  invalid: boolean;
-  isDirty: boolean;
-  isTouched: boolean;
-  isValidating: boolean;
-  error?: FieldError;
-};
+  invalid: boolean
+  isDirty: boolean
+  isTouched: boolean
+  isValidating: boolean
+  error?: FieldError
+}
 
 /**
  * This method will allow you to subscribe to formState without component render
@@ -420,17 +420,17 @@ useEffect(() => {
 export type UseFormSubscribe<TFieldValues extends FieldValues> = <
   TFieldNames extends readonly FieldPath<TFieldValues>[],
 >(payload: {
-  name?: readonly [...TFieldNames] | TFieldNames[number];
-  formState?: Partial<ReadFormState>;
+  name?: readonly [...TFieldNames] | TFieldNames[number]
+  formState?: Partial<ReadFormState>
   callback: (
     data: Partial<FormState<TFieldValues>> & {
-      values: TFieldValues;
-      name?: InternalFieldName;
-      type?: EventType;
+      values: TFieldValues
+      name?: InternalFieldName
+      type?: EventType
     },
-  ) => void;
-  exact?: boolean;
-}) => () => void;
+  ) => void
+  exact?: boolean
+}) => () => void
 
 export type UseFormWatch<TFieldValues extends FieldValues> = {
   /**
@@ -446,7 +446,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
    * const formValues = watch();
    * ```
    */
-  (): TFieldValues;
+  (): TFieldValues
   /**
    * Watch and subscribe to an array of fields used outside of render.
    *
@@ -466,7 +466,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
   <TFieldNames extends readonly FieldPath<TFieldValues>[]>(
     names: readonly [...TFieldNames],
     defaultValue?: DeepPartial<TFieldValues>,
-  ): FieldPathValues<TFieldValues, TFieldNames>;
+  ): FieldPathValues<TFieldValues, TFieldNames>
   /**
    * Watch and subscribe to a single field used outside of render.
    *
@@ -486,7 +486,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
   <TFieldName extends FieldPath<TFieldValues>>(
     name: TFieldName,
     defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
-  ): FieldPathValue<TFieldValues, TFieldName>;
+  ): FieldPathValue<TFieldValues, TFieldName>
   /**
    * Subscribe to field update/change without trigger re-render
    *
@@ -511,8 +511,8 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
   (
     callback: WatchObserver<TFieldValues>,
     defaultValues?: DeepPartial<TFieldValues>,
-  ): Subscription;
-};
+  ): Subscription
+}
 
 /**
  * Trigger field or form validation
@@ -544,7 +544,7 @@ export type UseFormTrigger<TFieldValues extends FieldValues> = (
     | FieldPath<TFieldValues>[]
     | readonly FieldPath<TFieldValues>[],
   options?: TriggerConfig,
-) => Promise<boolean>;
+) => Promise<boolean>
 
 /**
  * Clear the entire form errors.
@@ -571,7 +571,7 @@ export type UseFormClearErrors<TFieldValues extends FieldValues> = (
     | 'root'
     | 'form'
     | `form.${string}`,
-) => void;
+) => void
 
 /**
  * Set a single field value, or a group of fields value.
@@ -608,12 +608,12 @@ export type UseFormSetValue<TFieldValues extends FieldValues> = <
   name: TFieldName,
   value: FieldPathValue<TFieldValues, TFieldName>,
   options?: SetValueConfig,
-) => void;
+) => void
 
 export type UseFormSetValues<TFieldValues extends FieldValues> = (
   value: Partial<TFieldValues> | ResetAction<TFieldValues>,
   options?: SetValueConfig,
-) => void;
+) => void
 
 /**
  * Set an error for the field. When set an error which is not associated to a field then manual `clearErrors` invoke is required.
@@ -645,9 +645,9 @@ export type UseFormSetError<TFieldValues extends FieldValues> = (
     | `form.${string}`,
   error: ErrorOption,
   options?: {
-    shouldFocus: boolean;
+    shouldFocus: boolean
   },
-) => void;
+) => void
 
 /**
  * Unregister a field reference and remove its value.
@@ -680,7 +680,7 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
     | 'keepDefaultValues'
     | 'keepErrors'
   > & { keepValue?: boolean; keepDefaultValue?: boolean; keepError?: boolean },
-) => void;
+) => void
 
 /**
  * Validate the entire form. Handle submit and error callback.
@@ -707,7 +707,7 @@ export type UseFormHandleSubmit<
 > = (
   onValid: SubmitHandler<TTransformedValues>,
   onInvalid?: SubmitErrorHandler<TFieldValues>,
-) => (e?: React.BaseSyntheticEvent) => Promise<void>;
+) => (e?: React.BaseSyntheticEvent) => Promise<void>
 
 /**
  * Reset a field state and reference.
@@ -729,9 +729,9 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <
 >(
   name: TFieldName,
   options?: ResetFieldConfig<TFieldValues, TFieldName>,
-) => void;
+) => void
 
-type ResetAction<TFieldValues> = (formValues: TFieldValues) => TFieldValues;
+type ResetAction<TFieldValues> = (formValues: TFieldValues) => TFieldValues
 
 /**
  * Reset at the entire form state.
@@ -773,7 +773,7 @@ export type UseFormReset<TFieldValues extends FieldValues> = (
     | TFieldValues
     | ResetAction<TFieldValues>,
   keepStateOptions?: KeepStateOptions,
-) => void;
+) => void
 
 /**
  * Reset the default values of the form and recompute `dirtyFields`/`isDirty` without changing user values.
@@ -796,7 +796,7 @@ export type UseFormReset<TFieldValues extends FieldValues> = (
 export type UseFormResetDefaultValues<TFieldValues extends FieldValues> = (
   values: DefaultValues<TFieldValues> | TFieldValues,
   options?: Partial<Pick<KeepStateOptions, 'keepDirty' | 'keepIsValid'>>,
-) => void;
+) => void
 
 export type WatchInternal<TFieldValues> = (
   fieldNames?: InternalFieldName | InternalFieldName[],
@@ -805,45 +805,45 @@ export type WatchInternal<TFieldValues> = (
   isGlobal?: boolean,
 ) =>
   | FieldPathValue<FieldValues, InternalFieldName>
-  | FieldPathValues<FieldValues, InternalFieldName[]>;
+  | FieldPathValues<FieldValues, InternalFieldName[]>
 
 export type GetIsDirty = <TName extends InternalFieldName, TData>(
   name?: TName,
   data?: TData,
-) => boolean;
+) => boolean
 
 export type FormStateSubjectRef<TFieldValues extends FieldValues> = Subject<
   Partial<FormState<TFieldValues>> & {
-    name?: InternalFieldName;
-    values?: TFieldValues;
-    type?: EventType;
+    name?: InternalFieldName
+    values?: TFieldValues
+    type?: EventType
   }
->;
+>
 
 export type Subjects<TFieldValues extends FieldValues = FieldValues> = {
   array: Subject<{
-    name?: InternalFieldName;
-    values?: FieldValues;
-  }>;
-  state: FormStateSubjectRef<TFieldValues>;
-};
+    name?: InternalFieldName
+    values?: FieldValues
+  }>
+  state: FormStateSubjectRef<TFieldValues>
+}
 
 export type Names = {
-  mount: InternalNameSet;
-  unMount: InternalNameSet;
-  disabled: InternalNameSet;
-  array: InternalNameSet;
-  watch: InternalNameSet;
-  registerName: InternalNameSet;
-  focus?: InternalFieldName;
-  watchAll?: boolean;
-};
+  mount: InternalNameSet
+  unMount: InternalNameSet
+  disabled: InternalNameSet
+  array: InternalNameSet
+  watch: InternalNameSet
+  registerName: InternalNameSet
+  focus?: InternalFieldName
+  watchAll?: boolean
+}
 
 export type BatchFieldArrayUpdate = <
   T extends Function,
   TFieldValues extends FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> =
-    FieldArrayPath<TFieldValues>,
+  TFieldArrayName extends
+    FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
 >(
   name: InternalFieldName,
   updatedFieldArrayValues?: Partial<
@@ -851,164 +851,164 @@ export type BatchFieldArrayUpdate = <
   >[],
   method?: T,
   args?: Partial<{
-    argA: unknown;
-    argB: unknown;
+    argA: unknown
+    argB: unknown
   }>,
   shouldSetValue?: boolean,
   shouldUpdateFieldsAndErrors?: boolean,
-) => void;
+) => void
 
 export type FromSubscribe<TFieldValues extends FieldValues> = <
   TFieldNames extends readonly FieldPath<TFieldValues>[],
 >(payload: {
-  name?: readonly [...TFieldNames] | TFieldNames[number];
-  formState?: Partial<ReadFormState>;
+  name?: readonly [...TFieldNames] | TFieldNames[number]
+  formState?: Partial<ReadFormState>
   callback: (
     data: Partial<FormState<TFieldValues>> & {
-      values: TFieldValues;
-      name?: InternalFieldName;
+      values: TFieldValues
+      name?: InternalFieldName
     },
-  ) => void;
-  exact?: boolean;
-  reRenderRoot?: boolean;
-}) => () => void;
+  ) => void
+  exact?: boolean
+  reRenderRoot?: boolean
+}) => () => void
 
 export type Control<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues = TFieldValues,
 > = {
-  _subjects: Subjects<TFieldValues>;
-  _removeUnmounted: Noop;
-  _names: Names;
+  _subjects: Subjects<TFieldValues>
+  _removeUnmounted: Noop
+  _names: Names
   _state: {
-    mount: boolean;
-    action: boolean;
-    watch: boolean;
-  };
-  _reset: UseFormReset<TFieldValues>;
-  _options: UseFormProps<TFieldValues, TContext, TTransformedValues>;
-  _getDirty: GetIsDirty;
-  _resetDefaultValues: Noop;
-  _formState: FormState<TFieldValues>;
-  _setValid: (shouldUpdateValid?: boolean) => void;
-  _fields: FieldRefs;
-  _formValues: FieldValues;
-  _proxyFormState: ReadFormState;
-  _defaultValues: Partial<DefaultValues<TFieldValues>>;
-  _getWatch: WatchInternal<TFieldValues>;
-  _setFieldArray: BatchFieldArrayUpdate;
+    mount: boolean
+    action: boolean
+    watch: boolean
+  }
+  _reset: UseFormReset<TFieldValues>
+  _options: UseFormProps<TFieldValues, TContext, TTransformedValues>
+  _getDirty: GetIsDirty
+  _resetDefaultValues: Noop
+  _formState: FormState<TFieldValues>
+  _setValid: (shouldUpdateValid?: boolean) => void
+  _fields: FieldRefs
+  _formValues: FieldValues
+  _proxyFormState: ReadFormState
+  _defaultValues: Partial<DefaultValues<TFieldValues>>
+  _getWatch: WatchInternal<TFieldValues>
+  _setFieldArray: BatchFieldArrayUpdate
   _getFieldArray: <TFieldArrayValues>(
     name: InternalFieldName,
-  ) => Partial<TFieldArrayValues>[];
-  _setErrors: (errors: FieldErrors<TFieldValues>) => void;
+  ) => Partial<TFieldArrayValues>[]
+  _setErrors: (errors: FieldErrors<TFieldValues>) => void
   _setDisabledField: (props: {
-    disabled?: boolean;
-    name: FieldName<any>;
-  }) => void;
-  _runSchema: (names: InternalFieldName[]) => Promise<{ errors: FieldErrors }>;
+    disabled?: boolean
+    name: FieldName<any>
+  }) => void
+  _runSchema: (names: InternalFieldName[]) => Promise<{ errors: FieldErrors }>
   _updateIsValidating: (
     names?: InternalFieldName[],
     isValidating?: boolean,
-  ) => void;
-  _focusError: () => boolean | undefined;
-  _disableForm: (disabled?: boolean) => void;
-  _subscribe: FromSubscribe<TFieldValues>;
-  register: UseFormRegister<TFieldValues>;
-  handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>;
-  unregister: UseFormUnregister<TFieldValues>;
-  getFieldState: UseFormGetFieldState<TFieldValues>;
-  setError: UseFormSetError<TFieldValues>;
-};
+  ) => void
+  _focusError: () => boolean | undefined
+  _disableForm: (disabled?: boolean) => void
+  _subscribe: FromSubscribe<TFieldValues>
+  register: UseFormRegister<TFieldValues>
+  handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>
+  unregister: UseFormUnregister<TFieldValues>
+  getFieldState: UseFormGetFieldState<TFieldValues>
+  setError: UseFormSetError<TFieldValues>
+}
 
 export type WatchObserver<TFieldValues extends FieldValues> = (
   value: DeepPartialSkipArrayKey<TFieldValues>,
   info: {
-    name?: FieldPath<TFieldValues>;
-    type?: EventType;
-    values?: unknown;
+    name?: FieldPath<TFieldValues>
+    type?: EventType
+    values?: unknown
   },
-) => void;
+) => void
 
 export type UseFormReturn<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues = TFieldValues,
 > = {
-  watch: UseFormWatch<TFieldValues>;
-  getValues: UseFormGetValues<TFieldValues>;
-  getFieldState: UseFormGetFieldState<TFieldValues>;
-  setError: UseFormSetError<TFieldValues>;
-  clearErrors: UseFormClearErrors<TFieldValues>;
-  setValue: UseFormSetValue<TFieldValues>;
-  setValues: UseFormSetValues<TFieldValues>;
-  trigger: UseFormTrigger<TFieldValues>;
-  formState: FormState<TFieldValues>;
-  resetField: UseFormResetField<TFieldValues>;
-  reset: UseFormReset<TFieldValues>;
-  resetDefaultValues: UseFormResetDefaultValues<TFieldValues>;
-  handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>;
-  unregister: UseFormUnregister<TFieldValues>;
-  control: Control<TFieldValues, TContext, TTransformedValues>;
-  register: UseFormRegister<TFieldValues>;
-  setFocus: UseFormSetFocus<TFieldValues>;
-  subscribe: UseFormSubscribe<TFieldValues>;
-};
+  watch: UseFormWatch<TFieldValues>
+  getValues: UseFormGetValues<TFieldValues>
+  getFieldState: UseFormGetFieldState<TFieldValues>
+  setError: UseFormSetError<TFieldValues>
+  clearErrors: UseFormClearErrors<TFieldValues>
+  setValue: UseFormSetValue<TFieldValues>
+  setValues: UseFormSetValues<TFieldValues>
+  trigger: UseFormTrigger<TFieldValues>
+  formState: FormState<TFieldValues>
+  resetField: UseFormResetField<TFieldValues>
+  reset: UseFormReset<TFieldValues>
+  resetDefaultValues: UseFormResetDefaultValues<TFieldValues>
+  handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>
+  unregister: UseFormUnregister<TFieldValues>
+  control: Control<TFieldValues, TContext, TTransformedValues>
+  register: UseFormRegister<TFieldValues>
+  setFocus: UseFormSetFocus<TFieldValues>
+  subscribe: UseFormSubscribe<TFieldValues>
+}
 
 export type UseFormStateProps<
   TFieldValues extends FieldValues,
   TTransformedValues = TFieldValues,
 > = Partial<{
-  control?: Control<TFieldValues, any, TTransformedValues>;
-  disabled?: boolean;
+  control?: Control<TFieldValues, any, TTransformedValues>
+  disabled?: boolean
   name?:
     | FieldPath<TFieldValues>
     | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[];
-  exact?: boolean;
-}>;
+    | readonly FieldPath<TFieldValues>[]
+  exact?: boolean
+}>
 
 export type UseFormStateReturn<TFieldValues extends FieldValues> =
-  FormState<TFieldValues>;
+  FormState<TFieldValues>
 
 export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
   TTransformedValues = TFieldValues,
 > = {
-  children: React.ReactNode | React.ReactNode[];
-} & UseFormReturn<TFieldValues, TContext, TTransformedValues>;
+  children: React.ReactNode | React.ReactNode[]
+} & UseFormReturn<TFieldValues, TContext, TTransformedValues>
 
 export type FormProps<
   TFieldValues extends FieldValues,
   TTransformedValues = TFieldValues,
 > = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError' | 'onSubmit'> &
   Partial<{
-    control: Control<TFieldValues, any, TTransformedValues>;
-    headers: Record<string, string>;
-    validateStatus: (status: number) => boolean;
+    control: Control<TFieldValues, any, TTransformedValues>
+    headers: Record<string, string>
+    validateStatus: (status: number) => boolean
     onError: ({
       response,
       error,
     }:
       | {
-          response: Response;
-          error?: undefined;
+          response: Response
+          error?: undefined
         }
       | {
-          response?: undefined;
-          error: unknown;
-        }) => void;
-    onSuccess: ({ response }: { response: Response }) => void;
-    onSubmit: FormSubmitHandler<TTransformedValues>;
-    method: 'post' | 'put' | 'delete';
-    children: React.ReactNode | React.ReactNode[];
+          response?: undefined
+          error: unknown
+        }) => void
+    onSuccess: ({ response }: { response: Response }) => void
+    onSubmit: FormSubmitHandler<TTransformedValues>
+    method: 'post' | 'put' | 'delete'
+    children: React.ReactNode | React.ReactNode[]
     render: (props: {
-      submit: (e?: React.FormEvent) => void;
-    }) => React.ReactNode | React.ReactNode[];
+      submit: (e?: React.FormEvent) => void
+    }) => React.ReactNode | React.ReactNode[]
     encType:
       | 'application/x-www-form-urlencoded'
       | 'multipart/form-data'
       | 'text/plain'
-      | 'application/json';
-  }>;
+      | 'application/json'
+  }>

@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@hookform/resolvers/yup'
+import React, { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import * as yup from 'yup'
 
-let renderCounter = 0;
+let renderCounter = 0
 
 const validationSchema = yup
   .object()
@@ -12,7 +12,7 @@ const validationSchema = yup
     firstName: yup.string().min(10).required(),
     requiredField: yup.string().required(),
   })
-  .required();
+  .required()
 
 const SetValueWithSchema: React.FC = () => {
   const {
@@ -21,29 +21,29 @@ const SetValueWithSchema: React.FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<{
-    firstName: string;
-    lastName: string;
-    age: string;
-    checkbox: boolean;
-    radio: string;
-    select: string;
-    multiple: string[];
-    requiredField: string;
+    firstName: string
+    lastName: string
+    age: string
+    checkbox: boolean
+    radio: string
+    select: string
+    multiple: string[]
+    requiredField: string
   }>({
     resolver: yupResolver(validationSchema),
-  });
+  })
 
-  renderCounter++;
+  renderCounter++
 
   useEffect(() => {
-    register('firstName', { required: true });
-    register('lastName', { required: true });
-  }, [register]);
+    register('firstName', { required: true })
+    register('lastName', { required: true })
+  }, [register])
 
   return (
     <form
       onSubmit={handleSubmit((d) => {
-        console.log(d);
+        console.log(d)
       })}
     >
       <input
@@ -53,7 +53,7 @@ const SetValueWithSchema: React.FC = () => {
           setValue('firstName', e.target.value, {
             shouldValidate: true,
             shouldDirty: true,
-          });
+          })
         }}
       />
       {errors.firstName && <p>firstName error</p>}
@@ -65,7 +65,7 @@ const SetValueWithSchema: React.FC = () => {
           setValue('lastName', e.target.value, {
             shouldValidate: true,
             shouldDirty: true,
-          });
+          })
         }}
       />
       {errors.lastName && <p>lastName error</p>}
@@ -76,7 +76,7 @@ const SetValueWithSchema: React.FC = () => {
           setValue('age', e.target.value, {
             shouldValidate: true,
             shouldDirty: true,
-          });
+          })
         }}
       />
 
@@ -90,7 +90,7 @@ const SetValueWithSchema: React.FC = () => {
           setValue('requiredField', 'test123456789', {
             shouldValidate: true,
             shouldDirty: true,
-          });
+          })
         }}
       >
         firstName reset
@@ -99,7 +99,7 @@ const SetValueWithSchema: React.FC = () => {
       <button id="submit">Submit</button>
       <div id="renderCount">{renderCounter}</div>
     </form>
-  );
-};
+  )
+}
 
-export default SetValueWithSchema;
+export default SetValueWithSchema

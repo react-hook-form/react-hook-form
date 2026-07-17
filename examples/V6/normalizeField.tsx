@@ -1,23 +1,23 @@
-import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import NumberFormat from 'react-number-format';
-import { TextField, ThemeProvider, createMuiTheme } from '@material-ui/core';
+import { createMuiTheme, TextField, ThemeProvider } from '@material-ui/core'
+import React from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import NumberFormat from 'react-number-format'
 
 const theme = createMuiTheme({
   palette: {
     type: 'dark',
   },
-});
+})
 const defaultValues = {
   priceInCents: 1234567,
   muiPriceInCents: 1234567,
-};
+}
 function App() {
-  const form = useForm({ defaultValues });
+  const form = useForm({ defaultValues })
 
   const onSubmit = (data) => {
-    form.reset(defaultValues);
-  };
+    form.reset(defaultValues)
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -43,11 +43,11 @@ function App() {
         </pre>
       </form>
     </ThemeProvider>
-  );
+  )
 }
 
 const MuiCurrencyFormat = (props) => {
-  const { onChange, value, ...rest } = props;
+  const { onChange, value, ...rest } = props
 
   return (
     <NumberFormat
@@ -58,10 +58,10 @@ const MuiCurrencyFormat = (props) => {
       thousandSeparator={true}
       decimalScale={2}
       onValueChange={(target) => {
-        onChange(target.floatValue);
+        onChange(target.floatValue)
       }}
       isNumericString
       prefix="$ "
     />
-  );
-};
+  )
+}

@@ -1,9 +1,9 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { useForm } from 'react-hook-form'
 
 export default function App() {
-  const { register, errors, getValues, handleSubmit } = useForm();
+  const { register, errors, getValues, handleSubmit } = useForm()
 
   return (
     <div className="App">
@@ -25,8 +25,8 @@ export default function App() {
             required: 'Please confirm password!',
             validate: {
               matchesPreviousPassword: (value) => {
-                const { password } = getValues();
-                return password === value || 'Passwords should match!';
+                const { password } = getValues()
+                return password === value || 'Passwords should match!'
               },
             },
           })}
@@ -40,5 +40,5 @@ export default function App() {
         <button type="submit">Trigger</button>
       </form>
     </div>
-  );
+  )
 }

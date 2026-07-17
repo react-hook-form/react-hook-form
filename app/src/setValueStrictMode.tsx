@@ -1,30 +1,30 @@
-import React, { useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import React, { useEffect } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 
 const SetValueAsyncStrictMode = () => {
-  const state = React.useRef(new Set());
-  const [, update] = React.useState({});
+  const state = React.useRef(new Set())
+  const [, update] = React.useState({})
   const { register, setValue, control } = useForm<{
-    firstName: string;
-  }>();
+    firstName: string
+  }>()
 
   useEffect(() => {
     setTimeout(() => {
-      setValue('firstName', 'A');
-    }, 10);
+      setValue('firstName', 'A')
+    }, 10)
 
     setTimeout(() => {
-      setValue('firstName', 'B', { shouldDirty: true });
-    }, 20);
+      setValue('firstName', 'B', { shouldDirty: true })
+    }, 20)
 
     setTimeout(() => {
-      setValue('firstName', 'C', { shouldTouch: true });
-    }, 30);
+      setValue('firstName', 'C', { shouldTouch: true })
+    }, 30)
 
     setTimeout(() => {
-      setValue('firstName', 'D', { shouldValidate: true });
-    }, 40);
-  }, [register, setValue]);
+      setValue('firstName', 'D', { shouldValidate: true })
+    }, 40)
+  }, [register, setValue])
 
   return (
     <React.StrictMode>
@@ -33,8 +33,8 @@ const SetValueAsyncStrictMode = () => {
           defaultValue={'test'}
           control={control}
           render={({ field }) => {
-            state.current.add(field.value);
-            return <input id={'input'} {...field} />;
+            state.current.add(field.value)
+            return <input id={'input'} {...field} />
           }}
           name={'firstName'}
         />
@@ -46,7 +46,7 @@ const SetValueAsyncStrictMode = () => {
         <p id="result">{JSON.stringify([...state.current])}</p>
       </form>
     </React.StrictMode>
-  );
-};
+  )
+}
 
-export default SetValueAsyncStrictMode;
+export default SetValueAsyncStrictMode

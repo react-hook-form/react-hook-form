@@ -1,9 +1,9 @@
-import type { InternalFieldName } from '../..';
-import getResolverOptions from '../../logic/getResolverOptions';
+import type { InternalFieldName } from '../..'
+import getResolverOptions from '../../logic/getResolverOptions'
 
 describe('getFielfs', () => {
   it('should return fields from `fieldsNames` and `fieldsRef`', () => {
-    const fieldNames: Set<InternalFieldName> = new Set(['test.sub', 'test1']);
+    const fieldNames: Set<InternalFieldName> = new Set(['test.sub', 'test1'])
     const fieldsRef: any = {
       test: {
         sub: {
@@ -21,10 +21,11 @@ describe('getFielfs', () => {
           value: 'test1',
         },
       },
-    };
+    }
 
-    expect(getResolverOptions(fieldNames, fieldsRef, undefined, true))
-      .toMatchInlineSnapshot(`
+    expect(
+      getResolverOptions(fieldNames, fieldsRef, undefined, true),
+    ).toMatchInlineSnapshot(`
       {
         "criteriaMode": undefined,
         "fields": {
@@ -53,6 +54,6 @@ describe('getFielfs', () => {
         ],
         "shouldUseNativeValidation": true,
       }
-    `);
-  });
-});
+    `)
+  })
+})

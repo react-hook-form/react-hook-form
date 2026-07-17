@@ -1,4 +1,4 @@
-import type { ValidationModeFlags } from '../types';
+import type { ValidationModeFlags } from '../types'
 
 export default (
   isBlurEvent: boolean,
@@ -8,13 +8,13 @@ export default (
   mode: Partial<ValidationModeFlags>,
 ) => {
   if (mode.isOnAll) {
-    return false;
+    return false
   } else if (!isSubmitted && mode.isOnTouch) {
-    return !(isTouched || isBlurEvent);
+    return !(isTouched || isBlurEvent)
   } else if (isSubmitted ? reValidateMode.isOnBlur : mode.isOnBlur) {
-    return !isBlurEvent;
+    return !isBlurEvent
   } else if (isSubmitted ? reValidateMode.isOnChange : mode.isOnChange) {
-    return isBlurEvent;
+    return isBlurEvent
   }
-  return true;
-};
+  return true
+}

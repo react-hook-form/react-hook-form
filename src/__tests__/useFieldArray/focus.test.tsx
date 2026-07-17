@@ -1,24 +1,24 @@
-import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react'
+import React from 'react'
 
-import { useFieldArray } from '../../useFieldArray';
-import { useForm } from '../../useForm';
-import noop from '../../utils/noop';
+import { useFieldArray } from '../../useFieldArray'
+import { useForm } from '../../useForm'
+import noop from '../../utils/noop'
 
 describe('useFieldArray focus', () => {
   it('should not focus any element when shouldFocus is set to false', () => {
     const Component = () => {
       const { register, control } = useForm<{
-        test: { value: string }[];
+        test: { value: string }[]
       }>({
         defaultValues: {
           test: [{ value: '1' }, { value: '2' }],
         },
-      });
+      })
       const { fields, prepend, append, insert } = useFieldArray({
         name: 'test',
         control,
-      });
+      })
 
       return (
         <form>
@@ -44,19 +44,19 @@ describe('useFieldArray focus', () => {
             insert
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
-    fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    fireEvent.click(screen.getByRole('button', { name: /append/i }))
 
-    fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+    fireEvent.click(screen.getByRole('button', { name: /prepend/i }))
 
-    fireEvent.click(screen.getByRole('button', { name: /insert/i }));
+    fireEvent.click(screen.getByRole('button', { name: /insert/i }))
 
-    expect(document.activeElement).toEqual(document.body);
-  });
+    expect(document.activeElement).toEqual(document.body)
+  })
 
   it('should focus on the precise input index', () => {
     function App() {
@@ -77,8 +77,8 @@ describe('useFieldArray focus', () => {
             { value: '0' },
           ],
         },
-      });
-      const { fields, insert } = useFieldArray({ control, name: 'test' });
+      })
+      const { fields, insert } = useFieldArray({ control, name: 'test' })
 
       return (
         <form onSubmit={handleSubmit(noop)}>
@@ -92,29 +92,29 @@ describe('useFieldArray focus', () => {
             </div>
           ))}
         </form>
-      );
+      )
     }
 
-    render(<App />);
+    render(<App />)
 
-    fireEvent.click(screen.getAllByRole('button', { name: /insert/i })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: /insert/i })[0])
 
-    expect(document.activeElement).toEqual(screen.getAllByRole('textbox')[1]);
-  });
+    expect(document.activeElement).toEqual(screen.getAllByRole('textbox')[1])
+  })
 
   it('should focus correct field array by focus index', () => {
     const Component = () => {
       const { register, control } = useForm<{
-        test: { value: string }[];
+        test: { value: string }[]
       }>({
         defaultValues: {
           test: [{ value: '1' }, { value: '2' }],
         },
-      });
+      })
       const { fields, prepend, append, insert } = useFieldArray({
         name: 'test',
         control,
-      });
+      })
 
       return (
         <form>
@@ -140,37 +140,37 @@ describe('useFieldArray focus', () => {
             insert
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
-    fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    fireEvent.click(screen.getByRole('button', { name: /append/i }))
 
-    expect(document.activeElement).toEqual(screen.getAllByRole('textbox')[0]);
+    expect(document.activeElement).toEqual(screen.getAllByRole('textbox')[0])
 
-    fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+    fireEvent.click(screen.getByRole('button', { name: /prepend/i }))
 
-    expect(document.activeElement).toEqual(screen.getAllByRole('textbox')[1]);
+    expect(document.activeElement).toEqual(screen.getAllByRole('textbox')[1])
 
-    fireEvent.click(screen.getByRole('button', { name: /insert/i }));
+    fireEvent.click(screen.getByRole('button', { name: /insert/i }))
 
-    expect(document.activeElement).toEqual(screen.getAllByRole('textbox')[0]);
-  });
+    expect(document.activeElement).toEqual(screen.getAllByRole('textbox')[0])
+  })
 
   it('should focus correct field array by focus name', () => {
     const Component = () => {
       const { register, control } = useForm<{
-        test: { value: string }[];
+        test: { value: string }[]
       }>({
         defaultValues: {
           test: [{ value: '1' }, { value: '2' }],
         },
-      });
+      })
       const { fields, prepend, append, insert } = useFieldArray({
         name: 'test',
         control,
-      });
+      })
 
       return (
         <form>
@@ -200,21 +200,21 @@ describe('useFieldArray focus', () => {
             insert
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
-    fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    fireEvent.click(screen.getByRole('button', { name: /append/i }))
 
-    expect(document.activeElement).toEqual(screen.getAllByRole('textbox')[0]);
+    expect(document.activeElement).toEqual(screen.getAllByRole('textbox')[0])
 
-    fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+    fireEvent.click(screen.getByRole('button', { name: /prepend/i }))
 
-    expect(document.activeElement).toEqual(screen.getAllByRole('textbox')[1]);
+    expect(document.activeElement).toEqual(screen.getAllByRole('textbox')[1])
 
-    fireEvent.click(screen.getByRole('button', { name: /insert/i }));
+    fireEvent.click(screen.getByRole('button', { name: /insert/i }))
 
-    expect(document.activeElement).toEqual(screen.getAllByRole('textbox')[0]);
-  });
-});
+    expect(document.activeElement).toEqual(screen.getAllByRole('textbox')[0])
+  })
+})

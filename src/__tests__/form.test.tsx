@@ -1,16 +1,16 @@
-import 'whatwg-fetch';
+import 'whatwg-fetch'
 
-import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import React from 'react'
 
-import { Form } from '../form';
-import { useForm } from '../useForm';
-import { FormProvider } from '../useFormContext';
+import { Form } from '../form'
+import { useForm } from '../useForm'
+import { FormProvider } from '../useFormContext'
 
 describe('Form', () => {
   beforeEach(() => {
-    jest.restoreAllMocks();
-  });
+    jest.restoreAllMocks()
+  })
 
   it('should support render with both form tag and headless', () => {
     const WithContext = () => (
@@ -18,10 +18,10 @@ describe('Form', () => {
         <Form />
         <Form render={() => null} />
       </>
-    );
+    )
 
     const App = () => {
-      const methods = useForm();
+      const methods = useForm()
       return (
         <div>
           <Form control={methods.control}>
@@ -30,7 +30,7 @@ describe('Form', () => {
           <Form
             control={methods.control}
             render={() => {
-              return null;
+              return null
             }}
           />
 
@@ -38,11 +38,11 @@ describe('Form', () => {
             <WithContext />
           </FormProvider>
         </div>
-      );
-    };
+      )
+    }
 
-    render(<App />);
-  });
+    render(<App />)
+  })
 
   it('should handle success request callback', async () => {
     jest.spyOn(global, 'fetch').mockResolvedValueOnce(
@@ -50,34 +50,34 @@ describe('Form', () => {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
       }),
-    );
+    )
 
-    const onSubmit = jest.fn();
-    const onError = jest.fn();
+    const onSubmit = jest.fn()
+    const onError = jest.fn()
 
     const App = () => {
-      const [message, setMessage] = React.useState('');
+      const [message, setMessage] = React.useState('')
       const {
         control,
         formState: { isSubmitSuccessful },
-      } = useForm();
+      } = useForm()
 
       return (
         <Form
           encType={'application/json'}
           action={'/success'}
           onSubmit={({ data, formData, formDataJson }) => {
-            data;
-            formData;
-            formDataJson;
-            onSubmit();
+            data
+            formData
+            formDataJson
+            onSubmit()
           }}
           control={control}
           onError={onError}
           onSuccess={async ({ response }) => {
             if (response) {
-              const data: { message: string } = await response.json();
-              setMessage(data.message);
+              const data: { message: string } = await response.json()
+              setMessage(data.message)
             }
           }}
         >
@@ -85,34 +85,34 @@ describe('Form', () => {
           <p>{isSubmitSuccessful ? 'submitSuccessful' : 'submitFailed'}</p>
           <p>{message}</p>
         </Form>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'))
 
     await waitFor(() => {
-      expect(onSubmit).toHaveBeenCalled();
-      expect(onError).not.toHaveBeenCalled();
-      screen.getByText('submitSuccessful');
-      screen.getByText('ok');
-    });
-  });
+      expect(onSubmit).toHaveBeenCalled()
+      expect(onError).not.toHaveBeenCalled()
+      screen.getByText('submitSuccessful')
+      screen.getByText('ok')
+    })
+  })
 
   it('should handle error request callback', async () => {
     jest
       .spyOn(global, 'fetch')
-      .mockResolvedValueOnce(new Response(null, { status: 500 }));
+      .mockResolvedValueOnce(new Response(null, { status: 500 }))
 
-    const onSubmit = jest.fn();
-    const onSuccess = jest.fn();
+    const onSubmit = jest.fn()
+    const onSuccess = jest.fn()
 
     const App = () => {
       const {
         control,
         formState: { isSubmitSuccessful, errors },
-      } = useForm();
+      } = useForm()
 
       return (
         <Form
@@ -126,32 +126,32 @@ describe('Form', () => {
           {errors.root?.server && 'This is a server error'}
           <p>{errors.root?.server?.type}</p>
         </Form>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'))
 
     await waitFor(() => {
-      expect(onSubmit).toHaveBeenCalled();
-      expect(onSuccess).not.toHaveBeenCalled();
-      screen.getByText('This is a server error');
-      screen.getByText('500');
-      screen.getByText('submitFailed');
-    });
-  });
+      expect(onSubmit).toHaveBeenCalled()
+      expect(onSuccess).not.toHaveBeenCalled()
+      screen.getByText('This is a server error')
+      screen.getByText('500')
+      screen.getByText('submitFailed')
+    })
+  })
 
   it('should validate custom status code', async () => {
     jest
       .spyOn(global, 'fetch')
-      .mockResolvedValueOnce(new Response(null, { status: 201 }));
+      .mockResolvedValueOnce(new Response(null, { status: 201 }))
 
     const App = () => {
       const {
         control,
         formState: { isSubmitSuccessful },
-      } = useForm();
+      } = useForm()
 
       return (
         <Form
@@ -163,56 +163,56 @@ describe('Form', () => {
           <button>Submit</button>
           <p>{isSubmitSuccessful ? 'submitSuccessful' : 'submitFailed'}</p>
         </Form>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'))
 
     await waitFor(() => {
-      screen.getByText('submitFailed');
-    });
-  });
+      screen.getByText('submitFailed')
+    })
+  })
 
   it('should support other request type', async () => {
     jest
       .spyOn(global, 'fetch')
-      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+      .mockResolvedValueOnce(new Response(null, { status: 200 }))
 
     const App = () => {
       const {
         control,
         formState: { isSubmitSuccessful },
-      } = useForm();
+      } = useForm()
 
       return (
         <Form encType={'application/json'} action={'/get'} control={control}>
           <button>Submit</button>
           <p>{isSubmitSuccessful ? 'submitSuccessful' : 'submitFailed'}</p>
         </Form>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'))
 
     await waitFor(() => {
-      screen.getByText('submitSuccessful');
-    });
-  });
+      screen.getByText('submitSuccessful')
+    })
+  })
 
   it('should support render props for react native', async () => {
     jest
       .spyOn(global, 'fetch')
-      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+      .mockResolvedValueOnce(new Response(null, { status: 200 }))
 
     const App = () => {
       const {
         control,
         formState: { isSubmitSuccessful },
-      } = useForm();
+      } = useForm()
 
       return (
         <Form
@@ -225,69 +225,69 @@ describe('Form', () => {
                   {isSubmitSuccessful ? 'submitSuccessful' : 'submitFailed'}
                 </p>
               </>
-            );
+            )
           }}
         />
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'))
 
     await waitFor(() => {
-      screen.getByText('submitSuccessful');
-    });
-  });
+      screen.getByText('submitSuccessful')
+    })
+  })
 
   it('should support fetcher prop with external request', async () => {
-    const fetcher = jest.fn().mockResolvedValue({});
+    const fetcher = jest.fn().mockResolvedValue({})
     jest
       .spyOn(global, 'fetch')
-      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+      .mockResolvedValueOnce(new Response(null, { status: 200 }))
 
     const App = () => {
       const {
         control,
         formState: { isSubmitSuccessful },
-      } = useForm();
+      } = useForm()
 
       return (
         <Form
           control={control}
           onSubmit={async () => {
-            await fetcher();
+            await fetcher()
           }}
         >
           <button>Submit</button>
           <p>{isSubmitSuccessful ? 'submitSuccessful' : 'submitFailed'}</p>
         </Form>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'))
 
     await waitFor(() => {
-      screen.getByText('submitSuccessful');
+      screen.getByText('submitSuccessful')
 
-      expect(fetcher).toHaveBeenCalled();
-    });
-  });
+      expect(fetcher).toHaveBeenCalled()
+    })
+  })
 
   it('should include application/json header with encType supplied', async () => {
     jest
       .spyOn(global, 'fetch')
-      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+      .mockResolvedValueOnce(new Response(null, { status: 200 }))
 
-    const onSuccess = jest.fn();
+    const onSuccess = jest.fn()
 
     const App = () => {
       const {
         control,
         formState: { isSubmitSuccessful },
-      } = useForm();
+      } = useForm()
 
       return (
         <Form
@@ -299,30 +299,30 @@ describe('Form', () => {
           <button>Submit</button>
           <p>{isSubmitSuccessful ? 'submitSuccessful' : 'submitFailed'}</p>
         </Form>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'))
 
     await waitFor(() => {
-      expect(onSuccess).toHaveBeenCalled();
-    });
-  });
+      expect(onSuccess).toHaveBeenCalled()
+    })
+  })
 
   it('should support explicit "multipart/form-data" encType', async () => {
     jest
       .spyOn(global, 'fetch')
-      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+      .mockResolvedValueOnce(new Response(null, { status: 200 }))
 
-    const onSuccess = jest.fn();
+    const onSuccess = jest.fn()
 
     const App = () => {
       const {
         control,
         formState: { isSubmitSuccessful },
-      } = useForm();
+      } = useForm()
 
       return (
         <Form
@@ -334,15 +334,15 @@ describe('Form', () => {
           <button>Submit</button>
           <p>{isSubmitSuccessful ? 'submitSuccessful' : 'submitFailed'}</p>
         </Form>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'))
 
     await waitFor(() => {
-      expect(onSuccess).toHaveBeenCalled();
-    });
-  });
-});
+      expect(onSuccess).toHaveBeenCalled()
+    })
+  })
+})

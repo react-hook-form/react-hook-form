@@ -1,7 +1,7 @@
-import React from 'react';
-import { render } from '@testing-library/react';
+import { render } from '@testing-library/react'
+import React from 'react'
 
-import { Controller } from '../controller';
+import { Controller } from '../controller'
 import type {
   FieldErrors,
   FieldPath,
@@ -9,22 +9,22 @@ import type {
   Path,
   PathValue,
   UseFormRegister,
-} from '../types';
-import { useController } from '../useController';
-import { useFieldArray } from '../useFieldArray';
-import { useForm } from '../useForm';
-import { useFormState } from '../useFormState';
-import { useWatch } from '../useWatch';
+} from '../types'
+import { useController } from '../useController'
+import { useFieldArray } from '../useFieldArray'
+import { useForm } from '../useForm'
+import { useFormState } from '../useFormState'
+import { useWatch } from '../useWatch'
 
 test('should not throw type error with path name', () => {
   type MissingCompanyNamePath = Path<{
     test: {
       test: {
-        name: string;
-      }[];
-      testName: string;
-    };
-  }>;
+        name: string
+      }[]
+      testName: string
+    }
+  }>
 
   const test: MissingCompanyNamePath[] = [
     'test',
@@ -32,26 +32,26 @@ test('should not throw type error with path name', () => {
     'test.testName',
     'test.test.0',
     'test.test.0.name',
-  ];
+  ]
 
-  test;
-});
+  test
+})
 
 test('should not throw type error with optional array fields', () => {
-  type Thing = { id: string; name: string };
+  type Thing = { id: string; name: string }
 
   interface FormData {
-    name: string;
-    things?: Array<{ name: string }>;
-    items?: Array<Thing>;
+    name: string
+    things?: Array<{ name: string }>
+    items?: Array<Thing>
   }
 
   function App() {
     const { control, register } = useForm<FormData>({
       defaultValues: { name: 'test' },
-    });
-    const { fields, append } = useFieldArray({ control, name: 'things' });
-    const fieldArray = useFieldArray({ control, name: 'items' });
+    })
+    const { fields, append } = useFieldArray({ control, name: 'things' })
+    const fieldArray = useFieldArray({ control, name: 'items' })
 
     return (
       <div className="App">
@@ -65,23 +65,23 @@ test('should not throw type error with optional array fields', () => {
           </div>
         ))}
         {fieldArray.fields.map((item) => {
-          return <div key={item.id}>{item.name}</div>;
+          return <div key={item.id}>{item.name}</div>
         })}
       </div>
-    );
+    )
   }
 
-  App;
-});
+  App
+})
 
 test('should work with optional field with Controller', () => {
   type FormValues = {
-    firstName: string;
-    lastName?: string;
-  };
+    firstName: string
+    lastName?: string
+  }
 
   function App() {
-    const { control } = useForm<FormValues>();
+    const { control } = useForm<FormValues>()
 
     return (
       <div>
@@ -90,7 +90,7 @@ test('should work with optional field with Controller', () => {
           defaultValue=""
           control={control}
           render={({ field: { value, onChange } }) => {
-            return <input value={value} onChange={onChange} />;
+            return <input value={value} onChange={onChange} />
           }}
         />
         <Controller
@@ -98,28 +98,28 @@ test('should work with optional field with Controller', () => {
           defaultValue=""
           control={control}
           render={({ field: { value, onChange } }) => {
-            return <input value={value} onChange={onChange} />;
+            return <input value={value} onChange={onChange} />
           }}
         />
       </div>
-    );
+    )
   }
 
-  App;
-});
+  App
+})
 
 test('should work with useWatch return correct array types', () => {
   type FormValues = {
-    testString: string;
-    testNumber: number;
+    testString: string
+    testNumber: number
     testObject: {
-      testString: string;
-      test1String: string;
-    };
-  };
+      testString: string
+      test1String: string
+    }
+  }
 
   const App = () => {
-    const { control } = useForm<FormValues>();
+    const { control } = useForm<FormValues>()
     const output: [
       FormValues['testString'],
       FormValues['testNumber'],
@@ -127,19 +127,19 @@ test('should work with useWatch return correct array types', () => {
     ] = useWatch({
       control,
       name: ['testString', 'testNumber', 'testObject'],
-    });
+    })
 
-    return output;
-  };
+    return output
+  }
 
-  App;
-});
+  App
+})
 
 test('should type errors correctly with Path generic', () => {
   interface InputProps<T extends FieldValues = FieldValues> {
-    name: FieldPath<T>;
-    register: UseFormRegister<T>;
-    errors: FieldErrors<T>;
+    name: FieldPath<T>
+    register: UseFormRegister<T>
+    errors: FieldErrors<T>
   }
 
   function Input<T extends FieldValues = FieldValues>({
@@ -152,34 +152,34 @@ test('should type errors correctly with Path generic', () => {
         <input {...register(name)} />
         <p>{errors[name] ? String(errors?.[name]?.message) : 'no error'}</p>
       </>
-    );
+    )
   }
 
-  Input;
-});
+  Input
+})
 
 test('should allow unpackedValue and deep partial unpackValue for reset', () => {
-  type Type1 = { name: string };
-  type Type2 = { name: string };
+  type Type1 = { name: string }
+  type Type2 = { name: string }
 
   type Forms = {
-    test: Type1;
-    test1: Type2;
-  };
+    test: Type1
+    test1: Type2
+  }
 
-  type FormMapKey = keyof Forms;
+  type FormMapKey = keyof Forms
 
   const Test = <T extends FormMapKey>() => {
-    const { reset, getValues } = useForm<Forms[T]>();
-    reset(getValues());
-  };
+    const { reset, getValues } = useForm<Forms[T]>()
+    reset(getValues())
+  }
 
-  Test;
-});
+  Test
+})
 
 test('should infer context type into control', () => {
   function App() {
-    const [isValid] = React.useState(true);
+    const [isValid] = React.useState(true)
     const { control } = useForm<
       { test: Record<string, unknown>[] },
       { isValid: boolean }
@@ -188,43 +188,43 @@ test('should infer context type into control', () => {
         return {
           values: context?.isValid ? data : {},
           errors: {},
-        };
+        }
       },
       context: {
         isValid,
       },
-    });
+    })
 
     useFieldArray({
       name: 'test',
       control,
-    });
+    })
 
-    return null;
+    return null
   }
 
-  App;
-});
+  App
+})
 
 test('should support optional field errors', () => {
   type Errors = FieldErrors<{
-    steps?: { action: string }[];
+    steps?: { action: string }[]
     foo?: {
-      bar: string;
-    };
-    baz: { action: string };
-  }>;
+      bar: string
+    }
+    baz: { action: string }
+  }>
 
   const error = {
     type: 'test',
     message: 'test',
-  };
+  }
 
   let errors: Errors = {
     steps: error,
     foo: error,
     baz: error,
-  };
+  }
 
   errors = {
     steps: [{ action: error }],
@@ -234,30 +234,30 @@ test('should support optional field errors', () => {
     baz: {
       action: error,
     },
-  };
+  }
 
-  errors;
-});
+  errors
+})
 
 test('should support nullable field errors', () => {
   type Errors = FieldErrors<{
-    steps?: { action: string }[] | null;
+    steps?: { action: string }[] | null
     foo: {
-      bar: string;
-    } | null;
-    baz: { action: string };
-  }>;
+      bar: string
+    } | null
+    baz: { action: string }
+  }>
 
   const error = {
     type: 'test',
     message: 'test',
-  };
+  }
 
   let errors: Errors = {
     steps: error,
     foo: error,
     baz: error,
-  };
+  }
 
   errors = {
     steps: [{ action: error }],
@@ -267,28 +267,28 @@ test('should support nullable field errors', () => {
     baz: {
       action: error,
     },
-  };
+  }
 
-  errors;
-});
+  errors
+})
 
 test('should work with generic component path assertion', () => {
   function App<T extends FieldValues>() {
-    const { register } = useForm<T>();
-    const FIELD_DATA_EXTENSION = '__data';
+    const { register } = useForm<T>()
+    const FIELD_DATA_EXTENSION = '__data'
     const item = {
       value: 'data',
-    };
+    }
 
     register(`FieldName${FIELD_DATA_EXTENSION}` as FieldPath<T>, {
       value: item as PathValue<T, Path<T>>,
-    });
+    })
 
-    return null;
+    return null
   }
 
-  App;
-});
+  App
+})
 
 test('should infer async default values', () => {
   const formValues = {
@@ -297,7 +297,7 @@ test('should infer async default values', () => {
       nested: 'test',
     },
     fieldArray: [{ test: '' }],
-  };
+  }
 
   function App() {
     const {
@@ -316,58 +316,58 @@ test('should infer async default values', () => {
       setError,
     } = useForm<typeof formValues>({
       defaultValues: async () => {
-        return formValues;
+        return formValues
       },
-    });
+    })
     useFieldArray({
       name: 'fieldArray' as const,
       control,
-    });
+    })
     useController({
       name: 'test1.nested',
       control,
-    });
+    })
     useWatch({
       name: 'test1',
       control,
-    });
+    })
     useFormState({
       name: 'fieldArray',
       control,
-    });
+    })
 
-    setValue('test', 'data');
-    setValue('test1.nested', 'data');
+    setValue('test', 'data')
+    setValue('test1.nested', 'data')
     reset({
       test: 'test',
       test1: {
         nested: 'test1',
       },
-    });
+    })
 
-    watch('test');
-    watch('test1.nested');
+    watch('test')
+    watch('test1.nested')
 
-    getValues('test');
-    getValues('test1.nested');
+    getValues('test')
+    getValues('test1.nested')
 
-    getFieldState('test');
-    getFieldState('test1.nested');
+    getFieldState('test')
+    getFieldState('test1.nested')
 
-    clearErrors('test');
-    clearErrors('test1.nested');
+    clearErrors('test')
+    clearErrors('test1.nested')
 
-    unregister('test');
-    unregister('test1.nested');
+    unregister('test')
+    unregister('test1.nested')
 
-    setFocus('test');
-    setFocus('test1.nested');
+    setFocus('test')
+    setFocus('test1.nested')
 
-    trigger('test');
-    trigger('test1.nested');
+    trigger('test')
+    trigger('test1.nested')
 
-    setError('test', { type: 'test ' });
-    setError('test1.nested', { type: 'test ' });
+    setError('test', { type: 'test ' })
+    setError('test1.nested', { type: 'test ' })
 
     return (
       <form>
@@ -380,52 +380,52 @@ test('should infer async default values', () => {
         <p>{formState.dirtyFields.test}</p>
         <p>{formState.dirtyFields.test1?.nested}</p>
       </form>
-    );
+    )
   }
 
-  App;
-});
+  App
+})
 
 test('should work for root error type', () => {
   const App = () => {
     const {
       setError,
       formState: { errors },
-    } = useForm();
+    } = useForm()
 
     setError('root', {
       type: 'data',
       message: 'test',
-    });
+    })
     setError('root.nested', {
       type: 'data',
       message: 'test',
-    });
+    })
 
     React.useEffect(() => {
       setError('root.test', {
         type: 'root.test',
-      });
+      })
       setError('root', {
         type: 'root',
-      });
-    }, [setError]);
+      })
+    }, [setError])
 
     return (
       <form>
         <p>{errors.root?.test?.message}</p>
         <p>{errors.root?.message}</p>
       </form>
-    );
-  };
+    )
+  }
 
-  App;
-});
+  App
+})
 
 it('should worked for error with type or message keyword', () => {
   type FormInputs = {
-    object: { id: string; type: string; message: string };
-  };
+    object: { id: string; type: string; message: string }
+  }
 
   const App = () => {
     const {
@@ -439,11 +439,11 @@ it('should worked for error with type or message keyword', () => {
           id: 'test',
         },
       },
-    });
+    })
 
     const onSubmit = (data: FormInputs) => {
-      alert(JSON.stringify(data));
-    };
+      alert(JSON.stringify(data))
+    }
 
     return (
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -453,23 +453,23 @@ it('should worked for error with type or message keyword', () => {
         <p>{errors?.object?.id?.message}</p>
         <input type="submit" />
       </form>
-    );
-  };
+    )
+  }
 
-  App;
-});
+  App
+})
 
 test('should provide correct type for validate function with useFieldArray', () => {
   const App = () => {
     const { control } = useForm<{
       test: {
-        first: string;
-        last: string;
-      }[];
+        first: string
+        last: string
+      }[]
       test1: {
-        first: string;
-        last: string;
-      }[];
+        first: string
+        last: string
+      }[]
     }>({
       defaultValues: {
         test: [
@@ -479,43 +479,43 @@ test('should provide correct type for validate function with useFieldArray', () 
           },
         ],
       },
-    });
+    })
     useFieldArray({
       control,
       name: 'test',
       rules: {
         validate: (data) => {
-          return !!data.find((test) => test.first && test.last);
+          return !!data.find((test) => test.first && test.last)
         },
       },
-    });
+    })
     useFieldArray({
       control,
       name: 'test1',
       rules: {
         validate: {
           test: (data) => {
-            return !!data.find((test) => test.first && test.last);
+            return !!data.find((test) => test.first && test.last)
           },
         },
       },
-    });
+    })
 
-    return null;
-  };
+    return null
+  }
 
-  App;
-});
+  App
+})
 
 test('should support compute function via useWatch without name prop', () => {
   const Form = () => {
     type FormValue = {
-      test: string;
-    };
+      test: string
+    }
 
     const methods = useForm<FormValue>({
       defaultValues: { test: 'test' },
-    });
+    })
 
     const test = useWatch({
       control: methods.control,
@@ -523,52 +523,52 @@ test('should support compute function via useWatch without name prop', () => {
         return {
           data: 'test',
           test: data.test,
-        };
+        }
       },
-    });
+    })
 
     return (
       <div>
         {test.test}
         {test.data}
       </div>
-    );
-  };
+    )
+  }
 
-  render(<Form />);
-});
+  render(<Form />)
+})
 
 test('should support compute function via useWatch with string name prop', () => {
   const Form = () => {
     type FormValue = {
-      test: string;
-    };
+      test: string
+    }
 
     const methods = useForm<FormValue>({
       defaultValues: { test: 'test' },
-    });
+    })
 
     const test: boolean = useWatch({
       control: methods.control,
       name: 'test' as const,
       compute: (data: string) => {
-        return data === 'test';
+        return data === 'test'
       },
-    });
+    })
 
-    return <div>{test}</div>;
-  };
+    return <div>{test}</div>
+  }
 
-  render(<Form />);
-});
+  render(<Form />)
+})
 
 test('should support compute function via useWatch with array name prop', () => {
   const Form = () => {
     type FormValue = {
-      test1: string;
-      test2: number;
-      test3: boolean;
-    };
+      test1: string
+      test2: number
+      test3: boolean
+    }
 
     const methods = useForm<FormValue>({
       defaultValues: {
@@ -576,47 +576,47 @@ test('should support compute function via useWatch with array name prop', () => 
         test2: 1,
         test3: true,
       },
-    });
+    })
 
     const test: string = useWatch({
       control: methods.control,
       name: ['test1', 'test2'] as const,
       compute: ([test1Value, test2Value]: [string, number]) => {
-        return `${test1Value}${test2Value}`;
+        return `${test1Value}${test2Value}`
       },
-    });
+    })
 
-    return <div>{test}</div>;
-  };
+    return <div>{test}</div>
+  }
 
-  render(<Form />);
-});
+  render(<Form />)
+})
 
 test('useWatch should correctly select the name from object like param', () => {
   const App = () => {
     const { control } = useForm<{
       test: {
-        first: { second: string };
-      };
-    }>();
+        first: { second: string }
+      }
+    }>()
 
     const obj = {
       name: 'test.first' as const,
       control,
-    };
+    }
 
-    const resultFromObj = useWatch(obj);
+    const resultFromObj = useWatch(obj)
     const resultFromInline = useWatch({
       name: 'test.first',
       control,
-    });
+    })
 
-    void (resultFromObj satisfies { second: string });
-    void ({ ...resultFromObj } satisfies { second: string });
-    void (resultFromInline satisfies { second: string });
+    void (resultFromObj satisfies { second: string })
+    void ({ ...resultFromObj } satisfies { second: string })
+    void (resultFromInline satisfies { second: string })
 
-    return null;
-  };
+    return null
+  }
 
-  App;
-});
+  App
+})

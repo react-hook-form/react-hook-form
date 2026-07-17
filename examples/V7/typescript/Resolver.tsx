@@ -1,10 +1,10 @@
-import React from 'react';
-import { useForm, Resolver } from 'react-hook-form';
+import React from 'react'
+import { Resolver, useForm } from 'react-hook-form'
 
 type FormValues = {
-  firstName: string;
-  lastName: string;
-};
+  firstName: string
+  lastName: string
+}
 
 const resolver: Resolver<FormValues> = async (values) => {
   return {
@@ -17,14 +17,14 @@ const resolver: Resolver<FormValues> = async (values) => {
           },
         }
       : {},
-  };
-};
+  }
+}
 
 export default function App() {
   const { register, handleSubmit, errors } = useForm<FormValues>({
     resolver: resolver,
-  });
-  const onSubmit = handleSubmit((data) => alert(JSON.stringify(data)));
+  })
+  const onSubmit = handleSubmit((data) => alert(JSON.stringify(data)))
 
   return (
     <form onSubmit={onSubmit}>
@@ -41,5 +41,5 @@ export default function App() {
 
       <input type="submit" />
     </form>
-  );
+  )
 }

@@ -1,4 +1,4 @@
-import getFieldValueAs from '../../logic/getFieldValueAs';
+import getFieldValueAs from '../../logic/getFieldValueAs'
 
 describe('getFieldValueAs', () => {
   it('should return undefined when value is undefined', () => {
@@ -11,6 +11,6 @@ describe('getFieldValueAs', () => {
         valueAsNumber: true,
         valueAsDate: false,
       }),
-    ).toBeUndefined();
-  });
-});
+    ).toBeUndefined()
+  })
+})

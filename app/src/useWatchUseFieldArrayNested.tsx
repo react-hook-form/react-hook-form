@@ -1,38 +1,38 @@
-import React from 'react';
+import React from 'react'
 import {
+  Control,
   Controller,
   useFieldArray,
   useForm,
   useWatch,
-  Control,
-} from 'react-hook-form';
+} from 'react-hook-form'
 
 type FormValues = {
   test: {
-    firstName: string;
-    lastName: string;
-    keyValue: { name: string }[];
-  }[];
-};
+    firstName: string
+    lastName: string
+    keyValue: { name: string }[]
+  }[]
+}
 
 function NestedArray({
   control,
   index,
 }: {
-  control: Control<FormValues>;
-  index: number;
+  control: Control<FormValues>
+  index: number
 }) {
   const { fields, append, prepend, swap, move, remove, insert, update } =
     useFieldArray<FormValues, 'test.0.keyValue'>({
       name: `test.${index}.keyValue` as 'test.0.keyValue',
       control,
-    });
+    })
   const value = useWatch({
     name: 'test',
     control,
-  });
-  const renderCountRef = React.useRef(0);
-  renderCountRef.current++;
+  })
+  const renderCountRef = React.useRef(0)
+  renderCountRef.current++
 
   return (
     <div>
@@ -115,7 +115,7 @@ function NestedArray({
 
       {index === 0 && <p id="result">{JSON.stringify(value)}</p>}
     </div>
-  );
+  )
 }
 
 export default () => {
@@ -130,14 +130,14 @@ export default () => {
           },
         ],
       },
-    });
+    })
   const { fields, append, prepend, swap, move, insert, remove, update } =
     useFieldArray({
       control,
       name: 'test',
-    });
-  const renderCountRef = React.useRef(0);
-  renderCountRef.current++;
+    })
+  const renderCountRef = React.useRef(0)
+  renderCountRef.current++
 
   return (
     <form onSubmit={handleSubmit((e) => console.log(e))}>
@@ -150,7 +150,7 @@ export default () => {
             />
             <NestedArray control={control} index={index} />
           </div>
-        );
+        )
       })}
 
       <hr />
@@ -251,7 +251,7 @@ export default () => {
               { firstName: 'test1' },
               { firstName: 'test2' },
             ],
-          });
+          })
         }}
       >
         reset
@@ -261,5 +261,5 @@ export default () => {
 
       <button id={'submit'}>Submit</button>
     </form>
-  );
-};
+  )
+}

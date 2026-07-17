@@ -1,14 +1,14 @@
-import React from 'react';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
+import React from 'react'
+import { Controller, useFieldArray, useForm } from 'react-hook-form'
+import { useParams } from 'react-router-dom'
 
-let renderCount = 0;
+let renderCount = 0
 
-type FormValues = { data: { name: string }[] };
+type FormValues = { data: { name: string }[] }
 
 const UseFieldArray: React.FC = () => {
-  const { mode } = useParams();
-  const withoutFocus: boolean = mode === 'defaultAndWithoutFocus';
+  const { mode } = useParams()
+  const withoutFocus: boolean = mode === 'defaultAndWithoutFocus'
   const {
     control,
     handleSubmit,
@@ -24,7 +24,7 @@ const UseFieldArray: React.FC = () => {
         }
       : {}),
     mode: mode === 'formState' ? 'onChange' : 'onSubmit',
-  });
+  })
   const {
     fields,
     append,
@@ -38,23 +38,23 @@ const UseFieldArray: React.FC = () => {
   } = useFieldArray({
     control,
     name: 'data',
-  });
-  const [data, setData] = React.useState<FormValues>();
+  })
+  const [data, setData] = React.useState<FormValues>()
   const onSubmit = (data: FormValues) => {
-    setData(data);
-  };
+    setData(data)
+  }
 
   React.useEffect(() => {
     setTimeout(() => {
       if (mode === 'asyncReset') {
         reset({
           data: [{ name: 'test' }, { name: 'test1' }, { name: 'test2' }],
-        });
+        })
       }
-    }, 10);
-  }, [reset, mode]);
+    }, 10)
+  }, [reset, mode])
 
-  renderCount++;
+  renderCount++
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -179,7 +179,7 @@ const UseFieldArray: React.FC = () => {
         type="button"
         onClick={() =>
           setTimeout(() => {
-            remove(1);
+            remove(1)
           }, 90)
         }
       >
@@ -193,7 +193,7 @@ const UseFieldArray: React.FC = () => {
           setTimeout(() => {
             append({
               name: 'appendAsync',
-            });
+            })
           }, 90)
         }
       >
@@ -207,7 +207,7 @@ const UseFieldArray: React.FC = () => {
           setTimeout(() => {
             prepend({
               name: 'prependAsync',
-            });
+            })
           }, 90)
         }
       >
@@ -221,7 +221,7 @@ const UseFieldArray: React.FC = () => {
           setTimeout(() => {
             insert(1, {
               name: 'insertAsync',
-            });
+            })
           }, 90)
         }
       >
@@ -233,7 +233,7 @@ const UseFieldArray: React.FC = () => {
         type="button"
         onClick={() =>
           setTimeout(() => {
-            swap(0, 1);
+            swap(0, 1)
           }, 90)
         }
       >
@@ -250,7 +250,7 @@ const UseFieldArray: React.FC = () => {
           setTimeout(() => {
             update(0, {
               name: 'updateAsync',
-            });
+            })
           }, 90)
         }
         type="button"
@@ -268,7 +268,7 @@ const UseFieldArray: React.FC = () => {
               { name: `${renderCount}. ipsum` },
               { name: `${renderCount}. dolor` },
               { name: `${renderCount}. sit amet` },
-            ]);
+            ])
           }, 90)
         }
       >
@@ -300,7 +300,7 @@ const UseFieldArray: React.FC = () => {
         onClick={() => {
           reset({
             data: [{ name: 'test' }, { name: 'test1' }, { name: 'test2' }],
-          });
+          })
         }}
       >
         reset
@@ -313,8 +313,8 @@ const UseFieldArray: React.FC = () => {
           setTimeout(() => {
             reset({
               data: [],
-            });
-          }, 100);
+            })
+          }, 100)
         }}
       >
         reset async
@@ -335,7 +335,7 @@ const UseFieldArray: React.FC = () => {
       <div id="dirtyFields">{JSON.stringify(dirtyFields)}</div>
       <div id="touched">{JSON.stringify(touchedFields.data)}</div>
     </form>
-  );
-};
+  )
+}
 
-export default UseFieldArray;
+export default UseFieldArray

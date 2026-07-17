@@ -1,18 +1,18 @@
-import remove from '../../utils/remove';
+import remove from '../../utils/remove'
 
 describe('remove', () => {
   it('should remove item accordingly', () => {
     expect(
       remove([, , { type: 'required', message: '', ref: 'test' }], 1),
-    ).toEqual([undefined, { type: 'required', message: '', ref: 'test' }]);
+    ).toEqual([undefined, { type: 'required', message: '', ref: 'test' }])
 
     expect(
       remove([, , { type: 'required', message: '', ref: 'test' }], [1, 2]),
-    ).toEqual([]);
+    ).toEqual([])
 
     expect(
       remove([, , { type: 'required', message: '', ref: 'test' }], [0, 1]),
-    ).toEqual([{ type: 'required', message: '', ref: 'test' }]);
+    ).toEqual([{ type: 'required', message: '', ref: 'test' }])
 
     expect(
       remove(
@@ -26,7 +26,7 @@ describe('remove', () => {
         ],
         [3, 2],
       ),
-    ).toEqual([]);
+    ).toEqual([])
 
     expect(
       remove(
@@ -45,18 +45,18 @@ describe('remove', () => {
       { type: 'required', message: '', ref: 'test' },
       { type: 'required', message: '', ref: 'test' },
       undefined,
-    ]);
+    ])
 
-    expect(remove([true, true, true], [1])).toEqual([true, true]);
-    expect(remove([true, true, true], [0])).toEqual([true, true]);
+    expect(remove([true, true, true], [1])).toEqual([true, true])
+    expect(remove([true, true, true], [0])).toEqual([true, true])
 
     expect(
       remove([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], [6, 7, 8, 9, 10, 11]),
-    ).toEqual([0, 1, 2, 3, 4, 5]);
+    ).toEqual([0, 1, 2, 3, 4, 5])
     expect(
       remove([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], [11, 10, 9, 8, 7, 6]),
-    ).toEqual([0, 1, 2, 3, 4, 5]);
-  });
+    ).toEqual([0, 1, 2, 3, 4, 5])
+  })
 
   it('should remove correctly with indexes which contains gap', () => {
     expect(
@@ -80,8 +80,8 @@ describe('remove', () => {
       null,
       ,
       { type: 'required', message: '', ref: 'test' },
-    ]);
-  });
+    ])
+  })
 
   it('should remove all items', () => {
     expect(
@@ -135,6 +135,6 @@ describe('remove', () => {
         ],
         [0, 1, 2, 3, 4, 5, 6, 7, 8],
       ),
-    ).toEqual([]);
-  });
-});
+    ).toEqual([])
+  })
+})

@@ -1,4 +1,4 @@
-import { toProfile, toAvatar } from 'Link';
+import { toAvatar, toProfile } from 'Link';
 
 export default function generate(individual) {
   const { github, avatar, alt } = individual;

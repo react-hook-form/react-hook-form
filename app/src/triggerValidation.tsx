@@ -1,7 +1,7 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import React from 'react'
+import { useForm } from 'react-hook-form'
 
-let renderCounter = 0;
+let renderCounter = 0
 
 function TriggerValidation() {
   const {
@@ -9,12 +9,12 @@ function TriggerValidation() {
     trigger,
     formState: { errors },
   } = useForm<{
-    test: string;
-    test1: string;
-    test2: string;
-  }>();
+    test: string
+    test1: string
+    test2: string
+  }>()
 
-  renderCounter++;
+  renderCounter++
 
   return (
     <>
@@ -41,7 +41,7 @@ function TriggerValidation() {
 
       <div id="renderCount">{renderCounter}</div>
     </>
-  );
+  )
 }
 
-export default TriggerValidation;
+export default TriggerValidation

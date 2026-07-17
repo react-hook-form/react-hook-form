@@ -1,5 +1,5 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import React from 'react'
+import { useForm } from 'react-hook-form'
 
 export default function App() {
   const {
@@ -7,16 +7,16 @@ export default function App() {
     formState: { errors },
     handleSubmit,
   } = useForm<{
-    email: string[];
+    email: string[]
   }>({
     defaultValues: {
       email: ['first@react.hook.form', 'last@react.hook.form'],
     },
-  });
+  })
 
   const onSubmit = handleSubmit<{ email: string }>((data) => {
-    alert(JSON.stringify(data));
-  });
+    alert(JSON.stringify(data))
+  })
 
   return (
     <form onSubmit={onSubmit}>
@@ -38,5 +38,5 @@ export default function App() {
 
       <input type="submit" />
     </form>
-  );
+  )
 }

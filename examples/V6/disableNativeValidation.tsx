@@ -1,12 +1,12 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import React from 'react'
+import { useForm } from 'react-hook-form'
 
 export default function App() {
-  const { errors, handleSubmit, register } = useForm();
+  const { errors, handleSubmit, register } = useForm()
 
   const onSubmit = (data) => {
-    console.log({ data });
-  };
+    console.log({ data })
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -23,5 +23,5 @@ export default function App() {
       {errors.email && errors.email.message}
       <input type="submit" />
     </form>
-  );
+  )
 }

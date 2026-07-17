@@ -1,12 +1,12 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import * as S from './styles';
+import React from 'react'
+import { Link } from 'react-router-dom'
+import * as S from './styles'
 
 type Item = {
-  title: string;
-  description: string;
-  slugs: string[];
-};
+  title: string
+  description: string
+  slugs: string[]
+}
 
 const items: Item[] = [
   {
@@ -228,7 +228,7 @@ const items: Item[] = [
     description: 'Should behave correctly when disabling form or fields',
     slugs: ['/disabled'],
   },
-];
+]
 
 const Component: React.FC = () => {
   return (
@@ -253,7 +253,7 @@ const Component: React.FC = () => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Component;
+export default Component

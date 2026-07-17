@@ -1,16 +1,16 @@
-import React from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import React from 'react'
+import { SubmitHandler, useForm } from 'react-hook-form'
 
 type FormValues = {
-  firstName: string;
-  lastName: string;
-  email: string;
-};
+  firstName: string
+  lastName: string
+  email: string
+}
 
 export default function App() {
-  const { register, handleSubmit } = useForm<FormValues>();
+  const { register, handleSubmit } = useForm<FormValues>()
   const onSubmit: SubmitHandler<FormValues> = (data) =>
-    alert(JSON.stringify(data));
+    alert(JSON.stringify(data))
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -31,5 +31,5 @@ export default function App() {
 
       <input type="submit" />
     </form>
-  );
+  )
 }

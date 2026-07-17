@@ -1,12 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { useForm } from 'react-hook-form'
 
 export default function App() {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit } = useForm()
   const onSubmit = (data) => {
-    alert(JSON.stringify(data));
-  };
+    alert(JSON.stringify(data))
+  }
 
   return (
     <div className="App">
@@ -36,5 +36,5 @@ export default function App() {
         submit button outside of form
       </button>
     </div>
-  );
+  )
 }

@@ -4,13 +4,14 @@
  *
  * @see https://nodejs.org/docs/latest/api/packages.html#packages_determining_module_system
  */
-import * as exported from 'react-hook-form';
-import assert from 'assert';
-import fs from 'fs';
-import path from 'path';
-import url from 'url';
 
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+import assert from 'assert'
+import fs from 'fs'
+import path from 'path'
+import * as exported from 'react-hook-form'
+import url from 'url'
+
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
 
 /**
  * A shell one-liner to update this array when necessary (run from root of repo):
@@ -18,6 +19,6 @@ const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
  */
 const expected = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, './all-exports.json'), 'utf-8'),
-);
+)
 
-assert.deepStrictEqual(Object.keys(exported), expected);
+assert.deepStrictEqual(Object.keys(exported), expected)

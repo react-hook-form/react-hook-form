@@ -1,4 +1,4 @@
-import type React from 'react';
+import type React from 'react'
 
 import type {
   Control,
@@ -9,54 +9,54 @@ import type {
   Noop,
   RefCallBack,
   UseFormStateReturn,
-} from './';
-import type { RegisterOptions } from './validator';
+} from './'
+import type { RegisterOptions } from './validator'
 
 export type ControllerFieldState = {
-  invalid: boolean;
-  isTouched: boolean;
-  isDirty: boolean;
-  isValidating: boolean;
-  error?: FieldError;
-};
+  invalid: boolean
+  isTouched: boolean
+  isDirty: boolean
+  isValidating: boolean
+  error?: FieldError
+}
 
 export type ControllerRenderProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
-  onChange: (...event: any[]) => void;
-  onBlur: Noop;
-  value: FieldPathValue<TFieldValues, TName>;
-  disabled?: boolean;
-  name: TName;
-  ref: RefCallBack;
-};
+  onChange: (...event: any[]) => void
+  onBlur: Noop
+  value: FieldPathValue<TFieldValues, TName>
+  disabled?: boolean
+  name: TName
+  ref: RefCallBack
+}
 
 export type UseControllerProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
   TTransformedValues = TFieldValues,
 > = {
-  name: TName;
+  name: TName
   rules?: Omit<
     RegisterOptions<TFieldValues, TName>,
     'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'disabled'
-  >;
-  shouldUnregister?: boolean;
-  defaultValue?: FieldPathValue<TFieldValues, TName>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
-  disabled?: boolean;
-  exact?: boolean;
-};
+  >
+  shouldUnregister?: boolean
+  defaultValue?: FieldPathValue<TFieldValues, TName>
+  control?: Control<TFieldValues, any, TTransformedValues>
+  disabled?: boolean
+  exact?: boolean
+}
 
 export type UseControllerReturn<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
-  field: ControllerRenderProps<TFieldValues, TName>;
-  formState: UseFormStateReturn<TFieldValues>;
-  fieldState: ControllerFieldState;
-};
+  field: ControllerRenderProps<TFieldValues, TName>
+  formState: UseFormStateReturn<TFieldValues>
+  fieldState: ControllerFieldState
+}
 
 /**
  * Render function to provide the control for the field.
@@ -89,8 +89,8 @@ export type ControllerProps<
     fieldState,
     formState,
   }: {
-    field: ControllerRenderProps<TFieldValues, TName>;
-    fieldState: ControllerFieldState;
-    formState: UseFormStateReturn<TFieldValues>;
-  }) => React.ReactElement;
-} & UseControllerProps<TFieldValues, TName, TTransformedValues>;
+    field: ControllerRenderProps<TFieldValues, TName>
+    fieldState: ControllerFieldState
+    formState: UseFormStateReturn<TFieldValues>
+  }) => React.ReactElement
+} & UseControllerProps<TFieldValues, TName, TTransformedValues>

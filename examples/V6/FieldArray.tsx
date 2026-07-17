@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import React, { useState } from 'react'
+import ReactDOM from 'react-dom'
+import { useForm } from 'react-hook-form'
 
 function createArrayWithNumbers(length) {
-  return Array.from({ length }, (_, k) => k);
+  return Array.from({ length }, (_, k) => k)
 }
 
 export default function App() {
-  const { register, handleSubmit, errors } = useForm();
-  const [size, setSize] = useState(1);
+  const { register, handleSubmit, errors } = useForm()
+  const [size, setSize] = useState(1)
   const onSubmit = (data) => {
-    alert(JSON.stringify(data));
-  };
+    alert(JSON.stringify(data))
+  }
 
-  console.log(errors);
+  console.log(errors)
 
   return (
     <div className="App">
@@ -50,7 +50,7 @@ export default function App() {
 
               <hr />
             </div>
-          );
+          )
         })}
 
         <button type="button" onClick={() => setSize(size + 1)}>
@@ -64,5 +64,5 @@ export default function App() {
         <button type="submit">Submit</button>
       </form>
     </div>
-  );
+  )
 }

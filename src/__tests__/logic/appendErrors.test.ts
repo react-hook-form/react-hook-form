@@ -1,4 +1,4 @@
-import appendErrors from '../../logic/appendErrors';
+import appendErrors from '../../logic/appendErrors'
 
 describe('appendErrors', () => {
   it('should return empty object when validateAllFieldCriteria is false', () => {
@@ -7,9 +7,9 @@ describe('appendErrors', () => {
         type: 'required',
         message: 'test',
       },
-    };
-    expect(appendErrors('test', false, errors, 'min', 'test')).toEqual({});
-  });
+    }
+    expect(appendErrors('test', false, errors, 'min', 'test')).toEqual({})
+  })
 
   it('should return error object when validateAllFieldCriteria is true', () => {
     const errors = {
@@ -18,7 +18,7 @@ describe('appendErrors', () => {
         message: 'test',
         types: {},
       },
-    };
+    }
 
     expect(appendErrors('test', true, errors, 'required', 'test')).toEqual({
       message: 'test',
@@ -26,9 +26,9 @@ describe('appendErrors', () => {
       types: {
         required: 'test',
       },
-    });
+    })
 
-    errors.test.types = { required: 'test' };
+    errors.test.types = { required: 'test' }
     expect(appendErrors('test', true, errors, 'min', 'test')).toEqual({
       message: 'test',
       type: 'required',
@@ -36,9 +36,9 @@ describe('appendErrors', () => {
         required: 'test',
         min: 'test',
       },
-    });
+    })
 
-    errors.test.types = { ...errors.test.types, min: 'test' };
+    errors.test.types = { ...errors.test.types, min: 'test' }
     expect(appendErrors('test', true, errors, 'max', 'test')).toEqual({
       message: 'test',
       type: 'required',
@@ -47,9 +47,9 @@ describe('appendErrors', () => {
         min: 'test',
         max: 'test',
       },
-    });
+    })
 
-    errors.test.types = { ...errors.test.types, max: 'test' };
+    errors.test.types = { ...errors.test.types, max: 'test' }
     expect(appendErrors('test', true, errors, 'undefined', undefined)).toEqual({
       message: 'test',
       type: 'required',
@@ -59,12 +59,12 @@ describe('appendErrors', () => {
         max: 'test',
         undefined: true,
       },
-    });
+    })
 
     errors.test.types = {
       ...errors.test.types,
       undefined: true,
-    };
+    }
     expect(
       appendErrors('test', true, errors, 'invalid_string', [
         'uppercase',
@@ -81,6 +81,6 @@ describe('appendErrors', () => {
         undefined: true,
         invalid_string: ['uppercase', 'lowercase', 'number'],
       },
-    });
-  });
-});
+    })
+  })
+})

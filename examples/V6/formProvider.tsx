@@ -1,10 +1,10 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { useForm, FormProvider, useFormContext } from 'react-hook-form';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 
 export default function App() {
-  const methods = useForm();
-  const { register, handleSubmit } = methods;
+  const methods = useForm()
+  const { register, handleSubmit } = methods
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit((data) => console.log(data))}>
@@ -15,10 +15,10 @@ export default function App() {
         <input type="submit" />
       </form>
     </FormProvider>
-  );
+  )
 }
 
 function Test() {
-  const data = useFormContext();
-  return <input name="bill" ref={data.register} />;
+  const data = useFormContext()
+  return <input name="bill" ref={data.register} />
 }

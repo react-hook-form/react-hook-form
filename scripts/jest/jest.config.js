@@ -5,7 +5,7 @@ const jestDefaultConfig = {
   rootDir: '.',
   roots: ['<rootDir>/src'],
   transformIgnorePatterns: ['[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$'],
-};
+}
 
 const web = {
   ...jestDefaultConfig,
@@ -25,7 +25,7 @@ const web = {
   testEnvironmentOptions: {
     customExportConditions: [''],
   },
-};
+}
 
 const server = {
   ...jestDefaultConfig,
@@ -38,21 +38,21 @@ const server = {
     '^.+\\.tsx?$': '@swc/jest',
   },
   testEnvironment: 'node',
-};
+}
 
 const getProjects = () => {
-  const testEnv = process.env.TEST_ENV;
+  const testEnv = process.env.TEST_ENV
   if (!testEnv) {
-    return [web, server];
+    return [web, server]
   }
 
   switch (testEnv) {
     case 'web':
-      return [web];
+      return [web]
     case 'server':
-      return [server];
+      return [server]
   }
-};
+}
 
 module.exports = {
   collectCoverageFrom: [
@@ -64,4 +64,4 @@ module.exports = {
     '!**/__tests__/**',
   ],
   projects: getProjects(),
-};
+}

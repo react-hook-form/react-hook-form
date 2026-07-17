@@ -1,16 +1,16 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { useForm } from 'react-hook-form'
 
 export default function App() {
   const { register, handleSubmit, formState } = useForm({
     mode: 'onChange',
-  });
+  })
   const onSubmit = (data) => {
-    alert(JSON.stringify(data));
-  };
+    alert(JSON.stringify(data))
+  }
 
-  console.log(formState);
+  console.log(formState)
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -50,7 +50,7 @@ export default function App() {
 
       <input type="submit" />
     </form>
-  );
+  )
 }
 
-ReactDOM.render(<Form />, rootElement);
+ReactDOM.render(<Form />, rootElement)

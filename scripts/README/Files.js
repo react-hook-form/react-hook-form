@@ -1,4 +1,4 @@
-import { fromFileUrl, dirname, join } from 'Path';
+import { dirname, fromFileUrl, join } from 'Path';
 
 const folder = dirname(fromFileUrl(import.meta.url));
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   act,
   fireEvent,
@@ -6,20 +5,21 @@ import {
   renderHook,
   screen,
   waitFor,
-} from '@testing-library/react';
+} from '@testing-library/react'
+import React from 'react'
 
-import { VALIDATION_MODE } from '../../constants';
-import { Controller } from '../../controller';
-import type { Control, FormState, UseFormGetFieldState } from '../../types';
-import { useController } from '../../useController';
-import { useFieldArray } from '../../useFieldArray';
-import { useForm } from '../../useForm';
-import noop from '../../utils/noop';
+import { VALIDATION_MODE } from '../../constants'
+import { Controller } from '../../controller'
+import type { Control, FormState, UseFormGetFieldState } from '../../types'
+import { useController } from '../../useController'
+import { useFieldArray } from '../../useFieldArray'
+import { useForm } from '../../useForm'
+import noop from '../../utils/noop'
 
 describe('formState', () => {
   describe('isValid', () => {
     it('should return isValid correctly with resolver', async () => {
-      let isValidValue = false;
+      let isValidValue = false
 
       const Component = () => {
         const {
@@ -38,26 +38,26 @@ describe('formState', () => {
                       type: 'test',
                     },
                   },
-            };
+            }
           },
-        });
+        })
 
-        isValidValue = isValid;
-        return <input {...register('test')} />;
-      };
+        isValidValue = isValid
+        return <input {...register('test')} />
+      }
 
-      render(<Component />);
+      render(<Component />)
 
-      expect(isValidValue).toBeFalsy();
+      expect(isValidValue).toBeFalsy()
 
       fireEvent.input(screen.getByRole('textbox'), {
         target: {
           value: 'test',
         },
-      });
+      })
 
-      await waitFor(() => expect(isValidValue).toBeTruthy());
-    });
+      await waitFor(() => expect(isValidValue).toBeTruthy())
+    })
 
     it('should return true for onBlur mode by default', async () => {
       const App = () => {
@@ -65,15 +65,15 @@ describe('formState', () => {
           formState: { isValid },
         } = useForm<{ test: string }>({
           mode: VALIDATION_MODE.onBlur,
-        });
+        })
 
-        return <p>{isValid ? 'valid' : 'invalid'}</p>;
-      };
+        return <p>{isValid ? 'valid' : 'invalid'}</p>
+      }
 
-      render(<App />);
+      render(<App />)
 
-      expect(await screen.findByText('valid')).toBeVisible();
-    });
+      expect(await screen.findByText('valid')).toBeVisible()
+    })
 
     it('should return true for onChange mode by default', async () => {
       const App = () => {
@@ -81,15 +81,15 @@ describe('formState', () => {
           formState: { isValid },
         } = useForm<{ test: string }>({
           mode: VALIDATION_MODE.onChange,
-        });
+        })
 
-        return <p>{isValid ? 'valid' : 'invalid'}</p>;
-      };
+        return <p>{isValid ? 'valid' : 'invalid'}</p>
+      }
 
-      render(<App />);
+      render(<App />)
 
-      expect(await screen.findByText('valid')).toBeVisible();
-    });
+      expect(await screen.findByText('valid')).toBeVisible()
+    })
 
     it('should return true for all mode by default', async () => {
       const App = () => {
@@ -97,50 +97,50 @@ describe('formState', () => {
           formState: { isValid },
         } = useForm<{ test: string }>({
           mode: VALIDATION_MODE.all,
-        });
+        })
 
-        return <p>{isValid ? 'valid' : 'invalid'}</p>;
-      };
+        return <p>{isValid ? 'valid' : 'invalid'}</p>
+      }
 
-      render(<App />);
+      render(<App />)
 
-      expect(await screen.findByText('valid')).toBeVisible();
-    });
+      expect(await screen.findByText('valid')).toBeVisible()
+    })
 
     it('should return false when default value is not valid value', async () => {
       const { result } = renderHook(() => {
         const methods = useForm<{ input: string; issue: string }>({
           mode: VALIDATION_MODE.onChange,
-        });
+        })
 
-        methods.formState.isValid;
+        methods.formState.isValid
 
-        return methods;
-      });
+        return methods
+      })
 
       await act(async () => {
-        result.current.register('issue', { required: true });
-        result.current.setValue('issue', '', { shouldValidate: true });
-      });
+        result.current.register('issue', { required: true })
+        result.current.setValue('issue', '', { shouldValidate: true })
+      })
 
-      expect(result.current.formState.isValid).toBeFalsy();
-    });
+      expect(result.current.formState.isValid).toBeFalsy()
+    })
 
     it('should return false when custom register with validation', async () => {
       const { result } = renderHook(() =>
         useForm<{ input: string; issue: string }>({
           mode: VALIDATION_MODE.onChange,
         }),
-      );
+      )
 
-      result.current.formState.isValid;
+      result.current.formState.isValid
 
       await act(async () => {
-        result.current.register('issue', { required: true });
-      });
+        result.current.register('issue', { required: true })
+      })
 
-      expect(result.current.formState.isValid).toBeFalsy();
-    });
+      expect(result.current.formState.isValid).toBeFalsy()
+    })
 
     it('should update valid when toggle Controller', async () => {
       const App = () => {
@@ -151,8 +151,8 @@ describe('formState', () => {
         } = useForm({
           mode: 'onChange',
           shouldUnregister: true,
-        });
-        const test = watch('test');
+        })
+        const test = watch('test')
 
         return (
           <div>
@@ -187,58 +187,58 @@ describe('formState', () => {
               </>
             )}
           </div>
-        );
-      };
+        )
+      }
 
-      render(<App />);
+      render(<App />)
 
-      expect(screen.getByText('invalid')).toBeVisible();
-
-      fireEvent.change(screen.getByTestId('select'), {
-        target: {
-          value: 'test',
-        },
-      });
-
-      expect(await screen.findByText('valid')).toBeVisible();
-
-      fireEvent.change(screen.getByTestId('select'), {
-        target: {
-          value: 'test1',
-        },
-      });
-
-      expect(await screen.findByText('invalid')).toBeVisible();
+      expect(screen.getByText('invalid')).toBeVisible()
 
       fireEvent.change(screen.getByTestId('select'), {
         target: {
           value: 'test',
         },
-      });
+      })
 
-      expect(await screen.findByText('valid')).toBeVisible();
+      expect(await screen.findByText('valid')).toBeVisible()
 
       fireEvent.change(screen.getByTestId('select'), {
         target: {
           value: 'test1',
         },
-      });
+      })
 
-      expect(await screen.findByText('invalid')).toBeVisible();
-    });
+      expect(await screen.findByText('invalid')).toBeVisible()
+
+      fireEvent.change(screen.getByTestId('select'), {
+        target: {
+          value: 'test',
+        },
+      })
+
+      expect(await screen.findByText('valid')).toBeVisible()
+
+      fireEvent.change(screen.getByTestId('select'), {
+        target: {
+          value: 'test1',
+        },
+      })
+
+      expect(await screen.findByText('invalid')).toBeVisible()
+    })
 
     it('should set isValid to true after async values provide valid data', async () => {
-      jest.useFakeTimers();
+      jest.useFakeTimers()
 
       const App = () => {
         const [value, setValue] = React.useState<{ name: string } | undefined>(
           undefined,
-        );
+        )
 
         React.useEffect(() => {
-          const t = setTimeout(() => setValue({ name: 'Mike' }), 2000);
-          return () => clearTimeout(t);
-        }, []);
+          const t = setTimeout(() => setValue({ name: 'Mike' }), 2000)
+          return () => clearTimeout(t)
+        }, [])
 
         const {
           register,
@@ -247,53 +247,53 @@ describe('formState', () => {
           defaultValues: { name: '' },
           values: value ?? { name: '' },
           mode: 'onBlur',
-        });
+        })
 
         return (
           <div>
             <input {...register('name', { required: true })} />
             <p>{isValid ? 'valid' : 'invalid'}</p>
           </div>
-        );
-      };
+        )
+      }
 
-      render(<App />);
+      render(<App />)
 
-      expect(screen.getByText('invalid')).toBeVisible();
+      expect(screen.getByText('invalid')).toBeVisible()
 
       act(() => {
-        jest.advanceTimersByTime(2000);
-      });
+        jest.advanceTimersByTime(2000)
+      })
 
-      await waitFor(() => expect(screen.getByText('valid')).toBeVisible());
-      jest.useRealTimers();
-    });
-  });
+      await waitFor(() => expect(screen.getByText('valid')).toBeVisible())
+      jest.useRealTimers()
+    })
+  })
 
   it('should be a proxy object that returns undefined for unknown properties', () => {
-    const { result } = renderHook(() => useForm());
+    const { result } = renderHook(() => useForm())
 
     // @ts-expect-error it's expected for an undefined property to be a typescript error
-    expect(result.current.formState.nonExistentProperty).toBeUndefined();
-  });
+    expect(result.current.formState.nonExistentProperty).toBeUndefined()
+  })
 
   it('should be a proxy object that properly implements the has trap', () => {
-    const { result } = renderHook(() => useForm());
+    const { result } = renderHook(() => useForm())
 
-    expect('nonExistentProperty' in result.current.formState).toBeFalsy();
-  });
+    expect('nonExistentProperty' in result.current.formState).toBeFalsy()
+  })
 
   it('should be a proxy object that hasOwnProperty works on', () => {
-    const { result } = renderHook(() => useForm());
+    const { result } = renderHook(() => useForm())
 
-    expect(result.current.formState).toHaveProperty('hasOwnProperty');
-  });
+    expect(result.current.formState).toHaveProperty('hasOwnProperty')
+  })
 
   describe('when using with reset API', () => {
     type FormValues = {
-      foo: string;
-      foo1: string;
-    };
+      foo: string
+      foo1: string
+    }
 
     it('should render isValid as true with reset at useEffect with valid data', async () => {
       function Component() {
@@ -305,11 +305,11 @@ describe('formState', () => {
         } = useForm<FormValues>({
           mode: 'onBlur',
           defaultValues: { foo: '', foo1: '' },
-        });
+        })
 
         React.useEffect(() => {
-          reset({ foo: 'test', foo1: 'test2' });
-        }, [reset]);
+          reset({ foo: 'test', foo1: 'test2' })
+        }, [reset])
 
         return (
           <div>
@@ -323,13 +323,13 @@ describe('formState', () => {
             <input {...register('foo1', { required: true })} />
             {isValid ? 'valid' : 'nope'}
           </div>
-        );
+        )
       }
 
-      render(<Component />);
+      render(<Component />)
 
-      expect(await screen.findByText('valid')).toBeVisible();
-    });
+      expect(await screen.findByText('valid')).toBeVisible()
+    })
 
     it('should render isValid as false with reset at useEffect with valid data', async () => {
       function Component() {
@@ -341,11 +341,11 @@ describe('formState', () => {
         } = useForm<FormValues>({
           mode: 'onBlur',
           defaultValues: { foo: '', foo1: '' },
-        });
+        })
 
         React.useEffect(() => {
-          reset({ foo: 'test', foo1: '' });
-        }, [reset]);
+          reset({ foo: 'test', foo1: '' })
+        }, [reset])
 
         return (
           <div>
@@ -359,26 +359,26 @@ describe('formState', () => {
             <input {...register('foo1', { required: true })} />
             {isValid ? 'valid' : 'nope'}
           </div>
-        );
+        )
       }
 
-      render(<Component />);
+      render(<Component />)
 
-      expect(await screen.findByText('nope')).toBeVisible();
-    });
-  });
+      expect(await screen.findByText('nope')).toBeVisible()
+    })
+  })
 
   it('should not update form state when there is a promise reject', async () => {
     const rejectPromiseFn = jest
       .fn()
-      .mockRejectedValue(new Error('this is an error'));
+      .mockRejectedValue(new Error('this is an error'))
 
     const App = () => {
       const {
         register,
         handleSubmit,
         formState: { isSubmitSuccessful, isSubmitted },
-      } = useForm();
+      } = useForm()
 
       return (
         <form>
@@ -396,15 +396,15 @@ describe('formState', () => {
             Submit
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'))
 
-    expect(screen.getByText('isNotSubmitSuccessful')).toBeVisible();
-  });
+    expect(screen.getByText('isNotSubmitSuccessful')).toBeVisible()
+  })
 
   it('should update isValid even with mode set to onSubmit', async () => {
     const App = () => {
@@ -416,7 +416,7 @@ describe('formState', () => {
         defaultValues: {
           test: '',
         },
-      });
+      })
 
       return (
         <form onSubmit={handleSubmit(noop)}>
@@ -427,40 +427,38 @@ describe('formState', () => {
 
           <button>submit</button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
-    await waitFor(() => screen.getByText('invalid'));
-    expect(screen.queryByText('error')).not.toBeInTheDocument();
+    await waitFor(() => screen.getByText('invalid'))
+    expect(screen.queryByText('error')).not.toBeInTheDocument()
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
         value: 'value',
       },
-    });
+    })
 
-    await waitFor(() => screen.getByText('valid'));
-    expect(screen.queryByText('error')).not.toBeInTheDocument();
+    await waitFor(() => screen.getByText('valid'))
+    expect(screen.queryByText('error')).not.toBeInTheDocument()
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
         value: '',
       },
-    });
+    })
 
-    fireEvent.click(screen.getByRole('button'));
-    await waitFor(() =>
-      expect(screen.queryByText('error')).toBeInTheDocument(),
-    );
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() => expect(screen.queryByText('error')).toBeInTheDocument())
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
         value: 'value',
       },
-    });
+    })
     await waitFor(() =>
       expect(screen.queryByText('error')).not.toBeInTheDocument(),
-    );
-  });
+    )
+  })
 
   it('should update correct isValid formState with dynamic fields', async () => {
     const Component = () => {
@@ -470,20 +468,20 @@ describe('formState', () => {
         formState: { isValid },
       } = useForm<{
         list: {
-          firstName: string;
-          lastName: string;
-        }[];
-        test: string;
-        test1: string;
-        test2: string;
-        test3: string;
+          firstName: string
+          lastName: string
+        }[]
+        test: string
+        test1: string
+        test2: string
+        test3: string
       }>({
         mode: 'onChange',
-      });
+      })
       const { append, fields } = useFieldArray({
         control,
         name: 'list',
-      });
+      })
 
       return (
         <form>
@@ -527,7 +525,7 @@ describe('formState', () => {
                   placeholder={`list.${index}.lastName`}
                 />
               </div>
-            );
+            )
           })}
           <button
             type={'button'}
@@ -542,71 +540,71 @@ describe('formState', () => {
           </button>
           <p>{isValid ? 'valid' : 'inValid'}</p>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
-    expect(await screen.findByText('inValid')).toBeVisible();
+    expect(await screen.findByText('inValid')).toBeVisible()
 
     fireEvent.change(screen.getByPlaceholderText('test'), {
       target: { value: '1' },
-    });
+    })
     fireEvent.change(screen.getByPlaceholderText('test1'), {
       target: { value: '1' },
-    });
+    })
 
-    expect(await screen.findByText('valid')).toBeVisible();
+    expect(await screen.findByText('valid')).toBeVisible()
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'))
 
-    expect(await screen.findByText('inValid')).toBeVisible();
+    expect(await screen.findByText('inValid')).toBeVisible()
 
     fireEvent.change(screen.getByPlaceholderText('list.0.firstName'), {
       target: { value: '1' },
-    });
+    })
     fireEvent.change(screen.getByPlaceholderText('list.0.lastName'), {
       target: { value: '1' },
-    });
+    })
 
-    expect(await screen.findByText('valid')).toBeVisible();
+    expect(await screen.findByText('valid')).toBeVisible()
 
     fireEvent.change(screen.getByPlaceholderText('list.0.lastName'), {
       target: { value: '' },
-    });
+    })
 
-    expect(await screen.findByText('inValid')).toBeVisible();
+    expect(await screen.findByText('inValid')).toBeVisible()
 
     fireEvent.change(screen.getByPlaceholderText('list.0.lastName'), {
       target: { value: '1' },
-    });
+    })
 
-    expect(await screen.findByText('valid')).toBeVisible();
+    expect(await screen.findByText('valid')).toBeVisible()
 
     fireEvent.change(screen.getByPlaceholderText('list.0.firstName'), {
       target: { value: '' },
-    });
+    })
 
-    expect(await screen.findByText('inValid')).toBeVisible();
+    expect(await screen.findByText('inValid')).toBeVisible()
 
     fireEvent.change(screen.getByPlaceholderText('list.0.firstName'), {
       target: { value: '1' },
-    });
+    })
 
-    expect(await screen.findByText('valid')).toBeVisible();
-  });
+    expect(await screen.findByText('valid')).toBeVisible()
+  })
 
   it('should remind isSubmitting when form is invalid', async () => {
-    const submittingState: boolean[] = [];
+    const submittingState: boolean[] = []
 
     function App() {
       const {
         register,
         formState: { isSubmitting },
         handleSubmit,
-      } = useForm();
+      } = useForm()
 
-      submittingState.push(isSubmitting);
+      submittingState.push(isSubmitting)
 
       return (
         <form onSubmit={handleSubmit(noop)}>
@@ -616,17 +614,17 @@ describe('formState', () => {
           />
           <button>Submit</button>
         </form>
-      );
+      )
     }
 
-    render(<App />);
+    render(<App />)
 
     await act(async () => {
-      fireEvent.click(screen.getByRole('button'));
-    });
+      fireEvent.click(screen.getByRole('button'))
+    })
 
-    expect(submittingState).toEqual([false, false, true, false]);
-  });
+    expect(submittingState).toEqual([false, false, true, false])
+  })
 
   describe('when defaultValue supplied', () => {
     it('should update isValid to true for validation with inline defaultValue', async () => {
@@ -636,7 +634,7 @@ describe('formState', () => {
           formState: { isValid },
         } = useForm({
           mode: 'onChange',
-        });
+        })
 
         return (
           <form>
@@ -646,13 +644,13 @@ describe('formState', () => {
             />
             <p>isValid = {isValid ? 'true' : 'false'}</p>
           </form>
-        );
+        )
       }
 
-      render(<App />);
+      render(<App />)
 
-      expect(await screen.findByText('isValid = true')).toBeVisible();
-    });
+      expect(await screen.findByText('isValid = true')).toBeVisible()
+    })
 
     it('should update isValid to true for Controller validation', async () => {
       function App() {
@@ -661,7 +659,7 @@ describe('formState', () => {
           formState: { isValid },
         } = useForm({
           mode: 'onChange',
-        });
+        })
 
         return (
           <form>
@@ -674,26 +672,26 @@ describe('formState', () => {
             <p>isValid = {isValid ? 'true' : 'false'}</p>
             <button>Submit</button>
           </form>
-        );
+        )
       }
 
-      render(<App />);
+      render(<App />)
 
-      expect(await screen.findByText('isValid = true')).toBeVisible();
-    });
-  });
+      expect(await screen.findByText('isValid = true')).toBeVisible()
+    })
+  })
 
   it('should not update dirty fields during blur event', async () => {
-    let dirtyFieldsState = {};
+    let dirtyFieldsState = {}
 
     const App = () => {
       const {
         handleSubmit,
         register,
         formState: { dirtyFields },
-      } = useForm();
+      } = useForm()
 
-      dirtyFieldsState = dirtyFields;
+      dirtyFieldsState = dirtyFields
 
       return (
         <form onSubmit={handleSubmit(noop)}>
@@ -702,15 +700,15 @@ describe('formState', () => {
           />
           <input type="submit" />
         </form>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
-    fireEvent.blur(screen.getByRole('textbox'));
+    fireEvent.blur(screen.getByRole('textbox'))
 
-    expect(dirtyFieldsState).toEqual({});
-  });
+    expect(dirtyFieldsState).toEqual({})
+  })
 
   it('should mark an array-valued registered field dirty as a boolean rather than diffing its elements (#13584)', async () => {
     function App() {
@@ -719,7 +717,7 @@ describe('formState', () => {
         formState: { isDirty, dirtyFields },
       } = useForm({
         defaultValues: { fruits: [] as string[] },
-      });
+      })
 
       return (
         <div>
@@ -730,106 +728,106 @@ describe('formState', () => {
           <p>{isDirty ? 'dirty' : 'notDirty'}</p>
           <p>{JSON.stringify(dirtyFields)}</p>
         </div>
-      );
+      )
     }
 
-    render(<App />);
+    render(<App />)
 
-    const select = screen.getAllByRole('listbox')[0] as HTMLSelectElement;
+    const select = screen.getAllByRole('listbox')[0] as HTMLSelectElement
 
     await act(async () => {
-      select.options[0].selected = true;
-      fireEvent.change(select);
-    });
+      select.options[0].selected = true
+      fireEvent.change(select)
+    })
 
-    expect(await screen.findByText('dirty')).toBeVisible();
-    expect(screen.getByText(JSON.stringify({ fruits: true }))).toBeVisible();
-  });
+    expect(await screen.findByText('dirty')).toBeVisible()
+    expect(screen.getByText(JSON.stringify({ fruits: true }))).toBeVisible()
+  })
 
   it('should update isDirty with getFieldState at child component', () => {
     type FormValues = {
-      test?: string;
-    };
+      test?: string
+    }
 
     function Output({
       getFieldState,
       formState,
     }: {
-      getFieldState: UseFormGetFieldState<FormValues>;
-      formState: FormState<FormValues>;
+      getFieldState: UseFormGetFieldState<FormValues>
+      formState: FormState<FormValues>
     }) {
-      const { isDirty } = getFieldState('test', formState);
+      const { isDirty } = getFieldState('test', formState)
 
-      return <p>{isDirty.toString()}</p>;
+      return <p>{isDirty.toString()}</p>
     }
 
     const TextInput = ({ control }: { control: Control<FormValues> }) => {
       const { field } = useController({
         name: 'test',
         control,
-      });
+      })
 
-      return <input {...field} type="text" />;
-    };
+      return <input {...field} type="text" />
+    }
 
     function App() {
       const { formState, getFieldState, control } = useForm<FormValues>({
         values: {},
-      });
-      formState.isDirty;
+      })
+      formState.isDirty
 
       return (
         <form>
           <TextInput control={control} />
           <Output getFieldState={getFieldState} formState={formState} />
         </form>
-      );
+      )
     }
 
-    render(<App />);
+    render(<App />)
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
         value: '123456',
       },
-    });
+    })
 
     waitFor(() => {
-      screen.getByText('true');
-    });
-  });
+      screen.getByText('true')
+    })
+  })
 
   it('should recompute isDirty after toggling disabled', async () => {
-    let isDirty: null | boolean = null;
+    let isDirty: null | boolean = null
 
     const App = () => {
-      const defaultValues = { name: 'initial', disableName: false };
-      const { formState, register, watch } = useForm({ defaultValues });
+      const defaultValues = { name: 'initial', disableName: false }
+      const { formState, register, watch } = useForm({ defaultValues })
 
-      isDirty = formState.isDirty;
+      isDirty = formState.isDirty
 
-      const disableName = watch('disableName', defaultValues.disableName);
+      const disableName = watch('disableName', defaultValues.disableName)
 
       return (
         <form>
           <input type="text" {...register('name', { disabled: disableName })} />
           <input type="checkbox" {...register('disableName')} />
         </form>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
-    const checkbox = screen.getByRole('checkbox');
+    const checkbox = screen.getByRole('checkbox')
 
-    fireEvent.click(checkbox);
+    fireEvent.click(checkbox)
 
-    expect(isDirty).toBe(true);
+    expect(isDirty).toBe(true)
 
-    fireEvent.click(checkbox);
+    fireEvent.click(checkbox)
 
-    expect(isDirty).toBe(false);
-  });
+    expect(isDirty).toBe(false)
+  })
 
   it('should prevent dirty from updating when the form is disabled', async () => {
     function App() {
@@ -838,17 +836,17 @@ describe('formState', () => {
         control,
         formState: { isDirty, dirtyFields },
       } = useForm<{
-        test: { firstName: string; lastName: string }[];
+        test: { firstName: string; lastName: string }[]
       }>({
         disabled: true,
         defaultValues: {
           test: [{ firstName: 'Bill', lastName: 'Luo' }],
         },
-      });
+      })
       const { fields } = useFieldArray({
         control,
         name: 'test',
-      });
+      })
 
       return (
         <form>
@@ -865,20 +863,20 @@ describe('formState', () => {
                     control={control}
                   />
                 </li>
-              );
+              )
             })}
           </ul>
           <p>{isDirty ? 'dirty' : 'notDirty'}</p>
           <p>{Object.keys(dirtyFields).length}</p>
         </form>
-      );
+      )
     }
 
-    render(<App />);
+    render(<App />)
 
-    await screen.getByText('notDirty');
-    await screen.getByText('0');
-  });
+    await screen.getByText('notDirty')
+    await screen.getByText('0')
+  })
 
   it('should mark field and form as dirty with setValue shouldDirty when the form is disabled', () => {
     const { result } = renderHook(() =>
@@ -888,20 +886,20 @@ describe('formState', () => {
           test: 'a',
         },
       }),
-    );
+    )
 
-    result.current.formState.isDirty;
-    result.current.formState.dirtyFields;
+    result.current.formState.isDirty
+    result.current.formState.dirtyFields
 
     act(() => {
-      result.current.register('test');
-      result.current.setValue('test', 'b', { shouldDirty: true });
-    });
+      result.current.register('test')
+      result.current.setValue('test', 'b', { shouldDirty: true })
+    })
 
-    expect(result.current.getFieldState('test').isDirty).toBe(true);
-    expect(result.current.formState.isDirty).toBe(true);
-    expect(result.current.formState.dirtyFields).toEqual({ test: true });
-  });
+    expect(result.current.getFieldState('test').isDirty).toBe(true)
+    expect(result.current.formState.isDirty).toBe(true)
+    expect(result.current.formState.dirtyFields).toEqual({ test: true })
+  })
 
   it('should clear dirty state when setValue restores the default value on a disabled form', () => {
     const { result } = renderHook(() =>
@@ -911,42 +909,42 @@ describe('formState', () => {
           test: 'a',
         },
       }),
-    );
+    )
 
-    result.current.formState.isDirty;
-    result.current.formState.dirtyFields;
-
-    act(() => {
-      result.current.register('test');
-      result.current.setValue('test', 'b', { shouldDirty: true });
-    });
-
-    expect(result.current.formState.isDirty).toBe(true);
+    result.current.formState.isDirty
+    result.current.formState.dirtyFields
 
     act(() => {
-      result.current.setValue('test', 'a', { shouldDirty: true });
-    });
+      result.current.register('test')
+      result.current.setValue('test', 'b', { shouldDirty: true })
+    })
 
-    expect(result.current.getFieldState('test').isDirty).toBe(false);
-    expect(result.current.formState.isDirty).toBe(false);
-  });
+    expect(result.current.formState.isDirty).toBe(true)
+
+    act(() => {
+      result.current.setValue('test', 'a', { shouldDirty: true })
+    })
+
+    expect(result.current.getFieldState('test').isDirty).toBe(false)
+    expect(result.current.formState.isDirty).toBe(false)
+  })
 
   describe('when delay config is set', () => {
-    const message = 'required.';
+    const message = 'required.'
 
     it('should only show error after 500ms with register', async () => {
-      jest.useFakeTimers();
+      jest.useFakeTimers()
 
       const App = () => {
         const {
           register,
           formState: { errors },
         } = useForm<{
-          test: string;
+          test: string
         }>({
           delayError: 500,
           mode: 'onChange',
-        });
+        })
 
         return (
           <div>
@@ -957,23 +955,23 @@ describe('formState', () => {
             />
             {errors.test && <p>{message}</p>}
           </div>
-        );
-      };
+        )
+      }
 
-      render(<App />);
+      render(<App />)
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: {
           value: '123456',
         },
-      });
+      })
 
-      expect(screen.queryByText(message)).not.toBeInTheDocument();
+      expect(screen.queryByText(message)).not.toBeInTheDocument()
 
-      jest.advanceTimersByTime(500);
+      jest.advanceTimersByTime(500)
 
-      expect(await screen.findByText(message)).toBeVisible();
-    });
+      expect(await screen.findByText(message)).toBeVisible()
+    })
 
     it('should only show error after 500ms with Controller', async () => {
       const App = () => {
@@ -981,11 +979,11 @@ describe('formState', () => {
           control,
           formState: { errors },
         } = useForm<{
-          test: string;
+          test: string
         }>({
           delayError: 500,
           mode: 'onChange',
-        });
+        })
 
         return (
           <div>
@@ -1000,39 +998,39 @@ describe('formState', () => {
             />
             {errors.test && <p>{message}</p>}
           </div>
-        );
-      };
+        )
+      }
 
-      render(<App />);
+      render(<App />)
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: {
           value: '123456',
         },
-      });
+      })
 
-      expect(screen.queryByText(message)).not.toBeInTheDocument();
+      expect(screen.queryByText(message)).not.toBeInTheDocument()
 
       act(() => {
-        jest.advanceTimersByTime(500);
-      });
+        jest.advanceTimersByTime(500)
+      })
 
-      expect(await screen.findByText(message)).toBeVisible();
-    });
+      expect(await screen.findByText(message)).toBeVisible()
+    })
 
     it('should prevent error from showing once input is validated', async () => {
-      jest.useFakeTimers();
+      jest.useFakeTimers()
 
       const App = () => {
         const {
           register,
           formState: { errors, isDirty },
         } = useForm<{
-          test: string;
+          test: string
         }>({
           delayError: 500,
           mode: 'onChange',
-        });
+        })
 
         return (
           <div>
@@ -1044,52 +1042,52 @@ describe('formState', () => {
             />
             {errors.test && <p>{message}</p>}
           </div>
-        );
-      };
+        )
+      }
 
-      render(<App />);
+      render(<App />)
 
-      const input = screen.getByRole('textbox');
+      const input = screen.getByRole('textbox')
 
       fireEvent.change(input, {
         target: {
           value: '123456',
         },
-      });
+      })
 
-      expect(await screen.findByText('Dirty: true')).toBeVisible();
-      expect(screen.queryByText(message)).not.toBeInTheDocument();
+      expect(await screen.findByText('Dirty: true')).toBeVisible()
+      expect(screen.queryByText(message)).not.toBeInTheDocument()
 
       fireEvent.change(input, {
         target: {
           value: '123',
         },
-      });
-      expect(screen.queryByText(message)).not.toBeInTheDocument();
+      })
+      expect(screen.queryByText(message)).not.toBeInTheDocument()
 
       await act(async () => {
-        jest.advanceTimersByTime(500);
-      });
+        jest.advanceTimersByTime(500)
+      })
 
-      expect(screen.queryByText(message)).not.toBeInTheDocument();
-    });
+      expect(screen.queryByText(message)).not.toBeInTheDocument()
+    })
 
     describe('when delayError is provided', () => {
       it('should only show error after 500ms with register and render formState instantly', async () => {
-        jest.useFakeTimers();
+        jest.useFakeTimers()
 
-        const message = 'required.';
+        const message = 'required.'
 
         const App = () => {
           const {
             register,
             formState: { errors, isValid },
           } = useForm<{
-            test: string;
+            test: string
           }>({
             delayError: 500,
             mode: 'onChange',
-          });
+          })
 
           return (
             <div>
@@ -1102,46 +1100,46 @@ describe('formState', () => {
               />
               {errors.test && <p>{message}</p>}
             </div>
-          );
-        };
+          )
+        }
 
-        render(<App />);
+        render(<App />)
 
         fireEvent.change(screen.getByRole('textbox'), {
           target: {
             value: '123',
           },
-        });
+        })
 
-        expect(screen.queryByText(message)).not.toBeInTheDocument();
+        expect(screen.queryByText(message)).not.toBeInTheDocument()
 
-        expect(await screen.findByText('valid')).toBeVisible();
+        expect(await screen.findByText('valid')).toBeVisible()
 
         await act(async () => {
           fireEvent.change(screen.getByRole('textbox'), {
             target: {
               value: '',
             },
-          });
-        });
+          })
+        })
 
         await act(async () => {
-          await waitFor(() => screen.getByText('inValid'));
-        });
+          await waitFor(() => screen.getByText('inValid'))
+        })
 
-        expect(screen.queryByText(message)).toBeNull();
+        expect(screen.queryByText(message)).toBeNull()
 
         act(() => {
-          jest.advanceTimersByTime(500);
-        });
+          jest.advanceTimersByTime(500)
+        })
 
-        expect(await screen.findByText(message)).toBeVisible();
-      });
+        expect(await screen.findByText(message)).toBeVisible()
+      })
 
       it('should delay, show immediately, or cancel error via setValue depending on delayError option', async () => {
-        jest.useFakeTimers();
+        jest.useFakeTimers()
 
-        const message = 'required.';
+        const message = 'required.'
 
         const App = () => {
           const {
@@ -1150,7 +1148,7 @@ describe('formState', () => {
             formState: { errors },
           } = useForm<{ test: string }>({
             delayError: 500,
-          });
+          })
 
           return (
             <div>
@@ -1181,53 +1179,53 @@ describe('formState', () => {
                 }
               />
             </div>
-          );
-        };
+          )
+        }
 
-        render(<App />);
-
-        await act(async () => {
-          fireEvent.click(screen.getByTestId('delayed'));
-        });
-        expect(screen.queryByText(message)).not.toBeInTheDocument();
+        render(<App />)
 
         await act(async () => {
-          jest.advanceTimersByTime(500);
-        });
-        expect(await screen.findByText(message)).toBeVisible();
+          fireEvent.click(screen.getByTestId('delayed'))
+        })
+        expect(screen.queryByText(message)).not.toBeInTheDocument()
 
         await act(async () => {
-          fireEvent.click(screen.getByTestId('delayed'));
-        });
-        expect(screen.queryByText(message)).not.toBeInTheDocument();
+          jest.advanceTimersByTime(500)
+        })
+        expect(await screen.findByText(message)).toBeVisible()
 
         await act(async () => {
-          fireEvent.click(screen.getByTestId('valid'));
-        });
-        await act(async () => {
-          jest.advanceTimersByTime(500);
-        });
-        expect(screen.queryByText(message)).not.toBeInTheDocument();
+          fireEvent.click(screen.getByTestId('delayed'))
+        })
+        expect(screen.queryByText(message)).not.toBeInTheDocument()
 
         await act(async () => {
-          fireEvent.click(screen.getByTestId('immediate'));
-        });
-        expect(await screen.findByText(message)).toBeVisible();
+          fireEvent.click(screen.getByTestId('valid'))
+        })
+        await act(async () => {
+          jest.advanceTimersByTime(500)
+        })
+        expect(screen.queryByText(message)).not.toBeInTheDocument()
 
-        jest.useRealTimers();
-      });
+        await act(async () => {
+          fireEvent.click(screen.getByTestId('immediate'))
+        })
+        expect(await screen.findByText(message)).toBeVisible()
+
+        jest.useRealTimers()
+      })
 
       it('should show error immediately when form-level delayError is not configured', async () => {
-        jest.useFakeTimers();
+        jest.useFakeTimers()
 
-        const message = 'required.';
+        const message = 'required.'
 
         const App = () => {
           const {
             register,
             setValue,
             formState: { errors },
-          } = useForm<{ test: string }>();
+          } = useForm<{ test: string }>()
 
           return (
             <div>
@@ -1243,20 +1241,20 @@ describe('formState', () => {
                 }
               />
             </div>
-          );
-        };
+          )
+        }
 
-        render(<App />);
+        render(<App />)
 
         await act(async () => {
-          fireEvent.click(screen.getByTestId('trigger'));
-        });
-        expect(await screen.findByText(message)).toBeVisible();
+          fireEvent.click(screen.getByTestId('trigger'))
+        })
+        expect(await screen.findByText(message)).toBeVisible()
 
-        jest.useRealTimers();
-      });
-    });
-  });
+        jest.useRealTimers()
+      })
+    })
+  })
 
   it('should return updated value with NaN data type', async () => {
     function App() {
@@ -1265,7 +1263,7 @@ describe('formState', () => {
         defaultValues: {
           value: '',
         },
-      });
+      })
 
       return (
         <form>
@@ -1278,21 +1276,21 @@ describe('formState', () => {
             })}
           />
         </form>
-      );
+      )
     }
 
-    render(<App />);
+    render(<App />)
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
         value: '2a',
       },
-    });
+    })
 
     await waitFor(() => {
-      screen.getByText('error');
-    });
-  });
+      screen.getByText('error')
+    })
+  })
 
   it('should only trigger validation on blur', async () => {
     function App() {
@@ -1301,7 +1299,7 @@ describe('formState', () => {
         defaultValues: {
           value: '',
         },
-      });
+      })
 
       return (
         <form>
@@ -1314,31 +1312,31 @@ describe('formState', () => {
             })}
           />
         </form>
-      );
+      )
     }
 
-    render(<App />);
+    render(<App />)
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
         value: '2a',
       },
-    });
+    })
 
     await waitFor(() => {
-      expect(screen.queryByText('error')).toBeNull();
-    });
+      expect(screen.queryByText('error')).toBeNull()
+    })
 
     fireEvent.blur(screen.getByRole('textbox'), {
       target: {
         value: '2a',
       },
-    });
+    })
 
     await waitFor(() => {
-      screen.getByText('error');
-    });
-  });
+      screen.getByText('error')
+    })
+  })
 
   it('should report isDirty as false on mount when defaultValues contain numeric string keys (issue #13346)', async () => {
     function App() {
@@ -1352,7 +1350,7 @@ describe('formState', () => {
             '456': { name: 'Bob' },
           },
         },
-      });
+      })
 
       return (
         <div>
@@ -1360,55 +1358,55 @@ describe('formState', () => {
           <input {...register('items.456.name')} />
           <p>{isDirty ? 'dirty' : 'pristine'}</p>
         </div>
-      );
+      )
     }
 
-    render(<App />);
+    render(<App />)
 
     await waitFor(() => {
-      expect(screen.getByText('pristine')).toBeInTheDocument();
-    });
-  });
+      expect(screen.getByText('pristine')).toBeInTheDocument()
+    })
+  })
 
   it('should not update valid with onBlur mode', async () => {
     function App() {
       const {
         formState: { isValid },
         register,
-      } = useForm({ mode: 'onBlur' });
+      } = useForm({ mode: 'onBlur' })
 
       return (
         <div>
           <input {...register('name', { required: true })} />
           <p>{isValid ? 'yes' : 'no'}</p>
         </div>
-      );
+      )
     }
 
-    render(<App />);
+    render(<App />)
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
         value: '2a',
       },
-    });
+    })
 
     await waitFor(() => {
-      expect(screen.getByText('no')).toBeInTheDocument();
-    });
-  });
+      expect(screen.getByText('no')).toBeInTheDocument()
+    })
+  })
 
   it('should produce a new errors reference on each mutation so memoized child components re-render', async () => {
-    type FormValues = { test: string };
-    const errorRefs: object[] = [];
+    type FormValues = { test: string }
+    const errorRefs: object[] = []
 
     function ErrorDisplay({
       errors,
     }: {
-      errors: FormState<FormValues>['errors'];
+      errors: FormState<FormValues>['errors']
     }) {
-      errorRefs.push(errors);
-      return <p data-testid="error">{errors.test?.message ?? ''}</p>;
+      errorRefs.push(errors)
+      return <p data-testid="error">{errors.test?.message ?? ''}</p>
     }
 
     function App() {
@@ -1419,43 +1417,43 @@ describe('formState', () => {
       } = useForm<FormValues>({
         mode: 'onChange',
         defaultValues: { test: '' },
-      });
+      })
       return (
         <form onSubmit={handleSubmit(noop)}>
           <input {...register('test', { required: 'required' })} />
           <ErrorDisplay errors={errors} />
           <button type="submit">Submit</button>
         </form>
-      );
+      )
     }
 
-    render(<App />);
-    const input = screen.getByRole('textbox');
+    render(<App />)
+    const input = screen.getByRole('textbox')
 
-    fireEvent.change(input, { target: { value: 'valid' } });
+    fireEvent.change(input, { target: { value: 'valid' } })
     await waitFor(() =>
       expect(screen.getByTestId('error')).toHaveTextContent(''),
-    );
+    )
 
-    fireEvent.change(input, { target: { value: '' } });
+    fireEvent.change(input, { target: { value: '' } })
     await waitFor(() =>
       expect(screen.getByTestId('error')).toHaveTextContent('required'),
-    );
-    const refAfterFirstError = errorRefs.at(-1);
+    )
+    const refAfterFirstError = errorRefs.at(-1)
 
-    fireEvent.change(input, { target: { value: 'valid' } });
+    fireEvent.change(input, { target: { value: 'valid' } })
     await waitFor(() =>
       expect(screen.getByTestId('error')).toHaveTextContent(''),
-    );
-    const refAfterCleared = errorRefs.at(-1);
+    )
+    const refAfterCleared = errorRefs.at(-1)
 
-    fireEvent.change(input, { target: { value: '' } });
+    fireEvent.change(input, { target: { value: '' } })
     await waitFor(() =>
       expect(screen.getByTestId('error')).toHaveTextContent('required'),
-    );
-    const refAfterSecondError = errorRefs.at(-1);
+    )
+    const refAfterSecondError = errorRefs.at(-1)
 
-    expect(refAfterFirstError).not.toBe(refAfterCleared);
-    expect(refAfterCleared).not.toBe(refAfterSecondError);
-  });
-});
+    expect(refAfterFirstError).not.toBe(refAfterCleared)
+    expect(refAfterCleared).not.toBe(refAfterSecondError)
+  })
+})

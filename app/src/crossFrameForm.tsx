@@ -1,7 +1,7 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { useForm } from 'react-hook-form';
-import App from './app';
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { useForm } from 'react-hook-form'
+import App from './app'
 
 const FRAME_CONTENT = `
   <style>
@@ -13,22 +13,22 @@ const FRAME_CONTENT = `
   <div id='inner-root'>
     Loading content...
   </div>
-`;
+`
 
 const FRAME_STYLE = {
   width: '640px',
   height: '480px',
   background: 'white',
-};
+}
 
 const CrossFrameForm: React.FC = () => {
-  const ref = React.useRef<HTMLIFrameElement>(null);
+  const ref = React.useRef<HTMLIFrameElement>(null)
 
   function renderFormInFrame() {
     const rootElement =
-      ref.current!.contentDocument!.getElementById('inner-root');
-    const root = ReactDOM.createRoot(rootElement);
-    root.render(<FrameForm />);
+      ref.current!.contentDocument!.getElementById('inner-root')
+    const root = ReactDOM.createRoot(rootElement)
+    root.render(<FrameForm />)
   }
 
   return (
@@ -38,13 +38,13 @@ const CrossFrameForm: React.FC = () => {
       srcDoc={FRAME_CONTENT}
       onLoad={renderFormInFrame}
     />
-  );
-};
+  )
+}
 
 const FrameForm: React.FC = () => {
-  const { register, watch } = useForm();
+  const { register, watch } = useForm()
 
-  const value = watch();
+  const value = watch()
 
   return (
     <>
@@ -78,7 +78,7 @@ const FrameForm: React.FC = () => {
         <pre>{JSON.stringify(value)}</pre>
       </label>
     </>
-  );
-};
+  )
+}
 
-export default CrossFrameForm;
+export default CrossFrameForm

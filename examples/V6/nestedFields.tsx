@@ -1,8 +1,8 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
-import FormSection1 from './formSection1';
-import FormSection2 from './formSection2';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { useForm } from 'react-hook-form'
+import FormSection1 from './formSection1'
+import FormSection2 from './formSection2'
 
 export default function Section1({ register }) {
   return (
@@ -24,7 +24,7 @@ export default function Section1({ register }) {
         />
       </div>
     </>
-  );
+  )
 }
 
 export default function formSection2({ register }) {

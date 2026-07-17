@@ -1,15 +1,15 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { useForm } from 'react-hook-form'
 
-import './styles.css';
+import './styles.css'
 
 export default function Form() {
-  const { register, errors, handleSubmit } = useForm();
+  const { register, errors, handleSubmit } = useForm()
   const onSubmit = (data) => {
-    alert(JSON.stringify(data));
-  };
-  console.log(errors);
+    alert(JSON.stringify(data))
+  }
+  console.log(errors)
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -91,5 +91,5 @@ export default function Form() {
 
       <input type="submit" />
     </form>
-  );
+  )
 }

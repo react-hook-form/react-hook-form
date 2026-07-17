@@ -1,14 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { useForm } from 'react-hook-form'
 
 export default function App() {
-  const { register, watch, handleSubmit } = useForm();
+  const { register, watch, handleSubmit } = useForm()
   const onSubmit = (data) => {
-    alert(JSON.stringify(data));
-  };
+    alert(JSON.stringify(data))
+  }
 
-  const moreDetail = watch('moreDetail');
+  const moreDetail = watch('moreDetail')
 
   return (
     <div className="App">
@@ -47,5 +47,5 @@ export default function App() {
         <button type="submit">Submit</button>
       </form>
     </div>
-  );
+  )
 }

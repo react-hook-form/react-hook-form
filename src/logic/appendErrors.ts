@@ -2,7 +2,7 @@ import type {
   InternalFieldErrors,
   InternalFieldName,
   ValidateResult,
-} from '../types';
+} from '../types'
 
 export default (
   name: InternalFieldName,
@@ -19,4 +19,4 @@ export default (
           [type]: message || true,
         },
       }
-    : {};
+    : {}

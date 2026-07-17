@@ -1,5 +1,5 @@
-import { VALIDATION_MODE } from '../../constants';
-import validationModeChecker from '../../logic/getValidationModes';
+import { VALIDATION_MODE } from '../../constants'
+import validationModeChecker from '../../logic/getValidationModes'
 
 describe('validationModeChecker', () => {
   it('should return correct mode', () => {
@@ -9,7 +9,7 @@ describe('validationModeChecker', () => {
       isOnChange: false,
       isOnAll: false,
       isOnTouch: false,
-    });
+    })
 
     expect(validationModeChecker(VALIDATION_MODE.onChange)).toEqual({
       isOnSubmit: false,
@@ -17,7 +17,7 @@ describe('validationModeChecker', () => {
       isOnChange: true,
       isOnAll: false,
       isOnTouch: false,
-    });
+    })
 
     expect(validationModeChecker(VALIDATION_MODE.onSubmit)).toEqual({
       isOnSubmit: true,
@@ -25,7 +25,7 @@ describe('validationModeChecker', () => {
       isOnChange: false,
       isOnAll: false,
       isOnTouch: false,
-    });
+    })
 
     expect(validationModeChecker(undefined)).toEqual({
       isOnSubmit: true,
@@ -33,7 +33,7 @@ describe('validationModeChecker', () => {
       isOnChange: false,
       isOnAll: false,
       isOnTouch: false,
-    });
+    })
 
     expect(validationModeChecker(VALIDATION_MODE.all)).toEqual({
       isOnSubmit: false,
@@ -41,7 +41,7 @@ describe('validationModeChecker', () => {
       isOnChange: false,
       isOnAll: true,
       isOnTouch: false,
-    });
+    })
 
     expect(validationModeChecker(VALIDATION_MODE.onTouched)).toEqual({
       isOnSubmit: false,
@@ -49,6 +49,6 @@ describe('validationModeChecker', () => {
       isOnChange: false,
       isOnAll: false,
       isOnTouch: true,
-    });
-  });
-});
+    })
+  })
+})

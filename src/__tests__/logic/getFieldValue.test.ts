@@ -1,19 +1,19 @@
-import getFieldValue from '../../logic/getFieldValue';
-import type { Field } from '../../types';
+import getFieldValue from '../../logic/getFieldValue'
+import type { Field } from '../../types'
 
 jest.mock('../../logic/getRadioValue', () => ({
   __esModule: true,
   default: () => ({
     value: 2,
   }),
-}));
+}))
 
 jest.mock('../../logic/getCheckboxValue', () => ({
   __esModule: true,
   default: () => ({
     value: 'testValue',
   }),
-}));
+}))
 
 describe('getFieldValue', () => {
   it('should return correct value when type is radio', () => {
@@ -25,8 +25,8 @@ describe('getFieldValue', () => {
           name: 'test',
         },
       }),
-    ).toBe(2);
-  });
+    ).toBe(2)
+  })
 
   it('should return the correct value when type is checkbox', () => {
     expect(
@@ -37,8 +37,8 @@ describe('getFieldValue', () => {
           type: 'checkbox',
         },
       }),
-    ).toBe('testValue');
-  });
+    ).toBe('testValue')
+  })
 
   it('should return it value for other types', () => {
     expect(
@@ -50,12 +50,12 @@ describe('getFieldValue', () => {
           value: 'value',
         },
       }),
-    ).toBe('value');
-  });
+    ).toBe('value')
+  })
 
   it('should return empty string when radio input value is not found', () => {
-    expect(getFieldValue({ ref: {} } as Field['_f'])).toEqual(undefined);
-  });
+    expect(getFieldValue({ ref: {} } as Field['_f'])).toEqual(undefined)
+  })
 
   it('should return files for input type file', () => {
     expect(
@@ -67,8 +67,8 @@ describe('getFieldValue', () => {
           files: null,
         },
       }),
-    ).toEqual(null);
-  });
+    ).toEqual(null)
+  })
 
   it('should return undefined when input is not found', () => {
     expect(
@@ -79,6 +79,6 @@ describe('getFieldValue', () => {
           files: null,
         },
       }),
-    ).toEqual(undefined);
-  });
-});
+    ).toEqual(undefined)
+  })
+})

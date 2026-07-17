@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
 
-let renderCounter = 0;
+let renderCounter = 0
 
 const ManualRegisterForm: React.FC = () => {
   const {
@@ -10,36 +10,36 @@ const ManualRegisterForm: React.FC = () => {
     formState: { errors },
     setValue,
   } = useForm<{
-    firstName: string;
-    lastName: string;
-    min: string;
-    max: string;
-    minDate: string;
-    maxDate: string;
-    minLength: string;
-    minRequiredLength: string;
-    selectNumber: string;
-    pattern: string;
-    radio: string;
-    checkbox: string;
-  }>();
-  const onSubmit = () => {};
-  renderCounter++;
+    firstName: string
+    lastName: string
+    min: string
+    max: string
+    minDate: string
+    maxDate: string
+    minLength: string
+    minRequiredLength: string
+    selectNumber: string
+    pattern: string
+    radio: string
+    checkbox: string
+  }>()
+  const onSubmit = () => {}
+  renderCounter++
 
   useEffect(() => {
-    register('firstName', { required: true });
-    register('lastName', { required: true, maxLength: 5 });
-    register('min', { min: 10 });
-    register('max', { max: 20 });
-    register('minDate', { min: '2019-08-01' });
-    register('maxDate', { max: '2019-08-01' });
-    register('minLength', { minLength: 2 });
-    register('minRequiredLength', { minLength: 2, required: true });
-    register('selectNumber', { required: true });
-    register('pattern', { pattern: /\d+/ });
-    register('radio', { required: true });
-    register('checkbox', { required: true });
-  }, [register]);
+    register('firstName', { required: true })
+    register('lastName', { required: true, maxLength: 5 })
+    register('min', { min: 10 })
+    register('max', { max: 20 })
+    register('minDate', { min: '2019-08-01' })
+    register('maxDate', { max: '2019-08-01' })
+    register('minLength', { minLength: 2 })
+    register('minRequiredLength', { minLength: 2, required: true })
+    register('selectNumber', { required: true })
+    register('pattern', { pattern: /\d+/ })
+    register('radio', { required: true })
+    register('checkbox', { required: true })
+  }, [register])
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -211,7 +211,7 @@ const ManualRegisterForm: React.FC = () => {
       <button id="submit">Submit</button>
       <div id="renderCount">{renderCounter}</div>
     </form>
-  );
-};
+  )
+}
 
-export default ManualRegisterForm;
+export default ManualRegisterForm

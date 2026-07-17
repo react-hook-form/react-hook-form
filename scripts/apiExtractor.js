@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-const { Extractor, ExtractorConfig } = require('@microsoft/api-extractor');
-const fs = require('fs');
-const path = require('path');
+const { Extractor, ExtractorConfig } = require('@microsoft/api-extractor')
+const fs = require('fs')
+const path = require('path')
 
 /**
  * Command which developers need to run to generate an updated API report.
  */
-const API_EXTRACTOR_YARN_COMMAND = 'pnpm api-extractor:build';
+const API_EXTRACTOR_YARN_COMMAND = 'pnpm api-extractor:build'
 
-const config = loadExtractorConfig();
-checkReportMatchesApi(config);
-checkNoErrorsAndWarnings(config);
-checkLineEndings(config);
+const config = loadExtractorConfig()
+checkReportMatchesApi(config)
+checkNoErrorsAndWarnings(config)
+checkLineEndings(config)
 
 /**
  * Runs the API Extractor to check if the API report matches the API.
@@ -23,16 +23,16 @@ function checkReportMatchesApi(config) {
     localBuild: false, // validate report, fail on warnings or errors
     messageCallback: (message) => {
       // suppress all error or warnings
-      message.handled = true;
+      message.handled = true
     },
-  });
+  })
 
   if (result.apiReportChanged) {
     exit(
       `The API Extractor report does not match the exported API.`,
       `Please run \`${API_EXTRACTOR_YARN_COMMAND}\` to generate an`,
       `updated report and commit it.`,
-    );
+    )
   }
 }
 
@@ -44,13 +44,13 @@ function checkReportMatchesApi(config) {
 function checkNoErrorsAndWarnings(config) {
   const result = Extractor.invoke(config, {
     localBuild: false, // validate report, fail on warnings or errors,
-  });
+  })
 
   if (!result.succeeded) {
     exit(
       `API Extractor completed with ${result.errorCount} errors and`,
       `${result.warningCount} warnings.`,
-    );
+    )
   }
 }
 
@@ -61,30 +61,27 @@ function checkNoErrorsAndWarnings(config) {
  * @param config {ExtractorConfig}
  */
 function checkLineEndings(config) {
-  const report = fs.readFileSync(config.reportFilePath);
+  const report = fs.readFileSync(config.reportFilePath)
 
-  const LF = '\n';
-  const CRLF = '\r\n';
+  const LF = '\n'
+  const CRLF = '\r\n'
 
-  const containsLf = report.includes(LF);
-  const containsCrLf = report.includes(CRLF);
+  const containsLf = report.includes(LF)
+  const containsCrLf = report.includes(CRLF)
 
-  const relativeReportPath = path.relative(
-    process.cwd(),
-    config.reportFilePath,
-  );
+  const relativeReportPath = path.relative(process.cwd(), config.reportFilePath)
 
   if (config.newlineKind === LF && containsCrLf) {
     exit(
       `${relativeReportPath} contains CRLF.`,
       `Please convert its line endings to LF.`,
-    );
+    )
   }
   if (config.newlineKind === CRLF && containsLf && !containsCrLf) {
     exit(
       `${relativeReportPath} contains LF.`,
       `Please convert its line endings to CRLF.`,
-    );
+    )
   }
 }
 
@@ -96,14 +93,14 @@ function checkLineEndings(config) {
 function loadExtractorConfig() {
   const rawConfig = ExtractorConfig.tryLoadForFolder({
     startingFolder: process.cwd(),
-  });
+  })
   if (!rawConfig) {
     exit(
       `No API Extractor config could be found for the`,
       `current working directory.`,
-    );
+    )
   }
-  return ExtractorConfig.prepare(rawConfig);
+  return ExtractorConfig.prepare(rawConfig)
 }
 
 /**
@@ -113,7 +110,7 @@ function loadExtractorConfig() {
  * @param message {string}
  */
 function red(message) {
-  return `\u001b[31m${message}\u001b[0m`;
+  return `\u001b[31m${message}\u001b[0m`
 }
 
 /**
@@ -122,6 +119,6 @@ function red(message) {
  */
 function exit(...message) {
   /* eslint-disable-next-line no-console */
-  console.log(`${red('FAILURE REASON')} ${message.join(' ')}`);
-  process.exit(1);
+  console.log(`${red('FAILURE REASON')} ${message.join(' ')}`)
+  process.exit(1)
 }

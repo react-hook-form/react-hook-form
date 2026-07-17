@@ -1,7 +1,7 @@
-import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react'
+import React from 'react'
 
-import { useForm } from '../../useForm';
+import { useForm } from '../../useForm'
 
 describe('resetField', () => {
   it('should reset input value', () => {
@@ -10,7 +10,7 @@ describe('resetField', () => {
         defaultValues: {
           test: 'test',
         },
-      });
+      })
 
       return (
         <form>
@@ -18,33 +18,33 @@ describe('resetField', () => {
           <button
             type={'button'}
             onClick={() => {
-              resetField('test');
+              resetField('test')
             }}
           >
             reset
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
         value: '1234',
       },
-    });
+    })
 
     expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
       '1234',
-    );
+    )
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'))
 
     expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
       'test',
-    );
-  });
+    )
+  })
 
   it('should reset input touched field state', async () => {
     const App = () => {
@@ -56,7 +56,7 @@ describe('resetField', () => {
         defaultValues: {
           test: 'test',
         },
-      });
+      })
 
       return (
         <form>
@@ -65,27 +65,27 @@ describe('resetField', () => {
           <button
             type={'button'}
             onClick={() => {
-              resetField('test');
+              resetField('test')
             }}
           >
             reset
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
-    fireEvent.focus(screen.getByRole('textbox'));
+    fireEvent.focus(screen.getByRole('textbox'))
 
-    fireEvent.blur(screen.getByRole('textbox'));
+    fireEvent.blur(screen.getByRole('textbox'))
 
-    expect(await screen.findByText('touched')).toBeVisible();
+    expect(await screen.findByText('touched')).toBeVisible()
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'))
 
-    expect(await screen.findByText('noTouched')).toBeVisible();
-  });
+    expect(await screen.findByText('noTouched')).toBeVisible()
+  })
 
   it('should reset input dirty field and dirty state', async () => {
     const App = () => {
@@ -97,7 +97,7 @@ describe('resetField', () => {
         defaultValues: {
           test: 'test',
         },
-      });
+      })
 
       return (
         <form>
@@ -107,31 +107,31 @@ describe('resetField', () => {
           <button
             type={'button'}
             onClick={() => {
-              resetField('test');
+              resetField('test')
             }}
           >
             reset
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
         value: '1234',
       },
-    });
+    })
 
-    expect(await screen.findByText('dirty')).toBeVisible();
-    expect(screen.getByText('formDirty')).toBeVisible();
+    expect(await screen.findByText('dirty')).toBeVisible()
+    expect(screen.getByText('formDirty')).toBeVisible()
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'))
 
-    expect(await screen.findByText('notDirty')).toBeVisible();
-    expect(screen.getByText('formNotDirty')).toBeVisible();
-  });
+    expect(await screen.findByText('notDirty')).toBeVisible()
+    expect(screen.getByText('formNotDirty')).toBeVisible()
+  })
 
   it('should reset input error field and isValid state', async () => {
     const App = () => {
@@ -144,7 +144,7 @@ describe('resetField', () => {
           test: 'test',
         },
         mode: 'onChange',
-      });
+      })
 
       return (
         <form>
@@ -154,44 +154,44 @@ describe('resetField', () => {
           <button
             type={'button'}
             onClick={() => {
-              resetField('test');
+              resetField('test')
             }}
           >
             reset
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
-    expect(await screen.findByText('valid')).toBeVisible();
-    expect(screen.getByText('noError')).toBeVisible();
+    expect(await screen.findByText('valid')).toBeVisible()
+    expect(screen.getByText('noError')).toBeVisible()
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: {
         value: 'test12345',
       },
-    });
+    })
 
-    expect(await screen.findByText('NotValid')).toBeVisible();
-    expect(screen.getByText('error')).toBeVisible();
+    expect(await screen.findByText('NotValid')).toBeVisible()
+    expect(screen.getByText('error')).toBeVisible()
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'))
 
-    expect(await screen.findByText('valid')).toBeVisible();
-    expect(screen.getByText('noError')).toBeVisible();
-  });
+    expect(await screen.findByText('valid')).toBeVisible()
+    expect(screen.getByText('noError')).toBeVisible()
+  })
 
   it('should reset input file to empty string only', () => {
-    const getValuesFn = jest.fn();
+    const getValuesFn = jest.fn()
 
     const App = () => {
       const { register, resetField, getValues } = useForm({
         defaultValues: {
           test: '',
         },
-      });
+      })
 
       return (
         <form>
@@ -199,7 +199,7 @@ describe('resetField', () => {
           <button
             type={'button'}
             onClick={() => {
-              resetField('test', { defaultValue: '' });
+              resetField('test', { defaultValue: '' })
             }}
           >
             reset
@@ -207,25 +207,25 @@ describe('resetField', () => {
           <button
             type={'button'}
             onClick={() => {
-              getValuesFn(getValues());
+              getValuesFn(getValues())
             }}
           >
             getValues
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
-    fireEvent.click(screen.getByRole('button', { name: 'getValues' }));
+    fireEvent.click(screen.getByRole('button', { name: 'getValues' }))
 
-    expect(getValuesFn).toHaveBeenCalledWith({ test: '' });
+    expect(getValuesFn).toHaveBeenCalledWith({ test: '' })
 
-    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }))
 
-    expect(getValuesFn).toHaveBeenCalledWith({ test: '' });
-  });
+    expect(getValuesFn).toHaveBeenCalledWith({ test: '' })
+  })
 
   describe('when provided with options', () => {
     it('should update input value and its defaultValue', () => {
@@ -234,7 +234,7 @@ describe('resetField', () => {
           defaultValues: {
             test: 'test',
           },
-        });
+        })
 
         return (
           <form>
@@ -244,33 +244,33 @@ describe('resetField', () => {
               onClick={() => {
                 resetField('test', {
                   defaultValue: 'test1234',
-                });
+                })
               }}
             >
               reset
             </button>
           </form>
-        );
-      };
+        )
+      }
 
-      render(<App />);
+      render(<App />)
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: {
           value: '1234',
         },
-      });
+      })
 
       expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
         '1234',
-      );
+      )
 
-      fireEvent.click(screen.getByRole('button'));
+      fireEvent.click(screen.getByRole('button'))
 
       expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
         'test1234',
-      );
-    });
+      )
+    })
 
     it('should keep touched field state', async () => {
       const App = () => {
@@ -282,7 +282,7 @@ describe('resetField', () => {
           defaultValues: {
             test: 'test',
           },
-        });
+        })
 
         return (
           <form>
@@ -291,27 +291,27 @@ describe('resetField', () => {
             <button
               type={'button'}
               onClick={() => {
-                resetField('test', { keepTouched: true });
+                resetField('test', { keepTouched: true })
               }}
             >
               reset
             </button>
           </form>
-        );
-      };
+        )
+      }
 
-      render(<App />);
+      render(<App />)
 
-      fireEvent.focus(screen.getByRole('textbox'));
+      fireEvent.focus(screen.getByRole('textbox'))
 
-      fireEvent.blur(screen.getByRole('textbox'));
+      fireEvent.blur(screen.getByRole('textbox'))
 
-      expect(await screen.findByText('touched')).toBeVisible();
+      expect(await screen.findByText('touched')).toBeVisible()
 
-      fireEvent.click(screen.getByRole('button'));
+      fireEvent.click(screen.getByRole('button'))
 
-      expect(await screen.findByText('touched')).toBeVisible();
-    });
+      expect(await screen.findByText('touched')).toBeVisible()
+    })
 
     it('should keep dirty field and isDirty state', async () => {
       const App = () => {
@@ -323,7 +323,7 @@ describe('resetField', () => {
           defaultValues: {
             test: 'test',
           },
-        });
+        })
 
         return (
           <form>
@@ -333,31 +333,31 @@ describe('resetField', () => {
             <button
               type={'button'}
               onClick={() => {
-                resetField('test', { keepDirty: true });
+                resetField('test', { keepDirty: true })
               }}
             >
               reset
             </button>
           </form>
-        );
-      };
+        )
+      }
 
-      render(<App />);
+      render(<App />)
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: {
           value: '1234',
         },
-      });
+      })
 
-      expect(await screen.findByText('dirty')).toBeVisible();
-      expect(screen.getByText('formDirty')).toBeVisible();
+      expect(await screen.findByText('dirty')).toBeVisible()
+      expect(screen.getByText('formDirty')).toBeVisible()
 
-      fireEvent.click(screen.getByRole('button'));
+      fireEvent.click(screen.getByRole('button'))
 
-      expect(await screen.findByText('dirty')).toBeVisible();
-      expect(screen.getByText('formDirty')).toBeVisible();
-    });
+      expect(await screen.findByText('dirty')).toBeVisible()
+      expect(screen.getByText('formDirty')).toBeVisible()
+    })
 
     it('should skip reset error field and isValid state', async () => {
       const App = () => {
@@ -370,7 +370,7 @@ describe('resetField', () => {
             test: 'test',
           },
           mode: 'onChange',
-        });
+        })
 
         return (
           <form>
@@ -380,34 +380,34 @@ describe('resetField', () => {
             <button
               type={'button'}
               onClick={() => {
-                resetField('test', { keepError: true });
+                resetField('test', { keepError: true })
               }}
             >
               reset
             </button>
           </form>
-        );
-      };
+        )
+      }
 
-      render(<App />);
+      render(<App />)
 
-      expect(await screen.findByText('valid')).toBeVisible();
-      expect(screen.getByText('noError')).toBeVisible();
+      expect(await screen.findByText('valid')).toBeVisible()
+      expect(screen.getByText('noError')).toBeVisible()
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: {
           value: 'test12345',
         },
-      });
+      })
 
-      expect(await screen.findByText('NotValid')).toBeVisible();
-      expect(screen.getByText('error')).toBeVisible();
+      expect(await screen.findByText('NotValid')).toBeVisible()
+      expect(screen.getByText('error')).toBeVisible()
 
-      fireEvent.click(screen.getByRole('button'));
+      fireEvent.click(screen.getByRole('button'))
 
-      expect(await screen.findByText('NotValid')).toBeVisible();
-      expect(screen.getByText('error')).toBeVisible();
-    });
+      expect(await screen.findByText('NotValid')).toBeVisible()
+      expect(screen.getByText('error')).toBeVisible()
+    })
 
     it('should work with objects as defaultValue', async () => {
       const App = () => {
@@ -422,7 +422,7 @@ describe('resetField', () => {
             },
           },
           mode: 'onChange',
-        });
+        })
 
         return (
           <form>
@@ -433,36 +433,36 @@ describe('resetField', () => {
               onClick={() => {
                 resetField('nestedObjectTest', {
                   defaultValue: { test: 'test2' },
-                });
+                })
               }}
             >
               reset
             </button>
           </form>
-        );
-      };
+        )
+      }
 
-      render(<App />);
+      render(<App />)
 
-      expect(await screen.findByText('isNotDirty')).toBeVisible();
+      expect(await screen.findByText('isNotDirty')).toBeVisible()
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: {
           value: 'abcd',
         },
-      });
+      })
 
-      expect(await screen.findByText('isDirty')).toBeVisible();
+      expect(await screen.findByText('isDirty')).toBeVisible()
 
-      fireEvent.click(screen.getByRole('button'));
+      fireEvent.click(screen.getByRole('button'))
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: {
           value: '1234',
         },
-      });
+      })
 
-      expect(await screen.findByText('isDirty')).toBeVisible();
-    });
-  });
-});
+      expect(await screen.findByText('isDirty')).toBeVisible()
+    })
+  })
+})

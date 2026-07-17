@@ -1,6 +1,6 @@
+import Files from 'Files';
 import { format } from 'Time';
 import insertInto from './Insert.js';
-import Files from 'Files';
 
 const { readTextFile, writeTextFile } = Deno;
 

@@ -1,15 +1,15 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import React from 'react'
+import { useForm } from 'react-hook-form'
 
 const Input = React.forwardRef(({ name }, ref) => {
-  return <input ref={ref} name={name} />;
-});
+  return <input ref={ref} name={name} />
+})
 
 export default function App() {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit } = useForm()
   const onSubmit = (data, event) => {
-    console.log(data);
-  };
+    console.log(data)
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -18,5 +18,5 @@ export default function App() {
 
       <button>Submit</button>
     </form>
-  );
+  )
 }

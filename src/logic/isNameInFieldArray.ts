@@ -1,4 +1,4 @@
-import type { InternalFieldName } from '../types';
+import type { InternalFieldName } from '../types'
 
 export default (names: Set<InternalFieldName>, name: InternalFieldName) =>
   name
@@ -6,4 +6,4 @@ export default (names: Set<InternalFieldName>, name: InternalFieldName) =>
     .some(
       (part, index, arr) =>
         !isNaN(Number(part)) && names.has(arr.slice(0, index).join('.')),
-    );
+    )

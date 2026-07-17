@@ -1,12 +1,12 @@
-import getRadioValue from '../../logic/getRadioValue';
+import getRadioValue from '../../logic/getRadioValue'
 
 describe('getRadioValue', () => {
   it('should return default value if not valid or empty options', () => {
     expect(getRadioValue(undefined)).toEqual({
       isValid: false,
       value: null,
-    });
-  });
+    })
+  })
 
   it('should return valid to true when value found', () => {
     expect(
@@ -17,8 +17,8 @@ describe('getRadioValue', () => {
     ).toEqual({
       isValid: true,
       value: '2',
-    });
-  });
+    })
+  })
 
   it('should return disabled input correctly', () => {
     expect(
@@ -34,7 +34,7 @@ describe('getRadioValue', () => {
     ).toEqual({
       isValid: true,
       value: '2',
-    });
+    })
 
     expect(
       getRadioValue([
@@ -53,6 +53,6 @@ describe('getRadioValue', () => {
     ).toEqual({
       isValid: false,
       value: null,
-    });
-  });
-});
+    })
+  })
+})

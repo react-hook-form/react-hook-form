@@ -1,13 +1,13 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import * as yup from 'yup'; // you will have to install yup
-import { yupResolver } from '@hookform/resolvers/yup'; // you will have to install @hookform/resolvers
+import { yupResolver } from '@hookform/resolvers/yup' // you will have to install @hookform/resolvers
+import React from 'react'
+import { useForm } from 'react-hook-form'
+import * as yup from 'yup' // you will have to install yup
 
 const SignupSchema = yup.object().shape({
   firstName: yup.string().required(),
   age: yup.number().required().positive().integer(),
   website: yup.string().url(),
-});
+})
 
 export default function App() {
   const {
@@ -16,10 +16,10 @@ export default function App() {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(SignupSchema),
-  });
+  })
   const onSubmit = (data) => {
-    alert(JSON.stringify(data));
-  };
+    alert(JSON.stringify(data))
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -56,5 +56,5 @@ export default function App() {
       </div>
       <input type="submit" />
     </form>
-  );
+  )
 }

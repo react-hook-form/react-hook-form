@@ -1,5 +1,5 @@
-import getValidateError from '../../logic/getValidateError';
-import noop from '../../utils/noop';
+import getValidateError from '../../logic/getValidateError'
+import noop from '../../utils/noop'
 
 describe('getValidateError', () => {
   it('should return field error in correct format', () => {
@@ -19,7 +19,7 @@ describe('getValidateError', () => {
         name: 'test1',
         value: '',
       },
-    });
+    })
 
     expect(
       getValidateError(
@@ -37,10 +37,10 @@ describe('getValidateError', () => {
         name: 'test1',
         value: '',
       },
-    });
-  });
+    })
+  })
 
   it('should return undefined when called with non string result', () => {
-    expect(getValidateError(undefined, noop)).toBeUndefined();
-  });
-});
+    expect(getValidateError(undefined, noop)).toBeUndefined()
+  })
+})

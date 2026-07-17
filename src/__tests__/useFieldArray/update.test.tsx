@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   act,
   fireEvent,
@@ -6,32 +5,33 @@ import {
   renderHook,
   screen,
   waitFor,
-} from '@testing-library/react';
+} from '@testing-library/react'
+import React from 'react'
 
-import { VALIDATION_MODE } from '../../constants';
-import type { Control } from '../../types';
-import { useController } from '../../useController';
-import { useFieldArray } from '../../useFieldArray';
-import { useForm } from '../../useForm';
+import { VALIDATION_MODE } from '../../constants'
+import type { Control } from '../../types'
+import { useController } from '../../useController'
+import { useFieldArray } from '../../useFieldArray'
+import { useForm } from '../../useForm'
 
-let i = 0;
+let i = 0
 
-jest.mock('../../logic/generateId', () => () => String(i++));
+jest.mock('../../logic/generateId', () => () => String(i++))
 
 describe('update', () => {
   beforeEach(() => {
-    i = 0;
-  });
+    i = 0
+  })
 
   it('should update dirtyFields fields correctly', async () => {
-    let dirtyInputs = {};
+    let dirtyInputs = {}
     const Component = () => {
       const {
         register,
         control,
         formState: { dirtyFields },
       } = useForm<{
-        test: { value: string }[];
+        test: { value: string }[]
       }>({
         defaultValues: {
           test: [
@@ -40,13 +40,13 @@ describe('update', () => {
             { value: 'dont change' },
           ],
         },
-      });
+      })
       const { fields, update } = useFieldArray({
         control,
         name: 'test',
-      });
+      })
 
-      dirtyInputs = dirtyFields;
+      dirtyInputs = dirtyFields
 
       return (
         <form>
@@ -58,23 +58,23 @@ describe('update', () => {
           </button>
           {dirtyFields.test?.length && 'dirty'}
         </form>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'))
 
-    expect(await screen.findByText('dirty')).toBeVisible();
+    expect(await screen.findByText('dirty')).toBeVisible()
 
     expect(dirtyInputs).toEqual({
       test: [{ value: true }, undefined, undefined],
-    });
-  });
+    })
+  })
 
   it.each(['isDirty', 'dirtyFields'])('should update state with %s', () => {
-    let isDirtyValue;
-    let dirtyValue;
+    let isDirtyValue
+    let dirtyValue
 
     const Component = () => {
       const {
@@ -82,17 +82,17 @@ describe('update', () => {
         control,
         formState: { isDirty, dirtyFields },
       } = useForm<{
-        test: { test: string }[];
+        test: { test: string }[]
       }>({
         defaultValues: {},
-      });
+      })
       const { fields, update } = useFieldArray({
         control,
         name: 'test',
-      });
+      })
 
-      isDirtyValue = isDirty;
-      dirtyValue = dirtyFields;
+      isDirtyValue = isDirty
+      dirtyValue = dirtyFields
 
       return (
         <form>
@@ -102,36 +102,36 @@ describe('update', () => {
                 key={field.id}
                 {...register(`test.${index}.test` as const)}
               />
-            );
+            )
           })}
           <button type={'button'} onClick={() => update(2, { test: 'test1' })}>
             update
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
-    fireEvent.click(screen.getByRole('button', { name: 'update' }));
+    fireEvent.click(screen.getByRole('button', { name: 'update' }))
 
-    expect(isDirtyValue).toBeTruthy();
+    expect(isDirtyValue).toBeTruthy()
     expect(dirtyValue).toEqual({
       test: [undefined, undefined, { test: true }],
-    });
-  });
+    })
+  })
 
   it('should trigger reRender when user update input and is watching the all field array', () => {
-    const watched: any[] = [];
+    const watched: any[] = []
     const Component = () => {
       const { register, watch, control } = useForm<{
-        test: { value: string }[];
-      }>();
+        test: { value: string }[]
+      }>()
       const { fields, update } = useFieldArray({
         control,
         name: 'test',
-      });
-      watched.push(watch());
+      })
+      watched.push(watch())
 
       return (
         <form>
@@ -142,19 +142,19 @@ describe('update', () => {
             update
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
     expect(watched).toEqual([
       {},
       {
         test: [],
       },
-    ]);
+    ])
 
-    fireEvent.click(screen.getByRole('button', { name: /update/i }));
+    fireEvent.click(screen.getByRole('button', { name: /update/i }))
 
     expect(watched).toEqual([
       {},
@@ -175,21 +175,21 @@ describe('update', () => {
           },
         ],
       },
-    ]);
-  });
+    ])
+  })
 
   it('should return watched value with update and watch API', async () => {
-    const renderedItems: any = [];
+    const renderedItems: any = []
     const Component = () => {
       const { watch, register, control } = useForm<{
-        test: { value: string }[];
-      }>();
+        test: { value: string }[]
+      }>()
       const { fields, update } = useFieldArray({
         name: 'test',
         control,
-      });
-      const watched = watch('test');
-      renderedItems.push(watched);
+      })
+      const watched = watch('test')
+      renderedItems.push(watched)
       return (
         <div>
           {fields.map((field, i) => (
@@ -199,12 +199,12 @@ describe('update', () => {
           ))}
           <button onClick={() => update(0, { value: 'test' })}>update</button>
         </div>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
-    fireEvent.click(screen.getByRole('button', { name: /update/i }));
+    fireEvent.click(screen.getByRole('button', { name: /update/i }))
 
     await waitFor(() =>
       expect(renderedItems).toEqual([
@@ -213,32 +213,32 @@ describe('update', () => {
         [{ value: 'test' }],
         [{ value: 'test' }],
       ]),
-    );
-  });
+    )
+  })
 
   it('should update group input correctly', () => {
     type FormValues = {
       test: {
         value: {
-          firstName: string;
-          lastName: string;
-        };
-      }[];
-    };
+          firstName: string
+          lastName: string
+        }
+      }[]
+    }
 
-    const fieldArrayValues: unknown[] = [];
+    const fieldArrayValues: unknown[] = []
 
     const GroupInput = ({
       control,
       index,
     }: {
-      control: Control<FormValues>;
-      index: number;
+      control: Control<FormValues>
+      index: number
     }) => {
       const { field } = useController({
         control,
         name: `test.${index}.value` as const,
-      });
+      })
 
       return (
         <div>
@@ -248,7 +248,7 @@ describe('update', () => {
               field.onChange({
                 ...field.value,
                 firstName: e.target.name,
-              });
+              })
             }}
           />
           <input
@@ -257,12 +257,12 @@ describe('update', () => {
               field.onChange({
                 ...field.value,
                 lastName: e.target.name,
-              });
+              })
             }}
           />
         </div>
-      );
-    };
+      )
+    }
 
     const App = () => {
       const { control } = useForm<FormValues>({
@@ -276,13 +276,13 @@ describe('update', () => {
             },
           ],
         },
-      });
+      })
       const { fields, update } = useFieldArray({
         name: 'test',
         control,
-      });
+      })
 
-      fieldArrayValues.push(fields);
+      fieldArrayValues.push(fields)
 
       return (
         <div>
@@ -301,10 +301,10 @@ describe('update', () => {
             update
           </button>
         </div>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
     expect(fieldArrayValues.at(-1)).toEqual([
       {
@@ -314,16 +314,16 @@ describe('update', () => {
           lastName: 'luo',
         },
       },
-    ]);
+    ])
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'))
 
     expect(
       (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
-    ).toEqual('firstName');
+    ).toEqual('firstName')
     expect(
       (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
-    ).toEqual('lastName');
+    ).toEqual('lastName')
 
     // Let's check all values of renders with implicitly the number of render (for each value)
     expect(fieldArrayValues).toEqual([
@@ -354,14 +354,14 @@ describe('update', () => {
           },
         },
       ],
-    ]);
-  });
+    ])
+  })
 
   it('should update field array with single value', () => {
-    let fieldArrayValues: { value: string }[] | [] = [];
+    let fieldArrayValues: { value: string }[] | [] = []
     const App = () => {
       const { register, control } = useForm<{
-        test: { value: string }[];
+        test: { value: string }[]
       }>({
         defaultValues: {
           test: [
@@ -370,13 +370,13 @@ describe('update', () => {
             },
           ],
         },
-      });
+      })
       const { fields, update } = useFieldArray({
         name: 'test',
         control,
-      });
+      })
 
-      fieldArrayValues = fields;
+      fieldArrayValues = fields
 
       return (
         <div>
@@ -387,26 +387,26 @@ describe('update', () => {
           ))}
           <button onClick={() => update(0, { value: 'test' })}>update</button>
         </div>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'))
 
     expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
       'test',
-    );
+    )
 
-    expect(fieldArrayValues[0].value).toEqual('test');
-  });
+    expect(fieldArrayValues[0].value).toEqual('test')
+  })
 
   it('should update field array with multiple values', () => {
-    let fieldArrayValues: { firstName: string; lastName: string }[] | [] = [];
+    let fieldArrayValues: { firstName: string; lastName: string }[] | [] = []
 
     const App = () => {
       const { register, control } = useForm<{
-        test: { firstName: string; lastName: string }[];
+        test: { firstName: string; lastName: string }[]
       }>({
         defaultValues: {
           test: [
@@ -420,13 +420,13 @@ describe('update', () => {
             },
           ],
         },
-      });
+      })
       const { fields, update } = useFieldArray({
         name: 'test',
         control,
-      });
+      })
 
-      fieldArrayValues = fields;
+      fieldArrayValues = fields
 
       return (
         <div>
@@ -438,17 +438,17 @@ describe('update', () => {
           ))}
           <button
             onClick={() => {
-              update(0, { firstName: 'test1', lastName: 'test2' });
-              update(1, { firstName: 'test3', lastName: 'test4' });
+              update(0, { firstName: 'test1', lastName: 'test2' })
+              update(1, { firstName: 'test3', lastName: 'test4' })
             }}
           >
             update
           </button>
         </div>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
     expect(fieldArrayValues).toEqual([
       {
@@ -461,22 +461,22 @@ describe('update', () => {
         id: '1',
         lastName: 'luo1',
       },
-    ]);
+    ])
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'))
 
     expect(
       (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
-    ).toEqual('test1');
+    ).toEqual('test1')
     expect(
       (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
-    ).toEqual('test2');
+    ).toEqual('test2')
     expect(
       (screen.getAllByRole('textbox')[2] as HTMLInputElement).value,
-    ).toEqual('test3');
+    ).toEqual('test3')
     expect(
       (screen.getAllByRole('textbox')[3] as HTMLInputElement).value,
-    ).toEqual('test4');
+    ).toEqual('test4')
 
     expect(fieldArrayValues).toEqual([
       {
@@ -489,27 +489,27 @@ describe('update', () => {
         id: '5',
         lastName: 'test4',
       },
-    ]);
-  });
+    ])
+  })
 
   describe('with resolver', () => {
     it('should invoke resolver when formState.isValid true', async () => {
-      const resolver = jest.fn().mockReturnValue({});
+      const resolver = jest.fn().mockReturnValue({})
 
       const { result } = renderHook(() => {
         const { formState, control } = useForm({
           mode: VALIDATION_MODE.onChange,
           resolver,
-        });
-        const { update } = useFieldArray({ control, name: 'test' });
-        return { formState, update };
-      });
+        })
+        const { update } = useFieldArray({ control, name: 'test' })
+        return { formState, update }
+      })
 
-      result.current.formState.isValid;
+      result.current.formState.isValid
 
       await act(async () => {
-        result.current.update(0, { value: '1' });
-      });
+        result.current.update(0, { value: '1' })
+      })
 
       expect(resolver).toHaveBeenCalledWith(
         {
@@ -521,47 +521,47 @@ describe('update', () => {
           fields: {},
           names: [],
         },
-      );
-    });
+      )
+    })
 
     it('should not invoke resolver when formState.isValid false', () => {
-      const resolver = jest.fn().mockReturnValue({});
+      const resolver = jest.fn().mockReturnValue({})
 
       const { result } = renderHook(() => {
         const { formState, control } = useForm({
           mode: VALIDATION_MODE.onChange,
           resolver,
-        });
-        const { update } = useFieldArray({ control, name: 'test' });
-        return { formState, update };
-      });
+        })
+        const { update } = useFieldArray({ control, name: 'test' })
+        return { formState, update }
+      })
 
       act(() => {
-        result.current.update(0, { value: '1' });
-      });
+        result.current.update(0, { value: '1' })
+      })
 
-      expect(resolver).toHaveBeenCalled();
-    });
+      expect(resolver).toHaveBeenCalled()
+    })
 
     it('should not invoke resolver per register during update; only array-scoped + final isValid', async () => {
       const resolver = jest
         .fn()
-        .mockImplementation((values) => ({ values, errors: {} }));
+        .mockImplementation((values) => ({ values, errors: {} }))
 
       const App = () => {
         const { register, formState, control } = useForm<{
-          test: { value: string }[];
+          test: { value: string }[]
         }>({
           mode: VALIDATION_MODE.onTouched,
           resolver,
           defaultValues: {
             test: [{ value: 'a' }, { value: 'b' }, { value: 'c' }],
           },
-        });
+        })
 
-        formState.isValid;
+        formState.isValid
 
-        const { fields, update } = useFieldArray({ control, name: 'test' });
+        const { fields, update } = useFieldArray({ control, name: 'test' })
 
         return (
           <form>
@@ -573,53 +573,53 @@ describe('update', () => {
               update
             </button>
           </form>
-        );
-      };
+        )
+      }
 
-      render(<App />);
+      render(<App />)
 
       await waitFor(() =>
         expect(resolver.mock.calls.length).toBeGreaterThanOrEqual(1),
-      );
-      const initialCalls = resolver.mock.calls.length;
+      )
+      const initialCalls = resolver.mock.calls.length
 
-      fireEvent.click(screen.getByRole('button', { name: 'update' }));
+      fireEvent.click(screen.getByRole('button', { name: 'update' }))
 
       await waitFor(async () => {
-        expect((await screen.findAllByRole('textbox')).length).toBe(4);
-      });
+        expect((await screen.findAllByRole('textbox')).length).toBe(4)
+      })
 
       await waitFor(() =>
         expect(resolver.mock.calls.length).toBe(initialCalls + 2),
-      );
-    });
-  });
+      )
+    })
+  })
 
   it('should not omit keyName when provided', async () => {
     type FormValues = {
       test: {
-        test: string;
-        id: string;
-      }[];
-    };
+        test: string
+        id: string
+      }[]
+    }
 
     const App = () => {
-      const [data, setData] = React.useState<FormValues>();
+      const [data, setData] = React.useState<FormValues>()
       const { control, register, handleSubmit } = useForm<FormValues>({
         defaultValues: {
           test: [{ id: '1234', test: 'data' }],
         },
-      });
+      })
 
       const { fields, update } = useFieldArray({
         control,
         name: 'test',
-      });
+      })
 
       return (
         <form onSubmit={handleSubmit(setData)}>
           {fields.map((field, index) => {
-            return <input key={field.id} {...register(`test.${index}.test`)} />;
+            return <input key={field.id} {...register(`test.${index}.test`)} />
           })}
           <button
             type={'button'}
@@ -627,7 +627,7 @@ describe('update', () => {
               update(0, {
                 id: 'whatever',
                 test: '1234',
-              });
+              })
             }}
           >
             update
@@ -635,41 +635,41 @@ describe('update', () => {
           <button>submit</button>
           <p>{JSON.stringify(data)}</p>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
-    fireEvent.click(screen.getByRole('button', { name: 'update' }));
+    fireEvent.click(screen.getByRole('button', { name: 'update' }))
 
-    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }))
 
     expect(
       await screen.findByText('{"test":[{"id":"whatever","test":"1234"}]}'),
-    ).toBeVisible();
-  });
+    ).toBeVisible()
+  })
 
   it('should not omit keyName when provided and defaultValue is empty', async () => {
     type FormValues = {
       test: {
-        test: string;
-        id: string;
-      }[];
-    };
+        test: string
+        id: string
+      }[]
+    }
 
     const App = () => {
-      const [data, setData] = React.useState<FormValues>();
-      const { control, register, handleSubmit } = useForm<FormValues>();
+      const [data, setData] = React.useState<FormValues>()
+      const { control, register, handleSubmit } = useForm<FormValues>()
 
       const { fields, update } = useFieldArray({
         control,
         name: 'test',
-      });
+      })
 
       return (
         <form onSubmit={handleSubmit(setData)}>
           {fields.map((field, index) => {
-            return <input key={field.id} {...register(`test.${index}.test`)} />;
+            return <input key={field.id} {...register(`test.${index}.test`)} />
           })}
           <button
             type={'button'}
@@ -677,7 +677,7 @@ describe('update', () => {
               update(0, {
                 id: 'whatever',
                 test: '1234',
-              });
+              })
             }}
           >
             update
@@ -685,19 +685,19 @@ describe('update', () => {
           <button>submit</button>
           <p>{JSON.stringify(data)}</p>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
-    fireEvent.click(screen.getByRole('button', { name: 'update' }));
+    fireEvent.click(screen.getByRole('button', { name: 'update' }))
 
-    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }))
 
     expect(
       await screen.findByText('{"test":[{"id":"whatever","test":"1234"}]}'),
-    ).toBeVisible();
-  });
+    ).toBeVisible()
+  })
 
   it('should not update errors state', async () => {
     const App = () => {
@@ -714,15 +714,15 @@ describe('update', () => {
             },
           ],
         },
-      });
+      })
       const { fields, update } = useFieldArray({
         name: 'test',
         control,
-      });
+      })
 
       React.useEffect(() => {
-        trigger();
-      }, [trigger]);
+        trigger()
+      }, [trigger])
 
       return (
         <form>
@@ -746,15 +746,15 @@ describe('update', () => {
             update
           </button>
         </form>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
-    expect(await screen.findByText('This is required')).toBeVisible();
+    expect(await screen.findByText('This is required')).toBeVisible()
 
-    fireEvent.click(screen.getByRole('button'));
+    fireEvent.click(screen.getByRole('button'))
 
-    expect(await screen.findByText('This is required')).toBeVisible();
-  });
-});
+    expect(await screen.findByText('This is required')).toBeVisible()
+  })
+})

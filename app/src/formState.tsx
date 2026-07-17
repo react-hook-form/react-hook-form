@@ -1,11 +1,11 @@
-import React from 'react';
-import { useForm, ValidationMode } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
+import React from 'react'
+import { useForm, ValidationMode } from 'react-hook-form'
+import { useParams } from 'react-router-dom'
 
-let renderCounter = 0;
+let renderCounter = 0
 
 const FormState = () => {
-  const { mode } = useParams();
+  const { mode } = useParams()
   const {
     register,
     handleSubmit,
@@ -21,12 +21,12 @@ const FormState = () => {
     },
     reset,
   } = useForm<{
-    firstName: string;
-    lastName: string;
-    select: string;
-    radio: string | null;
-    checkbox: boolean;
-    ['checkbox-checked']: boolean;
+    firstName: string
+    lastName: string
+    select: string
+    radio: string | null
+    checkbox: boolean
+    ['checkbox-checked']: boolean
   }>({
     mode: mode as keyof ValidationMode,
     defaultValues: {
@@ -37,14 +37,14 @@ const FormState = () => {
       radio: null,
       'checkbox-checked': true,
     },
-  });
+  })
 
-  renderCounter++;
+  renderCounter++
 
   return (
     <form
       onSubmit={handleSubmit((d) => {
-        console.log(d);
+        console.log(d)
       })}
     >
       <input
@@ -84,7 +84,7 @@ const FormState = () => {
       </button>
       <div id="renderCount">{renderCounter}</div>
     </form>
-  );
-};
+  )
+}
 
-export default FormState;
+export default FormState

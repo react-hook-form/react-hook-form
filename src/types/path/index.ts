@@ -1,6 +1,6 @@
 /** Re-export public API */
 
-export { PathString } from './common';
+export { PathString } from './common'
 export {
   ArrayPath,
   FieldArrayPath,
@@ -12,4 +12,4 @@ export {
   FieldPathValues,
   Path,
   PathValue,
-} from './eager';
+} from './eager'

@@ -3,8 +3,8 @@ import type {
   FieldValues,
   WatchProps,
   WatchRenderValue,
-} from './types';
-import { useWatch } from './useWatch';
+} from './types'
+import { useWatch } from './useWatch'
 
 /**
  * Watch component that subscribes to form field changes and re-renders when watched fields update.
@@ -58,4 +58,4 @@ export const Watch = <
       TFieldValues,
       TComputeValue
     >,
-  );
+  )

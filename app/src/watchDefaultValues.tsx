@@ -1,5 +1,5 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import React from 'react'
+import { useForm } from 'react-hook-form'
 
 function WatchDefaultValues() {
   const { watch } = useForm({
@@ -16,14 +16,14 @@ function WatchDefaultValues() {
         whatever: 'flat',
       },
     },
-  });
+  })
 
-  const all = watch();
-  const array = watch(['test', 'flatName[1]']);
-  const singleObject = watch('test1.firstName');
-  const arrayStringOrObject = watch(['test', 'test1.firstName']);
-  const getDeepArray = watch('test1.lastName');
-  const singleDeepArray = watch('test1.lastName.0');
+  const all = watch()
+  const array = watch(['test', 'flatName[1]'])
+  const singleObject = watch('test1.firstName')
+  const arrayStringOrObject = watch(['test', 'test1.firstName'])
+  const getDeepArray = watch('test1.lastName')
+  const singleDeepArray = watch('test1.lastName.0')
 
   return (
     <>
@@ -39,7 +39,7 @@ function WatchDefaultValues() {
       <br />
       <div id="singleDeepArray">{JSON.stringify(singleDeepArray)}</div>
     </>
-  );
+  )
 }
 
-export default WatchDefaultValues;
+export default WatchDefaultValues

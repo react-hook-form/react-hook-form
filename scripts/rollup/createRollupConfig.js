@@ -1,19 +1,19 @@
-import commonjs from '@rollup/plugin-commonjs';
-import terser from '@rollup/plugin-terser';
-import typescript from 'rollup-plugin-typescript2';
+import commonjs from '@rollup/plugin-commonjs'
+import terser from '@rollup/plugin-terser'
+import typescript from 'rollup-plugin-typescript2'
 
-import pkg from '../../package.json';
+import pkg from '../../package.json'
 
 /**
  *
  * @returns {import("rollup").RollupOptions}
  */
 export function createRollupConfig(options, callback) {
-  const name = options.name;
+  const name = options.name
   // A file with the extension ".mjs" will always be treated as ESM, even when pkg.type is "commonjs" (the default)
   // https://nodejs.org/docs/latest/api/packages.html#packages_determining_module_system
-  const extName = options.format === 'esm' ? 'mjs' : 'js';
-  const outputName = 'dist/' + [name, options.format, extName].join('.');
+  const extName = options.format === 'esm' ? 'mjs' : 'js'
+  const outputName = 'dist/' + [name, options.format, extName].join('.')
 
   const config = {
     input: options.input,
@@ -52,7 +52,7 @@ export function createRollupConfig(options, callback) {
           },
         }),
     ].filter(Boolean),
-  };
+  }
 
-  return callback ? callback(config) : config;
+  return callback ? callback(config) : config
 }

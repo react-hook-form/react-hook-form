@@ -1,21 +1,21 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
-import * as yup from 'yup'; // you will have to install yup
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { useForm } from 'react-hook-form'
+import * as yup from 'yup' // you will have to install yup
 
 const SignupSchema = yup.object().shape({
   firstName: yup.string().required(),
   age: yup.number().required().positive().integer(),
   website: yup.string().url(),
-});
+})
 
 export default function App() {
   const { register, handleSubmit, errors } = useForm({
     validationSchema: SignupSchema,
-  });
+  })
   const onSubmit = (data) => {
-    alert(JSON.stringify(data));
-  };
+    alert(JSON.stringify(data))
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -52,5 +52,5 @@ export default function App() {
       </div>
       <input type="submit" />
     </form>
-  );
+  )
 }

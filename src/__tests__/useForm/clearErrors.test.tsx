@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   act,
   fireEvent,
@@ -6,45 +5,46 @@ import {
   renderHook,
   screen,
   waitFor,
-} from '@testing-library/react';
+} from '@testing-library/react'
+import React from 'react'
 
-import type { Control } from '../../types';
-import { useForm } from '../../useForm';
-import { useFormState } from '../../useFormState';
+import type { Control } from '../../types'
+import { useForm } from '../../useForm'
+import { useFormState } from '../../useFormState'
 
 describe('clearErrors', () => {
   it('should remove error', () => {
-    const { result } = renderHook(() => useForm<{ input: string }>());
+    const { result } = renderHook(() => useForm<{ input: string }>())
     act(() => {
-      result.current.register('input');
+      result.current.register('input')
       result.current.setError('input', {
         type: 'test',
         message: 'message',
-      });
-    });
+      })
+    })
 
-    act(() => result.current.clearErrors('input'));
+    act(() => result.current.clearErrors('input'))
 
-    expect(result.current.formState.errors).toEqual({});
-  });
+    expect(result.current.formState.errors).toEqual({})
+  })
 
   it('should remove nested error', () => {
     const { result } = renderHook(() =>
       useForm<{ input: { nested: string } }>(),
-    );
-    result.current.formState.errors;
+    )
+    result.current.formState.errors
     act(() =>
       result.current.setError('input.nested', {
         type: 'test',
       }),
-    );
-    expect(result.current.formState.errors.input?.nested).toBeDefined();
-    act(() => result.current.clearErrors('input.nested'));
-    expect(result.current.formState.errors.input?.nested).toBeUndefined();
-  });
+    )
+    expect(result.current.formState.errors.input?.nested).toBeDefined()
+    act(() => result.current.clearErrors('input.nested'))
+    expect(result.current.formState.errors.input?.nested).toBeUndefined()
+  })
 
   it('should remove deep nested error and set it to undefined', async () => {
-    let currentErrors = {};
+    let currentErrors = {}
 
     const Component = () => {
       const {
@@ -53,10 +53,10 @@ describe('clearErrors', () => {
         trigger,
         clearErrors,
       } = useForm<{
-        test: { data: string };
-      }>();
+        test: { data: string }
+      }>()
 
-      currentErrors = errors;
+      currentErrors = errors
       return (
         <div>
           <input type="text" {...register('test.data', { required: true })} />
@@ -67,12 +67,12 @@ describe('clearErrors', () => {
             clear
           </button>
         </div>
-      );
-    };
+      )
+    }
 
-    render(<Component />);
+    render(<Component />)
 
-    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }))
 
     await waitFor(() =>
       expect(currentErrors).toEqual({
@@ -84,43 +84,43 @@ describe('clearErrors', () => {
           },
         },
       }),
-    );
+    )
 
-    fireEvent.click(screen.getByRole('button', { name: 'clear' }));
+    fireEvent.click(screen.getByRole('button', { name: 'clear' }))
 
-    expect(currentErrors).toEqual({});
-  });
+    expect(currentErrors).toEqual({})
+  })
 
   it('should remove specified errors', () => {
     const { result } = renderHook(() =>
       useForm<{
-        input: string;
-        input1: string;
-        input2: string;
-        nest: { data: string; data1: string };
+        input: string
+        input1: string
+        input2: string
+        nest: { data: string; data1: string }
       }>(),
-    );
+    )
 
-    result.current.formState.errors;
+    result.current.formState.errors
 
     const error = {
       type: 'test',
       message: 'message',
-    };
+    }
 
     act(() => {
-      result.current.register('input');
-      result.current.register('input1');
-      result.current.register('input2');
-      result.current.setError('input', error);
-      result.current.setError('input1', error);
-      result.current.setError('input2', error);
+      result.current.register('input')
+      result.current.register('input1')
+      result.current.register('input2')
+      result.current.setError('input', error)
+      result.current.setError('input1', error)
+      result.current.setError('input2', error)
 
-      result.current.register('nest.data');
-      result.current.register('nest.data1');
-      result.current.setError('nest.data', error);
-      result.current.setError('nest.data1', error);
-    });
+      result.current.register('nest.data')
+      result.current.register('nest.data1')
+      result.current.setError('nest.data', error)
+      result.current.setError('nest.data1', error)
+    })
 
     const errors = {
       input: {
@@ -155,32 +155,32 @@ describe('clearErrors', () => {
           },
         },
       },
-    };
-    expect(result.current.formState.errors).toEqual(errors);
+    }
+    expect(result.current.formState.errors).toEqual(errors)
 
-    act(() => result.current.clearErrors(['input', 'input1', 'nest.data']));
+    act(() => result.current.clearErrors(['input', 'input1', 'nest.data']))
     expect(result.current.formState.errors).toEqual({
       input2: errors.input2,
       nest: {
         data1: errors.nest.data1,
       },
-    });
-  });
+    })
+  })
 
   it('should remove all error', () => {
     const { result } = renderHook(() =>
       useForm<{ input: string; input1: string; input2: string }>(),
-    );
+    )
 
-    result.current.formState.errors;
+    result.current.formState.errors
 
     const error = {
       type: 'test',
       message: 'message',
-    };
-    act(() => result.current.setError('input', error));
-    act(() => result.current.setError('input1', error));
-    act(() => result.current.setError('input2', error));
+    }
+    act(() => result.current.setError('input', error))
+    act(() => result.current.setError('input1', error))
+    act(() => result.current.setError('input2', error))
     expect(result.current.formState.errors).toEqual({
       input: {
         ...error,
@@ -197,34 +197,34 @@ describe('clearErrors', () => {
         ref: undefined,
         types: undefined,
       },
-    });
+    })
 
-    act(() => result.current.clearErrors());
-    expect(result.current.formState.errors).toEqual({});
-  });
+    act(() => result.current.clearErrors())
+    expect(result.current.formState.errors).toEqual({})
+  })
 
   it('should prevent the submission if there is a custom error', async () => {
-    const submit = jest.fn();
+    const submit = jest.fn()
     const { result } = renderHook(() =>
       useForm<{ data: string; whatever: string }>(),
-    );
+    )
 
-    result.current.register('data');
-
-    act(() => {
-      result.current.setError('whatever', { type: 'server' });
-    });
-
-    await act(async () => await result.current.handleSubmit(submit)());
-    expect(submit).not.toHaveBeenCalled();
+    result.current.register('data')
 
     act(() => {
-      result.current.clearErrors('whatever');
-    });
+      result.current.setError('whatever', { type: 'server' })
+    })
 
-    await act(async () => await result.current.handleSubmit(submit)());
-    expect(submit).toHaveBeenCalled();
-  });
+    await act(async () => await result.current.handleSubmit(submit)())
+    expect(submit).not.toHaveBeenCalled()
+
+    act(() => {
+      result.current.clearErrors('whatever')
+    })
+
+    await act(async () => await result.current.handleSubmit(submit)())
+    expect(submit).toHaveBeenCalled()
+  })
 
   it('should update isValid to true with setError', async () => {
     const App = () => {
@@ -234,13 +234,13 @@ describe('clearErrors', () => {
         clearErrors,
       } = useForm({
         mode: 'onChange',
-      });
+      })
 
       return (
         <div>
           <button
             onClick={() => {
-              setError('test', { type: 'test' });
+              setError('test', { type: 'test' })
             }}
           >
             setError
@@ -248,81 +248,81 @@ describe('clearErrors', () => {
 
           <button
             onClick={() => {
-              clearErrors();
+              clearErrors()
             }}
           >
             clearError
           </button>
           {isValid ? 'yes' : 'no'}
         </div>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
-    expect(await screen.findByText('yes')).toBeVisible();
+    expect(await screen.findByText('yes')).toBeVisible()
 
-    fireEvent.click(screen.getByRole('button', { name: 'setError' }));
+    fireEvent.click(screen.getByRole('button', { name: 'setError' }))
 
-    expect(await screen.findByText('no')).toBeVisible();
+    expect(await screen.findByText('no')).toBeVisible()
 
-    fireEvent.click(screen.getByRole('button', { name: 'clearError' }));
+    fireEvent.click(screen.getByRole('button', { name: 'clearError' }))
 
-    expect(await screen.findByText('no')).toBeVisible();
-  });
+    expect(await screen.findByText('no')).toBeVisible()
+  })
 
   it('should be able to clear root error', () => {
     const App = () => {
-      const { clearErrors } = useForm();
+      const { clearErrors } = useForm()
 
       React.useEffect(() => {
-        clearErrors('root');
-        clearErrors('root.other');
-      }, [clearErrors]);
+        clearErrors('root')
+        clearErrors('root.other')
+      }, [clearErrors])
 
-      return null;
-    };
+      return null
+    }
 
-    render(<App />);
-  });
+    render(<App />)
+  })
 
   it('should only notify subscribers for the cleared field when using exact: true', async () => {
-    let renderCountA = 0;
-    let renderCountB = 0;
+    let renderCountA = 0
+    let renderCountB = 0
 
     const FieldA = ({
       control,
     }: {
-      control: Control<{ a: string; b: string }>;
+      control: Control<{ a: string; b: string }>
     }) => {
       const { errors } = useFormState({
         control,
         name: 'a',
         exact: true,
-      });
-      renderCountA++;
-      return <div data-testid="error-a">{errors.a?.message || ''}</div>;
-    };
+      })
+      renderCountA++
+      return <div data-testid="error-a">{errors.a?.message || ''}</div>
+    }
 
     const FieldB = ({
       control,
     }: {
-      control: Control<{ a: string; b: string }>;
+      control: Control<{ a: string; b: string }>
     }) => {
       const { errors } = useFormState({
         control,
         name: 'b',
         exact: true,
-      });
-      renderCountB++;
-      return <div data-testid="error-b">{errors.b?.message || ''}</div>;
-    };
+      })
+      renderCountB++
+      return <div data-testid="error-b">{errors.b?.message || ''}</div>
+    }
 
     const App = () => {
       const { control, setError, clearErrors } = useForm<{
-        a: string;
-        b: string;
-      }>();
+        a: string
+        b: string
+      }>()
 
       return (
         <div>
@@ -333,43 +333,43 @@ describe('clearErrors', () => {
           </button>
           <button onClick={() => clearErrors('a')}>Clear Error A</button>
         </div>
-      );
-    };
+      )
+    }
 
-    render(<App />);
+    render(<App />)
 
     // Initial render
-    const initialRenderA = renderCountA;
-    const initialRenderB = renderCountB;
+    const initialRenderA = renderCountA
+    const initialRenderB = renderCountB
 
     // Set error on field 'a'
-    fireEvent.click(screen.getByRole('button', { name: 'Set Error A' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Set Error A' }))
 
     await waitFor(() => {
-      expect(screen.getByTestId('error-a')).toHaveTextContent('error a');
-    });
+      expect(screen.getByTestId('error-a')).toHaveTextContent('error a')
+    })
 
-    const afterSetErrorRenderA = renderCountA;
-    const afterSetErrorRenderB = renderCountB;
+    const afterSetErrorRenderA = renderCountA
+    const afterSetErrorRenderB = renderCountB
 
     // FieldA should have re-rendered for setError('a')
-    expect(afterSetErrorRenderA).toBeGreaterThan(initialRenderA);
+    expect(afterSetErrorRenderA).toBeGreaterThan(initialRenderA)
     // FieldB should NOT have re-rendered for setError('a')
-    expect(afterSetErrorRenderB).toBe(initialRenderB);
+    expect(afterSetErrorRenderB).toBe(initialRenderB)
 
     // Clear error on field 'a'
-    fireEvent.click(screen.getByRole('button', { name: 'Clear Error A' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Clear Error A' }))
 
     await waitFor(() => {
-      expect(screen.getByTestId('error-a')).toHaveTextContent('');
-    });
+      expect(screen.getByTestId('error-a')).toHaveTextContent('')
+    })
 
-    const afterClearErrorRenderA = renderCountA;
-    const afterClearErrorRenderB = renderCountB;
+    const afterClearErrorRenderA = renderCountA
+    const afterClearErrorRenderB = renderCountB
 
     // FieldA should have re-rendered for clearErrors('a')
-    expect(afterClearErrorRenderA).toBeGreaterThan(afterSetErrorRenderA);
+    expect(afterClearErrorRenderA).toBeGreaterThan(afterSetErrorRenderA)
     // FieldB should NOT have re-rendered for clearErrors('a') - this is the bug fix!
-    expect(afterClearErrorRenderB).toBe(afterSetErrorRenderB);
-  });
-});
+    expect(afterClearErrorRenderB).toBe(afterSetErrorRenderB)
+  })
+})

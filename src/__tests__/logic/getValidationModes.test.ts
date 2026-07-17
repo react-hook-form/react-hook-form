@@ -1,5 +1,5 @@
-import { VALIDATION_MODE } from '../../constants';
-import getValidationModes from '../../logic/getValidationModes';
+import { VALIDATION_MODE } from '../../constants'
+import getValidationModes from '../../logic/getValidationModes'
 
 describe('getValidationModes', () => {
   it('shold return correct flags for each mode', () => {
@@ -9,7 +9,7 @@ describe('getValidationModes', () => {
       isOnChange: false,
       isOnAll: false,
       isOnTouch: false,
-    });
+    })
 
     expect(getValidationModes(VALIDATION_MODE.onChange)).toEqual({
       isOnSubmit: false,
@@ -17,7 +17,7 @@ describe('getValidationModes', () => {
       isOnChange: true,
       isOnAll: false,
       isOnTouch: false,
-    });
+    })
 
     expect(getValidationModes(VALIDATION_MODE.onSubmit)).toEqual({
       isOnSubmit: true,
@@ -25,7 +25,7 @@ describe('getValidationModes', () => {
       isOnChange: false,
       isOnAll: false,
       isOnTouch: false,
-    });
+    })
 
     expect(getValidationModes(undefined)).toEqual({
       isOnSubmit: true,
@@ -33,7 +33,7 @@ describe('getValidationModes', () => {
       isOnChange: false,
       isOnAll: false,
       isOnTouch: false,
-    });
+    })
 
     expect(getValidationModes(VALIDATION_MODE.all)).toEqual({
       isOnSubmit: false,
@@ -41,7 +41,7 @@ describe('getValidationModes', () => {
       isOnChange: false,
       isOnAll: true,
       isOnTouch: false,
-    });
+    })
 
     expect(getValidationModes(VALIDATION_MODE.onTouched)).toEqual({
       isOnSubmit: false,
@@ -49,6 +49,6 @@ describe('getValidationModes', () => {
       isOnChange: false,
       isOnAll: false,
       isOnTouch: true,
-    });
-  });
-});
+    })
+  })
+})

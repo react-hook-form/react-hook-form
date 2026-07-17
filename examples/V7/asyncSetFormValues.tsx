@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
-import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import React, { useEffect } from 'react'
+import ReactDOM from 'react-dom'
+import { useForm } from 'react-hook-form'
 
 export default function App() {
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset } = useForm()
   const onSubmit = (data) => {
-    alert(JSON.stringify(data));
-  };
+    alert(JSON.stringify(data))
+  }
 
   useEffect(() => {
     // you can use `async` server requests to populate your form!
@@ -14,9 +14,9 @@ export default function App() {
       reset({
         firstName: 'bill',
         lastName: 'luo',
-      });
-    }, 2000);
-  }, [reset]);
+      })
+    }, 2000)
+  }, [reset])
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -28,5 +28,5 @@ export default function App() {
       <input {...register('lastName')} />
       <input type="submit" />
     </form>
-  );
+  )
 }

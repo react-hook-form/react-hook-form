@@ -1,13 +1,13 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import React from 'react'
+import { useForm } from 'react-hook-form'
 
-const toggle = (state: boolean) => !state;
+const toggle = (state: boolean) => !state
 
 export default function DisabledFields() {
-  const [formDisabled, setFormDisabled] = React.useState(false);
-  const [firstDisabled, setFirstDisabled] = React.useState(false);
-  const [secondDisabled, setSecondDisabled] = React.useState(true);
-  const { register } = useForm({ disabled: formDisabled });
+  const [formDisabled, setFormDisabled] = React.useState(false)
+  const [firstDisabled, setFirstDisabled] = React.useState(false)
+  const [secondDisabled, setSecondDisabled] = React.useState(true)
+  const { register } = useForm({ disabled: formDisabled })
 
   return (
     <form>
@@ -30,5 +30,5 @@ export default function DisabledFields() {
         {...register('second', { disabled: secondDisabled })}
       />
     </form>
-  );
+  )
 }

@@ -1,23 +1,23 @@
-import React, { useState } from 'react';
-import ReactSelect from 'react-select';
-import { useForm, Controller } from 'react-hook-form';
+import React, { useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import ReactSelect from 'react-select'
 
 const options = [
   { value: 'chocolate', label: 'Chocolate' },
   { value: 'strawberry', label: 'Strawberry' },
   { value: 'vanilla', label: 'Vanilla' },
-];
+]
 
 export default function AutoUnregister() {
   const { register, control, handleSubmit } = useForm<{
-    test: string;
-    test1: string;
-    test2: boolean;
-    test3: string;
-    test4: string;
-    ReactSelect: { label: string; value: string };
-  }>();
-  const [show, setShow] = useState(true);
+    test: string
+    test1: string
+    test2: boolean
+    test3: string
+    test4: string
+    ReactSelect: { label: string; value: string }
+  }>()
+  const [show, setShow] = useState(true)
 
   return (
     <form onSubmit={handleSubmit((d) => console.log(d))}>
@@ -56,5 +56,5 @@ export default function AutoUnregister() {
 
       <input type="submit" />
     </form>
-  );
+  )
 }

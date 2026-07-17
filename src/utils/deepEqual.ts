@@ -1,10 +1,10 @@
-import isDateObject from './isDateObject';
-import isObject from './isObject';
-import isPlainObject from './isPlainObject';
-import isPrimitive from './isPrimitive';
+import isDateObject from './isDateObject'
+import isObject from './isObject'
+import isPlainObject from './isPlainObject'
+import isPrimitive from './isPrimitive'
 
 const isEmptyObjectWithCustomPrototype = (object: object, keys: string[]) =>
-  keys.length === 0 && !Array.isArray(object) && !isPlainObject(object);
+  keys.length === 0 && !Array.isArray(object) && !isPlainObject(object)
 
 export default function deepEqual(
   object1: any,
@@ -12,58 +12,58 @@ export default function deepEqual(
   visited = new WeakMap<object, WeakSet<object>>(),
 ) {
   if (object1 === object2) {
-    return true;
+    return true
   }
 
   if (isPrimitive(object1) || isPrimitive(object2)) {
-    return Object.is(object1, object2);
+    return Object.is(object1, object2)
   }
 
   if (isDateObject(object1) && isDateObject(object2)) {
-    return Object.is(object1.getTime(), object2.getTime());
+    return Object.is(object1.getTime(), object2.getTime())
   }
 
-  const keys1 = Object.keys(object1);
-  const keys2 = Object.keys(object2);
+  const keys1 = Object.keys(object1)
+  const keys2 = Object.keys(object2)
 
   if (keys1.length !== keys2.length) {
-    return false;
+    return false
   }
 
   if (
     isEmptyObjectWithCustomPrototype(object1, keys1) ||
     isEmptyObjectWithCustomPrototype(object2, keys2)
   ) {
-    return Object.is(object1, object2);
+    return Object.is(object1, object2)
   }
 
   if (!keys1.length && Array.isArray(object1) !== Array.isArray(object2)) {
-    return false;
+    return false
   }
 
-  const visitedPairs = visited.get(object1);
+  const visitedPairs = visited.get(object1)
 
   if (visitedPairs && visitedPairs.has(object2)) {
-    return true;
+    return true
   }
 
   if (visitedPairs) {
-    visitedPairs.add(object2);
+    visitedPairs.add(object2)
   } else {
-    const ws = new WeakSet();
-    ws.add(object2);
-    visited.set(object1, ws);
+    const ws = new WeakSet()
+    ws.add(object2)
+    visited.set(object1, ws)
   }
 
   for (const key of keys1) {
-    const val1 = object1[key];
+    const val1 = object1[key]
 
     if (!(key in object2)) {
-      return false;
+      return false
     }
 
     if (key !== 'ref') {
-      const val2 = object2[key];
+      const val2 = object2[key]
 
       if (
         (isDateObject(val1) && isDateObject(val2)) ||
@@ -72,10 +72,10 @@ export default function deepEqual(
           ? !deepEqual(val1, val2, visited)
           : !Object.is(val1, val2)
       ) {
-        return false;
+        return false
       }
     }
   }
 
-  return true;
+  return true
 }

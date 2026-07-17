@@ -1,49 +1,49 @@
-import React, { useState } from 'react';
-import { useForm, ValidationMode } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
+import React, { useState } from 'react'
+import { useForm, ValidationMode } from 'react-hook-form'
+import { useParams } from 'react-router-dom'
 
-let renderCounter = 0;
+let renderCounter = 0
 
 const Basic: React.FC = () => {
-  const { mode } = useParams();
-  const [data, setData] = React.useState({});
+  const { mode } = useParams()
+  const [data, setData] = React.useState({})
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
   } = useForm<{
-    firstName: string;
-    lastName: string;
-    min: string;
-    max: string;
-    minDate: string;
-    maxDate: string;
-    minLength: string;
-    minRequiredLength: string;
-    selectNumber: string;
-    pattern: string;
-    radio: string;
-    checkbox: string;
-    checkboxArray: string[];
-    multiple: string;
-    validate: string;
+    firstName: string
+    lastName: string
+    min: string
+    max: string
+    minDate: string
+    maxDate: string
+    minLength: string
+    minRequiredLength: string
+    selectNumber: string
+    pattern: string
+    radio: string
+    checkbox: string
+    checkboxArray: string[]
+    multiple: string
+    validate: string
     nestItem: {
-      nest1: string;
-    };
-    arrayItem: { test1: string; test2: string }[];
+      nest1: string
+    }
+    arrayItem: { test1: string; test2: string }[]
   }>({
     mode: mode as keyof ValidationMode,
-  });
-  const [onInvalidCalledTimes, setOnInvalidCalledTimes] = useState(0);
-  const onInvalid = () => setOnInvalidCalledTimes((prevCount) => prevCount + 1);
+  })
+  const [onInvalidCalledTimes, setOnInvalidCalledTimes] = useState(0)
+  const onInvalid = () => setOnInvalidCalledTimes((prevCount) => prevCount + 1)
 
-  renderCounter++;
+  renderCounter++
 
   return (
     <form
       onSubmit={handleSubmit((data) => {
-        setData(data);
+        setData(data)
       }, onInvalid)}
     >
       <input
@@ -163,7 +163,7 @@ const Basic: React.FC = () => {
       </div>
       <pre>{JSON.stringify(data)}</pre>
     </form>
-  );
-};
+  )
+}
 
-export default Basic;
+export default Basic

@@ -1,47 +1,47 @@
-import React from 'react';
+import React from 'react'
 import {
+  Control,
+  Controller,
+  UseFormReturn,
+  useFieldArray,
   useForm,
   useWatch,
-  useFieldArray,
-  Controller,
-  Control,
-  UseFormReturn,
-} from 'react-hook-form';
+} from 'react-hook-form'
 
-let renderCount = 0;
+let renderCount = 0
 
 type FormInputs = {
-  data: { name: string; conditional: string }[];
-};
+  data: { name: string; conditional: string }[]
+}
 
 const ConditionField = <T extends any[]>({
   control,
   index,
   unregister,
 }: {
-  control: Control<FormInputs>;
-  unregister: UseFormReturn<FormInputs>['unregister'];
-  index: number;
-  fields: T;
+  control: Control<FormInputs>
+  unregister: UseFormReturn<FormInputs>['unregister']
+  index: number
+  fields: T
 }) => {
   const output = useWatch({
     name: 'data',
     control,
-  });
+  })
 
   React.useEffect(() => {
     return () => {
       unregister(`data.${index}.conditional` as const, {
         keepDirty: true,
         keepTouched: true,
-      });
-    };
-  }, [unregister, index]);
+      })
+    }
+  }, [unregister, index])
 
   return output?.[index]?.name === 'bill' ? (
     <input {...control.register(`data.${index}.conditional`)} />
-  ) : null;
-};
+  ) : null
+}
 
 const UseFieldArrayUnregister: React.FC = () => {
   const {
@@ -57,23 +57,23 @@ const UseFieldArrayUnregister: React.FC = () => {
       data: [{ name: 'test' }, { name: 'test1' }, { name: 'test2' }],
     },
     mode: 'onSubmit',
-  });
+  })
   const { fields, append, prepend, swap, move, insert, remove } =
     useFieldArray<FormInputs>({
       control,
       name: 'data',
-    });
-  const [data, setData] = React.useState<FormInputs>();
+    })
+  const [data, setData] = React.useState<FormInputs>()
   const updateFieldArray = () => {
-    setValue('data', [...getValues().data, { name: 'test', conditional: '' }]);
-  };
+    setValue('data', [...getValues().data, { name: 'test', conditional: '' }])
+  }
 
-  renderCount++;
+  renderCount++
 
   return (
     <form
       onSubmit={handleSubmit((data) => {
-        setData(data);
+        setData(data)
       })}
     >
       <ul>
@@ -176,7 +176,7 @@ const UseFieldArrayUnregister: React.FC = () => {
       <div id="dirtyFields">{JSON.stringify(dirtyFields)}</div>
       <div id="touched">{JSON.stringify(touchedFields.data)}</div>
     </form>
-  );
-};
+  )
+}
 
-export default UseFieldArrayUnregister;
+export default UseFieldArrayUnregister

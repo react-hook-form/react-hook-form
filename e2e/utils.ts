@@ -1,4 +1,4 @@
-import { expect, type Locator } from '@playwright/test';
+import { expect, type Locator } from '@playwright/test'
 
 /**
  * Playwright's locator.pressSequentially() repositions the cursor to the
@@ -7,9 +7,9 @@ import { expect, type Locator } from '@playwright/test';
  * the end first makes repeated typing into the same field append correctly.
  */
 export async function type(locator: Locator, text: string) {
-  await locator.focus();
-  await locator.press('End');
-  await locator.pressSequentially(text);
+  await locator.focus()
+  await locator.press('End')
+  await locator.pressSequentially(text)
 }
 
 /**
@@ -27,16 +27,16 @@ export async function expectRenderCountInRange(
   min: number,
   max: number,
 ) {
-  let previous = -1;
+  let previous = -1
   await expect
     .poll(async () => {
-      const current = Number(await locator.textContent());
-      const stable = current === previous;
-      previous = current;
-      return stable;
+      const current = Number(await locator.textContent())
+      const stable = current === previous
+      previous = current
+      return stable
     })
-    .toBe(true);
+    .toBe(true)
 
-  expect(previous).toBeGreaterThanOrEqual(min);
-  expect(previous).toBeLessThanOrEqual(max);
+  expect(previous).toBeGreaterThanOrEqual(min)
+  expect(previous).toBeLessThanOrEqual(max)
 }

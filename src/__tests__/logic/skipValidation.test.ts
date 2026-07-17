@@ -1,4 +1,4 @@
-import skipValidation from '../../logic/skipValidation';
+import skipValidation from '../../logic/skipValidation'
 
 describe('should skip validation', () => {
   it('when is onChange mode and blur event', () => {
@@ -17,8 +17,8 @@ describe('should skip validation', () => {
           isOnTouch: false,
         },
       ),
-    ).toBeTruthy();
-  });
+    ).toBeTruthy()
+  })
 
   it('when is onSubmit mode and re-validate on Submit', () => {
     expect(
@@ -36,8 +36,8 @@ describe('should skip validation', () => {
           isOnTouch: false,
         },
       ),
-    ).toBeTruthy();
-  });
+    ).toBeTruthy()
+  })
 
   it('when is onSubmit mode and not submitted yet', () => {
     expect(
@@ -55,8 +55,8 @@ describe('should skip validation', () => {
           isOnTouch: false,
         },
       ),
-    ).toBeTruthy();
-  });
+    ).toBeTruthy()
+  })
 
   it('when on blur mode, not blur event and error gets clear', () => {
     expect(
@@ -74,8 +74,8 @@ describe('should skip validation', () => {
           isOnTouch: false,
         },
       ),
-    ).toBeTruthy();
-  });
+    ).toBeTruthy()
+  })
 
   it('when re-validate mode is blur, not blur event and has error ', () => {
     expect(
@@ -93,8 +93,8 @@ describe('should skip validation', () => {
           isOnTouch: false,
         },
       ),
-    ).toBeTruthy();
-  });
+    ).toBeTruthy()
+  })
 
   it('when is re-validate mode on submit and have error', () => {
     expect(
@@ -112,9 +112,9 @@ describe('should skip validation', () => {
           isOnTouch: false,
         },
       ),
-    ).toBeTruthy();
-  });
-});
+    ).toBeTruthy()
+  })
+})
 
 describe('should validate the input', () => {
   it('when form is submitted and there is error', () => {
@@ -133,8 +133,8 @@ describe('should validate the input', () => {
           isOnTouch: false,
         },
       ),
-    ).toBeFalsy();
-  });
+    ).toBeFalsy()
+  })
 
   it('when mode is under all', () => {
     expect(
@@ -152,8 +152,8 @@ describe('should validate the input', () => {
           isOnAll: true,
         },
       ),
-    ).toBeFalsy();
-  });
+    ).toBeFalsy()
+  })
 
   it('when user blur input and there is no more error', () => {
     expect(
@@ -171,8 +171,8 @@ describe('should validate the input', () => {
           isOnTouch: false,
         },
       ),
-    ).toBeFalsy();
-  });
+    ).toBeFalsy()
+  })
 
   it('when user blur and there is an error', () => {
     expect(
@@ -190,6 +190,6 @@ describe('should validate the input', () => {
           isOnTouch: false,
         },
       ),
-    ).toBeFalsy();
-  });
-});
+    ).toBeFalsy()
+  })
+})

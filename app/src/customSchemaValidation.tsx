@@ -1,9 +1,9 @@
-import React from 'react';
-import { useForm, ValidationMode } from 'react-hook-form';
-import Joi from 'joi';
-import { useParams } from 'react-router-dom';
+import Joi from 'joi'
+import React from 'react'
+import { useForm, ValidationMode } from 'react-hook-form'
+import { useParams } from 'react-router-dom'
 
-let renderCounter = 0;
+let renderCounter = 0
 
 const validationSchema = Joi.object({
   firstName: Joi.string().required(),
@@ -18,12 +18,12 @@ const validationSchema = Joi.object({
   pattern: Joi.string().required(),
   radio: Joi.string().required(),
   checkbox: Joi.required(),
-});
+})
 
 const resolver = async (data: unknown) => {
   const { error, value: values } = validationSchema.validate(data, {
     abortEarly: false,
-  });
+  })
 
   return {
     values: error ? {} : values,
@@ -35,40 +35,40 @@ const resolver = async (data: unknown) => {
               message,
               type,
             },
-          };
+          }
         }, {})
       : {},
-  };
-};
+  }
+}
 
 const BasicSchemaValidation: React.FC = () => {
-  const { mode } = useParams();
+  const { mode } = useParams()
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<{
-    firstName: string;
-    lastName: string;
-    min: string;
-    max: string;
-    minDate: string;
-    maxDate: string;
-    minLength: string;
-    minRequiredLength: string;
-    selectNumber: string;
-    pattern: string;
-    radio: string;
-    checkbox: string;
-    multiple: string;
-    validate: string;
+    firstName: string
+    lastName: string
+    min: string
+    max: string
+    minDate: string
+    maxDate: string
+    minLength: string
+    minRequiredLength: string
+    selectNumber: string
+    pattern: string
+    radio: string
+    checkbox: string
+    multiple: string
+    validate: string
   }>({
     resolver,
     mode: mode as keyof ValidationMode,
-  });
-  const onSubmit = () => {};
+  })
+  const onSubmit = () => {}
 
-  renderCounter++;
+  renderCounter++
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -111,7 +111,7 @@ const BasicSchemaValidation: React.FC = () => {
       <button>Submit</button>
       <div id="renderCount">{renderCounter}</div>
     </form>
-  );
-};
+  )
+}
 
-export default BasicSchemaValidation;
+export default BasicSchemaValidation

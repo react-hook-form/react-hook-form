@@ -1,12 +1,12 @@
 type RadioFieldResult = {
-  isValid: boolean;
-  value: number | string | null;
-};
+  isValid: boolean
+  value: number | string | null
+}
 
 const defaultReturn: RadioFieldResult = {
   isValid: false,
   value: null,
-};
+}
 
 export default (options?: HTMLInputElement[]): RadioFieldResult =>
   Array.isArray(options)
@@ -20,4 +20,4 @@ export default (options?: HTMLInputElement[]): RadioFieldResult =>
             : previous,
         defaultReturn,
       )
-    : defaultReturn;
+    : defaultReturn

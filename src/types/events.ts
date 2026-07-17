@@ -22,4 +22,4 @@ export type EventType =
   | 'load'
   | 'error'
   | 'progress'
-  | 'custom';
+  | 'custom'

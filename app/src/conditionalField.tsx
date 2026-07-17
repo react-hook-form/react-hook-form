@@ -1,7 +1,7 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import React from 'react'
+import { useForm } from 'react-hook-form'
 
-let renderCounter = 0;
+let renderCounter = 0
 
 const ConditionalField: React.FC = () => {
   const {
@@ -20,25 +20,25 @@ const ConditionalField: React.FC = () => {
       errors,
     },
   } = useForm<{
-    selectNumber: string;
-    firstName: string;
-    lastName: string;
-    min: string;
-    max: string;
-    notRequired: string;
+    selectNumber: string
+    firstName: string
+    lastName: string
+    min: string
+    max: string
+    notRequired: string
   }>({
     mode: 'onChange',
-  });
-  const [result, setResult] = React.useState({});
+  })
+  const [result, setResult] = React.useState({})
 
-  const selectNumber = watch('selectNumber');
+  const selectNumber = watch('selectNumber')
 
-  renderCounter++;
+  renderCounter++
 
   return (
     <form
       onSubmit={handleSubmit((data) => {
-        setResult(data);
+        setResult(data)
       })}
     >
       <select {...register('selectNumber', { required: true })}>
@@ -99,7 +99,7 @@ const ConditionalField: React.FC = () => {
       <div id="result">{typeof selectNumber}</div>
       <div id="renderCount">{renderCounter}</div>
     </form>
-  );
-};
+  )
+}
 
-export default ConditionalField;
+export default ConditionalField

@@ -1,4 +1,4 @@
-import extractFormValues from '../../utils/extractFormValues';
+import extractFormValues from '../../utils/extractFormValues'
 
 describe('extractFormValues', () => {
   it('should return extracted form values based on form state', () => {
@@ -15,7 +15,7 @@ describe('extractFormValues', () => {
           test3: 'test3',
         },
       },
-    };
+    }
 
     const touchedFields = {
       test: {
@@ -24,7 +24,7 @@ describe('extractFormValues', () => {
           test3: true,
         },
       },
-    };
+    }
 
     expect(extractFormValues(touchedFields, formData)).toEqual({
       test: {
@@ -33,6 +33,6 @@ describe('extractFormValues', () => {
           test3: 'test3',
         },
       },
-    });
-  });
-});
+    })
+  })
+})

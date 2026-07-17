@@ -1,7 +1,7 @@
-import React from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
-import { object, array, string } from 'yup';
-import { yupResolver } from '@hookform/resolvers';
+import { yupResolver } from '@hookform/resolvers'
+import React from 'react'
+import { useFieldArray, useForm } from 'react-hook-form'
+import { array, object, string } from 'yup'
 
 const validationSchema = object().shape({
   questions: array()
@@ -11,7 +11,7 @@ const validationSchema = object().shape({
       }),
     )
     .required(),
-});
+})
 
 function App() {
   const {
@@ -26,32 +26,32 @@ function App() {
   } = useForm({
     mode: 'onChange',
     resolver: yupResolver(validationSchema),
-  });
+  })
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'questions',
-  });
+  })
 
-  const isInitialRender = React.useRef(true);
+  const isInitialRender = React.useRef(true)
   const appendQuestion = () => {
     append({
       text: '',
-    });
+    })
 
     if (errors.questions?.type === 'min') {
-      clearErrors('questions'); // always clear errors when there is add action.
+      clearErrors('questions') // always clear errors when there is add action.
     }
-  };
+  }
 
   React.useEffect(() => {
     if (!fields.length && !isInitialRender.current) {
-      trigger('questions');
+      trigger('questions')
     }
 
     if (isInitialRender.current) {
-      isInitialRender.current = false;
+      isInitialRender.current = false
     }
-  }, [fields, register, setValue, unregister, trigger]);
+  }, [fields, register, setValue, unregister, trigger])
 
   return (
     <form onSubmit={handleSubmit(console.log)}>
@@ -68,8 +68,8 @@ function App() {
           <button
             type="button"
             onClick={() => {
-              remove(questionIndex);
-              trigger();
+              remove(questionIndex)
+              trigger()
             }}
           >
             Remove question {question.id}
@@ -82,5 +82,5 @@ function App() {
       </button>
       <input type="submit" />
     </form>
-  );
+  )
 }

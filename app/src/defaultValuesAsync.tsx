@@ -1,8 +1,8 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import React from 'react'
+import { useForm } from 'react-hook-form'
 
 const sleep = <T,>(data: T, ms: number) =>
-  new Promise<T>((res) => setTimeout(() => res(data), ms));
+  new Promise<T>((res) => setTimeout(() => res(data), ms))
 
 function DefaultValues() {
   const { register } = useForm({
@@ -21,8 +21,8 @@ function DefaultValues() {
         },
         10,
       ),
-  });
-  const [show, setShow] = React.useState(true);
+  })
+  const [show, setShow] = React.useState(true)
 
   return (
     <>
@@ -42,7 +42,7 @@ function DefaultValues() {
         toggle
       </button>
     </>
-  );
+  )
 }
 
-export default DefaultValues;
+export default DefaultValues

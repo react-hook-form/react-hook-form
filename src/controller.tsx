@@ -1,5 +1,5 @@
-import type { ControllerProps, FieldPath, FieldValues } from './types';
-import { useController } from './useController';
+import type { ControllerProps, FieldPath, FieldValues } from './types'
+import { useController } from './useController'
 
 /**
  * Component based on `useController` hook to work with controlled component.
@@ -49,7 +49,6 @@ const Controller = <
   TTransformedValues = TFieldValues,
 >(
   props: ControllerProps<TFieldValues, TName, TTransformedValues>,
-) =>
-  props.render(useController<TFieldValues, TName, TTransformedValues>(props));
+) => props.render(useController<TFieldValues, TName, TTransformedValues>(props))
 
-export { Controller };
+export { Controller }

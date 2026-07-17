@@ -1,5 +1,5 @@
-import type { FieldArrayMethodProps, InternalFieldName } from '../types';
-import isUndefined from '../utils/isUndefined';
+import type { FieldArrayMethodProps, InternalFieldName } from '../types'
+import isUndefined from '../utils/isUndefined'
 
 export default (
   name: InternalFieldName,
@@ -9,4 +9,4 @@ export default (
   options.shouldFocus || isUndefined(options.shouldFocus)
     ? options.focusName ||
       `${name}.${isUndefined(options.focusIndex) ? index : options.focusIndex}.`
-    : '';
+    : ''

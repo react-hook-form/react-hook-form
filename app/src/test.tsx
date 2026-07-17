@@ -1,28 +1,28 @@
-import React from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { Control } from '../../src/types';
+import React from 'react'
+import { useFieldArray, useForm } from 'react-hook-form'
+import { Control } from '../../src/types'
 
 type FormData = {
   nest: {
     test: {
-      value: string;
+      value: string
       nestedArray: {
-        value: string;
-      }[];
-    }[];
-  };
-};
+        value: string
+      }[]
+    }[]
+  }
+}
 const ChildComponent = ({
   index,
   control,
 }: {
-  control: Control<FormData>;
-  index: number;
+  control: Control<FormData>
+  index: number
 }) => {
   const { fields } = useFieldArray<FormData>({
     name: `nest.test.${index}.nestedArray` as const,
     control,
-  });
+  })
 
   return (
     <div>
@@ -35,8 +35,8 @@ const ChildComponent = ({
         />
       ))}
     </div>
-  );
-};
+  )
+}
 
 const Component = () => {
   const { register, control } = useForm({
@@ -48,11 +48,11 @@ const Component = () => {
         ],
       },
     },
-  });
+  })
   const { fields, remove, append } = useFieldArray({
     name: 'nest.test',
     control,
-  });
+  })
 
   return (
     <div>
@@ -76,7 +76,7 @@ const Component = () => {
         append
       </button>
     </div>
-  );
-};
+  )
+}
 
-export default Component;
+export default Component

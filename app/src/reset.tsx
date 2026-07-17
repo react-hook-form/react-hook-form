@@ -1,22 +1,22 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import React from 'react'
+import { useForm } from 'react-hook-form'
 
 function Reset() {
   const { register, reset } = useForm<{
-    firstName: string;
-    lastName: string;
+    firstName: string
+    lastName: string
     objectData: {
-      test: string;
-    };
-    array: string[];
+      test: string
+    }
+    array: string[]
     deepNest: {
       level1: {
         level2: {
-          data: string;
-        };
-      };
-    };
-  }>();
+          data: string
+        }
+      }
+    }
+  }>()
   return (
     <>
       <input {...register('firstName')} />
@@ -45,7 +45,7 @@ function Reset() {
         button
       </button>
     </>
-  );
+  )
 }
 
-export default Reset;
+export default Reset

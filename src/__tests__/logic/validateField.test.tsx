@@ -1,19 +1,19 @@
-import getCheckboxValue from '../../logic/getCheckboxValue';
-import getRadioValue from '../../logic/getRadioValue';
-import validateField from '../../logic/validateField';
+import getCheckboxValue from '../../logic/getCheckboxValue'
+import getRadioValue from '../../logic/getRadioValue'
+import validateField from '../../logic/validateField'
 
-jest.mock('../../logic/getRadioValue');
-jest.mock('../../logic/getCheckboxValue');
+jest.mock('../../logic/getRadioValue')
+jest.mock('../../logic/getCheckboxValue')
 
 describe('validateField', () => {
   it('should return required true when input not filled with required', async () => {
-    (getRadioValue as jest.Mock).mockImplementation(() => ({
+    ;(getRadioValue as jest.Mock).mockImplementation(() => ({
       value: '2',
-    }));
-    (getCheckboxValue as jest.Mock).mockImplementation(() => ({
+    }))
+    ;(getCheckboxValue as jest.Mock).mockImplementation(() => ({
       value: false,
       isValid: false,
-    }));
+    }))
 
     expect(
       await validateField(
@@ -37,9 +37,9 @@ describe('validateField', () => {
         message: '',
         type: 'required',
       },
-    });
+    })
 
-    const input = document.createElement('input');
+    const input = document.createElement('input')
 
     expect(
       await validateField(
@@ -62,7 +62,7 @@ describe('validateField', () => {
         message: '',
         type: 'required',
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -86,7 +86,7 @@ describe('validateField', () => {
         message: 'required',
         type: 'required',
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -105,7 +105,7 @@ describe('validateField', () => {
         },
         false,
       ),
-    ).toEqual({});
+    ).toEqual({})
 
     expect(
       await validateField(
@@ -129,7 +129,7 @@ describe('validateField', () => {
         message: 'required',
         type: 'required',
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -156,7 +156,7 @@ describe('validateField', () => {
         message: 'required',
         type: 'required',
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -183,7 +183,7 @@ describe('validateField', () => {
         message: 'required',
         type: 'required',
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -204,7 +204,7 @@ describe('validateField', () => {
         },
         false,
       ),
-    ).toEqual({});
+    ).toEqual({})
 
     expect(
       await validateField(
@@ -228,7 +228,7 @@ describe('validateField', () => {
         type: 'required',
         ref: { type: 'radio', name: 'test' },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -252,7 +252,7 @@ describe('validateField', () => {
         type: 'required',
         ref: { type: 'text', name: 'test', value: '' },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -276,7 +276,7 @@ describe('validateField', () => {
         type: 'required',
         ref: { type: 'radio', name: 'test', value: '' },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -300,7 +300,7 @@ describe('validateField', () => {
         type: 'required',
         ref: { type: 'checkbox', name: 'test' },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -319,12 +319,12 @@ describe('validateField', () => {
         },
         false,
       ),
-    ).toEqual({});
+    ).toEqual({})
 
-    (getCheckboxValue as jest.Mock).mockImplementation(() => ({
+    ;(getCheckboxValue as jest.Mock).mockImplementation(() => ({
       value: 'test',
       isValid: true,
-    }));
+    }))
 
     expect(
       await validateField(
@@ -342,7 +342,7 @@ describe('validateField', () => {
         },
         false,
       ),
-    ).toEqual({});
+    ).toEqual({})
 
     expect(
       await validateField(
@@ -371,7 +371,7 @@ describe('validateField', () => {
           value: '',
         },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -390,7 +390,7 @@ describe('validateField', () => {
         },
         false,
       ),
-    ).toEqual({});
+    ).toEqual({})
 
     expect(
       await validateField(
@@ -419,8 +419,8 @@ describe('validateField', () => {
           value: '',
         },
       },
-    });
-  });
+    })
+  })
 
   it('should return max error', async () => {
     expect(
@@ -447,7 +447,7 @@ describe('validateField', () => {
         message: '',
         ref: { type: 'number', name: 'test', valueAsNumber: 10 },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -476,7 +476,7 @@ describe('validateField', () => {
         message: 'max',
         ref: { type: 'number', name: 'test', valueAsNumber: 10 },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -505,7 +505,7 @@ describe('validateField', () => {
         message: 'max',
         ref: { type: 'number', name: 'test', valueAsNumber: 10 },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -525,7 +525,7 @@ describe('validateField', () => {
         },
         false,
       ),
-    ).toEqual({});
+    ).toEqual({})
 
     expect(
       await validateField(
@@ -553,7 +553,7 @@ describe('validateField', () => {
           max: true,
         },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -578,7 +578,7 @@ describe('validateField', () => {
         message: '',
         ref: { type: 'custom', name: 'test', valueAsNumber: NaN },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -612,7 +612,7 @@ describe('validateField', () => {
           valueAsNumber: NaN,
         },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -641,7 +641,7 @@ describe('validateField', () => {
         message: '',
         ref: { type: 'custom', name: 'test', valueAsNumber: NaN },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -660,7 +660,7 @@ describe('validateField', () => {
         },
         false,
       ),
-    ).toEqual({});
+    ).toEqual({})
 
     expect(
       await validateField(
@@ -692,7 +692,7 @@ describe('validateField', () => {
           name: 'test',
         },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -727,7 +727,7 @@ describe('validateField', () => {
           name: 'test',
         },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -762,8 +762,8 @@ describe('validateField', () => {
           name: 'test',
         },
       },
-    });
-  });
+    })
+  })
 
   it('should return min error', async () => {
     expect(
@@ -790,7 +790,7 @@ describe('validateField', () => {
         message: '',
         ref: { type: 'number', name: 'test', valueAsNumber: -1 },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -819,7 +819,7 @@ describe('validateField', () => {
         message: 'min',
         ref: { type: 'number', name: 'test', valueAsNumber: -1 },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -848,7 +848,7 @@ describe('validateField', () => {
         message: 'min',
         ref: { type: 'number', name: 'test', valueAsNumber: -1 },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -874,7 +874,7 @@ describe('validateField', () => {
         message: '',
         ref: { type: 'number', name: 'test', valueAsNumber: 10 },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -908,7 +908,7 @@ describe('validateField', () => {
           valueAsDate: new Date('2019-2-12'),
         },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -943,7 +943,7 @@ describe('validateField', () => {
           name: 'test',
         },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -980,7 +980,7 @@ describe('validateField', () => {
           valueAsDate: new Date('2019-2-12'),
         },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -1015,7 +1015,7 @@ describe('validateField', () => {
           name: 'test',
         },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -1050,8 +1050,8 @@ describe('validateField', () => {
           name: 'test',
         },
       },
-    });
-  });
+    })
+  })
 
   it('should return min and max error for custom input', async () => {
     expect(
@@ -1078,7 +1078,7 @@ describe('validateField', () => {
         message: '',
         ref: { type: '', name: 'test' },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -1104,7 +1104,7 @@ describe('validateField', () => {
         message: '',
         ref: { type: '', name: 'test' },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -1138,8 +1138,8 @@ describe('validateField', () => {
           valueAsDate: new Date('2019-2-12'),
         },
       },
-    });
-  });
+    })
+  })
 
   it('should return max length error ', async () => {
     expect(
@@ -1172,7 +1172,7 @@ describe('validateField', () => {
         message: '',
         type: 'maxLength',
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -1207,7 +1207,7 @@ describe('validateField', () => {
         message: 'maxLength',
         type: 'maxLength',
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -1242,8 +1242,8 @@ describe('validateField', () => {
         message: 'maxLength',
         type: 'maxLength',
       },
-    });
-  });
+    })
+  })
 
   it('should return min length error ', async () => {
     expect(
@@ -1276,7 +1276,7 @@ describe('validateField', () => {
         message: '',
         type: 'minLength',
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -1311,7 +1311,7 @@ describe('validateField', () => {
         message: 'minLength',
         type: 'minLength',
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -1346,12 +1346,12 @@ describe('validateField', () => {
         message: 'minLength',
         type: 'minLength',
       },
-    });
-  });
+    })
+  })
 
   it('should return pattern error when not matching', async () => {
     const emailRegex =
-      /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+      /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/
 
     expect(
       await validateField(
@@ -1383,7 +1383,7 @@ describe('validateField', () => {
         message: '',
         type: 'pattern',
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -1418,7 +1418,7 @@ describe('validateField', () => {
         message: 'regex failed',
         type: 'pattern',
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -1453,7 +1453,7 @@ describe('validateField', () => {
         message: 'regex failed',
         type: 'pattern',
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -1476,7 +1476,7 @@ describe('validateField', () => {
         },
         false,
       ),
-    ).toEqual({});
+    ).toEqual({})
 
     expect(
       await validateField(
@@ -1499,8 +1499,8 @@ describe('validateField', () => {
         },
         false,
       ),
-    ).toEqual({});
-  });
+    ).toEqual({})
+  })
 
   it('should validate for custom validation', async () => {
     expect(
@@ -1524,7 +1524,7 @@ describe('validateField', () => {
         },
         false,
       ),
-    ).toEqual({});
+    ).toEqual({})
 
     expect(
       await validateField(
@@ -1556,7 +1556,7 @@ describe('validateField', () => {
         },
         type: 'validate',
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -1591,14 +1591,14 @@ describe('validateField', () => {
         type: 'test',
         message: '',
       },
-    });
+    })
 
-    (getRadioValue as jest.Mock).mockImplementation(() => {
+    ;(getRadioValue as jest.Mock).mockImplementation(() => {
       return {
         isValid: false,
         value: 'test',
-      };
-    });
+      }
+    })
 
     expect(
       await validateField(
@@ -1632,7 +1632,7 @@ describe('validateField', () => {
         type: 'test',
         message: '',
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -1664,7 +1664,7 @@ describe('validateField', () => {
         type: 'test',
         message: '',
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -1693,8 +1693,8 @@ describe('validateField', () => {
         },
         false,
       ),
-    ).toEqual({});
-  });
+    ).toEqual({})
+  })
 
   it('should return error message when it is defined', async () => {
     expect(
@@ -1711,9 +1711,9 @@ describe('validateField', () => {
             validate: {
               test: (value) => {
                 if (value.toString().length > 3) {
-                  return 'max 3';
+                  return 'max 3'
                 }
-                return true;
+                return true
               },
             },
           },
@@ -1733,7 +1733,7 @@ describe('validateField', () => {
           name: 'test',
         },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -1749,9 +1749,9 @@ describe('validateField', () => {
             validate: {
               test: (value) => {
                 if (value.toString().length > 3) {
-                  return 'max 3';
+                  return 'max 3'
                 }
-                return true;
+                return true
               },
             },
           },
@@ -1771,8 +1771,8 @@ describe('validateField', () => {
           name: 'test',
         },
       },
-    });
-  });
+    })
+  })
 
   it('should return result or empty string when validate has error', async () => {
     expect(
@@ -1804,7 +1804,7 @@ describe('validateField', () => {
           name: 'test',
         },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -1835,8 +1835,8 @@ describe('validateField', () => {
           name: 'test',
         },
       },
-    });
-  });
+    })
+  })
 
   it('if undefined returned from validate, no error is reported', async () => {
     expect(
@@ -1859,8 +1859,8 @@ describe('validateField', () => {
         },
         false,
       ),
-    ).toEqual({});
-  });
+    ).toEqual({})
+  })
 
   it('should do nothing when validate is not an object nor function', async () => {
     expect(
@@ -1880,13 +1880,13 @@ describe('validateField', () => {
         { test: 'This is a long text input' },
         false,
       ),
-    ).toEqual({});
-  });
+    ).toEqual({})
+  })
 
   it('should return all validation errors', async () => {
-    (getRadioValue as jest.Mock).mockImplementation(() => ({
+    ;(getRadioValue as jest.Mock).mockImplementation(() => ({
       value: '',
-    }));
+    }))
 
     expect(
       await validateField(
@@ -1921,7 +1921,7 @@ describe('validateField', () => {
           validate: true,
         },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -1957,15 +1957,15 @@ describe('validateField', () => {
           validate: true,
         },
       },
-    });
-  });
+    })
+  })
 
   it('should handle pattern with g flag', async () => {
-    const reusedRe = /a/g;
+    const reusedRe = /a/g
 
-    (getRadioValue as jest.Mock).mockImplementation(() => ({
+    ;(getRadioValue as jest.Mock).mockImplementation(() => ({
       value: '',
-    }));
+    }))
     expect(
       await validateField(
         {
@@ -1999,7 +1999,7 @@ describe('validateField', () => {
           validate: true,
         },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -2034,13 +2034,13 @@ describe('validateField', () => {
           validate: true,
         },
       },
-    });
-  });
+    })
+  })
 
   it('should return all validation error messages', async () => {
-    (getRadioValue as jest.Mock).mockImplementation(() => ({
+    ;(getRadioValue as jest.Mock).mockImplementation(() => ({
       value: '',
-    }));
+    }))
     expect(
       await validateField(
         {
@@ -2086,7 +2086,7 @@ describe('validateField', () => {
           test2: 'Bill',
         },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -2134,7 +2134,7 @@ describe('validateField', () => {
           test2: 'Bill',
         },
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -2182,13 +2182,13 @@ describe('validateField', () => {
           test2: 'Bill',
         },
       },
-    });
-  });
+    })
+  })
 
   describe('with Browser native validation', () => {
     it('should invoke setCustomValidity for invalid input', () => {
-      const setCustomValidity = jest.fn();
-      const reportValidity = jest.fn();
+      const setCustomValidity = jest.fn()
+      const reportValidity = jest.fn()
 
       validateField(
         {
@@ -2211,15 +2211,15 @@ describe('validateField', () => {
         },
         false,
         true,
-      );
+      )
 
-      expect(setCustomValidity).toHaveBeenCalledWith('');
-      expect(reportValidity).toHaveBeenCalled();
-    });
+      expect(setCustomValidity).toHaveBeenCalledWith('')
+      expect(reportValidity).toHaveBeenCalled()
+    })
 
     it('should invoke setCustomValidity for invalid input with its message', () => {
-      const setCustomValidity = jest.fn();
-      const reportValidity = jest.fn();
+      const setCustomValidity = jest.fn()
+      const reportValidity = jest.fn()
 
       validateField(
         {
@@ -2242,15 +2242,15 @@ describe('validateField', () => {
         },
         false,
         true,
-      );
+      )
 
-      expect(setCustomValidity).toHaveBeenCalledWith('something is wrong');
-      expect(reportValidity).toHaveBeenCalled();
-    });
+      expect(setCustomValidity).toHaveBeenCalledWith('something is wrong')
+      expect(reportValidity).toHaveBeenCalled()
+    })
 
     it('should invoke setCustomValidity with empty string for a valid input', () => {
-      const setCustomValidity = jest.fn();
-      const reportValidity = jest.fn();
+      const setCustomValidity = jest.fn()
+      const reportValidity = jest.fn()
 
       validateField(
         {
@@ -2273,21 +2273,21 @@ describe('validateField', () => {
         },
         false,
         true,
-      );
+      )
 
-      expect(setCustomValidity).toHaveBeenCalledWith('');
-      expect(reportValidity).toHaveBeenCalled();
-    });
+      expect(setCustomValidity).toHaveBeenCalledWith('')
+      expect(reportValidity).toHaveBeenCalled()
+    })
 
     it('should invoke setCustomValidity on all refs for a required radio group', async () => {
-      (getRadioValue as jest.Mock).mockReturnValue({
+      ;(getRadioValue as jest.Mock).mockReturnValue({
         isValid: false,
         value: undefined,
-      });
+      })
 
-      const setCustomValidity1 = jest.fn();
-      const setCustomValidity2 = jest.fn();
-      const reportValidity = jest.fn();
+      const setCustomValidity1 = jest.fn()
+      const setCustomValidity2 = jest.fn()
+      const reportValidity = jest.fn()
 
       const ref1 = {
         setCustomValidity: setCustomValidity1,
@@ -2295,13 +2295,13 @@ describe('validateField', () => {
         name: 'foo',
         value: 'bar',
         type: 'radio',
-      };
+      }
       const ref2 = {
         setCustomValidity: setCustomValidity2,
         name: 'foo',
         value: 'baz',
         type: 'radio',
-      };
+      }
 
       await validateField(
         {
@@ -2317,22 +2317,22 @@ describe('validateField', () => {
         { foo: undefined },
         false,
         true,
-      );
+      )
 
-      expect(setCustomValidity1).toHaveBeenCalledWith('You missed that');
-      expect(setCustomValidity2).toHaveBeenCalledWith('You missed that');
-      expect(reportValidity).toHaveBeenCalledTimes(1);
-    });
+      expect(setCustomValidity1).toHaveBeenCalledWith('You missed that')
+      expect(setCustomValidity2).toHaveBeenCalledWith('You missed that')
+      expect(reportValidity).toHaveBeenCalledTimes(1)
+    })
 
     it('should clear setCustomValidity on all refs for a valid radio group', async () => {
-      (getRadioValue as jest.Mock).mockReturnValue({
+      ;(getRadioValue as jest.Mock).mockReturnValue({
         isValid: true,
         value: 'bar',
-      });
+      })
 
-      const setCustomValidity1 = jest.fn();
-      const setCustomValidity2 = jest.fn();
-      const reportValidity = jest.fn();
+      const setCustomValidity1 = jest.fn()
+      const setCustomValidity2 = jest.fn()
+      const reportValidity = jest.fn()
 
       const ref1 = {
         setCustomValidity: setCustomValidity1,
@@ -2341,14 +2341,14 @@ describe('validateField', () => {
         value: 'bar',
         type: 'radio',
         checked: true,
-      };
+      }
       const ref2 = {
         setCustomValidity: setCustomValidity2,
         name: 'foo',
         value: 'baz',
         type: 'radio',
         checked: false,
-      };
+      }
 
       await validateField(
         {
@@ -2364,12 +2364,12 @@ describe('validateField', () => {
         { foo: 'bar' },
         false,
         true,
-      );
+      )
 
-      expect(setCustomValidity1).toHaveBeenCalledWith('');
-      expect(setCustomValidity2).toHaveBeenCalledWith('');
-      expect(reportValidity).toHaveBeenCalledTimes(1);
-    });
+      expect(setCustomValidity1).toHaveBeenCalledWith('')
+      expect(setCustomValidity2).toHaveBeenCalledWith('')
+      expect(reportValidity).toHaveBeenCalledTimes(1)
+    })
 
     it('should abort validation early when input is disabled', async () => {
       expect(
@@ -2392,9 +2392,9 @@ describe('validateField', () => {
           },
           false,
         ),
-      ).toEqual({});
-    });
-  });
+      ).toEqual({})
+    })
+  })
 
   it('should validate field array with required attribute', async () => {
     expect(
@@ -2428,7 +2428,7 @@ describe('validateField', () => {
         },
         type: 'required',
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -2459,7 +2459,7 @@ describe('validateField', () => {
         },
         type: 'required',
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -2492,7 +2492,7 @@ describe('validateField', () => {
         },
         type: 'required',
       },
-    });
+    })
 
     expect(
       await validateField(
@@ -2516,6 +2516,6 @@ describe('validateField', () => {
         false,
         true,
       ),
-    ).toEqual({});
-  });
-});
+    ).toEqual({})
+  })
+})

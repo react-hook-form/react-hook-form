@@ -1,5 +1,5 @@
-import type { FieldArrayPath, FieldArrayProps, FieldValues } from './types';
-import { useFieldArray } from './useFieldArray';
+import type { FieldArrayPath, FieldArrayProps, FieldValues } from './types'
+import { useFieldArray } from './useFieldArray'
 
 /**
  * Component based on `useFieldArray` hook to work with controlled component.
@@ -39,6 +39,6 @@ const FieldArray = <
   TKeyName extends string = 'id',
 >(
   props: FieldArrayProps<TFieldValues, TName, TKeyName>,
-) => props.render(useFieldArray<TFieldValues, TName, TKeyName>(props));
+) => props.render(useFieldArray<TFieldValues, TName, TKeyName>(props))
 
-export { FieldArray };
+export { FieldArray }

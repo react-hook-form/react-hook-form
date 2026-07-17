@@ -1,10 +1,10 @@
-import React from 'react';
-import { useForm, ValidationMode } from 'react-hook-form';
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useParams } from 'react-router-dom';
+import { yupResolver } from '@hookform/resolvers/yup'
+import React from 'react'
+import { useForm, ValidationMode } from 'react-hook-form'
+import { useParams } from 'react-router-dom'
+import * as yup from 'yup'
 
-let renderCounter = 0;
+let renderCounter = 0
 
 const validationSchema = yup
   .object()
@@ -15,10 +15,10 @@ const validationSchema = yup
     radio: yup.string().required(),
     checkbox: yup.string().required(),
   })
-  .required();
+  .required()
 
 const FormStateWithSchema: React.FC = () => {
-  const { mode } = useParams();
+  const { mode } = useParams()
   const {
     register,
     handleSubmit,
@@ -34,11 +34,11 @@ const FormStateWithSchema: React.FC = () => {
     },
     reset,
   } = useForm<{
-    firstName: string;
-    lastName: string;
-    select: string;
-    radio: string | null;
-    checkbox: boolean;
+    firstName: string
+    lastName: string
+    select: string
+    radio: string | null
+    checkbox: boolean
   }>({
     resolver: yupResolver(validationSchema),
     mode: mode as keyof ValidationMode,
@@ -49,10 +49,10 @@ const FormStateWithSchema: React.FC = () => {
       checkbox: false,
       radio: null,
     },
-  });
-  const onSubmit = () => {};
+  })
+  const onSubmit = () => {}
 
-  renderCounter++;
+  renderCounter++
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -88,7 +88,7 @@ const FormStateWithSchema: React.FC = () => {
       </div>
       <div id="renderCount">{renderCounter}</div>
     </form>
-  );
-};
+  )
+}
 
-export default FormStateWithSchema;
+export default FormStateWithSchema

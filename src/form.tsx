@@ -1,10 +1,9 @@
-import React from 'react';
+import React from 'react'
+import type { FieldValues, FormProps } from './types'
+import { useFormContext } from './useFormContext'
+import { flatten } from './utils/flatten'
 
-import { flatten } from './utils/flatten';
-import type { FieldValues, FormProps } from './types';
-import { useFormContext } from './useFormContext';
-
-const POST_REQUEST = 'post';
+const POST_REQUEST = 'post'
 
 /**
  * Form component to manage submission.
@@ -32,8 +31,8 @@ function Form<
   TFieldValues extends FieldValues,
   TTransformedValues = TFieldValues,
 >(props: FormProps<TFieldValues, TTransformedValues>) {
-  const methods = useFormContext<TFieldValues, any, TTransformedValues>();
-  const [mounted, setMounted] = React.useState(false);
+  const methods = useFormContext<TFieldValues, any, TTransformedValues>()
+  const [mounted, setMounted] = React.useState(false)
   const {
     control = methods.control,
     onSubmit,
@@ -47,25 +46,25 @@ function Form<
     onSuccess,
     validateStatus,
     ...rest
-  } = props;
+  } = props
 
   const submit = React.useCallback(
     async (event?: React.BaseSyntheticEvent) => {
-      let hasError = false;
-      let type = '';
+      let hasError = false
+      let type = ''
 
       await control.handleSubmit(async (data) => {
-        const formData = new FormData();
-        let formDataJson = '';
+        const formData = new FormData()
+        let formDataJson = ''
 
         try {
-          formDataJson = JSON.stringify(data);
+          formDataJson = JSON.stringify(data)
         } catch {}
 
-        const flattenFormValues = flatten(data as FieldValues);
+        const flattenFormValues = flatten(data as FieldValues)
 
         for (const key in flattenFormValues) {
-          formData.append(key, flattenFormValues[key]);
+          formData.append(key, flattenFormValues[key])
         }
 
         if (onSubmit) {
@@ -75,7 +74,7 @@ function Form<
             method,
             formData,
             formDataJson,
-          });
+          })
         }
 
         if (action) {
@@ -83,7 +82,7 @@ function Form<
             const shouldStringifySubmissionData = [
               headers && headers['Content-Type'],
               encType,
-            ].some((value) => value && value.includes('json'));
+            ].some((value) => value && value.includes('json'))
 
             const response = await fetch(String(action), {
               method,
@@ -94,7 +93,7 @@ function Form<
                   : {}),
               },
               body: shouldStringifySubmissionData ? formDataJson : formData,
-            });
+            })
 
             if (
               response &&
@@ -102,26 +101,26 @@ function Form<
                 ? !validateStatus(response.status)
                 : response.status < 200 || response.status >= 300)
             ) {
-              hasError = true;
-              onError && onError({ response });
-              type = String(response.status);
+              hasError = true
+              onError && onError({ response })
+              type = String(response.status)
             } else {
-              onSuccess && onSuccess({ response });
+              onSuccess && onSuccess({ response })
             }
           } catch (error: unknown) {
-            hasError = true;
-            onError && onError({ error });
+            hasError = true
+            onError && onError({ error })
           }
         }
-      })(event);
+      })(event)
 
       if (hasError && control) {
         control._subjects.state.next({
           isSubmitSuccessful: false,
-        });
+        })
         control.setError('root.server', {
           type,
-        });
+        })
       }
     },
     [
@@ -135,11 +134,11 @@ function Form<
       onError,
       onSuccess,
     ],
-  );
+  )
 
   React.useEffect(() => {
-    setMounted(true);
-  }, []);
+    setMounted(true)
+  }, [])
 
   return render ? (
     <>
@@ -158,7 +157,7 @@ function Form<
     >
       {children}
     </form>
-  );
+  )
 }
 
-export { Form };
+export { Form }

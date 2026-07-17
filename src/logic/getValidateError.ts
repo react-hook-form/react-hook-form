@@ -1,6 +1,6 @@
-import type { FieldError, Ref, ValidateResult } from '../types';
-import isBoolean from '../utils/isBoolean';
-import isString from '../utils/isString';
+import type { FieldError, Ref, ValidateResult } from '../types'
+import isBoolean from '../utils/isBoolean'
+import isString from '../utils/isString'
 
 export default function getValidateError(
   result: ValidateResult,
@@ -16,6 +16,6 @@ export default function getValidateError(
       type,
       message: isString(result) ? result : '',
       ref,
-    };
+    }
   }
 }

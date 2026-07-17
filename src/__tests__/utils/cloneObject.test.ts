@@ -1,9 +1,9 @@
-import cloneObject from '../../utils/cloneObject';
-import noop from '../../utils/noop';
+import cloneObject from '../../utils/cloneObject'
+import noop from '../../utils/noop'
 
 describe('clone', () => {
   it('should clone object and not mutate the original object', () => {
-    const fileData = new File([''], 'filename');
+    const fileData = new File([''], 'filename')
     const data: Record<string, any> = {
       items: [],
       test: {
@@ -34,14 +34,14 @@ describe('clone', () => {
         [2, 'two'],
         [3, 'three'],
       ]),
-    };
+    }
 
-    const copy = cloneObject(data);
-    expect(cloneObject(data)).toEqual(copy);
+    const copy = cloneObject(data)
+    expect(cloneObject(data)).toEqual(copy)
 
-    copy.test.what = '1243';
-    copy.test.date = new Date('2020-10-16');
-    copy.items[0] = 2;
+    copy.test.what = '1243'
+    copy.test.date = new Date('2020-10-16')
+    copy.items[0] = 2
 
     expect(data).toEqual({
       items: [],
@@ -73,12 +73,12 @@ describe('clone', () => {
         [2, 'two'],
         [3, 'three'],
       ]),
-    });
+    })
 
-    data.items = [1, 2, 3];
+    data.items = [1, 2, 3]
 
-    expect(copy.items).toEqual([2]);
-  });
+    expect(copy.items).toEqual([2])
+  })
 
   it('should skip clone if a node is instance of function', () => {
     const data = {
@@ -92,10 +92,10 @@ describe('clone', () => {
       },
       testFunction: noop,
       other: 'string',
-    };
+    }
 
-    const copy = cloneObject(data);
-    data.test.deep.test = 'changed-deep-string';
+    const copy = cloneObject(data)
+    data.test.deep.test = 'changed-deep-string'
 
     expect(copy).toEqual({
       test: {
@@ -108,83 +108,83 @@ describe('clone', () => {
       },
       testFunction: noop,
       other: 'string',
-    });
-  });
+    })
+  })
 
   it('should skip clone if a node is not planeObject', () => {
     class Foo {
-      a = 1;
-      b = 1;
+      a = 1
+      b = 1
 
-      static c = function () {};
+      static c = function () {}
     }
 
-    const object = new Foo();
-    const copy = cloneObject(object);
+    const object = new Foo()
+    const copy = cloneObject(object)
 
-    expect(copy).toBe(object);
-  });
+    expect(copy).toBe(object)
+  })
 
   describe('FileList not defined', () => {
-    const fileList = globalThis.FileList;
+    const fileList = globalThis.FileList
 
     beforeAll(() => {
       // @ts-expect-error we want to test that clone skips if FileList is not defined.
-      delete globalThis.FileList;
-    });
+      delete globalThis.FileList
+    })
 
     afterAll(() => {
-      globalThis.FileList = fileList;
-    });
+      globalThis.FileList = fileList
+    })
 
     it('should skip clone if FileList is not defined', () => {
       const data = {
         a: 1,
         b: 2,
-      };
-      const copy = cloneObject(data);
+      }
+      const copy = cloneObject(data)
 
-      expect(copy).toEqual(data);
-    });
-  });
+      expect(copy).toEqual(data)
+    })
+  })
 
   describe('in presence of Array polyfills', () => {
     beforeAll(() => {
       // @ts-expect-error we want to test that clone skips polyfill
-      Array.prototype.somePolyfill = () => 123;
-    });
+      Array.prototype.somePolyfill = () => 123
+    })
 
     it('should skip polyfills while cloning', () => {
-      const data = [1];
-      const copy = cloneObject(data);
+      const data = [1]
+      const copy = cloneObject(data)
 
-      expect(Object.hasOwn(copy, 'somePolyfill')).toBe(false);
-    });
+      expect(Object.hasOwn(copy, 'somePolyfill')).toBe(false)
+    })
 
     afterAll(() => {
       // @ts-expect-error we want to test that clone skips polyfill
-      delete Array.prototype.somePolyfill;
-    });
-  });
+      delete Array.prototype.somePolyfill
+    })
+  })
 
   it('should not override prototype of nested object', () => {
     const UtcProto = {
       _tag: 'Utc',
-    };
+    }
     const formValues = {
       dateTime: Object.create(UtcProto),
-    };
-    const copy = cloneObject(formValues);
-    expect(Object.getPrototypeOf(copy.dateTime)).toEqual(UtcProto);
-    expect(copy.dateTime._tag).toBe('Utc');
-  });
+    }
+    const copy = cloneObject(formValues)
+    expect(Object.getPrototypeOf(copy.dateTime)).toEqual(UtcProto)
+    expect(copy.dateTime._tag).toBe('Utc')
+  })
 
   it('should not override prototype of nested object', () => {
     const UtcProto = {
       _tag: 'Utc',
-    };
-    const dateTime = Object.create(UtcProto);
-    const copy = cloneObject(dateTime);
-    expect(copy._tag).toBe('Utc');
-  });
-});
+    }
+    const dateTime = Object.create(UtcProto)
+    const copy = cloneObject(dateTime)
+    expect(copy._tag).toBe('Utc')
+  })
+})

@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
 
-let renderCounter = 0;
+let renderCounter = 0
 
 const SetValueWithTrigger: React.FC = () => {
   const {
@@ -10,9 +10,9 @@ const SetValueWithTrigger: React.FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<{
-    firstName: string;
-    lastName: string;
-  }>();
+    firstName: string
+    lastName: string
+  }>()
 
   useEffect(() => {
     register('firstName', {
@@ -21,23 +21,23 @@ const SetValueWithTrigger: React.FC = () => {
         value: 10,
         message: 'minLength 10',
       },
-    });
+    })
     register('lastName', {
       validate: (data) => {
         if (data === 'bill') {
-          return true;
+          return true
         }
 
         if (data && data.length < 10) {
-          return 'too short';
+          return 'too short'
         }
 
-        return 'error message';
+        return 'error message'
       },
-    });
-  }, [register]);
+    })
+  }, [register])
 
-  renderCounter++;
+  renderCounter++
 
   return (
     <form onSubmit={handleSubmit(() => {})}>
@@ -68,7 +68,7 @@ const SetValueWithTrigger: React.FC = () => {
       <button>Submit</button>
       <div id="renderCount">{renderCounter}</div>
     </form>
-  );
-};
+  )
+}
 
-export default SetValueWithTrigger;
+export default SetValueWithTrigger
