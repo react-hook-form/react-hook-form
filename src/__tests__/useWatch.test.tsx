@@ -587,7 +587,7 @@ describe('useWatch', () => {
       fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
 
       await waitFor(() => expect(parentCount).toBe(1));
-      expect(childCount).toBe(2);
+      expect(childCount).toBe(1);
 
       parentCount = 0;
       childCount = 0;
@@ -667,8 +667,8 @@ describe('useWatch', () => {
       fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
 
       await waitFor(() => expect(parentCount).toBe(1));
-      expect(childCount).toBe(2);
-      expect(childSecondCount).toBe(2);
+      expect(childCount).toBe(1);
+      expect(childSecondCount).toBe(1);
 
       parentCount = 0;
       childCount = 0;
@@ -689,6 +689,50 @@ describe('useWatch', () => {
       expect(parentCount).toBe(0);
       expect(childCount).toBe(1);
       expect(childSecondCount).toBe(1);
+    });
+
+    it('should not re-render useWatch when submit does not change watched values', async () => {
+      type FormInputs = {
+        firstName: string;
+      };
+
+      let watchCount = 0;
+      let isSubmitted = false;
+      const FirstNameWatched = ({
+        control,
+      }: Pick<UseFormReturn<FormInputs>, 'control'>) => {
+        useWatch({ name: ['firstName'], control, exact: true });
+        watchCount++;
+        return null;
+      };
+
+      const Parent = () => {
+        const { register, control, handleSubmit } = useForm<FormInputs>();
+        return (
+          <form
+            onSubmit={handleSubmit(() => {
+              isSubmitted = true;
+            })}
+          >
+            <input {...register('firstName')} />
+            <FirstNameWatched control={control} />
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<Parent />);
+
+      fireEvent.input(screen.getByRole('textbox'), {
+        target: { value: 'test' },
+      });
+
+      watchCount = 0;
+
+      fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
+
+      await waitFor(() => expect(isSubmitted).toBe(true));
+      expect(watchCount).toBe(0);
     });
 
     it('should only subscribe change at useWatch level instead of useForm', () => {
@@ -881,6 +925,84 @@ describe('useWatch', () => {
 
       expect(screen.getByText('yes')).toBeVisible();
     });
+
+    it('should react to changing field name', () => {
+      type FormValues = {
+        field1: string;
+        field2: string;
+      };
+
+      const { result: formResult } = renderHook(() =>
+        useForm<FormValues>({
+          defaultValues: {
+            field1: 'value1',
+            field2: 'value2',
+          },
+        }),
+      );
+
+      const { result, rerender } = renderHook(
+        ({ fieldName }: { fieldName: 'field1' | 'field2' }) => {
+          const watchedValue = useWatch({
+            control: formResult.current.control,
+            name: fieldName,
+          });
+          return watchedValue;
+        },
+        {
+          initialProps: { fieldName: 'field1' },
+        },
+      );
+
+      expect(result.current).toBe('value1');
+
+      rerender({ fieldName: 'field2' });
+      expect(result.current).toBe('value2');
+
+      rerender({ fieldName: 'field1' });
+      expect(result.current).toBe('value1');
+    });
+
+    it('should react to changing control', () => {
+      type FormValues = {
+        name: string;
+      };
+
+      const { result: form1Result } = renderHook(() =>
+        useForm<FormValues>({
+          defaultValues: {
+            name: 'form1-value',
+          },
+        }),
+      );
+
+      const { result: form2Result } = renderHook(() =>
+        useForm<FormValues>({
+          defaultValues: {
+            name: 'form2-value',
+          },
+        }),
+      );
+
+      const { result, rerender } = renderHook(
+        ({ control }: { control: Control<FormValues> }) =>
+          useWatch({
+            control,
+            name: 'name',
+          }),
+        {
+          initialProps: { control: form1Result.current.control },
+        },
+      );
+
+      expect(result.current).toBe('form1-value');
+
+      rerender({ control: form2Result.current.control });
+      expect(result.current).toBe('form2-value');
+
+      rerender({ control: form1Result.current.control });
+      expect(result.current).toBe('form1-value');
+    });
   });
 
   describe('fieldArray', () => {
@@ -969,9 +1091,6 @@ describe('useWatch', () => {
       fireEvent.click(screen.getAllByRole('button')[1]);
 
       expect(inputValues).toEqual([
-        'Type',
-        'Number',
-        'Totals',
         'Type',
         'Number',
         'Totals',
@@ -1107,7 +1226,7 @@ describe('useWatch', () => {
           defaultValue: itemsDefault,
         });
 
-        watchData.push(useWatchedItems);
+        watchData.push(JSON.parse(JSON.stringify(useWatchedItems)));
 
         return (
           <div>
@@ -1304,7 +1423,7 @@ describe('useWatch', () => {
         const Test = ({ control }: { control: Control<FormValues> }) => {
           const values = useWatch({ control });
           const options = values.options;
-          watchedValue.push(values);
+          watchedValue.push(JSON.parse(JSON.stringify(values)));
 
           return (
             <div>

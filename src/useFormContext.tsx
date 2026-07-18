@@ -1,6 +1,12 @@
 import React from 'react';
 
-import type { FieldValues, FormProviderProps, UseFormReturn } from './types';
+import type {
+  Control,
+  FieldValues,
+  FormProviderProps,
+  UseFormReturn,
+} from './types';
+import { HookFormControlContext } from './useFormControlContext';
 
 const HookFormContext = React.createContext<UseFormReturn | null>(null);
 HookFormContext.displayName = 'HookFormContext';
@@ -47,7 +53,7 @@ export const useFormContext = <
   >;
 
 /**
- * A provider component that propagates the `useForm` methods to all children components via [React Context](https://reactjs.org/docs/context.html) API. To be used with {@link useFormContext}.
+ * A provider component that propagates the `useForm` methods to all children components via [React Context](https://react.dev/reference/react/useContext) API. To be used with {@link useFormContext}.
  *
  * @remarks
  * [API](https://react-hook-form.com/docs/useformcontext) • [Demo](https://codesandbox.io/s/react-hook-form-v7-form-context-ytudi)
@@ -80,13 +86,77 @@ export const FormProvider = <
   TFieldValues extends FieldValues,
   TContext = any,
   TTransformedValues = TFieldValues,
->(
-  props: FormProviderProps<TFieldValues, TContext, TTransformedValues>,
-) => {
-  const { children, ...data } = props;
+>({
+  children,
+  watch,
+  getValues,
+  getFieldState,
+  setError,
+  clearErrors,
+  setValue,
+  setValues,
+  trigger,
+  formState,
+  resetField,
+  reset,
+  resetDefaultValues,
+  handleSubmit,
+  unregister,
+  control,
+  register,
+  setFocus,
+  subscribe,
+}: FormProviderProps<TFieldValues, TContext, TTransformedValues>) => {
+  const memoizedValue = React.useMemo<
+    UseFormReturn<TFieldValues, TContext, TTransformedValues>
+  >(
+    () => ({
+      watch,
+      getValues,
+      getFieldState,
+      setError,
+      clearErrors,
+      setValue,
+      setValues,
+      trigger,
+      formState,
+      resetField,
+      reset,
+      resetDefaultValues,
+      handleSubmit,
+      unregister,
+      control,
+      register,
+      setFocus,
+      subscribe,
+    }),
+    [
+      clearErrors,
+      control,
+      formState,
+      getFieldState,
+      getValues,
+      handleSubmit,
+      register,
+      reset,
+      resetDefaultValues,
+      resetField,
+      setError,
+      setFocus,
+      setValue,
+      setValues,
+      subscribe,
+      trigger,
+      unregister,
+      watch,
+    ],
+  );
+
   return (
-    <HookFormContext.Provider value={data as unknown as UseFormReturn}>
-      {children}
+    <HookFormContext.Provider value={memoizedValue as unknown as UseFormReturn}>
+      <HookFormControlContext.Provider value={memoizedValue.control as Control}>
+        {children}
+      </HookFormControlContext.Provider>
     </HookFormContext.Provider>
   );
 };

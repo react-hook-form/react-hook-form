@@ -77,12 +77,57 @@ describe('append', () => {
     fireEvent.click(screen.getByRole('button'));
 
     expect(dirtyInputs).toEqual({
-      test: [
-        { value: true },
-        { value: false },
-        { value: false },
-        { value: true },
-      ],
+      test: [{ value: true }, undefined, undefined, { value: true }],
+    });
+  });
+
+  it('should not mark unrelated fields as dirty when appending to field array', async () => {
+    let dirtyInputs = {};
+    const Component = () => {
+      const {
+        register,
+        control,
+        formState: { dirtyFields },
+      } = useForm<{
+        name: string;
+        age: number;
+        items: { value: string }[];
+      }>({
+        defaultValues: {
+          name: 'John',
+          age: 30,
+          items: [],
+        },
+      });
+      const { fields, append } = useFieldArray({
+        control,
+        name: 'items',
+      });
+
+      dirtyInputs = dirtyFields;
+
+      return (
+        <form>
+          <input {...register('name')} />
+          <input {...register('age')} />
+          {fields.map((field, i) => (
+            <input key={field.id} {...register(`items.${i}.value` as const)} />
+          ))}
+          <button type="button" onClick={() => append({ value: 'new' })}>
+            append
+          </button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(dirtyInputs).toEqual({
+        items: [{ value: true }],
+      });
     });
   });
 
@@ -473,6 +518,60 @@ describe('append', () => {
       });
 
       expect(resolver).toHaveBeenCalled();
+    });
+
+    it('should not invoke resolver per register during append; only array-scoped + final isValid', async () => {
+      const resolver = jest
+        .fn()
+        .mockImplementation((values) => ({ values, errors: {} }));
+
+      const App = () => {
+        const { register, formState, control } = useForm<{
+          test: { value: string }[];
+        }>({
+          mode: VALIDATION_MODE.onTouched,
+          resolver,
+          defaultValues: { test: [] },
+        });
+
+        formState.isValid;
+
+        const { fields, append } = useFieldArray({ control, name: 'test' });
+
+        return (
+          <form>
+            <input {...register('test' as const)} />
+            {fields.map((f, i) => (
+              <input key={f.id} {...register(`test.${i}.value` as const)} />
+            ))}
+            <button
+              type="button"
+              onClick={() =>
+                append([{ value: '1' }, { value: '2' }, { value: '3' }])
+              }
+            >
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await waitFor(() =>
+        expect(resolver.mock.calls.length).toBeGreaterThanOrEqual(1),
+      );
+      const initialCalls = resolver.mock.calls.length;
+
+      fireEvent.click(screen.getByRole('button', { name: 'append' }));
+
+      await waitFor(async () => {
+        expect((await screen.findAllByRole('textbox')).length).toBe(4); // 1 root + 3 items
+      });
+
+      await waitFor(() =>
+        expect(resolver.mock.calls.length).toBe(initialCalls + 2),
+      );
     });
   });
 

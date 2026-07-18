@@ -8,7 +8,7 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies

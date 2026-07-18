@@ -1,7 +1,5 @@
 // @ts-check
-
-import { fixupPluginRules } from '@eslint/compat';
-import pluginCypress from 'eslint-plugin-cypress/flat';
+import pluginPlaywright from 'eslint-plugin-playwright';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import reactPlugin from 'eslint-plugin-react';
 import reactHookPlugin from 'eslint-plugin-react-hooks';
@@ -25,10 +23,13 @@ export default tseslint.config(
   reactPlugin.configs.flat.recommended,
   ...tseslint.configs.recommended,
   eslintPluginPrettierRecommended,
-  pluginCypress.configs.recommended,
+  {
+    files: ['e2e/**/*.ts'],
+    ...pluginPlaywright.configs['flat/recommended'],
+  },
   {
     plugins: {
-      'react-hooks': fixupPluginRules(reactHookPlugin),
+      'react-hooks': reactHookPlugin,
       'simple-import-sort': simpleImportSort,
     },
     languageOptions: {
@@ -47,9 +48,7 @@ export default tseslint.config(
       },
     },
     rules: {
-      curly: 'error',
       'no-extra-boolean-cast': 'error',
-      'cypress/unsafe-to-chain-command': 'off',
       '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/no-empty-function': 'off',
       '@typescript-eslint/ban-ts-comment': 'warn',
@@ -61,7 +60,6 @@ export default tseslint.config(
         'warn',
         { ignoreRestSiblings: true },
       ],
-      'cypress/no-unnecessary-waiting': 'off',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'error',
       'react/display-name': 'warn',
@@ -85,6 +83,15 @@ export default tseslint.config(
       'simple-import-sort/exports': 'error',
       '@typescript-eslint/no-unused-expressions': 'off',
       '@typescript-eslint/no-unsafe-function-type': 'off',
+    },
+  },
+  {
+    files: ['scripts/**/*.cjs'],
+    languageOptions: {
+      sourceType: 'commonjs',
+    },
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
     },
   },
   {

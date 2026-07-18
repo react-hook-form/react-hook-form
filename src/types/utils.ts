@@ -47,21 +47,27 @@ export type ExtractObjects<T> = T extends infer U
     : never
   : never;
 
-export type DeepPartial<T> = T extends BrowserNativeObject | NestedValue
-  ? T
-  : {
-      [K in keyof T]?: ExtractObjects<T[K]> extends never
-        ? T[K]
-        : DeepPartial<T[K]>;
-    };
+type IsPrimitiveLike<T> = T extends Primitive ? true : false;
 
-export type DeepPartialSkipArrayKey<T> = T extends
-  | BrowserNativeObject
-  | NestedValue
-  ? T
-  : T extends ReadonlyArray<any>
-    ? { [K in keyof T]: DeepPartialSkipArrayKey<T[K]> }
-    : { [K in keyof T]?: DeepPartialSkipArrayKey<T[K]> };
+export type DeepPartial<T> =
+  IsPrimitiveLike<T> extends true
+    ? T
+    : T extends BrowserNativeObject | NestedValue
+      ? T
+      : {
+          [K in keyof T]?: ExtractObjects<T[K]> extends never
+            ? T[K]
+            : DeepPartial<T[K]>;
+        };
+
+export type DeepPartialSkipArrayKey<T> =
+  IsPrimitiveLike<T> extends true
+    ? T
+    : T extends BrowserNativeObject | NestedValue
+      ? T
+      : T extends ReadonlyArray<any>
+        ? { [K in keyof T]: DeepPartialSkipArrayKey<T[K]> }
+        : { [K in keyof T]?: DeepPartialSkipArrayKey<T[K]> };
 
 /**
  * Checks whether the type is any
@@ -78,8 +84,8 @@ export type IsAny<T> = 0 extends 1 & T ? true : false;
  * Checks whether the type is never
  * @typeParam T - type which may be never
  * ```
- * IsAny<never> = true
- * IsAny<string> = false
+ * IsNever<never> = true
+ * IsNever<string> = false
  * ```
  */
 export type IsNever<T> = [T] extends [never] ? true : false;
@@ -109,9 +115,11 @@ export type DeepMap<T, TValue> =
     ? any
     : T extends BrowserNativeObject | NestedValue
       ? TValue
-      : T extends object
-        ? { [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue> }
-        : TValue;
+      : T extends ReadonlyArray<infer U>
+        ? Array<DeepMap<NonUndefined<U>, TValue> | undefined>
+        : T extends object
+          ? { [K in keyof T]: DeepMap<NonUndefined<T[K]>, TValue> }
+          : TValue;
 
 export type IsFlatObject<T extends object> =
   Extract<

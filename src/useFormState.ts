@@ -3,19 +3,20 @@ import React from 'react';
 import getProxyFormState from './logic/getProxyFormState';
 import type {
   FieldValues,
+  FormState,
   UseFormStateProps,
   UseFormStateReturn,
 } from './types';
-import { useFormContext } from './useFormContext';
+import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
- * This custom hook allows you to subscribe to each form state, and isolate the re-render at the custom hook level. It has its scope in terms of form state subscription, so it would not affect other useFormState and useForm. Using this hook can reduce the re-render impact on large and complex form application.
+ * Subscribes to each form state and isolates re-renders at the custom hook level. It has its own scope for form state subscriptions, so it will not affect other useFormState or useForm instances. Using this hook can reduce the re-render impact on large and complex form applications.
  *
  * @remarks
  * [API](https://react-hook-form.com/docs/useformstate) • [Demo](https://codesandbox.io/s/useformstate-75xly)
  *
- * @param props - include options on specify fields to subscribe. {@link UseFormStateReturn}
+ * @param props - Include options to specify fields to subscribe to. {@link UseFormStateReturn}
  *
  * @example
  * ```tsx
@@ -45,9 +46,19 @@ export function useFormState<
 >(
   props?: UseFormStateProps<TFieldValues, TTransformedValues>,
 ): UseFormStateReturn<TFieldValues> {
-  const methods = useFormContext<TFieldValues, any, TTransformedValues>();
-  const { control = methods.control, disabled, name, exact } = props || {};
-  const [formState, updateFormState] = React.useState(control._formState);
+  const formControl = useFormControlContext<
+    TFieldValues,
+    any,
+    TTransformedValues
+  >();
+  const { control = formControl, disabled, name, exact } = props || {};
+  const [formState, updateFormState] = React.useState<FormState<TFieldValues>>(
+    () => ({
+      ...control._formState,
+      defaultValues:
+        control._defaultValues as FormState<TFieldValues>['defaultValues'],
+    }),
+  );
   const _localProxyFormState = React.useRef({
     isDirty: false,
     isLoading: false,
@@ -70,6 +81,8 @@ export function useFormState<
             updateFormState({
               ...control._formState,
               ...formState,
+              defaultValues:
+                control._defaultValues as FormState<TFieldValues>['defaultValues'],
             });
         },
       }),

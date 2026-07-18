@@ -11,7 +11,12 @@ import {
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
-import type { UseFormRegister } from '../../types';
+import type {
+  FieldErrors,
+  Resolver,
+  ResolverResult,
+  UseFormRegister,
+} from '../../types';
 import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
 import isFunction from '../../utils/isFunction';
@@ -157,17 +162,20 @@ describe('register', () => {
 
   it('should re-render if errors occurred with resolver when formState.isValid is defined', async () => {
     const Component = () => {
-      const { register, formState } = useForm<{ test: string }>({
-        resolver: async (data) => {
-          return {
-            values: data,
-            errors: {
-              test: {
-                type: 'test',
-              },
+      const resolver: Resolver<{ test: string }> = async () => {
+        return {
+          values: {},
+          errors: {
+            test: {
+              type: 'test',
+              message: 'Error',
             },
-          };
-        },
+          },
+        };
+      };
+
+      const { register, formState } = useForm<{ test: string }>({
+        resolver,
       });
 
       return (
@@ -500,7 +508,7 @@ describe('register', () => {
 
     render(<Component />);
 
-    expect(watchedValue.at(-1)).toEqual({ test: 'bill' });
+    expect(watchedValue[watchedValue.length - 1]).toEqual({ test: 'bill' });
 
     fireEvent.click(screen.getByRole('button'));
 
@@ -998,6 +1006,82 @@ describe('register', () => {
 
       expect(await screen.findByText('{"test":"a"}')).toBeVisible();
     });
+
+    it('should update isValid when toggling disabled state with required field in onChange mode', async () => {
+      let isValidValue = false;
+
+      const App = () => {
+        const [disableFirstName, setDisableFirstName] = React.useState(false);
+        const {
+          register,
+          formState: { isValid },
+          handleSubmit,
+        } = useForm({
+          mode: 'onChange',
+          defaultValues: {
+            firstName: '',
+            lastName: '',
+          },
+        });
+
+        // Track isValid changes
+        React.useEffect(() => {
+          isValidValue = isValid;
+        }, [isValid]);
+
+        const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+          setDisableFirstName(event.currentTarget.checked);
+        };
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <input
+              {...register('firstName', {
+                required: true,
+                disabled: disableFirstName,
+              })}
+              placeholder="First Name"
+              data-testid="firstName"
+            />
+            <input
+              {...register('lastName')}
+              placeholder="Last Name"
+              data-testid="lastName"
+            />
+            <input
+              id="disable"
+              type="checkbox"
+              onChange={handleChange}
+              data-testid="toggle-disabled"
+            />
+            <p data-testid="isValid">{isValid ? 'valid' : 'invalid'}</p>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      // Initially invalid - firstName is required and empty
+      await waitFor(() => expect(isValidValue).toBe(false));
+
+      // Toggle to disable firstName - should become valid (disabled fields skip validation)
+      fireEvent.click(screen.getByTestId('toggle-disabled'));
+      await waitFor(() => expect(isValidValue).toBe(true));
+
+      // Toggle back to enable firstName - should become invalid again (field is still empty)
+      fireEvent.click(screen.getByTestId('toggle-disabled'));
+      await waitFor(() => expect(isValidValue).toBe(false));
+
+      // Fill firstName - should become valid
+      fireEvent.change(screen.getByTestId('firstName'), {
+        target: { value: 'test' },
+      });
+      await waitFor(() => expect(isValidValue).toBe(true));
+
+      // Disable again - should stay valid
+      fireEvent.click(screen.getByTestId('toggle-disabled'));
+      await waitFor(() => expect(isValidValue).toBe(true));
+    });
   });
 
   describe('register valueAs', () => {
@@ -1326,6 +1410,36 @@ describe('register', () => {
 
     it('should send valueAs fields to resolver', async () => {
       const Component = () => {
+        const resolver: Resolver<{ test: number; test1: number }> = async (
+          data,
+        ): Promise<ResolverResult<{ test: number; test1: number }>> => {
+          const valid = !(isNaN(data.test) && isNaN(data.test1));
+
+          if (valid) {
+            return {
+              values: {
+                test: 1,
+                test1: 2,
+              },
+              errors: {},
+            };
+          }
+
+          return {
+            values: {},
+            errors: {
+              test: {
+                type: 'error',
+                message: 'issue',
+              },
+              test1: {
+                type: 'error',
+                message: 'issue',
+              },
+            },
+          };
+        };
+
         const {
           register,
           trigger,
@@ -1335,52 +1449,25 @@ describe('register', () => {
           test1: number;
         }>({
           mode: 'onChange',
-          resolver: async (data) => {
-            const valid = !(isNaN(data.test) && isNaN(data.test1));
-
-            return {
-              errors: valid
-                ? {}
-                : {
-                    test: {
-                      type: 'error',
-                      message: 'issue',
-                    },
-                    test1: {
-                      type: 'error',
-                      message: 'issue',
-                    },
-                  },
-              values: valid
-                ? {
-                    test: 1,
-                    test1: 2,
-                  }
-                : {},
-            };
-          },
+          resolver,
         });
 
         return (
           <>
             <input
               {...register('test', {
-                validate: (value) => {
-                  return value === 1;
-                },
+                validate: (value) => value === 1,
                 valueAsNumber: true,
               })}
             />
             {errors.test && <p>test error</p>}
             <input
               {...register('test1', {
-                validate: (value) => {
-                  return value === 1;
-                },
+                validate: (value) => value === 1,
                 setValueAs: (value) => parseInt(value),
               })}
             />
-            {errors.test && <p>test1 error</p>}
+            {errors.test1 && <p>test1 error</p>} {/* also fixed bug here */}
             <button onClick={() => trigger()}>trigger</button>
           </>
         );
@@ -1394,15 +1481,11 @@ describe('register', () => {
       expect(screen.getByText('test1 error')).toBeVisible();
 
       fireEvent.change(screen.getAllByRole('textbox')[0], {
-        target: {
-          value: '1',
-        },
+        target: { value: '1' },
       });
 
       fireEvent.change(screen.getAllByRole('textbox')[1], {
-        target: {
-          value: '1',
-        },
+        target: { value: '1' },
       });
 
       await waitForElementToBeRemoved(screen.queryByText('test error'));
@@ -1727,7 +1810,7 @@ describe('register', () => {
     ).toEqual('textarea');
   });
 
-  it('should should trigger deps validation', async () => {
+  it('should trigger deps validation', async () => {
     const App = () => {
       const { register, getValues, formState } = useForm<{
         firstName: string;
@@ -1770,33 +1853,44 @@ describe('register', () => {
     await waitForElementToBeRemoved(screen.queryByText('error'));
   });
 
-  it('should should trigger deps validation with schema validation', async () => {
+  it('should trigger deps validation with schema validation', async () => {
     const App = () => {
-      const { register, formState } = useForm<{
+      type Form = {
         firstName: string;
         lastName: string;
-      }>({
+      };
+
+      const resolver: Resolver<Form> = async (
+        values,
+      ): Promise<ResolverResult<Form>> => {
+        const isValid = values.firstName === values.lastName;
+
+        if (isValid) {
+          return {
+            values: {
+              firstName: values.firstName,
+              lastName: values.lastName,
+            },
+            errors: {},
+          };
+        }
+
+        return {
+          values: {},
+          errors: {
+            firstName: {
+              type: 'error',
+            },
+            lastName: {
+              type: 'error',
+            },
+          } as FieldErrors<Form>,
+        };
+      };
+
+      const { register, formState } = useForm<Form>({
         mode: 'onChange',
-        resolver: (values) => {
-          if (values.firstName === values.lastName) {
-            return {
-              errors: {},
-              values,
-            };
-          } else {
-            return {
-              errors: {
-                firstName: {
-                  type: 'error',
-                },
-                lastName: {
-                  type: 'error',
-                },
-              },
-              values,
-            };
-          }
-        },
+        resolver,
       });
 
       return (
@@ -1812,25 +1906,19 @@ describe('register', () => {
     render(<App />);
 
     fireEvent.change(screen.getAllByRole('textbox')[0], {
-      target: {
-        value: 'test',
-      },
+      target: { value: 'test' },
     });
 
     expect(await screen.findByText('firstName error')).toBeVisible();
 
     fireEvent.change(screen.getAllByRole('textbox')[1], {
-      target: {
-        value: 'test1',
-      },
+      target: { value: 'test1' },
     });
 
     expect(await screen.findByText('lastName error')).toBeVisible();
 
     fireEvent.change(screen.getAllByRole('textbox')[1], {
-      target: {
-        value: 'test',
-      },
+      target: { value: 'test' },
     });
 
     await waitFor(() =>

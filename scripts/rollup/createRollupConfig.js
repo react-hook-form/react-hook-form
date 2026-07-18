@@ -29,6 +29,11 @@ export function createRollupConfig(options, callback) {
     plugins: [
       typescript({
         clean: true,
+        // rpt2 ships with include: ["*.ts+(|x)", "**/*.ts+(|x)", ...] which uses extglob
+        // syntax that picomatch v2 (used by @rollup/pluginutils@4.x) does not support —
+        // picomatch v2 treats +(|x) as literal characters, so those patterns never match.
+        // Override with plain globs that picomatch v2 handles correctly.
+        include: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'],
       }),
       options.format === 'umd' &&
         commonjs({
@@ -37,7 +42,14 @@ export function createRollupConfig(options, callback) {
       options.format !== 'esm' &&
         terser({
           output: { comments: false },
-          compress: { drop_console: true },
+          compress: {
+            drop_console: true,
+            passes: 2,
+            unsafe: false,
+            unsafe_comps: false,
+            unsafe_math: false,
+            pure_funcs: ['console.log', 'console.info', 'console.debug'],
+          },
         }),
     ].filter(Boolean),
   };

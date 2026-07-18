@@ -1,7 +1,8 @@
-import type { INPUT_VALIDATION_RULES } from '../constants';
+import type { EVENTS, INPUT_VALIDATION_RULES } from '../constants';
 
 import type { Message } from './errors';
 import type { FieldValues } from './fields';
+import type { FormState } from './form';
 import type { FieldPath, FieldPathValue } from './path';
 
 export type ValidationValue = boolean | number | string | RegExp;
@@ -13,16 +14,43 @@ export type ValidationRule<
 export type ValidationValueMessage<
   TValidationValue extends ValidationValue = ValidationValue,
 > = {
-  value: TValidationValue;
+  value: TValidationValue | undefined;
   message: Message;
 };
 
 export type ValidateResult = Message | Message[] | boolean | undefined;
 
+export type FormValidateResult<T> =
+  | Partial<
+      Record<
+        keyof T,
+        {
+          message: Message | Message[] | boolean | undefined;
+          type: string;
+        }
+      >
+    >
+  | string
+  | boolean;
+
 export type Validate<TFieldValue, TFormValues> = (
   value: TFieldValue,
   formValues: TFormValues,
 ) => ValidateResult | Promise<ValidateResult>;
+
+export type ValidateFormEventType = (typeof EVENTS)[keyof typeof EVENTS];
+
+export type ValidateForm<
+  TFormValues extends FieldValues,
+  TFieldName extends FieldPath<TFormValues> = FieldPath<TFormValues>,
+> = (props: {
+  formValues: TFormValues;
+  formState: FormState<TFormValues>;
+  eventType?: ValidateFormEventType;
+  name?: TFieldName | TFieldName[];
+}) =>
+  | FormValidateResult<TFormValues>
+  | Promise<FormValidateResult<TFormValues>>;
 
 export type RegisterOptions<
   TFieldValues extends FieldValues = FieldValues,

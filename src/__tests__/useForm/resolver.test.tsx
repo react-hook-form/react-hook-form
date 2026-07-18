@@ -1,8 +1,19 @@
 import React from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 
-import type { FieldErrors } from '../../types/errors';
+import { Controller } from '../../controller';
+import type { Control, FieldErrors, ResolverResult } from '../../types';
+import type { Resolver } from '../../types';
+import { useController } from '../../useController';
+import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import { useFormState } from '../../useFormState';
 import noop from '../../utils/noop';
 import sleep from '../../utils/sleep';
 
@@ -58,22 +69,26 @@ describe('resolver', () => {
       test: string;
     };
 
-    const fakeResolver = (schema: boolean) => async () => {
-      return schema
-        ? {
+    const fakeResolver =
+      (schema: boolean): Resolver<FormValues> =>
+      async (): Promise<ResolverResult<FormValues>> => {
+        if (schema) {
+          return {
             values: { test: 'ok' },
             errors: {},
-          }
-        : {
-            values: {},
-            errors: {
-              test: {
-                type: 'test',
-                value: { message: 'wrong', type: 'test' },
-              },
-            },
           };
-    };
+        }
+
+        return {
+          values: {},
+          errors: {
+            test: {
+              type: 'test',
+              message: 'wrong',
+            },
+          },
+        };
+      };
 
     const App = () => {
       const [schema, setSchema] = React.useState(false);
@@ -151,10 +166,18 @@ describe('resolver', () => {
   it('should avoid the problem of race condition', async () => {
     jest.useFakeTimers();
 
+    type FormValues = {
+      test: string;
+    };
+
     const test = jest.fn();
     let errorsObject = {};
 
-    const resolver = async (a: any, b: any, c: any) => {
+    const resolver: Resolver<FormValues> = async (
+      a,
+      b,
+      c,
+    ): Promise<ResolverResult<FormValues>> => {
       test(a, b, c);
 
       if (a.test !== 'OK') {
@@ -163,7 +186,7 @@ describe('resolver', () => {
           errors: {
             test: {
               type: 'test',
-              value: { message: 'wrong', type: 'test' },
+              message: 'wrong',
             },
           },
           values: {},
@@ -180,7 +203,7 @@ describe('resolver', () => {
       const {
         register,
         formState: { errors },
-      } = useForm({
+      } = useForm<FormValues>({
         resolver,
         mode: 'onChange',
       });
@@ -297,5 +320,328 @@ describe('resolver', () => {
         timeout: 3000,
       }),
     ).toBeVisible();
+  });
+
+  describe('resolver state batching', () => {
+    type FormValues = {
+      test: string;
+    };
+
+    const createResolver = (): Resolver<FormValues> => async () => {
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      return {
+        values: {},
+        errors: {
+          test: { type: 'required', message: 'Required' },
+        },
+      };
+    };
+
+    const StateTracker = ({
+      control,
+      onEmit,
+    }: {
+      control: any;
+      onEmit: (state: { errors: any; isValidating: boolean }) => void;
+    }) => {
+      const { errors, isValidating } = useFormState({ control });
+
+      React.useEffect(() => {
+        onEmit({ errors: { ...errors }, isValidating });
+      }, [errors, isValidating, onEmit]);
+
+      return null;
+    };
+
+    it('should batch state updates in onChange mode', async () => {
+      const stateEmissions: Array<{ errors: any; isValidating: boolean }> = [];
+
+      const App = () => {
+        const { register, control } = useForm<FormValues>({
+          resolver: createResolver(),
+          mode: 'onChange',
+        });
+
+        return (
+          <form>
+            <input {...register('test')} />
+            <StateTracker
+              control={control}
+              onEmit={(state) => stateEmissions.push(state)}
+            />
+          </form>
+        );
+      };
+
+      render(<App />);
+      stateEmissions.length = 0;
+
+      fireEvent.change(screen.getByRole('textbox'), { target: { value: 'a' } });
+
+      await waitFor(() => {
+        expect(stateEmissions.some((s) => s.errors.test)).toBe(true);
+      });
+
+      // Should be 2 emissions, not 3
+      expect(stateEmissions).toHaveLength(2);
+      expect(stateEmissions[0]).toEqual({ errors: {}, isValidating: true });
+      expect(stateEmissions[1].errors.test).toBeDefined();
+      expect(stateEmissions[1].isValidating).toBe(false);
+    });
+
+    it('should update isDirty after rapid changes with async resolver', async () => {
+      type DirtyState = { isDirty: boolean };
+      const dirtyStateEmissions: DirtyState[] = [];
+
+      const App = () => {
+        const { register, control } = useForm<FormValues>({
+          resolver: createResolver(),
+          mode: 'onChange',
+          defaultValues: { test: '' },
+        });
+        const { isDirty } = useFormState({ control });
+
+        React.useEffect(() => {
+          dirtyStateEmissions.push({ isDirty });
+        }, [isDirty]);
+
+        return <input {...register('test')} />;
+      };
+
+      render(<App />);
+      dirtyStateEmissions.length = 0;
+
+      fireEvent.change(screen.getByRole('textbox'), { target: { value: 'a' } });
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'ab' },
+      });
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'abc' },
+      });
+
+      await waitFor(() => {
+        expect(dirtyStateEmissions.some(({ isDirty }) => isDirty)).toBe(true);
+      });
+    });
+
+    it('should propagate isDirty to a separate useFormState subscriber when Controller field.onChange is called twice in the same tick', async () => {
+      type FieldValues = { field: string };
+
+      function DirtyStatus({ control }: { control: Control<FieldValues> }) {
+        const { isDirty } = useFormState({ control });
+        return <p data-testid="dirty">{String(isDirty)}</p>;
+      }
+
+      const App = () => {
+        const { control } = useForm<FieldValues>({
+          resolver: async (data) => ({ values: data, errors: {} }),
+          mode: 'onChange',
+          defaultValues: { field: 'initial' },
+        });
+
+        return (
+          <>
+            <Controller
+              name="field"
+              control={control}
+              render={({ field }) => (
+                <button
+                  data-testid="double-change"
+                  onClick={() => {
+                    field.onChange('value-A');
+                    field.onChange('value-B');
+                  }}
+                >
+                  Two Changes
+                </button>
+              )}
+            />
+            <DirtyStatus control={control} />
+          </>
+        );
+      };
+
+      render(<App />);
+      expect(screen.getByTestId('dirty')).toHaveTextContent('false');
+
+      fireEvent.click(screen.getByTestId('double-change'));
+
+      await waitFor(() =>
+        expect(screen.getByTestId('dirty')).toHaveTextContent('true'),
+      );
+    });
+
+    it('should batch state updates in onBlur mode', async () => {
+      const stateEmissions: Array<{ errors: any; isValidating: boolean }> = [];
+
+      const App = () => {
+        const { register, control } = useForm<FormValues>({
+          resolver: createResolver(),
+          mode: 'onBlur',
+        });
+
+        return (
+          <form>
+            <input {...register('test')} />
+            <StateTracker
+              control={control}
+              onEmit={(state) => stateEmissions.push(state)}
+            />
+          </form>
+        );
+      };
+
+      render(<App />);
+      stateEmissions.length = 0;
+
+      fireEvent.focus(screen.getByRole('textbox'));
+      fireEvent.change(screen.getByRole('textbox'), { target: { value: 'a' } });
+      fireEvent.blur(screen.getByRole('textbox'));
+
+      await waitFor(() => {
+        expect(stateEmissions.some((s) => s.errors.test)).toBe(true);
+      });
+
+      // Should be 2 emissions, not 3
+      expect(stateEmissions).toHaveLength(2);
+      expect(stateEmissions[0]).toEqual({ errors: {}, isValidating: true });
+      expect(stateEmissions[1].errors.test).toBeDefined();
+      expect(stateEmissions[1].isValidating).toBe(false);
+    });
+
+    it('should batch state updates when using trigger', async () => {
+      const stateEmissions: Array<{ errors: any; isValidating: boolean }> = [];
+
+      const App = () => {
+        const { register, control, trigger } = useForm<FormValues>({
+          resolver: createResolver(),
+        });
+
+        return (
+          <form>
+            <input {...register('test')} />
+            <StateTracker
+              control={control}
+              onEmit={(state) => stateEmissions.push(state)}
+            />
+            <button type="button" onClick={() => trigger('test')}>
+              Trigger
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+      stateEmissions.length = 0;
+
+      fireEvent.click(screen.getByRole('button', { name: 'Trigger' }));
+
+      await waitFor(() => {
+        expect(stateEmissions.some((s) => s.errors.test)).toBe(true);
+      });
+
+      // Should be 2 emissions, not 3
+      expect(stateEmissions).toHaveLength(2);
+      expect(stateEmissions[0]).toEqual({ errors: {}, isValidating: true });
+      expect(stateEmissions[1].errors.test).toBeDefined();
+      expect(stateEmissions[1].isValidating).toBe(false);
+    });
+
+    it('should not cause "Cannot update component while rendering" error with fieldArray and async validation', async () => {
+      const consoleError = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+
+      const asyncResolver = async (values: any) => {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+
+        const errors: any = {};
+        if (values.parts) {
+          values.parts.forEach((part: any, index: number) => {
+            if (!part.name) {
+              if (!errors.parts) {
+                errors.parts = [];
+              }
+              errors.parts[index] = { name: { message: 'Required' } };
+            }
+          });
+        }
+
+        return {
+          values,
+          errors,
+        };
+      };
+
+      const FormInput = ({ control, name }: any) => {
+        const { field } = useController({ control, name });
+        return <input {...field} />;
+      };
+
+      const TestComponent = () => {
+        const [partCount, setPartCount] = React.useState(1);
+
+        const { control, reset } = useForm({
+          resolver: asyncResolver,
+          mode: 'onChange',
+          defaultValues: {
+            parts: [{ name: 'Part 1' }],
+          },
+        });
+
+        const { fields } = useFieldArray({
+          control,
+          name: 'parts',
+        });
+
+        const { isValid } = useFormState({ control });
+
+        React.useEffect(() => {
+          if (fields.length < partCount) {
+            const newParts = Array.from({ length: partCount }, (_, i) => ({
+              name: `Part ${i + 1}`,
+            }));
+            reset({ parts: newParts });
+          }
+        }, [partCount, fields.length, reset]);
+
+        return (
+          <div>
+            <div data-testid="isValid">{isValid ? 'valid' : 'invalid'}</div>
+            <div data-testid="fieldsCount">{fields.length}</div>
+            {fields.map((field, index) => (
+              <FormInput
+                key={field.id}
+                control={control}
+                name={`parts.${index}.name`}
+              />
+            ))}
+            <button onClick={() => setPartCount(10)}>Add Parts</button>
+          </div>
+        );
+      };
+
+      render(<TestComponent />);
+
+      expect(screen.getByTestId('fieldsCount')).toHaveTextContent('1');
+
+      fireEvent.click(screen.getByText('Add Parts'));
+
+      await waitFor(
+        () => {
+          expect(screen.getByTestId('fieldsCount')).toHaveTextContent('10');
+        },
+        { timeout: 3000 },
+      );
+
+      // Verify no React rendering errors occurred
+      const reactErrors = consoleError.mock.calls.filter((call) =>
+        call[0]?.toString().includes('Cannot update a component'),
+      );
+
+      expect(reactErrors.length).toBe(0);
+
+      consoleError.mockRestore();
+    });
   });
 });

@@ -3,18 +3,25 @@ name: E2E Test
 on: [pull_request]
 
 jobs:
-  cypress-run:
+  playwright-run:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Install Dependencies
         uses: ./.github/actions/install-dependencies
 
-      - name: Cypress run
-        uses: cypress-io/github-action@v6
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Playwright run
+        run: pnpm e2e
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
         with:
-          start: pnpm start
-          wait-on: 'http://ip6-localhost:3000'
-          wait-on-timeout: 120
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

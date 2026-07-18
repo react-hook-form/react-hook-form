@@ -46,6 +46,7 @@ export type UseControllerProps<
   defaultValue?: FieldPathValue<TFieldValues, TName>;
   control?: Control<TFieldValues, any, TTransformedValues>;
   disabled?: boolean;
+  exact?: boolean;
 };
 
 export type UseControllerReturn<

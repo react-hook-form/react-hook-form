@@ -16,9 +16,9 @@ Here is a quick guide to doing code contributions to the library.
    pnpm install
    ```
 
-Pay attention that we use pnpm v9 along with Node.js 20.
+Pay attention that we use pnpm v11 along with Node.js 22.
 
-4. If you've added a code that should be tested, ensure the test suite still passes.
+4. If you've added code that should be tested, ensure the test suite still passes.
 
    ```shellscript
    pnpm test && pnpm test:type
@@ -32,7 +32,7 @@ Pay attention that we use pnpm v9 along with Node.js 20.
    pnpm lint
    ```
 
-7. Ensure the automation suite passes by running two following commands in parallel:
+7. Ensure the automation suite passes by running the following two commands in parallel:
 
    ```shellscript
    pnpm start
@@ -40,7 +40,7 @@ Pay attention that we use pnpm v9 along with Node.js 20.
    pnpm e2e
    ```
 
-8. Ensure build passes.
+8. Ensure the build passes.
 
    ```shellscript
    pnpm build
@@ -68,7 +68,7 @@ Please follow the coding style of the project. React Hook Form uses eslint and p
 
 You can use [Jest Preview](https://www.jest-preview.com) to debug the Jest tests visually.
 
-1. Put `debug()` to wherever you want to preview the UI of your Jest tests
+1. Put `debug()` wherever you want to preview the UI of your Jest tests
 
 ```diff
 import { debug } from 'jest-preview';
@@ -93,13 +93,13 @@ it('should render correctly', () => {
    pnpm test:watch
    ```
 
-The browser will reloads automatically when `debug()` is executed.
+The browser will reload automatically when `debug()` is executed.
 
 [Automatic Mode](https://www.jest-preview.com/blog/automatic-mode/) is also enabled, it will preview the UI of a failed test on the browser automatically without explicitly adding `debug()`.
 
 ### Write a new test
 
-To write a new test efficiently, add `debug()` at the end of `it`'s callback block. Whenever you hit Save, the corresponding UI updated in a browser instantly.
+To write a new test efficiently, add `debug()` at the end of `it`'s callback block. Whenever you hit Save, the corresponding UI is updated in a browser instantly.
 
 You can remove `debug()` after you have finished writing the tests.
 
