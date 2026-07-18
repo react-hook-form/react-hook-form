@@ -2,6 +2,7 @@
   "Controller",
   "FieldArray",
   "Form",
+  "FormState",
   "FormProvider",
   "FormStateSubscribe",
   "Watch",
