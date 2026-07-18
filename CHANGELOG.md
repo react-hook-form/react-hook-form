@@ -1,5 +1,59 @@
 # Changelog
 
+## [7.82.0] - 2026-07-18
+
+### Added
+
+- Opt-in `delayError` option for `setValue` to delay validation error updates
+
+### Fixed
+
+- Expose `resetDefaultValues` through form context
+- `setValue` with `shouldDirty` not updating dirty state correctly when the form is disabled
+- Preserve `dirtyFields` boolean values for registered array fields
+- Restore `FieldArray` component export
+
+### Performance
+
+- Improve `getDirtyFields` performance, especially for larger forms and deeply nested values
+
+## [7.81.0] - 2026-07-05
+
+### Added
+
+- `FieldArray` component built on `useFieldArray` for controlled field-array rendering
+
+### Fixed
+
+- `clearErrors` changing the `name` value from `form.subscribe`
+- `reset` triggering `subscribe` with the latest name instead of `undefined`
+- `setValues` leaving stale elements behind when shrinking a field array
+- `flatten` preserving `Date` values as leaf nodes
+- `useFieldArray` min length validation error changing location in the `errors` object
+- `useController` not reflecting a cleared parent object in controlled fields
+
+### Security
+
+- Harden `unset()` against prototype-path traversal (`__proto__` / `constructor` / `prototype`), matching the existing `set()` guard
+
+### Performance
+
+- Improve re-render with `useFieldArray` reset
+
+## [7.80.0] - 2026-06-20
+
+### Added
+
+- `disabled` prop support for individual fields within `useFieldArray`
+
+### Fixed
+
+- `deepEqual` incorrectly treating empty array `[]` and empty plain object `{}` as equal
+
+### Performance
+
+- Improve `onChange`, `setValid`, dirty checking, `setValue`, and `setValues` performance
+
 ## [7.79.0] - 2026-06-13
 
 ### Added

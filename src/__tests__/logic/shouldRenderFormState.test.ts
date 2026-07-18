@@ -65,6 +65,27 @@ describe('shouldRenderFormState', () => {
     expect(result).toBeUndefined();
   });
 
+  it('calls Object.keys on formState exactly once regardless of which branch is taken', () => {
+    const keysSpy = jest.spyOn(Object, 'keys');
+
+    // non-root, non-empty, no matching key → reaches .find() branch
+    const proxy = { isValid: true } as ReadFormState;
+    shouldRenderFormState({ isDirty: true }, proxy, updateFormState);
+
+    // Each call to shouldRenderFormState should produce exactly one
+    // Object.keys(formState) call. The proxy may also be keyed once (isRoot
+    // length check is skipped here), so the formState key must not appear 2-3×.
+    const formStateKeyCalls = keysSpy.mock.calls.filter(
+      (args) =>
+        args[0] != null &&
+        typeof args[0] === 'object' &&
+        'isDirty' in (args[0] as object),
+    );
+    expect(formStateKeyCalls).toHaveLength(1);
+
+    keysSpy.mockRestore();
+  });
+
   describe('when root subscribe', () => {
     it('should return subscribed key name if expecting all', () => {
       const proxy: ReadFormState = {
