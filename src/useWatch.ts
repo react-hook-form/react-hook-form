@@ -16,13 +16,13 @@ import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 
 /**
- * Subscribe to the entire form values change and re-render at the hook level.
+ * Subscribes to all form value changes and re-renders at the hook level.
  *
  * @remarks
  *
  * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
  *
- * @param props - defaultValue, disable subscription and match exact name.
+ * @param props - DefaultValue, disabled subscription, and exact name matching.
  *
  * @example
  * ```tsx
@@ -48,13 +48,13 @@ export function useWatch<
   compute?: undefined;
 }): DeepPartialSkipArrayKey<TFieldValues>;
 /**
- * Custom hook to subscribe to field change and isolate re-rendering at the component level.
+ * Custom hook to subscribe to field changes and isolate re-rendering at the component level.
  *
  * @remarks
  *
  * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
  *
- * @param props - defaultValue, disable subscription and match exact name.
+ * @param props - DefaultValue, disabled subscription, and exact name matching.
  *
  * @example
  * ```tsx
@@ -80,13 +80,13 @@ export function useWatch<
   compute?: undefined;
 }): FieldPathValue<TFieldValues, TFieldName>;
 /**
- * Custom hook to subscribe to field change and compute function to produce state update
+ * Custom hook to subscribe to field changes and use a compute function to produce state updates.
  *
  * @remarks
  *
  * [API](https://react-hook-form.com/docs/usewatch)
  *
- * @param props - defaultValue, disable subscription and match exact name.
+ * @param props - DefaultValue, disabled subscription, and exact name matching.
  *
  * @example
  * ```tsx
@@ -110,13 +110,13 @@ export function useWatch<
   compute: (formValues: TFieldValues) => TComputeValue;
 }): TComputeValue;
 /**
- * Custom hook to subscribe to field change and compute function to produce state update
+ * Custom hook to subscribe to field changes and use a compute function to produce state updates.
  *
  * @remarks
  *
  * [API](https://react-hook-form.com/docs/usewatch)
  *
- * @param props - defaultValue, disable subscription and match exact name.
+ * @param props - DefaultValue, disabled subscription, and exact name matching.
  *
  * @example
  * ```tsx
@@ -146,13 +146,13 @@ export function useWatch<
   ) => TComputeValue;
 }): TComputeValue;
 /**
- * Custom hook to subscribe to field change and isolate re-rendering at the component level.
+ * Custom hook to subscribe to field changes and isolate re-rendering at the component level.
  *
  * @remarks
  *
  * [API](https://react-hook-form.com/docs/usewatch) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-usewatch-h9i5e)
  *
- * @param props - defaultValue, disable subscription and match exact name.
+ * @param props - DefaultValue, disabled subscription, and exact name matching.
  *
  * @example
  * ```tsx
@@ -182,13 +182,13 @@ export function useWatch<
   compute?: undefined;
 }): FieldPathValues<TFieldValues, TFieldNames>;
 /**
- * Custom hook to subscribe to field change and compute function to produce state update
+ * Custom hook to subscribe to field changes and use a compute function to produce state updates.
  *
  * @remarks
  *
  * [API](https://react-hook-form.com/docs/usewatch)
  *
- * @param props - defaultValue, disable subscription and match exact name.
+ * @param props - DefaultValue, disabled subscription, and exact name matching.
  *
  * @example
  * ```tsx
@@ -222,7 +222,7 @@ export function useWatch<
   ) => TComputeValue;
 }): TComputeValue;
 /**
- * Custom hook to subscribe to field change and isolate re-rendering at the component level.
+ * Custom hook to subscribe to field changes and isolate re-rendering at the component level.
  *
  * @remarks
  *
@@ -230,7 +230,7 @@ export function useWatch<
  *
  * @example
  * ```tsx
- * // can skip passing down the control into useWatch if the form is wrapped with the FormProvider
+ * // Can skip passing down the control into useWatch if the form is wrapped with FormProvider
  * const values = useWatch()
  * ```
  */
@@ -238,7 +238,7 @@ export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
 >(): DeepPartialSkipArrayKey<TFieldValues>;
 /**
- * Custom hook to subscribe to field change and isolate re-rendering at the component level.
+ * Custom hook to subscribe to field changes and isolate re-rendering at the component level.
  *
  * @remarks
  *
@@ -248,7 +248,7 @@ export function useWatch<
  * ```tsx
  * const { control } = useForm();
  * const values = useWatch({
- *   name: "fieldName"
+ *   name: "fieldName",
  *   control,
  * })
  * ```

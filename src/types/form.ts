@@ -212,13 +212,13 @@ export type UseFormRegisterReturn<
 };
 
 /**
- * Register field into hook form with or without the actual DOM ref. You can invoke register anywhere in the component including at `useEffect`.
+ * Registers a field into hook form with or without the actual DOM ref. You can invoke register anywhere in the component including in `useEffect`.
  *
  * @remarks
  * [API](https://react-hook-form.com/docs/useform/register) • [Demo](https://codesandbox.io/s/react-hook-form-register-ts-ip2j3) • [Video](https://www.youtube.com/watch?v=JFIpCoajYkA)
  *
- * @param name - the path name to the form field value, name is required and unique
- * @param options - register options include validation, disabled, unregister, value as and dependent validation
+ * @param name - The path name to the form field value; name is required and unique.
+ * @param options - Register options including validation, disabled, unregister, value as, and dependent validation.
  *
  * @returns onChange, onBlur, name, ref, and native HTML validation attributes if browser validation is enabled.
  *
@@ -256,13 +256,13 @@ export type SetFocusOptions = Partial<{
 }>;
 
 /**
- * Set focus on a registered field. You can start to invoke this method after all fields are mounted to the DOM.
+ * Sets focus on a registered field. You can start to invoke this method after all fields are mounted to the DOM.
  *
  * @remarks
  * [API](https://react-hook-form.com/docs/useform/setfocus) • [Demo](https://codesandbox.io/s/setfocus-rolus)
  *
- * @param name - the path name to the form field value.
- * @param options - input focus behavior options
+ * @param name - The path name to the form field value.
+ * @param options - Input focus behavior options.
  *
  * @example
  * ```tsx
@@ -298,7 +298,7 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    * @remarks
    * [API](https://react-hook-form.com/docs/useform/getvalues) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-getvalues-txsfg)
    *
-   * @returns form values
+   * @returns Form values.
    *
    * @example
    * ```tsx
@@ -316,8 +316,8 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
    * @remarks
    * [API](https://react-hook-form.com/docs/useform/getvalues) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-getvalues-txsfg)
    *
-   * @param name - the path name to the form field value.
-   * @param config - return touched or dirty fields
+   * @param name - The path name to the form field value.
+   * @param config - Return touched or dirty fields.
    *
    * @returns the single field value
    *
@@ -361,14 +361,14 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
 };
 
 /**
- * This method will return individual field states. It will be useful when you are trying to retrieve the nested value field state in a typesafe approach.
+ * This method will return individual field states. It will be useful when you are trying to retrieve the nested value field state in a type-safe approach.
  *
  * @remarks
  * [API](https://react-hook-form.com/docs/useform/getfieldstate) • [Demo](https://codesandbox.io/s/getfieldstate-jvekk)
  *
- * @param name - the path name to the form field value.
+ * @param name - The path name to the form field value.
  *
- * @returns invalid, isDirty, isTouched, isValidating, and error object
+ * @returns invalid, isDirty, isTouched, isValidating, and error object.
  *
  * @example
  * ```tsx
@@ -398,12 +398,12 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
 };
 
 /**
- * This method will allow you to subscribe to formState without component render
+ * This method will allow you to subscribe to formState without a component re-rendering.
  *
  * @remarks
  * [API](https://react-hook-form.com/docs/useform/subscribe) • [Demo](https://codesandbox.io/s/subscribe)
  *
- * @param options - subscription options on which formState subscribe to
+ * @param options - Subscription options to which formState subscribes.
  *
  * @example
  * ```tsx
@@ -434,12 +434,12 @@ export type UseFormSubscribe<TFieldValues extends FieldValues> = <
 
 export type UseFormWatch<TFieldValues extends FieldValues> = {
   /**
-   * Watch and subscribe to the entire form update/change based on onChange and re-render at the useForm.
+   * Watch and subscribe to all form updates and changes based on onChange, and trigger re-renders at the useForm level.
    *
    * @remarks
    * [API](https://react-hook-form.com/docs/useform/watch) • [Demo](https://codesandbox.io/s/react-hook-form-watch-v7-ts-8et1d) • [Video](https://www.youtube.com/watch?v=3qLd69WMqKk)
    *
-   * @returns the entire form values
+   * @returns The entire form values.
    *
    * @example
    * ```tsx
@@ -453,10 +453,10 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
    * @remarks
    * [API](https://react-hook-form.com/docs/useform/watch) • [Demo](https://codesandbox.io/s/react-hook-form-watch-v7-ts-8et1d) • [Video](https://www.youtube.com/watch?v=3qLd69WMqKk)
    *
-   * @param names - an array of field names
-   * @param defaultValue - defaultValues for the entire form
+   * @param names - An array of field names.
+   * @param defaultValue - DefaultValues for the entire form.
    *
-   * @returns an array of field values
+   * @returns An array of field values.
    *
    * @example
    * ```tsx
@@ -488,15 +488,15 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
     defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
   ): FieldPathValue<TFieldValues, TFieldName>;
   /**
-   * Subscribe to field update/change without trigger re-render
+   * Subscribe to field updates and changes without triggering a re-render.
    *
    * @remarks
    * [API](https://react-hook-form.com/docs/useform/watch) • [Demo](https://codesandbox.io/s/react-hook-form-watch-v7-ts-8et1d) • [Video](https://www.youtube.com/watch?v=3qLd69WMqKk)
    *
-   * @param callback - call back function to subscribe all fields change and return unsubscribe function
-   * @param defaultValues - defaultValues for the entire form
+   * @param callback - Callback function to subscribe to all field changes and return an unsubscribe function.
+   * @param defaultValues - DefaultValues for the entire form.
    *
-   * @returns unsubscribe function
+   * @returns Unsubscribe function.
    *
    * @example
    * ```tsx
@@ -515,15 +515,15 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
 };
 
 /**
- * Trigger field or form validation
+ * Triggers field or form validation.
  *
  * @remarks
  * [API](https://react-hook-form.com/docs/useform/trigger) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-triggervalidation-forked-xs7hl) • [Video](https://www.youtube.com/watch?v=-bcyJCDjksE)
  *
- * @param name - provide empty argument will trigger the entire form validation, an array of field names will validate an array of fields, and a single field name will only trigger that field's validation.
- * @param options - should focus on the error field
+ * @param name - Providing no argument will trigger the entire form validation; an array of field names will validate those fields, and a single field name will only trigger that field's validation.
+ * @param options - Should focus on the error field.
  *
- * @returns validation result
+ * @returns Validation result.
  *
  * @example
  * ```tsx
@@ -547,12 +547,12 @@ export type UseFormTrigger<TFieldValues extends FieldValues> = (
 ) => Promise<boolean>;
 
 /**
- * Clear the entire form errors.
+ * Clears all form errors.
  *
  * @remarks
  * [API](https://react-hook-form.com/docs/useform/clearerrors) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-clearerrors-w3ymx)
  *
- * @param name - the path name to the form field value.
+ * @param name - The path name to the form field value.
  *
  * @example
  * Clear all errors
@@ -574,14 +574,14 @@ export type UseFormClearErrors<TFieldValues extends FieldValues> = (
 ) => void;
 
 /**
- * Set a single field value, or a group of fields value.
+ * Sets a single field value, or a group of field values.
  *
  * @remarks
  * [API](https://react-hook-form.com/docs/useform/setvalue) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-setvalue-8z9hx) • [Video](https://www.youtube.com/watch?v=qpv51sCH3fI)
  *
- * @param name - the path name to the form field value.
- * @param value - field value
- * @param options - should validate or update form state
+ * @param name - The path name to the form field value.
+ * @param value - Field value.
+ * @param options - Should validate or update form state.
  *
  * @example
  * ```tsx
@@ -592,7 +592,7 @@ export type UseFormClearErrors<TFieldValues extends FieldValues> = (
  *   shouldDirty: true, // update dirty and dirty fields form state
  * });
  *
- * // Update a group fields
+ * // Update a group of fields
  * setValue('root', {
  *   a: 'test', // setValue('root.a', 'data')
  *   b: 'test1', // setValue('root.b', 'data')
@@ -616,18 +616,18 @@ export type UseFormSetValues<TFieldValues extends FieldValues> = (
 ) => void;
 
 /**
- * Set an error for the field. When set an error which is not associated to a field then manual `clearErrors` invoke is required.
+ * Sets an error for a field. When setting an error that is not associated with a field, a manual `clearErrors` call is required.
  *
  * @remarks
  * [API](https://react-hook-form.com/docs/useform/seterror) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-seterror-nfxxu) • [Video](https://www.youtube.com/watch?v=raMqvE0YyIY)
  *
- * @param name - the path name to the form field value.
- * @param error - an error object which contains type and optional message
- * @param options - whether or not to focus on the field
+ * @param name - The path name to the form field value.
+ * @param error - An error object containing the type and an optional message.
+ * @param options - Whether or not to focus on the field.
  *
  * @example
  * ```tsx
- * // when the error is not associated with any fields, `clearError` will need to invoke to clear the error
+ * // When the error is not associated with any fields, `clearErrors` will need to be invoked to clear the error.
  * const onSubmit = () => setError("serverError", { type: "server", message: "Error occurred"})
  *
  * <button onClick={() => setError("name", { type: "min" })} />
@@ -650,13 +650,13 @@ export type UseFormSetError<TFieldValues extends FieldValues> = (
 ) => void;
 
 /**
- * Unregister a field reference and remove its value.
+ * Unregisters a field reference and removes its value.
  *
  * @remarks
  * [API](https://react-hook-form.com/docs/useform/unregister) • [Demo](https://codesandbox.io/s/react-hook-form-unregister-4k2ey) • [Video](https://www.youtube.com/watch?v=TM99g_NW5Gk&feature=emb_imp_woyt)
  *
- * @param name - the path name to the form field value.
- * @param options - keep form state options
+ * @param name - The path name to the form field value.
+ * @param options - Keep form state options.
  *
  * @example
  * ```tsx
@@ -683,15 +683,15 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (
 ) => void;
 
 /**
- * Validate the entire form. Handle submit and error callback.
+ * Validates the entire form. Handles the submit and error callbacks.
  *
  * @remarks
  * [API](https://react-hook-form.com/docs/useform/handlesubmit) • [Demo](https://codesandbox.io/s/react-hook-form-handlesubmit-ts-v7-lcrtu) • [Video](https://www.youtube.com/watch?v=KzcPKB9SOEk)
  *
- * @param onValid - callback function invoked after form pass validation
- * @param onInvalid - callback function invoked when form failed validation
+ * @param onValid - Callback function invoked after the form passes validation.
+ * @param onInvalid - Callback function invoked when the form fails validation.
  *
- * @returns callback - return callback function
+ * @returns Callback function.
  *
  * @example
  * ```tsx
@@ -710,13 +710,13 @@ export type UseFormHandleSubmit<
 ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
 
 /**
- * Reset a field state and reference.
+ * Resets a field's state and reference.
  *
  * @remarks
  * [API](https://react-hook-form.com/docs/useform/resetfield) • [Demo](https://codesandbox.io/s/priceless-firefly-d0kuv) • [Video](https://www.youtube.com/watch?v=IdLFcNaEFEo)
  *
- * @param name - the path name to the form field value.
- * @param options - keep form state options
+ * @param name - The path name to the form field value.
+ * @param options - Keep form state options.
  *
  * @example
  * ```tsx
@@ -734,25 +734,25 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <
 type ResetAction<TFieldValues> = (formValues: TFieldValues) => TFieldValues;
 
 /**
- * Reset at the entire form state.
+ * Resets the entire form state.
  *
  * @remarks
  * [API](https://react-hook-form.com/docs/useform/reset) • [Demo](https://codesandbox.io/s/react-hook-form-reset-v7-ts-pu901) • [Video](https://www.youtube.com/watch?v=qmCLBjyPwVk)
  *
- * @param values - the entire form values to be reset
- * @param keepStateOptions - keep form state options
+ * @param values - The entire form values to be reset.
+ * @param keepStateOptions - Keep form state options.
  *
  * @example
  * ```tsx
  * useEffect(() => {
- *   // reset the entire form after component mount or form defaultValues is ready
+ *   // reset the entire form after component mount or form defaultValues are ready
  *   reset({
  *     fieldA: "test"
  *     fieldB: "test"
  *   });
  * }, [reset])
  *
- * // reset by combine with existing form values
+ * // Reset by combining with existing form values
  * reset({
  *   ...getValues(),
  *  fieldB: "test"
@@ -776,13 +776,13 @@ export type UseFormReset<TFieldValues extends FieldValues> = (
 ) => void;
 
 /**
- * Reset the default values of the form and recompute `dirtyFields`/`isDirty` without changing user values.
+ * Resets the default values of the form and recomputes `dirtyFields`/`isDirty` without changing user values.
  *
  * @remarks
  * [API](https://react-hook-form.com/docs/useform/resetdefaultvalues)
  *
- * @param values - the new default values
- * @param options - options to keep dirty or isValid state
+ * @param values - The new default values.
+ * @param options - Options to keep dirty or isValid state.
  *
  * @example
  * ```tsx
