@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react';
 import {
   act,
   fireEvent,
@@ -6,6 +5,7 @@ import {
   renderHook,
   screen,
 } from '@testing-library/react';
+import React, { useEffect, useState } from 'react';
 
 import { Controller } from '../../controller';
 import type { Control, FieldValues } from '../../types';

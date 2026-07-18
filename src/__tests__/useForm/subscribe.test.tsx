@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   act,
   fireEvent,
@@ -6,6 +5,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import React from 'react';
 
 import type { UseFormSubscribe } from '../../types';
 import { useForm } from '../../useForm';

@@ -22,13 +22,14 @@ import type {
   ValidPathPrefix,
 } from '../../types/path/common';
 import type {
+  Equal,
+  Expect,
   HundredPathString,
   HundredTuple,
   InfiniteType,
   Nested,
   NullableInfiniteType,
 } from '../__fixtures__';
-import type { Equal, Expect } from '../__fixtures__';
 import { _ } from '../__fixtures__';
 
 /** {@link IsTuple} */ {

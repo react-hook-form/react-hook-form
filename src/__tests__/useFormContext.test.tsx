@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-import { flushSync } from 'react-dom';
 import {
   act,
   fireEvent,
@@ -7,6 +5,8 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import React, { useState } from 'react';
+import { flushSync } from 'react-dom';
 
 import { Controller } from '../controller';
 import { useController } from '../useController';

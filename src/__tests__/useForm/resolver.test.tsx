@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   act,
   fireEvent,
@@ -6,10 +5,15 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import React from 'react';
 
 import { Controller } from '../../controller';
-import type { Control, FieldErrors, ResolverResult } from '../../types';
-import type { Resolver } from '../../types';
+import type {
+  Control,
+  FieldErrors,
+  Resolver,
+  ResolverResult,
+} from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';

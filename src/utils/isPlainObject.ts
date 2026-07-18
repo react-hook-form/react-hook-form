@@ -5,6 +5,6 @@ export default (tempObject: object) => {
     tempObject.constructor && tempObject.constructor.prototype;
 
   return (
-    isObject(prototypeCopy) && prototypeCopy.hasOwnProperty('isPrototypeOf')
+    isObject(prototypeCopy) && Object.hasOwn(prototypeCopy, 'isPrototypeOf')
   );
 };

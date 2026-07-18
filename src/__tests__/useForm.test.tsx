@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
   act,
   fireEvent,
@@ -8,7 +7,15 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react';
-
+import React, { useState } from 'react';
+import {
+  Controller,
+  createFormControl,
+  useController,
+  useFieldArray,
+  useForm,
+  useFormState,
+} from '../';
 import { VALIDATION_MODE } from '../constants';
 import type {
   Control,
@@ -27,14 +34,6 @@ import type {
 import isFunction from '../utils/isFunction';
 import noop from '../utils/noop';
 import sleep from '../utils/sleep';
-import {
-  Controller,
-  createFormControl,
-  useController,
-  useFieldArray,
-  useForm,
-  useFormState,
-} from '../';
 
 jest.useFakeTimers();
 
@@ -470,7 +469,7 @@ describe('useForm', () => {
     });
 
     it('should only unregister inputs when all checkboxes are unmounted', async () => {
-      let result: Record<string, string> | undefined = undefined;
+      let result: Record<string, string> | undefined;
 
       const Component = () => {
         const { register, handleSubmit } = useForm({

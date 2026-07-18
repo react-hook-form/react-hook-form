@@ -1,7 +1,6 @@
 // types/__tests__/formState.tsd.ts
 import { FormStateSubscribe } from '../formStateSubscribe';
-import type { FieldValues } from '../types';
-import { type UseFormStateReturn } from '../types';
+import type { FieldValues, UseFormStateReturn } from '../types';
 import { useForm } from '../useForm';
 
 import type { Equal, Expect } from './__fixtures__';
@@ -117,17 +116,14 @@ import type { Equal, Expect } from './__fixtures__';
       },
     });
   }
-
-  /** it should allow using context (no control prop) and still infer types when provided upstream */ {
-    // This block is purely type-level: we just assert render param type remains UseFormStateReturn<any>
-    // when control isn't passed directly. Actual inference comes from provider at runtime.
-    void FormStateSubscribe({
-      // no control
-      render: (state) => {
-        // Without a generic argument here, state defaults to FieldValues
-        type _t = Expect<Equal<typeof state, UseFormStateReturn<FieldValues>>>;
-        return null;
-      },
-    });
-  }
+  // This block is purely type-level: we just assert render param type remains UseFormStateReturn<any>
+  // when control isn't passed directly. Actual inference comes from provider at runtime.
+  void FormStateSubscribe({
+    // no control
+    render: (state) => {
+      // Without a generic argument here, state defaults to FieldValues
+      type _t = Expect<Equal<typeof state, UseFormStateReturn<FieldValues>>>;
+      return null;
+    },
+  });
 }

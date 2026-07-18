@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   act,
   fireEvent,
@@ -7,6 +6,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import React from 'react';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
@@ -999,7 +999,7 @@ describe('setValue', () => {
   });
 
   it('should set hidden input value correctly and reflect on the submission data', async () => {
-    let submitData: Record<string, string> | undefined = undefined;
+    let submitData: Record<string, string> | undefined;
 
     const Component = () => {
       const { register, handleSubmit, setValue } = useForm<{

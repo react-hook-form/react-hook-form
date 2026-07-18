@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { VALIDATION_MODE } from './constants';
 import generateId from './logic/generateId';
 import getFocusFieldName from './logic/getFocusFieldName';
 import getValidationModes from './logic/getValidationModes';
@@ -7,23 +7,6 @@ import isWatched from './logic/isWatched';
 import iterateFieldsByAction from './logic/iterateFieldsByAction';
 import updateFieldArrayRootError from './logic/updateFieldArrayRootError';
 import validateField from './logic/validateField';
-import appendAt from './utils/append';
-import cloneObject from './utils/cloneObject';
-import convertToArrayPayload from './utils/convertToArrayPayload';
-import fillEmptyArray from './utils/fillEmptyArray';
-import get from './utils/get';
-import insertAt from './utils/insert';
-import isBoolean from './utils/isBoolean';
-import isEmptyObject from './utils/isEmptyObject';
-import isObject from './utils/isObject';
-import moveArrayAt from './utils/move';
-import prependAt from './utils/prepend';
-import removeArrayAt from './utils/remove';
-import set from './utils/set';
-import swapArrayAt from './utils/swap';
-import unset from './utils/unset';
-import updateAt from './utils/update';
-import { VALIDATION_MODE } from './constants';
 import type {
   Control,
   Field,
@@ -43,6 +26,22 @@ import type {
 } from './types';
 import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
+import appendAt from './utils/append';
+import cloneObject from './utils/cloneObject';
+import convertToArrayPayload from './utils/convertToArrayPayload';
+import fillEmptyArray from './utils/fillEmptyArray';
+import get from './utils/get';
+import insertAt from './utils/insert';
+import isBoolean from './utils/isBoolean';
+import isEmptyObject from './utils/isEmptyObject';
+import isObject from './utils/isObject';
+import moveArrayAt from './utils/move';
+import prependAt from './utils/prepend';
+import removeArrayAt from './utils/remove';
+import set from './utils/set';
+import swapArrayAt from './utils/swap';
+import unset from './utils/unset';
+import updateAt from './utils/update';
 
 /**
  * A custom hook that exposes convenient methods to perform operations with a list of dynamic inputs that need to be appended, updated, removed etc. • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn) • [Video](https://youtu.be/4MrbfGSFY2A)
@@ -83,8 +82,8 @@ import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
  */
 export function useFieldArray<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldArrayName extends FieldArrayPath<TFieldValues> =
-    FieldArrayPath<TFieldValues>,
+  TFieldArrayName extends
+    FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
   TTransformedValues = TFieldValues,
 >(

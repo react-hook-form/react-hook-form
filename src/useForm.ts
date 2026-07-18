@@ -1,11 +1,7 @@
 import React from 'react';
-
+import { createFormControl } from './logic';
 import { DEFAULT_FORM_STATE } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
-import cloneObject from './utils/cloneObject';
-import deepEqual from './utils/deepEqual';
-import isFunction from './utils/isFunction';
-import { createFormControl } from './logic';
 import type {
   FieldValues,
   FormState,
@@ -13,6 +9,9 @@ import type {
   UseFormReturn,
 } from './types';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
+import cloneObject from './utils/cloneObject';
+import deepEqual from './utils/deepEqual';
+import isFunction from './utils/isFunction';
 
 /**
  * Custom hook to manage the entire form.

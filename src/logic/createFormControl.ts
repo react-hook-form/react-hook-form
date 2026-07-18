@@ -888,7 +888,7 @@ export function createFormControl<
     skipRender = false,
   ) => {
     for (const fieldKey in value) {
-      if (!value.hasOwnProperty(fieldKey)) {
+      if (!Object.hasOwn(value, fieldKey)) {
         return;
       }
       const fieldValue = value[fieldKey];
@@ -1477,7 +1477,7 @@ export function createFormControl<
   }) => {
     if (
       (isBoolean(disabled) && _state.mount) ||
-      !!disabled ||
+      disabled ||
       _names.disabled.has(name)
     ) {
       const wasDisabled = _names.disabled.has(name);
@@ -1620,7 +1620,7 @@ export function createFormControl<
 
   const handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues> =
     (onValid, onInvalid) => async (e) => {
-      let onValidError = undefined;
+      let onValidError;
       if (e) {
         e.preventDefault && e.preventDefault();
         (e as React.BaseSyntheticEvent).persist &&

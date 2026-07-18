@@ -1,6 +1,5 @@
 import type { ArrayPath, FieldPathValues, Path, PathValue } from '../../types';
-import type { Depth3Type } from '../__fixtures__';
-import type { Equal, Expect } from '../__fixtures__';
+import type { Depth3Type, Equal, Expect } from '../__fixtures__';
 import { _ } from '../__fixtures__';
 
 /** {@link Path} */ {

@@ -70,7 +70,9 @@ export type AsPathTuple<T> = Extract<T, PathTuple>;
  * ```
  */
 export type UnionToIntersection<U> = (
-  U extends any ? (_: U) => any : never
+  U extends any
+    ? (_: U) => any
+    : never
 ) extends (_: infer I) => any
   ? I
   : never;

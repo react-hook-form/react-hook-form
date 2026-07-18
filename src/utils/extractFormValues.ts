@@ -7,7 +7,7 @@ export default function extractFormValues<
   const values: Record<string, unknown> = {};
 
   for (const key in fieldsState) {
-    if (fieldsState.hasOwnProperty(key)) {
+    if (Object.hasOwn(fieldsState, key)) {
       const fieldState = fieldsState[key];
       const fieldValue = formValues[key];
 

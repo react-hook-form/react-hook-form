@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   act,
   fireEvent,
@@ -8,6 +7,7 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react';
+import React from 'react';
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
