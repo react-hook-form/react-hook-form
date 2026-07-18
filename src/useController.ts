@@ -201,7 +201,7 @@ export function useController<
     const _shouldUnregisterField =
       control._options.shouldUnregister || shouldUnregister;
 
-    control.register(name, {
+    _registerProps.current = control.register(name, {
       ..._props.current.rules,
       ...(isBoolean(_props.current.disabled)
         ? { disabled: _props.current.disabled }

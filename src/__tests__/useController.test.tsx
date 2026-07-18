@@ -1758,6 +1758,59 @@ describe('useController', () => {
     expect(result.current.field.value).toBe('form1-value');
   });
 
+  it('should write onChange updates to the newly-passed control (#13163)', async () => {
+    type FormValues = {
+      name: string;
+    };
+
+    const { result: form1Result } = renderHook(() =>
+      useForm<FormValues>({
+        defaultValues: {
+          name: '',
+        },
+      }),
+    );
+
+    const { result: form2Result } = renderHook(() =>
+      useForm<FormValues>({
+        defaultValues: {
+          name: '',
+        },
+      }),
+    );
+
+    const { result, rerender } = renderHook(
+      ({ control }: { control: Control<FormValues> }) =>
+        useController({
+          control,
+          name: 'name',
+        }),
+      {
+        initialProps: { control: form1Result.current.control },
+      },
+    );
+
+    result.current.field.onChange('form1-typed');
+
+    await waitFor(() => {
+      expect(form1Result.current.getValues('name')).toBe('form1-typed');
+    });
+
+    rerender({ control: form2Result.current.control });
+
+    await waitFor(() => {
+      expect(result.current.field.value).toBe('');
+    });
+
+    result.current.field.onChange('form2-typed');
+
+    await waitFor(() => {
+      expect(form2Result.current.getValues('name')).toBe('form2-typed');
+    });
+
+    expect(form1Result.current.getValues('name')).toBe('form1-typed');
+  });
+
   it('should update isValid when Controller with required rule re-mounts via checkbox toggle', async () => {
     type FormValues = {
       items: { checked: boolean; input: string }[];

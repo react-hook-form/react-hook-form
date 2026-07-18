@@ -232,7 +232,7 @@ export type FieldError = {
 };
 
 // @public (undocumented)
-export type FieldErrors<T extends FieldValues = FieldValues> = Partial<FieldValues extends IsAny<FieldValues> ? any : FieldErrorsImpl<DeepRequired<T>>> & {
+export type FieldErrors<T extends FieldValues = FieldValues> = Partial<FieldErrorsImpl<DeepRequired<T>>> & {
     root?: Record<string, GlobalError> & GlobalError;
     form?: GlobalError;
 };
@@ -991,7 +991,7 @@ export type ValidationValue = boolean | number | string | RegExp;
 
 // @public (undocumented)
 export type ValidationValueMessage<TValidationValue extends ValidationValue = ValidationValue> = {
-    value: TValidationValue;
+    value: TValidationValue | undefined;
     message: Message;
 };
 
@@ -1023,7 +1023,7 @@ export type WatchProps<TFieldName extends WatchName<TFieldValues>, TFieldValues 
 export type WatchRenderValue<TFieldName, TFieldValues extends FieldValues, TComputeValue> = TComputeValue extends undefined ? WatchValue<TFieldName, TFieldValues> : TComputeValue;
 
 // @public (undocumented)
-export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValues> = TFieldName extends FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] ? FieldPathValues<TFieldValues, TFieldName> : TFieldName extends FieldPath<TFieldValues> ? FieldPathValue<TFieldValues, TFieldName> : TFieldValues;
+export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValues> = TFieldName extends readonly FieldPath<TFieldValues>[] ? FieldPathValues<TFieldValues, TFieldName> : TFieldName extends FieldPath<TFieldValues> ? FieldPathValue<TFieldValues, TFieldName> : TFieldValues;
 
 // (No @packageDocumentation comment for this package)
 

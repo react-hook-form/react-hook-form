@@ -1,5 +1,22 @@
 # Changelog
 
+## [7.82.0] - 2026-07-18
+
+### Added
+
+- Opt-in `delayError` option for `setValue` to delay validation error updates
+
+### Fixed
+
+- Expose `resetDefaultValues` through form context
+- `setValue` with `shouldDirty` not updating dirty state correctly when the form is disabled
+- Preserve `dirtyFields` boolean values for registered array fields
+- Restore `FieldArray` component export
+
+### Performance
+
+- Improve `getDirtyFields` performance, especially for larger forms and deeply nested values
+
 ## [7.81.0] - 2026-07-05
 
 ### Added

@@ -19,3 +19,15 @@ test('getEventValue should return correct value', () => {
   expect(getEventValue(undefined)).toEqual(undefined);
   expect(getEventValue(null)).toEqual(null);
 });
+
+test('getEventValue should return files for a file input target', () => {
+  const files = [new File(['hello'], 'hello.png', { type: 'image/png' })];
+
+  expect(
+    getEventValue({
+      target: { type: 'file', files, value: 'C:\\fakepath\\hello.png' },
+    }),
+  ).toEqual(files);
+
+  expect(getEventValue({ target: { type: 'file', files: [] } })).toEqual([]);
+});
