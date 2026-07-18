@@ -31,6 +31,7 @@ import type {
   SetFieldValue,
   SetValueConfig,
   Subjects,
+  TriggerConfig,
   UseFormClearErrors,
   UseFormGetFieldState,
   UseFormGetValues,
@@ -174,8 +175,9 @@ export function createFormControl<
     watch: new Set(),
     registerName: new Set(),
   };
-  let delayErrorCallback: DelayCallback | null;
-  let timer = 0;
+  const delayErrorCallbacks: Partial<Record<InternalFieldName, DelayCallback>> =
+    {};
+  const timers: Partial<Record<InternalFieldName, number>> = {};
   let _valuesSubscriberCount = 0;
   let _validationModeBeforeSubmit = getValidationModes(_options.mode);
   let _validationModeAfterSubmit = getValidationModes(_options.reValidateMode);
@@ -199,14 +201,16 @@ export function createFormControl<
     state: createSubject(),
   };
 
+  let _setValidCallId = 0;
+
   const shouldDisplayAllAssociatedErrors =
     _options.criteriaMode === VALIDATION_MODE.all;
 
   const debounce =
-    <T extends Function>(callback: T) =>
+    <T extends Function>(name: InternalFieldName, callback: T) =>
     (wait: number) => {
-      clearTimeout(timer);
-      timer = setTimeout(callback, wait);
+      clearTimeout(timers[name]);
+      timers[name] = setTimeout(callback, wait);
     };
 
   const _setValid = async (shouldUpdateValid?: boolean) => {
@@ -219,10 +223,11 @@ export function createFormControl<
         _proxySubscribeFormState.isValid ||
         shouldUpdateValid)
     ) {
+      const callId = ++_setValidCallId;
       let isValid: boolean;
       if (_options.resolver) {
         isValid = isEmptyObject((await _runSchema()).errors);
-        _updateIsValidating();
+        callId === _setValidCallId && _updateIsValidating();
       } else {
         isValid = await executeBuiltInValidation({
           fields: _fields,
@@ -230,7 +235,7 @@ export function createFormControl<
           eventType: EVENTS.VALID,
         });
       }
-      if (isValid !== _formState.isValid) {
+      if (callId === _setValidCallId && isValid !== _formState.isValid) {
         _subjects.state.next({
           isValid,
         });
@@ -262,7 +267,12 @@ export function createFormControl<
   };
 
   const _updateDirtyFields = () => {
-    _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
+    _formState.dirtyFields = getDirtyFields(
+      _defaultValues,
+      _formValues,
+      undefined,
+      _fields,
+    );
   };
 
   const _setFieldArray: BatchFieldArrayUpdate = (
@@ -433,7 +443,9 @@ export function createFormControl<
       name,
     };
 
-    if (!_options.disabled) {
+    // an explicit programmatic update (e.g. setValue with shouldDirty: true)
+    // opts into dirty tracking even when the form is disabled
+    if (!_options.disabled || shouldDirty === true) {
       if (!isBlurEvent || shouldDirty) {
         const isCurrentFieldPristine = deepEqual(
           get(_defaultValues, name),
@@ -451,7 +463,12 @@ export function createFormControl<
         isPreviousDirty = !!get(_formState.dirtyFields, name);
 
         if (isCurrentFieldPristine !== _formState.isDirty) {
-          _formState.dirtyFields = getDirtyFields(_defaultValues, _formValues);
+          _formState.dirtyFields = getDirtyFields(
+            _defaultValues,
+            _formValues,
+            undefined,
+            _fields,
+          );
         } else {
           isCurrentFieldPristine
             ? unset(_formState.dirtyFields, name)
@@ -503,11 +520,13 @@ export function createFormControl<
       _formState.isValid !== isValid;
 
     if (_options.delayError && error) {
-      delayErrorCallback = debounce(() => updateErrors(name, error));
-      delayErrorCallback(_options.delayError);
+      delayErrorCallbacks[name] = debounce(name, () =>
+        updateErrors(name, error),
+      );
+      delayErrorCallbacks[name](_options.delayError);
     } else {
-      clearTimeout(timer);
-      delayErrorCallback = null;
+      clearTimeout(timers[name]);
+      delete delayErrorCallbacks[name];
       error
         ? set(_formState.errors, name, error)
         : unset(_formState.errors, name);
@@ -737,10 +756,10 @@ export function createFormControl<
     _names.unMount = new Set();
   };
 
-  const _getDirty: GetIsDirty = (name, data) =>
-    !_options.disabled &&
-    (name && data && set(_formValues, name, data),
-    !deepEqual(_state.mount ? _formValues : _defaultValues, _defaultValues));
+  const _getDirty: GetIsDirty = (name, data) => (
+    name && data && set(_formValues, name, data),
+    !deepEqual(_state.mount ? _formValues : _defaultValues, _defaultValues)
+  );
 
   const _getWatch: WatchInternal<TFieldValues> = (
     names,
@@ -847,7 +866,13 @@ export function createFormControl<
         !skipRender,
       );
 
-    options.shouldValidate && trigger(name as Path<TFieldValues>);
+    options.shouldValidate &&
+      trigger(
+        name as Path<TFieldValues>,
+        {
+          delayError: options.delayError,
+        } as TriggerConfig & { delayError?: boolean },
+      );
   };
 
   const setFieldValues = <
@@ -1031,7 +1056,8 @@ export function createFormControl<
       if (isBlurEvent) {
         if (!target || !target.readOnly) {
           field._f.onBlur && field._f.onBlur(event);
-          delayErrorCallback && delayErrorCallback(0);
+          const pendingDelayError = delayErrorCallbacks[name];
+          pendingDelayError && pendingDelayError(0);
         }
       } else if (field._f.onChange) {
         field._f.onChange(event);
@@ -1158,7 +1184,10 @@ export function createFormControl<
     return;
   };
 
-  const trigger: UseFormTrigger<TFieldValues> = async (name, options = {}) => {
+  const trigger: UseFormTrigger<TFieldValues> = async (
+    name,
+    options: TriggerConfig & { delayError?: boolean } = {},
+  ) => {
     let isValid;
     let validationResult;
     const fieldNames = convertToArrayPayload(name) as InternalFieldName[];
@@ -1191,6 +1220,20 @@ export function createFormControl<
         name,
         eventType: EVENTS.TRIGGER,
       });
+    }
+
+    if (options.delayError && _options.delayError && isString(name)) {
+      const error = get(_formState.errors, name);
+      if (error) {
+        unset(_formState.errors, name);
+        delayErrorCallbacks[name] = debounce(name, () =>
+          updateErrors(name, error),
+        );
+        delayErrorCallbacks[name](_options.delayError);
+      } else {
+        clearTimeout(timers[name]);
+        delete delayErrorCallbacks[name];
+      }
     }
 
     _subjects.state.next({
@@ -1688,6 +1731,7 @@ export function createFormControl<
     const cloneUpdatedValues = cloneObject(updatedValues);
     const isEmptyResetValues = isEmptyObject(formValues);
     const values = cloneUpdatedValues;
+    const fieldRefs = _fields;
 
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = updatedValues;
@@ -1697,7 +1741,9 @@ export function createFormControl<
       if (keepStateOptions.keepDirtyValues) {
         const fieldsToCheck = new Set([
           ..._names.mount,
-          ...Object.keys(getDirtyFields(_defaultValues, _formValues)),
+          ...Object.keys(
+            getDirtyFields(_defaultValues, _formValues, undefined, fieldRefs),
+          ),
         ]);
         for (const fieldName of Array.from(fieldsToCheck)) {
           const isDirty = get(_formState.dirtyFields, fieldName);
@@ -1813,10 +1859,10 @@ export function createFormControl<
         ? {}
         : keepStateOptions.keepDirtyValues
           ? keepStateOptions.keepDefaultValues && _formValues
-            ? getDirtyFields(_defaultValues, _formValues)
+            ? getDirtyFields(_defaultValues, _formValues, undefined, fieldRefs)
             : _formState.dirtyFields
           : keepStateOptions.keepDefaultValues && formValues
-            ? getDirtyFields(_defaultValues, formValues)
+            ? getDirtyFields(_defaultValues, formValues, undefined, fieldRefs)
             : keepStateOptions.keepDirty
               ? _formState.dirtyFields
               : {},
@@ -1896,7 +1942,12 @@ export function createFormControl<
     _defaultValues = cloneObject(values) as Partial<typeof _defaultValues>;
 
     if (!options.keepDirty) {
-      const newDirtyFields = getDirtyFields(_defaultValues, _formValues);
+      const newDirtyFields = getDirtyFields(
+        _defaultValues,
+        _formValues,
+        undefined,
+        _fields,
+      );
       _formState.dirtyFields = newDirtyFields as typeof _formState.dirtyFields;
       _formState.isDirty = !isEmptyObject(newDirtyFields);
     }
