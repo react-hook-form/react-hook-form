@@ -42,6 +42,30 @@ import { _ } from '../__fixtures__';
     const actual = _ as Path<Foo>;
     type _t = Expect<Equal<typeof actual, 'foo' | 'bar' | 'bar.baz'>>;
   }
+
+  /** it should support paths up to 10 segments deep */ {
+    type D10 = {
+      a: { a: { a: { a: { a: { a: { a: { a: { a: { a: string } } } } } } } } };
+    };
+    // 'a.a.a.a.a.a.a.a.a.a' = 10 segments — must be assignable
+    type _t = Expect<
+      Equal<'a.a.a.a.a.a.a.a.a.a' extends Path<D10> ? true : false, true>
+    >;
+  }
+
+  /** it should not generate paths beyond 10 segments */ {
+    type D11 = {
+      a: {
+        a: {
+          a: { a: { a: { a: { a: { a: { a: { a: string } } } } } } };
+        };
+      };
+    };
+    // 'a.a.a.a.a.a.a.a.a.a.a' = 11 segments — must NOT be in Path<D11>
+    type _t = Expect<
+      Equal<'a.a.a.a.a.a.a.a.a.a.a' extends Path<D11> ? true : false, false>
+    >;
+  }
 }
 
 /** {@link ArrayPath} */ {

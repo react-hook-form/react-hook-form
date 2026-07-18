@@ -1025,7 +1025,7 @@ export type WatchProps<TFieldName extends WatchName<TFieldValues>, TFieldValues 
 export type WatchRenderValue<TFieldName, TFieldValues extends FieldValues, TComputeValue> = TComputeValue extends undefined ? WatchValue<TFieldName, TFieldValues> : TComputeValue;
 
 // @public (undocumented)
-export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValues> = TFieldName extends FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] ? FieldPathValues<TFieldValues, TFieldName> : TFieldName extends FieldPath<TFieldValues> ? FieldPathValue<TFieldValues, TFieldName> : TFieldValues;
+export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValues> = TFieldName extends readonly FieldPath<TFieldValues>[] ? FieldPathValues<TFieldValues, TFieldName> : TFieldName extends FieldPath<TFieldValues> ? FieldPathValue<TFieldValues, TFieldName> : TFieldValues;
 
 // Warnings were encountered during analysis:
 //
