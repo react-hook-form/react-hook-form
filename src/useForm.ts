@@ -54,6 +54,7 @@ export function useForm<
     UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
   >(undefined);
   const _values = React.useRef<typeof props.values>(undefined);
+  const _formControlProp = React.useRef(props.formControl);
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>(
     () => ({
       ...cloneObject(DEFAULT_FORM_STATE),
@@ -66,7 +67,11 @@ export function useForm<
     }),
   );
 
-  if (!_formControl.current) {
+  if (
+    !_formControl.current ||
+    (props.formControl && _formControlProp.current !== props.formControl)
+  ) {
+    _formControlProp.current = props.formControl;
     if (props.formControl) {
       _formControl.current = {
         ...props.formControl,
@@ -92,7 +97,12 @@ export function useForm<
   useIsomorphicLayoutEffect(() => {
     const sub = control._subscribe({
       formState: control._proxyFormState,
-      callback: () => updateFormState({ ...control._formState }),
+      callback: () =>
+        updateFormState({
+          ...control._formState,
+          defaultValues:
+            control._defaultValues as FormState<TFieldValues>['defaultValues'],
+        }),
       reRenderRoot: true,
     });
 

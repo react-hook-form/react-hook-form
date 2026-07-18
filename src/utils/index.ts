@@ -1,4 +1,2 @@
-import get from './get';
-import set from './set';
-
-export { get, set };
+export { default as get } from './get';
+export { default as set } from './set';

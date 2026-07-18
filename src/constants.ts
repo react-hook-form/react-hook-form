@@ -25,6 +25,6 @@ export const INPUT_VALIDATION_RULES = {
   validate: 'validate',
 } as const;
 
-export const FORM_ERROR_TYPE = 'form';
-
 export const ROOT_ERROR_TYPE = 'root';
+
+export const PROTOTYPE_KEYWORDS = ['__proto__', 'constructor', 'prototype'];

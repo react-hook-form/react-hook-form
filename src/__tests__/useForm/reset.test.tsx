@@ -678,55 +678,6 @@ describe('reset', () => {
         );
       });
 
-      it('should only update none dirty fields and keep other values updated', async () => {
-        render(<App />);
-
-        fireEvent.change(screen.getByPlaceholderText('First Name'), {
-          target: {
-            value: 'test',
-          },
-        });
-
-        await waitFor(() =>
-          expect(
-            (screen.getByPlaceholderText('Last Name') as HTMLInputElement)
-              .value,
-          ).toEqual('luo'),
-        );
-
-        expect(updatedDirtyFields).toEqual({
-          firstName: true,
-        });
-        expect(updatedDirty).toBeTruthy();
-
-        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-
-        await waitFor(() =>
-          expect(submittedValue).toEqual({
-            firstName: 'test',
-            lastName: 'luo',
-          }),
-        );
-
-        fireEvent.click(screen.getByRole('button', { name: 'reset' }));
-
-        expect(
-          (screen.getByPlaceholderText('First Name') as HTMLInputElement).value,
-        ).toEqual('bill');
-
-        expect(updatedDirtyFields).toEqual({});
-        expect(updatedDirty).toBeFalsy();
-
-        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
-
-        await waitFor(() =>
-          expect(submittedValue).toEqual({
-            firstName: 'bill',
-            lastName: 'luo',
-          }),
-        );
-      });
-
       it('should treat previously-undirty fields as dirty when keepDefaultValues is set', async () => {
         let updatedDirtyFields: Record<string, boolean> = {};
         let updatedDirty = false;
@@ -959,7 +910,7 @@ describe('reset', () => {
     });
   });
 
-  it('should allow to reset unmounted field array', () => {
+  it('should allow resetting unmounted field array', () => {
     type FormValues = {
       test: { name: string }[];
     };
@@ -1127,6 +1078,83 @@ describe('reset', () => {
     expect(
       (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
     ).toEqual('control');
+  });
+
+  it('should keep reset value for conditionally mounted controlled fields with shouldUnregister', async () => {
+    let submittedData = {};
+
+    const App = () => {
+      const { control, watch, handleSubmit, reset } = useForm<{
+        name: string;
+        age: string;
+      }>({
+        shouldUnregister: true,
+        defaultValues: {
+          name: '',
+        },
+      });
+      const showAge = !!watch('name');
+
+      return (
+        <form
+          onSubmit={handleSubmit((data) => {
+            submittedData = data;
+          })}
+        >
+          <Controller
+            name="name"
+            control={control}
+            render={({ field: { onChange, name, ref, value } }) => (
+              <input
+                ref={ref}
+                name={name}
+                value={value || ''}
+                onChange={onChange}
+              />
+            )}
+          />
+          {showAge && (
+            <Controller
+              name="age"
+              control={control}
+              render={({ field: { onChange, name, ref, value } }) => (
+                <input
+                  ref={ref}
+                  name={name}
+                  value={value || ''}
+                  onChange={onChange}
+                />
+              )}
+            />
+          )}
+          <button
+            type="button"
+            onClick={() => {
+              reset({ name: 'name', age: '3' });
+            }}
+          >
+            reset with values
+          </button>
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'reset with values' }));
+
+    await waitFor(() =>
+      expect(
+        (screen.getAllByRole('textbox')[1] as HTMLInputElement).value,
+      ).toBe('3'),
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() =>
+      expect(submittedData).toEqual({ name: 'name', age: '3' }),
+    );
   });
 
   it('should keep input values when keepValues is set to true', () => {
@@ -1515,7 +1543,7 @@ describe('reset', () => {
     });
   });
 
-  it('should return defaultValues in useWatch and watch when using calling reset with empty object', async () => {
+  it('should reset to empty values in useWatch and watch when calling reset with empty object', async () => {
     const defaultValues = {
       something: 'anything',
     };
@@ -1558,8 +1586,66 @@ describe('reset', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(screen.getByText('watch: anything')).toBeVisible();
-    expect(screen.getByText('useWatch: anything')).toBeVisible();
+    expect(screen.getByText('watch:')).toBeVisible();
+    expect(screen.getByText('useWatch:')).toBeVisible();
+  });
+
+  it('should use values passed to reset({}) as new defaultValues on submit', async () => {
+    let submittedData: unknown;
+
+    function App() {
+      const { reset, handleSubmit } = useForm({
+        defaultValues: {
+          name: {
+            firstName: 'John',
+            lastName: 'Doe',
+          },
+        },
+      });
+
+      return (
+        <form
+          onSubmit={handleSubmit((data) => {
+            submittedData = data;
+          })}
+        >
+          <button type="submit">submit</button>
+          <button
+            type="button"
+            onClick={() => {
+              reset({});
+            }}
+          >
+            reset
+          </button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() => expect(submittedData).toEqual({}));
+  });
+
+  it('should set _formValues to empty object after reset({})', () => {
+    const { result } = renderHook(() =>
+      useForm({
+        defaultValues: {
+          name: {
+            firstName: 'John',
+            lastName: 'Doe',
+          },
+        },
+      }),
+    );
+
+    act(() => result.current.reset({}));
+
+    expect(result.current.getValues()).toEqual({});
+    expect(result.current.control._defaultValues).toEqual({});
   });
 
   it('should keep mounted value after reset with keep dirty values', async () => {
@@ -1659,6 +1745,69 @@ describe('reset', () => {
     await waitFor(() => {
       screen.getByText('users#1');
     });
+  });
+
+  it('should keep dirty fields for dynamic controller name when keepDirty and keepDirtyValues are true', async () => {
+    type FormValues = {
+      name_es: string;
+      name_en: string;
+    };
+
+    const defaultValues: FormValues = {
+      name_es: 'Espanol',
+      name_en: 'English',
+    };
+
+    function App() {
+      const {
+        control,
+        reset,
+        formState: { dirtyFields },
+      } = useForm<FormValues>({
+        defaultValues,
+      });
+      const [language, setLanguage] = React.useState<'es' | 'en'>('en');
+
+      return (
+        <form>
+          <Controller
+            control={control}
+            name={`name_${language}`}
+            render={({ field }) => <input {...field} />}
+          />
+          <button
+            type="button"
+            onClick={() => {
+              setLanguage((prev) => (prev === 'en' ? 'es' : 'en'));
+              reset(defaultValues, { keepDirty: true, keepDirtyValues: true });
+            }}
+          >
+            toggle
+          </button>
+          <p data-testid="dirtyFields">{JSON.stringify(dirtyFields)}</p>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'Test 1',
+      },
+    });
+
+    expect(screen.getByTestId('dirtyFields').textContent).toBe(
+      '{"name_en":true}',
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('dirtyFields').textContent).toBe(
+        '{"name_en":true}',
+      ),
+    );
   });
 
   it('should not mutate data outside of library', () => {

@@ -138,7 +138,7 @@ describe('iterateFieldsByAction', () => {
     expect(focus).toHaveBeenCalledWith('last');
   });
 
-  it('should should recursively drill into objects and break out of all loops on first focus', () => {
+  it('should recursively drill into objects and break out of all loops on first focus', () => {
     const focus = jest.fn();
     const notFocus = jest.fn();
     iterateFieldsByAction(

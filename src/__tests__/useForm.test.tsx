@@ -30,6 +30,7 @@ import sleep from '../utils/sleep';
 import {
   Controller,
   createFormControl,
+  useController,
   useFieldArray,
   useForm,
   useFormState,
@@ -1906,6 +1907,55 @@ describe('useForm', () => {
     screen.getByText('stateValidation: false');
   });
 
+  it('should update isValidating without subscribing to validatingFields', async () => {
+    const App = () => {
+      const {
+        register,
+        handleSubmit,
+        formState: { isValidating },
+      } = useForm();
+
+      return (
+        <form onSubmit={handleSubmit(noop)}>
+          {isValidating && <p>is validating</p>}
+          <input
+            {...register('firstName', {
+              validate: {
+                asyncMinLengthValidator: async (value) => {
+                  await sleep(2000);
+                  return value.length > 3;
+                },
+                customMinLength: (value) => value.length > 1,
+              },
+              required: true,
+            })}
+            placeholder="First name"
+          />
+          <input type="submit" />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.input(screen.getByPlaceholderText('First name'), {
+      target: { value: 'test' },
+    });
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(screen.getByText('is validating')).toBeVisible();
+    });
+
+    await act(async () => {
+      jest.advanceTimersByTime(2000);
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByText('is validating')).not.toBeInTheDocument();
+    });
+  });
+
   it('should correctly handle multiple async validation triggers', async () => {
     jest.useFakeTimers();
 
@@ -2224,6 +2274,80 @@ describe('useForm', () => {
     });
   });
 
+  it('should submit mounted values from values prop when shouldUnregister is true', async () => {
+    const onSubmit = jest.fn();
+    const onInvalid = jest.fn();
+
+    const App = () => {
+      const { register, handleSubmit } = useForm<{
+        firstName: string;
+        age: string;
+      }>({
+        values: {
+          firstName: 'test',
+          age: '',
+        },
+        shouldUnregister: true,
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
+          <input {...register('firstName', { required: true })} />
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByRole('textbox')).toHaveValue('test');
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(
+        {
+          firstName: 'test',
+        },
+        expect.anything(),
+      ),
+    );
+    expect(onInvalid).not.toHaveBeenCalled();
+  });
+
+  it('should use values prop over defaultValues with shouldUnregister and Controller (#12697)', async () => {
+    const App = () => {
+      const { control, handleSubmit } = useForm<{
+        firstName: string;
+      }>({
+        shouldUnregister: true,
+        defaultValues: {
+          firstName: '1',
+        },
+        values: {
+          firstName: '2',
+        },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(noop)}>
+          <Controller
+            name="firstName"
+            control={control}
+            render={({ field }) => <input {...field} />}
+          />
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('textbox')).toHaveValue('2');
+    });
+  });
+
   it('should only update async form values which are not interacted', async () => {
     type FormValues = {
       test: string;
@@ -2360,6 +2484,29 @@ describe('useForm', () => {
       screen.getByText('C');
       screen.getByText('pristine');
     });
+  });
+
+  it('should update form values when rerendered values reuse an object reference', async () => {
+    type FormValues = {
+      home: { street: string };
+      work: { street: string };
+    };
+
+    const { result, rerender } = renderHook(
+      ({ values }: { values: FormValues }) => useForm<FormValues>({ values }),
+      {
+        initialProps: {
+          values: { home: { street: 'a' }, work: { street: 'b' } },
+        },
+      },
+    );
+
+    expect(result.current.getValues('work.street')).toBe('b');
+
+    const shared = { street: 'a' };
+    rerender({ values: { home: shared, work: shared } });
+
+    expect(result.current.getValues('work.street')).toBe('a');
   });
 
   it('should keep defaultValues if set keep default values is true on reset option', async () => {
@@ -2645,7 +2792,7 @@ describe('useForm', () => {
     });
   });
 
-  it('should allow to submit a form with disabled form fields', async () => {
+  it('should allow submitting a form with disabled form fields', async () => {
     function App() {
       const { register, getFieldState, formState, handleSubmit } = useForm();
 
@@ -2731,6 +2878,141 @@ describe('useForm', () => {
 
       fireEvent.input(input, { target: { value: 'abc' } });
       expect(input.value).toBe('abc');
+    });
+
+    it('should reset useController value on remount with defaultValues', async () => {
+      type FormValues = {
+        firstName: string;
+        lastName: string;
+      };
+
+      const { register, handleSubmit, formControl, control } =
+        createFormControl<FormValues>();
+      const onSubmit = jest.fn();
+
+      function LastName() {
+        const { field } = useController({
+          control,
+          name: 'lastName',
+          rules: { required: true },
+        });
+
+        return <input {...field} placeholder="lastName" />;
+      }
+
+      function Form({
+        onFormSubmit,
+      }: {
+        onFormSubmit: SubmitHandler<FormValues>;
+      }) {
+        useForm({
+          formControl,
+          defaultValues: {
+            firstName: '',
+            lastName: '',
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(onFormSubmit)}>
+            <input {...register('firstName')} placeholder="firstName" />
+            <LastName />
+            <button type="submit">submit</button>
+          </form>
+        );
+      }
+
+      function App() {
+        const [showForm, setShowForm] = React.useState(true);
+
+        return showForm ? (
+          <Form
+            onFormSubmit={(data) => {
+              onSubmit(data);
+              setShowForm(false);
+            }}
+          />
+        ) : (
+          <button onClick={() => setShowForm(true)}>back</button>
+        );
+      }
+
+      render(<App />);
+
+      fireEvent.input(screen.getByPlaceholderText('firstName'), {
+        target: { value: 'John' },
+      });
+      fireEvent.input(screen.getByPlaceholderText('lastName'), {
+        target: { value: 'Doe' },
+      });
+      fireEvent.click(screen.getByText('submit'));
+
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenNthCalledWith(1, {
+          firstName: 'John',
+          lastName: 'Doe',
+        });
+      });
+
+      fireEvent.click(screen.getByText('back'));
+      expect(
+        (screen.getByPlaceholderText('lastName') as HTMLInputElement).value,
+      ).toBe('');
+      fireEvent.click(screen.getByText('submit'));
+
+      await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    });
+
+    it('should re-initialise when formControl prop reference changes (e.g. HMR/Fast Refresh)', async () => {
+      type FormValues = {
+        firstName: string;
+      };
+
+      const onSubmit = jest.fn();
+
+      // Simulate initial module-level createFormControl call
+      const { handleSubmit, formControl } = createFormControl<FormValues>({
+        defaultValues: { firstName: '' },
+      });
+
+      function Form({
+        ctrl,
+        submit,
+      }: {
+        ctrl: typeof formControl;
+        submit: typeof handleSubmit;
+      }) {
+        const { register } = useForm({ formControl: ctrl });
+        return (
+          <form onSubmit={submit(onSubmit)}>
+            <input {...register('firstName')} placeholder="firstName" />
+            <button type="submit">submit</button>
+          </form>
+        );
+      }
+
+      const { rerender } = render(
+        <Form ctrl={formControl} submit={handleSubmit} />,
+      );
+
+      // Simulate Fast Refresh: module re-executes, producing new instances
+      const next = createFormControl<FormValues>({
+        defaultValues: { firstName: '' },
+      });
+
+      rerender(<Form ctrl={next.formControl} submit={next.handleSubmit} />);
+
+      fireEvent.input(screen.getByPlaceholderText('firstName'), {
+        target: { value: 'Bill' },
+      });
+      fireEvent.click(screen.getByText('submit'));
+
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledWith(
+          { firstName: 'Bill' },
+          expect.any(Object),
+        );
+      });
     });
   });
 
@@ -2821,6 +3103,141 @@ describe('useForm', () => {
 
       await waitFor(() =>
         expect(screen.queryByText('required')).not.toBeInTheDocument(),
+      );
+    });
+
+    it('should use error message from object return value', async () => {
+      const App = () => {
+        const {
+          register,
+          formState: { errors },
+          handleSubmit,
+        } = useForm({
+          validate: ({ formValues }) => {
+            if (formValues.firstName) {
+              return true;
+            }
+
+            return {
+              firstName: {
+                message: 'first name is required',
+                type: 'required',
+              },
+            };
+          },
+          defaultValues: {
+            firstName: '',
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <input {...register('firstName')} />
+            <p data-testid="msg">{(errors as any).form?.firstName?.message}</p>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(screen.getByTestId('msg').textContent).toBe(
+          'first name is required',
+        ),
+      );
+    });
+
+    it('should preserve custom error type from object return value', async () => {
+      let capturedErrors: any;
+
+      const App = () => {
+        const {
+          register,
+          formState: { errors },
+          handleSubmit,
+        } = useForm({
+          validate: ({ formValues }) => {
+            if (formValues.firstName) {
+              return true;
+            }
+
+            return { firstName: { message: 'err', type: 'customType' } };
+          },
+          defaultValues: {
+            firstName: '',
+          },
+        });
+
+        capturedErrors = errors;
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <input {...register('firstName')} />
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect((capturedErrors as any).form?.firstName?.type).toBe(
+          'customType',
+        ),
+      );
+    });
+
+    it('should clear object return errors when form becomes valid', async () => {
+      const App = () => {
+        const {
+          register,
+          formState: { errors },
+          handleSubmit,
+        } = useForm({
+          validate: ({ formValues }) => {
+            if (formValues.firstName) {
+              return true;
+            }
+
+            return { firstName: { message: 'first name is required' } };
+          },
+          defaultValues: {
+            firstName: '',
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <input {...register('firstName')} />
+            <p data-testid="msg">{(errors as any).form?.firstName?.message}</p>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(screen.getByTestId('msg').textContent).toBe(
+          'first name is required',
+        ),
+      );
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'test' },
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(screen.getByTestId('msg').textContent).toBe(''),
       );
     });
   });
