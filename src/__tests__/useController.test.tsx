@@ -1751,7 +1751,7 @@ describe('useController', () => {
     expect(result.current.field.value).toBe('form1-value');
   });
 
-  it('should write onChange/onBlur updates to the newly-passed control (#13163)', async () => {
+  it('should write onChange updates to the newly-passed control (#13163)', async () => {
     type FormValues = {
       name: string;
     };
