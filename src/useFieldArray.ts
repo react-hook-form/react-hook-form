@@ -13,7 +13,9 @@ import convertToArrayPayload from './utils/convertToArrayPayload';
 import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
 import insertAt from './utils/insert';
+import isBoolean from './utils/isBoolean';
 import isEmptyObject from './utils/isEmptyObject';
+import isObject from './utils/isObject';
 import moveArrayAt from './utils/move';
 import prependAt from './utils/prepend';
 import removeArrayAt from './utils/remove';
@@ -29,6 +31,7 @@ import type {
   FieldArrayMethodProps,
   FieldArrayPath,
   FieldArrayWithId,
+  FieldError,
   FieldErrors,
   FieldPath,
   FieldValues,
@@ -105,11 +108,9 @@ export function useFieldArray<
     shouldUnregister,
     rules,
   } = props;
-  const [fields, setFields] = React.useState(
-    disabled ? [] : control._getFieldArray(name),
-  );
+  const [fields, setFields] = React.useState(control._getFieldArray(name));
   const ids = React.useRef<string[]>(
-    disabled ? [] : control._getFieldArray(name).map(generateId),
+    control._getFieldArray(name).map(generateId),
   );
 
   const _actioned = React.useRef(false);
@@ -394,18 +395,32 @@ export function useFieldArray<
           control._updateIsValidating([name]);
           const error = get(result.errors, name);
           const existingError = get(control._formState.errors, name);
+          const existingErrorType =
+            existingError && (existingError.type || existingError.root?.type);
+          const existingErrorMessage =
+            existingError &&
+            (existingError.message || existingError.root?.message);
 
           if (
             existingError
-              ? (!error && existingError.type) ||
+              ? (!error && existingErrorType) ||
                 (error &&
-                  (existingError.type !== error.type ||
-                    existingError.message !== error.message))
+                  (existingErrorType !== error.type ||
+                    existingErrorMessage !== error.message))
               : error && error.type
           ) {
-            error
-              ? set(control._formState.errors, name, error)
-              : unset(control._formState.errors, name);
+            if (error) {
+              isObject(error) &&
+              !Object.keys(error).some((key) => !Number.isNaN(+key))
+                ? updateFieldArrayRootError(
+                    control._formState.errors as FieldErrors<TFieldValues>,
+                    { [name]: error } as Partial<Record<string, FieldError>>,
+                    name,
+                  )
+                : set(control._formState.errors, name, error);
+            } else {
+              unset(control._formState.errors, name);
+            }
             control._subjects.state.next({
               errors: control._formState.errors as FieldErrors<TFieldValues>,
             });
@@ -443,10 +458,14 @@ export function useFieldArray<
       }
     }
 
-    control._subjects.state.next({
-      name,
-      values: cloneObject(control._formValues) as TFieldValues,
-    });
+    // External updates that change `fields` (e.g. reset() or setValue() on
+    // the array) already notify subscribers with the up-to-date values
+    // themselves, so only re-broadcast here for genuine array method calls.
+    _actioned.current &&
+      control._subjects.state.next({
+        name,
+        values: cloneObject(control._formValues) as TFieldValues,
+      });
 
     control._names.focus &&
       iterateFieldsByAction(control._fields, (ref, key: string) => {
@@ -523,9 +542,10 @@ export function useFieldArray<
       () =>
         fields.map((field, index) => ({
           ...field,
+          ...(isBoolean(disabled) ? { disabled } : {}),
           [keyName]: ids.current[index] || generateId(),
         })) as FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[],
-      [fields, keyName],
+      [fields, keyName, disabled],
     ),
   };
 }
