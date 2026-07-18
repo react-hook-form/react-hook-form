@@ -86,73 +86,75 @@ export const FormProvider = <
   TFieldValues extends FieldValues,
   TContext = any,
   TTransformedValues = TFieldValues,
->(
-  props: FormProviderProps<TFieldValues, TContext, TTransformedValues>,
-) => {
-  const {
-    children,
-    watch,
-    getValues,
-    getFieldState,
-    setError,
-    clearErrors,
-    setValue,
-    trigger,
-    formState,
-    resetField,
-    reset,
-    handleSubmit,
-    unregister,
-    control,
-    register,
-    setFocus,
-    subscribe,
-  } = props;
+>({
+  children,
+  watch,
+  getValues,
+  getFieldState,
+  setError,
+  clearErrors,
+  setValue,
+  setValues,
+  trigger,
+  formState,
+  resetField,
+  reset,
+  resetDefaultValues,
+  handleSubmit,
+  unregister,
+  control,
+  register,
+  setFocus,
+  subscribe,
+}: FormProviderProps<TFieldValues, TContext, TTransformedValues>) => {
+  const memoizedValue = React.useMemo<
+    UseFormReturn<TFieldValues, TContext, TTransformedValues>
+  >(
+    () => ({
+      watch,
+      getValues,
+      getFieldState,
+      setError,
+      clearErrors,
+      setValue,
+      setValues,
+      trigger,
+      formState,
+      resetField,
+      reset,
+      resetDefaultValues,
+      handleSubmit,
+      unregister,
+      control,
+      register,
+      setFocus,
+      subscribe,
+    }),
+    [
+      clearErrors,
+      control,
+      formState,
+      getFieldState,
+      getValues,
+      handleSubmit,
+      register,
+      reset,
+      resetDefaultValues,
+      resetField,
+      setError,
+      setFocus,
+      setValue,
+      setValues,
+      subscribe,
+      trigger,
+      unregister,
+      watch,
+    ],
+  );
 
   return (
-    <HookFormContext.Provider
-      value={
-        React.useMemo(
-          () => ({
-            watch,
-            getValues,
-            getFieldState,
-            setError,
-            clearErrors,
-            setValue,
-            trigger,
-            formState,
-            resetField,
-            reset,
-            handleSubmit,
-            unregister,
-            control,
-            register,
-            setFocus,
-            subscribe,
-          }),
-          [
-            clearErrors,
-            control,
-            formState,
-            getFieldState,
-            getValues,
-            handleSubmit,
-            register,
-            reset,
-            resetField,
-            setError,
-            setFocus,
-            setValue,
-            subscribe,
-            trigger,
-            unregister,
-            watch,
-          ],
-        ) as unknown as UseFormReturn
-      }
-    >
-      <HookFormControlContext.Provider value={control as Control}>
+    <HookFormContext.Provider value={memoizedValue as unknown as UseFormReturn}>
+      <HookFormControlContext.Provider value={memoizedValue.control as Control}>
         {children}
       </HookFormControlContext.Provider>
     </HookFormContext.Provider>

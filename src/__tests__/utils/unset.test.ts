@@ -16,6 +16,21 @@ describe('unset', () => {
     expect(unset(test, '')).toEqual(test);
   });
 
+  it('should allow unsetting flat keep', () => {
+    const test = {
+      'test.is.flat': 'test',
+      test: {
+        'test.is.flat': 'test',
+      },
+    };
+
+    expect(unset(test, 'test.is.flat')).toEqual({
+      test: {
+        'test.is.flat': 'test',
+      },
+    });
+  });
+
   it('should unset the flat object', () => {
     const test = {
       test: 'test',
@@ -329,5 +344,26 @@ describe('unset', () => {
       // @ts-expect-error we want to test unset in presence of polyfills
       delete Array.prototype.somePolyfill;
     });
+  });
+
+  it('should not traverse or delete prototype properties via __proto__ path', () => {
+    const protoPollutionKey = '__rhfTestPolluted__';
+
+    // Simulate Object.prototype being extended (e.g. by another library)
+    (Object.prototype as any)[protoPollutionKey] = 'SENSITIVE';
+
+    try {
+      // Without the fix, unset traverses into Object.prototype via baseGet
+      // and deletes the property from there.
+      unset({}, `__proto__.${protoPollutionKey}`);
+      unset({}, ['__proto__', protoPollutionKey]);
+      unset({}, `constructor.${protoPollutionKey}`);
+      unset({}, `prototype.${protoPollutionKey}`);
+
+      // The prototype property must still exist — unset must be a no-op.
+      expect((Object.prototype as any)[protoPollutionKey]).toBe('SENSITIVE');
+    } finally {
+      delete (Object.prototype as any)[protoPollutionKey];
+    }
   });
 });

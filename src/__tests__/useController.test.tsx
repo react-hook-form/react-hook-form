@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
+  act,
   fireEvent,
   render,
   renderHook,
@@ -12,6 +13,7 @@ import type { Control, FieldPath, FieldValues, UseFormReturn } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
+import { useWatch } from '../useWatch';
 import isBoolean from '../utils/isBoolean';
 import noop from '../utils/noop';
 
@@ -33,6 +35,43 @@ describe('useController', () => {
     };
 
     render(<Component />);
+  });
+
+  it('should return a promise-like value from field.onChange', async () => {
+    let onChangeResult: any;
+
+    const Component = () => {
+      const { control } = useForm<{ test: string }>();
+      const { field } = useController({
+        control,
+        name: 'test',
+        defaultValue: '',
+      });
+
+      return (
+        <button
+          type="button"
+          onClick={() => {
+            onChangeResult = field.onChange({
+              target: {
+                name: 'test',
+                value: 'next',
+              },
+              type: 'change',
+            });
+          }}
+        >
+          change
+        </button>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'change' }));
+
+    expect(onChangeResult).toBeInstanceOf(Promise);
+    await expect(onChangeResult).resolves.toBeDefined();
   });
 
   it('component using the hook can be memoized', async () => {
@@ -181,7 +220,7 @@ describe('useController', () => {
 
     fireEvent.blur(screen.getAllByRole('textbox')[0]);
 
-    expect(renderCounter).toEqual([4, 4]);
+    expect(renderCounter).toEqual([3, 4]);
   });
 
   describe('checkbox', () => {
@@ -948,6 +987,48 @@ describe('useController', () => {
     screen.getByText('pristine');
   });
 
+  it('should preserve ref proxy methods on error when shouldUnregister is true in StrictMode', async () => {
+    let capturedError: any;
+
+    function Input() {
+      const { control, handleSubmit, formState } = useForm();
+      capturedError = formState.errors.myInput;
+
+      const { field, fieldState } = useController({
+        name: 'myInput',
+        control,
+        rules: { required: 'This field is required' },
+        shouldUnregister: true,
+      });
+
+      return (
+        <form onSubmit={handleSubmit(noop)}>
+          <input
+            ref={field.ref}
+            value={field.value ?? ''}
+            onChange={field.onChange}
+          />
+          {fieldState.error && <p>{fieldState.error.message}</p>}
+          <button type="submit">submit</button>
+        </form>
+      );
+    }
+
+    render(<Input />, { reactStrictMode: true });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    await waitFor(() => screen.getByText('This field is required'));
+
+    expect(capturedError).toBeDefined();
+    expect(typeof capturedError.ref.focus).toBe('function');
+    expect(typeof capturedError.ref.select).toBe('function');
+    expect(typeof capturedError.ref.reportValidity).toBe('function');
+    expect(typeof capturedError.ref.setCustomValidity).toBe('function');
+  });
+
   it('should disable the controller input', async () => {
     function Form() {
       const { field } = useController({
@@ -1018,10 +1099,7 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    waitFor(() => {
-      screen.getByText('');
-      screen.getByText('disable');
-    });
+    await waitFor(() => screen.getByText('disable'));
   });
 
   it('should disable form input field with disabled prop', async () => {
@@ -1379,7 +1457,7 @@ describe('useController', () => {
     expect(renderCounter).toEqual({ test: 4, test_with_suffix: 4 });
   });
 
-  it('should prevent field value leakage when field names change at same position', () => {
+  it('should prevent value leakage and preserve previous field value when name changes', () => {
     type FormValues = {
       type: 'personal' | 'business';
       personalName: string;
@@ -1419,6 +1497,7 @@ describe('useController', () => {
               render={({ field }) => <input {...field} />}
             />
           )}
+          <span data-testid="personal-name-value">{watch('personalName')}</span>
         </div>
       );
     };
@@ -1434,6 +1513,9 @@ describe('useController', () => {
     });
 
     expect((screen.getByRole('textbox') as HTMLInputElement).value).toBe('');
+    expect(screen.getByTestId('personal-name-value').textContent).toBe(
+      'John Doe',
+    );
   });
 
   it('should react to changing field name', () => {
@@ -1472,6 +1554,160 @@ describe('useController', () => {
     rerender({ fieldName: 'field1' });
     expect(result.current.field.name).toBe('field1');
     expect(result.current.field.value).toBe('value1');
+  });
+
+  it('should keep nested array values when useController and watch APIs switch dynamic names', async () => {
+    type FormValues = {
+      content: {
+        children: {
+          data: {
+            setting: {
+              visibility: string;
+            };
+          };
+          type: string;
+        }[];
+      };
+    };
+
+    const getVisibilityName = (index: 0 | 1) =>
+      `content.children.${index}.data.setting.visibility` as FieldPath<FormValues>;
+
+    let latestValues: FormValues | undefined;
+
+    const VisibilityField = ({ name }: { name: FieldPath<FormValues> }) => {
+      const { control } = useFormContext<FormValues>();
+      const { field } = useController({
+        control,
+        name,
+      });
+
+      return (
+        <>
+          <p>controller:{String(field.value)}</p>
+          <button type="button" onClick={() => field.onChange('desktop')}>
+            update-visibility
+          </button>
+        </>
+      );
+    };
+
+    const VisibilityWatch = ({ name }: { name: FieldPath<FormValues> }) => {
+      const { control, watch, getValues } = useFormContext<FormValues>();
+      const useWatchValue = useWatch({
+        control,
+        name,
+      });
+      const watchValue = watch(name);
+
+      latestValues = getValues();
+
+      return (
+        <>
+          <p>useWatch:{String(useWatchValue)}</p>
+          <p>watch:{String(watchValue)}</p>
+        </>
+      );
+    };
+
+    const App = () => {
+      const methods = useForm<FormValues>({
+        defaultValues: {
+          content: {
+            children: [
+              {
+                data: {
+                  setting: {
+                    visibility: 'mobile',
+                  },
+                },
+                type: 'product',
+              },
+              {
+                data: {
+                  setting: {
+                    visibility: 'both',
+                  },
+                },
+                type: 'spacer',
+              },
+            ],
+          },
+        },
+      });
+      const [focusedIndex, setFocusedIndex] = useState<0 | 1>(0);
+      const name = getVisibilityName(focusedIndex);
+
+      return (
+        <FormProvider {...methods}>
+          <button type="button" onClick={() => setFocusedIndex(0)}>
+            focus-0
+          </button>
+          <button type="button" onClick={() => setFocusedIndex(1)}>
+            focus-1
+          </button>
+          <VisibilityField name={name} />
+          <VisibilityWatch name={name} />
+        </FormProvider>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByText('controller:mobile')).toBeVisible();
+    expect(screen.getByText('useWatch:mobile')).toBeVisible();
+    expect(screen.getByText('watch:mobile')).toBeVisible();
+    expect(latestValues?.content.children[0].data.setting.visibility).toBe(
+      'mobile',
+    );
+    expect(latestValues?.content.children[1].data.setting.visibility).toBe(
+      'both',
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'focus-1' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('controller:both')).toBeVisible();
+      expect(screen.getByText('useWatch:both')).toBeVisible();
+      expect(screen.getByText('watch:both')).toBeVisible();
+    });
+
+    expect(latestValues?.content.children[0].data.setting.visibility).toBe(
+      'mobile',
+    );
+    expect(latestValues?.content.children[1].data.setting.visibility).toBe(
+      'both',
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'update-visibility' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('controller:desktop')).toBeVisible();
+      expect(screen.getByText('useWatch:desktop')).toBeVisible();
+      expect(screen.getByText('watch:desktop')).toBeVisible();
+    });
+
+    expect(latestValues?.content.children[0].data.setting.visibility).toBe(
+      'mobile',
+    );
+    expect(latestValues?.content.children[1].data.setting.visibility).toBe(
+      'desktop',
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'focus-0' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('controller:mobile')).toBeVisible();
+      expect(screen.getByText('useWatch:mobile')).toBeVisible();
+      expect(screen.getByText('watch:mobile')).toBeVisible();
+    });
+
+    expect(latestValues?.content.children[0].data.setting.visibility).toBe(
+      'mobile',
+    );
+    expect(latestValues?.content.children[1].data.setting.visibility).toBe(
+      'desktop',
+    );
   });
 
   it('should react to changing control', () => {
@@ -1513,5 +1749,145 @@ describe('useController', () => {
 
     rerender({ control: form1Result.current.control });
     expect(result.current.field.value).toBe('form1-value');
+  });
+
+  it('should update isValid when Controller with required rule re-mounts via checkbox toggle', async () => {
+    type FormValues = {
+      items: { checked: boolean; input: string }[];
+    };
+
+    const InputField = ({
+      control,
+      index,
+    }: {
+      control: Control<FormValues>;
+      index: number;
+    }) => (
+      <Controller
+        control={control}
+        rules={{ required: 'Input is required' }}
+        name={`items.${index}.input`}
+        render={({ field }) => <input placeholder="Enter" {...field} />}
+      />
+    );
+
+    const App = () => {
+      const { control, formState, handleSubmit } = useForm({
+        mode: 'all',
+        defaultValues: {
+          items: [{ checked: false, input: '' }],
+        },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(noop)}>
+          <Controller
+            name="items.0.checked"
+            control={control}
+            render={({ field }) => (
+              <>
+                <input
+                  type="checkbox"
+                  checked={field.value}
+                  onChange={(e) => field.onChange(e.target.checked)}
+                />
+                {field.value && <InputField control={control} index={0} />}
+              </>
+            )}
+          />
+          <p>{formState.isValid ? 'valid' : 'invalid'}</p>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByText('valid')).toBeVisible();
+    });
+
+    fireEvent.click(screen.getByRole('checkbox'));
+
+    await waitFor(() => {
+      expect(screen.getByText('invalid')).toBeVisible();
+    });
+
+    fireEvent.click(screen.getByRole('checkbox'));
+
+    await waitFor(() => {
+      expect(screen.getByText('valid')).toBeVisible();
+    });
+
+    fireEvent.click(screen.getByRole('checkbox'));
+
+    await waitFor(() => {
+      expect(screen.getByText('invalid')).toBeVisible();
+    });
+  });
+
+  it('can register field array property before field array root', () => {
+    const Component = () => {
+      const { control } = useForm<{
+        test: string;
+        test1: { test: string }[];
+      }>();
+
+      useController({
+        name: 'test1.0.test',
+        control,
+      });
+
+      useController({
+        name: 'test1',
+        control,
+      });
+
+      return null;
+    };
+
+    render(<Component />);
+  });
+
+  it('should update the field value when a parent object is cleared with setValue', async () => {
+    function App() {
+      const { control, setValue } = useForm<{
+        data: { type: string };
+      }>();
+
+      const { field } = useController({ control, name: 'data.type' });
+      const watched = useWatch({ control, name: 'data.type', exact: false });
+
+      return (
+        <div>
+          <p>controller:{String(field.value)}</p>
+          <p>watch:{String(watched)}</p>
+          <button
+            type="button"
+            onClick={() => setValue('data', { type: 'foo' })}
+          >
+            set
+          </button>
+          <button type="button" onClick={() => setValue('data', null as never)}>
+            clear
+          </button>
+        </div>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'set' }));
+    await waitFor(() =>
+      expect(screen.getByText('controller:foo')).toBeVisible(),
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'clear' }));
+
+    // The controlled field must reflect the cleared parent object and stay in
+    // sync with useWatch, instead of holding on to the stale 'foo' value.
+    await waitFor(() =>
+      expect(screen.getByText('controller:undefined')).toBeVisible(),
+    );
+    expect(screen.getByText('watch:undefined')).toBeVisible();
   });
 });

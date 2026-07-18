@@ -65,12 +65,10 @@ describe('getDirtyFields', () => {
     ).toEqual({
       test: {
         test1: true,
-        test2: false,
       },
-      test1: [false, true, true],
+      test1: [undefined, true, true],
       test2: [
         {
-          test1: false,
           test2: true,
         },
       ],
@@ -106,7 +104,7 @@ describe('getDirtyFields', () => {
         { test: [{ data: 'luo', data1: 'luo1' }] },
         { test: [{ data: 'luo', data1: 'luo1' }] },
       ),
-    ).toEqual({ test: [{ data: false, data1: false }] });
+    ).toEqual({});
   });
 
   it('should unset dirtyFields fields when value matches', () => {
@@ -115,7 +113,7 @@ describe('getDirtyFields', () => {
         { test: [{ data: 'bill' }, { data: 'luo2', data1: 'luo1' }] },
         { test: [{ data: 'bill1' }, { data: 'luo2' }] },
       ),
-    ).toEqual({ test: [{ data: true }, { data: false, data1: true }] });
+    ).toEqual({ test: [{ data: true }, { data1: true }] });
   });
 
   it('should works in reverse dirtyFields fields check', () => {
@@ -131,7 +129,7 @@ describe('getDirtyFields', () => {
         { test: [{ data: 'bill1' }, { data: 'luo2' }] },
         { test: [{ data: 'bill' }, { data: 'luo2', data1: 'luo1' }] },
       ),
-    ).toEqual({ test: [{ data: true }, { data: false, data1: true }] });
+    ).toEqual({ test: [{ data: true }, { data1: true }] });
   });
 
   it('should work for empty values compare with defaultValues', () => {
@@ -216,8 +214,6 @@ describe('getDirtyFields', () => {
         },
         {
           data: true,
-          data1: false,
-          nested: [{ data: false, data1: false }],
           nested1: [{ data: true, data1: true }],
         },
       ],
@@ -230,7 +226,7 @@ describe('getDirtyFields', () => {
         { test: [{ data: 'bill' }] },
         { test: [{ data: 'bill' }] },
       ),
-    ).toEqual({ test: [{ data: false }] });
+    ).toEqual({});
   });
 
   it('should reset dirtyFields fields', () => {
@@ -359,6 +355,32 @@ describe('getDirtyFields', () => {
     });
   });
 
+  it('should prune empty array', () => {
+    expect(
+      getDirtyFields(
+        { test: { data: [{ value: 'default' }] } },
+        { test: { data: [{ value: 'default' }] } },
+      ),
+    ).toEqual({});
+  });
+
+  it('should not leave a stray empty array for a field array with no default value once all items are removed (#13600)', () => {
+    expect(getDirtyFields({}, { data: [] })).toEqual({});
+  });
+
+  it('should not leave a stray empty array for a nested field array with no default value once all items are removed (#13600)', () => {
+    expect(
+      getDirtyFields(
+        { test: [{ firstName: 'bill' }, { firstName: 'bill' }] },
+        {
+          test: [{ firstName: 'luo' }, { firstName: 'luo', keyValue: [] }],
+        },
+      ),
+    ).toEqual({
+      test: [{ firstName: true }, { firstName: true }],
+    });
+  });
+
   it('should mark null values as dirty when comparing with defaultValues', () => {
     expect(
       getDirtyFields(
@@ -372,8 +394,50 @@ describe('getDirtyFields', () => {
         },
       ),
     ).toEqual({
-      views: false,
       name: true,
+    });
+  });
+
+  it('should mark an array-valued registered field as dirty with a boolean rather than diffing elements (#13584)', () => {
+    const fieldRefs = {
+      fruits: { _f: { name: 'fruits', ref: {} } },
+    };
+
+    expect(
+      getDirtyFields(
+        { fruits: ['apple'] },
+        { fruits: ['apple', 'banana'] },
+        undefined,
+        fieldRefs,
+      ),
+    ).toEqual({
+      fruits: true,
+    });
+
+    expect(
+      getDirtyFields(
+        { fruits: ['apple'] },
+        { fruits: ['apple'] },
+        undefined,
+        fieldRefs,
+      ),
+    ).toEqual({});
+  });
+
+  it('should still diff a field array element-by-element when the array path itself is not a registered leaf', () => {
+    const fieldRefs = {
+      test: [{ value: { _f: { name: 'test.0.value', ref: {} } } }],
+    };
+
+    expect(
+      getDirtyFields(
+        { test: [{ value: 'a' }, { value: 'b' }] },
+        { test: [{ value: 'a' }, { value: 'changed' }] },
+        undefined,
+        fieldRefs,
+      ),
+    ).toEqual({
+      test: [undefined, { value: true }],
     });
   });
 });
