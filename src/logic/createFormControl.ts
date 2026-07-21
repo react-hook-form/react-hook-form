@@ -268,14 +268,23 @@ export function createFormControl<
   };
 
   const _updateDirtyFields = () => {
-    _formState.dirtyFields = getDirtyFields(
+    const nextDirtyFields = getDirtyFields(
       _defaultValues,
       _formValues,
       undefined,
       _fields,
     );
-  };
 
+    _formState.dirtyFields ??= {};
+
+    for (const key in _formState.dirtyFields) {
+      if (!(key in nextDirtyFields)) {
+        delete _formState.dirtyFields[key];
+      }
+    }
+
+    Object.assign(_formState.dirtyFields, nextDirtyFields);
+  };
   const _setFieldArray: BatchFieldArrayUpdate = (
     name,
     values = [],
