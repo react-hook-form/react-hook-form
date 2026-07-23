@@ -1639,6 +1639,7 @@ export function createFormControl<
 
   const handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues> =
     (onValid, onInvalid) => async (e) => {
+      let result: any = undefined;
       let onValidError = undefined;
       if (e) {
         e.preventDefault && e.preventDefault();
@@ -1679,7 +1680,7 @@ export function createFormControl<
           errors: {},
         });
         try {
-          await onValid(fieldValues as TTransformedValues, e);
+          result = await onValid(fieldValues as TTransformedValues, e);
         } catch (error) {
           onValidError = error;
         }
@@ -1702,6 +1703,7 @@ export function createFormControl<
       if (onValidError) {
         throw onValidError;
       }
+      return result;
     };
 
   const resetField: UseFormResetField<TFieldValues> = (name, options = {}) => {
