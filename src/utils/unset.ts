@@ -9,7 +9,7 @@ import isUndefined from './isUndefined';
 import stringToPath from './stringToPath';
 
 function baseGet(object: any, updatePath: (string | number)[]) {
-  const length = updatePath.slice(0, -1).length;
+  const length = updatePath.length - 1;
   let index = 0;
 
   while (index < length) {
