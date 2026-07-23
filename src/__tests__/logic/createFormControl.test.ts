@@ -10,6 +10,38 @@ jest.mock('../../utils/isEmptyObject', () => {
 });
 
 describe('createFormControl', () => {
+  it('should keep dirtyFields reference stable when dirty fields do not change', () => {
+    const { control, setValue, subscribe } = createFormControl<{
+      a: string;
+      b: string;
+    }>({
+      defaultValues: {
+        a: '',
+        b: '',
+      },
+    });
+
+    subscribe({
+      formState: {
+        isDirty: true,
+        dirtyFields: true,
+      },
+      callback: jest.fn(),
+    });
+
+    const dirtyFieldsRefs = [];
+
+    for (let i = 0; i < 4; i++) {
+      setValue('a', `x${i}`, { shouldDirty: true });
+      dirtyFieldsRefs.push(control._formState.dirtyFields);
+    }
+
+    expect(control._formState.dirtyFields).toEqual({ a: true });
+    expect(dirtyFieldsRefs[1]).toBe(dirtyFieldsRefs[0]);
+    expect(dirtyFieldsRefs[2]).toBe(dirtyFieldsRefs[0]);
+    expect(dirtyFieldsRefs[3]).toBe(dirtyFieldsRefs[0]);
+  });
+
   it('should call `executeBuiltInValidation` once for a single field', async () => {
     const { register, control } = createFormControl({
       defaultValues: {
