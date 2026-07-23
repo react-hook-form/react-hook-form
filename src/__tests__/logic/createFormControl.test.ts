@@ -62,4 +62,24 @@ describe('createFormControl', () => {
 
     expect(isEmptyObject).toHaveBeenCalledTimes(3);
   });
+
+  it('should clear the entire internal errors state when `clearErrors()` is called without arguments', () => {
+    const { setError, clearErrors, getFieldState, control } =
+      createFormControl<{
+        foo: string;
+        bar: string;
+      }>();
+
+    setError('foo', { type: 'required' });
+    setError('bar', { type: 'required' });
+
+    expect(getFieldState('foo').invalid).toBe(true);
+    expect(control._formState.errors).not.toEqual({});
+
+    clearErrors();
+
+    expect(getFieldState('foo').invalid).toBe(false);
+    expect(getFieldState('bar').invalid).toBe(false);
+    expect(control._formState.errors).toEqual({});
+  });
 });
