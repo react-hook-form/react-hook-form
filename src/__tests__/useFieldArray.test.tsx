@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
   act,
   fireEvent,
@@ -7,6 +6,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import React, { useState } from 'react';
 
 import { Controller } from '../controller';
 import type {
@@ -1027,10 +1027,8 @@ describe('useFieldArray', () => {
     });
 
     it('should unset field array values correctly on DOM removing', async () => {
-      interface NestedComponentProps extends Pick<
-        UseFormReturn<FormValues>,
-        'control' | 'register'
-      > {
+      interface NestedComponentProps
+        extends Pick<UseFormReturn<FormValues>, 'control' | 'register'> {
         childIndex: number;
       }
 

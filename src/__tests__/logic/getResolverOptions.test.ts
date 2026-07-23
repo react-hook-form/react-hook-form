@@ -23,8 +23,9 @@ describe('getFielfs', () => {
       },
     };
 
-    expect(getResolverOptions(fieldNames, fieldsRef, undefined, true))
-      .toMatchInlineSnapshot(`
+    expect(
+      getResolverOptions(fieldNames, fieldsRef, undefined, true),
+    ).toMatchInlineSnapshot(`
       {
         "criteriaMode": undefined,
         "fields": {

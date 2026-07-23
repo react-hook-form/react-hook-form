@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   fireEvent,
   render,
@@ -7,6 +6,7 @@ import {
   waitFor,
   within,
 } from '@testing-library/react';
+import React from 'react';
 
 import { Controller } from '../controller';
 import type {

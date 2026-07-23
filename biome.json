@@ -1,0 +1,165 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.4/schema.json",
+  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "**",
+      "!app",
+      "!examples",
+      "!node_modules",
+      "!dist",
+      "!coverage",
+      "!src/types/global.d.ts",
+      "!reports",
+      "!scripts/README",
+      "!**/pnpm-lock.yaml",
+      "!**/README.md",
+      "!**/README.*",
+      "!**/*.README.*",
+      "!.github/workflows/README.yml",
+      "!docs/Helpers.yaml",
+      "!docs/Sponsors.yaml",
+      "!docs/Template.md"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 80,
+    "attributePosition": "auto",
+    "bracketSameLine": false,
+    "useEditorconfig": true
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "a11y": {
+        "noSvgWithoutTitle": "off"
+      },
+      "complexity": {
+        "noForEach": "off"
+      },
+      "correctness": {
+        "noChildrenProp": "error",
+        "noUnusedVariables": "warn",
+        "useExhaustiveDependencies": "warn",
+        "useHookAtTopLevel": "error",
+        "useJsxKeyInIterable": "error"
+      },
+      "style": {
+        "noDefaultExport": "off",
+        "noNonNullAssertion": "off",
+        "useImportType": "error"
+      },
+      "suspicious": {
+        "noConsole": "error",
+        "noDuplicateEnumValues": "error",
+        "noDuplicateJsxProps": "error",
+        "noEmptyBlockStatements": "off",
+        "noExplicitAny": "off",
+        "noExtraNonNullAssertion": "error",
+        "noMisleadingInstantiator": "error",
+        "noNonNullAssertedOptionalChain": "error",
+        "noRedundantUseStrict": "error",
+        "noThenProperty": "error",
+        "noUnusedExpressions": "off",
+        "useNamespaceKeyword": "error",
+        "noDoubleEquals": "off",
+        "noAssignInExpressions": "off",
+        "noImplicitAnyLet": "off",
+        "noArrayIndexKey": "off",
+        "useIterableCallbackReturn": "off"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "arrowParentheses": "always",
+      "bracketSameLine": false,
+      "bracketSpacing": true,
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "quoteStyle": "single",
+      "semicolons": "always",
+      "trailingCommas": "all"
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["**/*.test.ts", "**/*.test.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noCommentText": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/__typetest__/**/*"],
+      "linter": { "rules": { "correctness": { "noUnusedVariables": "off" } } }
+    },
+    {
+      "includes": ["app/**/*", "examples/**/*"],
+      "linter": {
+        "rules": {
+          "correctness": { "noUnusedVariables": "off" },
+          "suspicious": { "noConsole": "off", "noUnknownAttribute": "off" }
+        }
+      }
+    },
+    {
+      "includes": ["src/logic/isNode.ts"],
+      "linter": {
+        "rules": { "suspicious": { "noDoubleEquals": "off" } }
+      }
+    },
+    {
+      "includes": ["src/utils/isEmptyObject.ts"],
+      "linter": { "rules": { "correctness": { "noEmptyPattern": "off" } } }
+    },
+    {
+      "includes": ["scripts/**/*"],
+      "linter": {
+        "rules": {
+          "suspicious": { "noConsole": "off" },
+          "style": { "noCommonJs": "off" }
+        }
+      }
+    },
+    {
+      "includes": [
+        "src/__typetest__/**/*",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/*.test-d.ts"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedVariables": "off",
+            "useHookAtTopLevel": "off",
+            "useExhaustiveDependencies": "off"
+          },
+          "suspicious": {
+            "noExplicitAny": "off",
+            "noImplicitAnyLet": "off",
+            "noControlCharactersInRegex": "off",
+            "noDoubleEquals": "off",
+            "noSparseArray": "off"
+          },
+          "a11y": {
+            "useButtonType": "off",
+            "noLabelWithoutControl": "off"
+          }
+        }
+      }
+    }
+  ],
+  "assist": { "actions": { "source": { "organizeImports": "on" } } }
+}

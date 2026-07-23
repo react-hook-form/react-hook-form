@@ -1,8 +1,8 @@
 import isPlainObject from '../utils/isPlainObject';
 import noop from '../utils/noop';
 
-describe('isPlainObject', function () {
-  it('should identify plan object or not', function () {
+describe('isPlainObject', () => {
+  it('should identify plan object or not', () => {
     function test() {
       return {
         test: noop,
@@ -15,7 +15,7 @@ describe('isPlainObject', function () {
     expect(isPlainObject({})).toBeTruthy();
     expect(isPlainObject(Object.create(null))).toBeFalsy();
     expect(!isPlainObject(/foo/)).toBeTruthy();
-    expect(!isPlainObject(function () {})).toBeTruthy();
+    expect(!isPlainObject(() => {})).toBeTruthy();
     expect(!isPlainObject(['foo', 'bar'])).toBeTruthy();
     expect(!isPlainObject([])).toBeTruthy();
     expect(!isPlainObject(test)).toBeTruthy();

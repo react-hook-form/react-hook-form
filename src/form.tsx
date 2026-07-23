@@ -1,8 +1,7 @@
 import React from 'react';
-
-import { flatten } from './utils/flatten';
 import type { FieldValues, FormProps } from './types';
 import { useFormContext } from './useFormContext';
+import { flatten } from './utils/flatten';
 
 const POST_REQUEST = 'post';
 

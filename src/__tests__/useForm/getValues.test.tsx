@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   fireEvent,
   render,
@@ -6,6 +5,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import React from 'react';
 
 import { Controller } from '../../controller';
 import { useForm } from '../../useForm';

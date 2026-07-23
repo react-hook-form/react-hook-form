@@ -1,4 +1,3 @@
-import React, { useEffect, useMemo, useState } from 'react';
 import {
   act,
   fireEvent,
@@ -7,6 +6,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { Controller } from '../controller';
 import type { Control, FieldPath, FieldValues, UseFormReturn } from '../types';

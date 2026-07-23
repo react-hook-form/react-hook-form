@@ -1,7 +1,6 @@
 import React from 'react';
 
 import generateWatchOutput from './logic/generateWatchOutput';
-import deepEqual from './utils/deepEqual';
 import type {
   Control,
   DeepPartialSkipArrayKey,
@@ -14,6 +13,7 @@ import type {
 } from './types';
 import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
+import deepEqual from './utils/deepEqual';
 
 /**
  * Subscribes to all form value changes and re-renders at the hook level.
@@ -170,8 +170,8 @@ export function useWatch<
  */
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldNames extends readonly FieldPath<TFieldValues>[] =
-    readonly FieldPath<TFieldValues>[],
+  TFieldNames extends
+    readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[],
   TTransformedValues = TFieldValues,
 >(props: {
   name: readonly [...TFieldNames];
@@ -207,8 +207,8 @@ export function useWatch<
  */
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldNames extends readonly FieldPath<TFieldValues>[] =
-    readonly FieldPath<TFieldValues>[],
+  TFieldNames extends
+    readonly FieldPath<TFieldValues>[] = readonly FieldPath<TFieldValues>[],
   TTransformedValues = TFieldValues,
   TComputeValue = unknown,
 >(props: {

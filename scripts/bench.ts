@@ -10,8 +10,8 @@
  */
 
 import { Bench } from 'tinybench';
-import cloneObject from '../src/utils/cloneObject';
 import { createFormControl } from '../src/logic/createFormControl';
+import cloneObject from '../src/utils/cloneObject';
 
 const FIELDS = 50;
 const JSON_MODE = process.argv.includes('--json');

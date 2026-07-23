@@ -116,7 +116,7 @@ describe('clone', () => {
       a = 1;
       b = 1;
 
-      static c = function () {};
+      static c = () => {};
     }
 
     const object = new Foo();
