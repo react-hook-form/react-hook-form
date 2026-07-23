@@ -52,7 +52,6 @@ import type {
   UseFormWatch,
   ValidateFormEventType,
   WatchInternal,
-  WatchObserver,
 } from '../types';
 import cloneObject from '../utils/cloneObject';
 import compact from '../utils/compact';
@@ -1353,7 +1352,14 @@ export function createFormControl<
     name?:
       | FieldPath<TFieldValues>
       | ReadonlyArray<FieldPath<TFieldValues>>
-      | WatchObserver<TFieldValues>,
+      | ((
+          value: TFieldValues,
+          info: {
+            name?: FieldPath<TFieldValues>;
+            type?: EventType;
+            value?: unknown;
+          },
+        ) => void),
     defaultValue?: DeepPartial<TFieldValues>,
   ) => {
     if (isFunction(name)) {

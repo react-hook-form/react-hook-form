@@ -1,7 +1,7 @@
 import type React from 'react';
 
 import type { VALIDATION_MODE } from '../constants';
-import type { Subject, Subscription } from '../utils/createSubject';
+import type { Subject } from '../utils/createSubject';
 
 import type { ErrorOption, FieldError, FieldErrors } from './errors';
 import type { EventType } from './events';
@@ -20,12 +20,7 @@ import type {
   FieldPathValues,
 } from './path';
 import type { Resolver } from './resolvers';
-import type {
-  DeepMap,
-  DeepPartial,
-  DeepPartialSkipArrayKey,
-  Noop,
-} from './utils';
+import type { DeepMap, DeepPartial, Noop } from './utils';
 import type { RegisterOptions, ValidateForm } from './validator';
 
 declare const $NestedValue: unique symbol;
@@ -448,6 +443,36 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
    */
   (): TFieldValues;
   /**
+   * Watch and subscribe to the entire form update/change via callback, outside of render.
+   *
+   * @remarks
+   * [API](https://react-hook-form.com/docs/useform/watch) • [Demo](https://codesandbox.io/s/react-hook-form-watch-v7-ts-8et1d) • [Video](https://www.youtube.com/watch?v=3qLd69WMqKk)
+   *
+   * @param callback - invoked with the latest form values whenever a relevant update occurs
+   * @param defaultValue - defaultValues for the entire form
+   *
+   * @returns a subscription object; call `unsubscribe` to stop watching
+   *
+   * @example
+   * ```tsx
+   * useEffect(() => {
+   *   const { unsubscribe } = watch((value, { name, type }) => console.log(value, name, type));
+   *   return () => unsubscribe();
+   * }, [watch]);
+   * ```
+   */
+  (
+    callback: (
+      value: TFieldValues,
+      info: {
+        name?: FieldPath<TFieldValues>;
+        type?: EventType;
+        value?: unknown;
+      },
+    ) => void,
+    defaultValue?: DeepPartial<TFieldValues>,
+  ): { unsubscribe: () => void };
+  /**
    * Watch and subscribe to an array of fields used outside of render.
    *
    * @remarks
@@ -487,31 +512,6 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
     name: TFieldName,
     defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
   ): FieldPathValue<TFieldValues, TFieldName>;
-  /**
-   * Subscribe to field updates and changes without triggering a re-render.
-   *
-   * @remarks
-   * [API](https://react-hook-form.com/docs/useform/watch) • [Demo](https://codesandbox.io/s/react-hook-form-watch-v7-ts-8et1d) • [Video](https://www.youtube.com/watch?v=3qLd69WMqKk)
-   *
-   * @param callback - Callback function to subscribe to all field changes and return an unsubscribe function.
-   * @param defaultValues - DefaultValues for the entire form.
-   *
-   * @returns Unsubscribe function.
-   *
-   * @example
-   * ```tsx
-   * useEffect(() => {
-   *   const { unsubscribe } = watch((value) => {
-   *     console.log(value);
-   *   });
-   *   return () => unsubscribe();
-   * }, [watch])
-   * ```
-   */
-  (
-    callback: WatchObserver<TFieldValues>,
-    defaultValues?: DeepPartial<TFieldValues>,
-  ): Subscription;
 };
 
 /**
@@ -920,15 +920,6 @@ export type Control<
   getFieldState: UseFormGetFieldState<TFieldValues>;
   setError: UseFormSetError<TFieldValues>;
 };
-
-export type WatchObserver<TFieldValues extends FieldValues> = (
-  value: DeepPartialSkipArrayKey<TFieldValues>,
-  info: {
-    name?: FieldPath<TFieldValues>;
-    type?: EventType;
-    values?: unknown;
-  },
-) => void;
 
 export type UseFormReturn<
   TFieldValues extends FieldValues = FieldValues,

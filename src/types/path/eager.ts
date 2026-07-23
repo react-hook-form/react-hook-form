@@ -89,7 +89,7 @@ type ArrayPathImpl<
     ? string
     : never
   : V extends ReadonlyArray<infer U>
-    ? U extends Primitive | BrowserNativeObject
+    ? U extends BrowserNativeObject
       ? IsAny<V> extends true
         ? string
         : never

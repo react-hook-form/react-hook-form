@@ -36,9 +36,8 @@ import { useFieldArray } from './useFieldArray';
 const FieldArray = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
 >(
-  props: FieldArrayProps<TFieldValues, TName, TKeyName>,
-) => props.render(useFieldArray<TFieldValues, TName, TKeyName>(props));
+  props: FieldArrayProps<TFieldValues, TName>,
+) => props.render(useFieldArray<TFieldValues, TName>(props));
 
 export { FieldArray };
