@@ -1322,8 +1322,9 @@ export function createFormControl<
         });
       });
     } else {
+      _formState.errors = {};
       _subjects.state.next({
-        errors: {},
+        errors: _formState.errors,
       });
     }
   };
