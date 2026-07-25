@@ -7,14 +7,14 @@ import type {
 } from './types';
 import { useFormState } from './useFormState';
 
-export type FormStateSubscribeProps<
+export type FormStateProps<
   TFieldValues extends FieldValues,
   TTransformedValues = TFieldValues,
 > = UseFormStateProps<TFieldValues, TTransformedValues> & {
   render: (values: UseFormStateReturn<TFieldValues>) => ReactNode;
 };
 
-export const FormStateSubscribe = <
+export const FormState = <
   TFieldValues extends FieldValues,
   TTransformedValues = TFieldValues,
 >({
@@ -23,5 +23,14 @@ export const FormStateSubscribe = <
   exact,
   name,
   render,
-}: FormStateSubscribeProps<TFieldValues, TTransformedValues>) =>
+}: FormStateProps<TFieldValues, TTransformedValues>) =>
   render(useFormState({ control, name, disabled, exact }));
+
+/** @deprecated Use `FormState` instead. Kept as an alias for backward compatibility. */
+export const FormStateSubscribe = FormState;
+
+/** @deprecated Use `FormStateProps` instead. Kept as an alias for backward compatibility. */
+export type FormStateSubscribeProps<
+  TFieldValues extends FieldValues,
+  TTransformedValues = TFieldValues,
+> = FormStateProps<TFieldValues, TTransformedValues>;

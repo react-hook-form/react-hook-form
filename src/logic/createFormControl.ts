@@ -111,6 +111,19 @@ const defaultOptions = {
 
 const FORM_ERROR_TYPE = 'form';
 
+const updateDirtyFields = (
+  dirtyFields: Record<string, unknown>,
+  nextDirtyFields: Record<string, unknown>,
+) => {
+  for (const key in dirtyFields) {
+    if (!(key in nextDirtyFields)) {
+      delete dirtyFields[key];
+    }
+  }
+
+  Object.assign(dirtyFields, nextDirtyFields);
+};
+
 export const DEFAULT_FORM_STATE = {
   submitCount: 0,
   isDirty: false,
@@ -202,6 +215,8 @@ export function createFormControl<
     state: createSubject(),
   };
 
+  let _setValidCallId = 0;
+
   const shouldDisplayAllAssociatedErrors =
     _options.criteriaMode === VALIDATION_MODE.all;
 
@@ -222,10 +237,11 @@ export function createFormControl<
         _proxySubscribeFormState.isValid ||
         shouldUpdateValid)
     ) {
+      const callId = ++_setValidCallId;
       let isValid: boolean;
       if (_options.resolver) {
         isValid = isEmptyObject((await _runSchema()).errors);
-        _updateIsValidating();
+        callId === _setValidCallId && _updateIsValidating();
       } else {
         isValid = await executeBuiltInValidation({
           fields: _fields,
@@ -233,7 +249,7 @@ export function createFormControl<
           eventType: EVENTS.VALID,
         });
       }
-      if (isValid !== _formState.isValid) {
+      if (callId === _setValidCallId && isValid !== _formState.isValid) {
         _subjects.state.next({
           isValid,
         });
@@ -441,7 +457,9 @@ export function createFormControl<
       name,
     };
 
-    if (!_options.disabled) {
+    // an explicit programmatic update (e.g. setValue with shouldDirty: true)
+    // opts into dirty tracking even when the form is disabled
+    if (!_options.disabled || shouldDirty === true) {
       if (!isBlurEvent || shouldDirty) {
         const isCurrentFieldPristine = deepEqual(
           get(_defaultValues, name),
@@ -459,11 +477,14 @@ export function createFormControl<
         isPreviousDirty = !!get(_formState.dirtyFields, name);
 
         if (isCurrentFieldPristine !== _formState.isDirty) {
-          _formState.dirtyFields = getDirtyFields(
-            _defaultValues,
-            _formValues,
-            undefined,
-            _fields,
+          updateDirtyFields(
+            _formState.dirtyFields as Record<string, unknown>,
+            getDirtyFields(
+              _defaultValues,
+              _formValues,
+              undefined,
+              _fields,
+            ) as Record<string, unknown>,
           );
         } else {
           isCurrentFieldPristine
@@ -752,10 +773,10 @@ export function createFormControl<
     _names.unMount = new Set();
   };
 
-  const _getDirty: GetIsDirty = (name, data) =>
-    !_options.disabled &&
-    (name && data && set(_formValues, name, data),
-    !deepEqual(_state.mount ? _formValues : _defaultValues, _defaultValues));
+  const _getDirty: GetIsDirty = (name, data) => (
+    name && data && set(_formValues, name, data),
+    !deepEqual(_state.mount ? _formValues : _defaultValues, _defaultValues)
+  );
 
   const _getWatch: WatchInternal<TFieldValues> = (
     names,
@@ -1301,8 +1322,9 @@ export function createFormControl<
         });
       });
     } else {
+      _formState.errors = {};
       _subjects.state.next({
-        errors: {},
+        errors: _formState.errors,
       });
     }
   };
@@ -1553,20 +1575,23 @@ export function createFormControl<
             return;
           }
 
+          const newField = {
+            ...field._f,
+          };
+          if (radioOrCheckbox) {
+            newField.refs = [
+              ...refs.filter(live),
+              fieldRef,
+              ...(Array.isArray(get(_defaultValues, name)) ? [{}] : []),
+            ];
+            newField.ref = { type: fieldRef.type, name };
+          } else {
+            newField.ref = fieldRef;
+            delete newField.refs;
+          }
+
           set(_fields, name, {
-            _f: {
-              ...field._f,
-              ...(radioOrCheckbox
-                ? {
-                    refs: [
-                      ...refs.filter(live),
-                      fieldRef,
-                      ...(Array.isArray(get(_defaultValues, name)) ? [{}] : []),
-                    ],
-                    ref: { type: fieldRef.type, name },
-                  }
-                : { ref: fieldRef }),
-            },
+            _f: newField,
           });
 
           updateValidAndValue(name, false, undefined, fieldRef);
@@ -1615,6 +1640,7 @@ export function createFormControl<
 
   const handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues> =
     (onValid, onInvalid) => async (e) => {
+      let result: any = undefined;
       let onValidError = undefined;
       if (e) {
         e.preventDefault && e.preventDefault();
@@ -1655,7 +1681,7 @@ export function createFormControl<
           errors: {},
         });
         try {
-          await onValid(fieldValues as TTransformedValues, e);
+          result = await onValid(fieldValues as TTransformedValues, e);
         } catch (error) {
           onValidError = error;
         }
@@ -1678,6 +1704,7 @@ export function createFormControl<
       if (onValidError) {
         throw onValidError;
       }
+      return result;
     };
 
   const resetField: UseFormResetField<TFieldValues> = (name, options = {}) => {

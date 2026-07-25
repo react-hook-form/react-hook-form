@@ -1,7 +1,9 @@
 [
   "Controller",
+  "FieldArray",
   "Form",
   "FormProvider",
+  "FormState",
   "FormStateSubscribe",
   "Watch",
   "appendErrors",
