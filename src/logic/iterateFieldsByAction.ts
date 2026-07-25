@@ -9,10 +9,14 @@ const iterateFieldsByAction = (
   abortEarly?: boolean,
 ) => {
   for (const key of fieldsNames || Object.keys(fields)) {
-    const field = get(fields, key);
+    if (key === '_f') {
+      continue;
+    }
+
+    const field = fieldsNames ? get(fields, key) : fields[key];
 
     if (field) {
-      const { _f, ...currentField } = field;
+      const { _f } = field;
 
       if (_f) {
         if (_f.refs && _f.refs[0] && action(_f.refs[0], key) && !abortEarly) {
@@ -20,12 +24,12 @@ const iterateFieldsByAction = (
         } else if (_f.ref && action(_f.ref, _f.name) && !abortEarly) {
           return true;
         } else {
-          if (iterateFieldsByAction(currentField, action)) {
+          if (iterateFieldsByAction(field, action)) {
             break;
           }
         }
-      } else if (isObject(currentField)) {
-        if (iterateFieldsByAction(currentField as FieldRefs, action)) {
+      } else if (isObject(field) || Array.isArray(field)) {
+        if (iterateFieldsByAction(field as FieldRefs, action)) {
           break;
         }
       }
