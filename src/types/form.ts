@@ -360,6 +360,8 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
   ): [...FieldPathValues<TFieldValues, TFieldNames>];
 };
 
+type ErrorNamespacePath = 'root' | `root.${string}` | 'form' | `form.${string}`;
+
 /**
  * This method will return individual field states. It will be useful when you are trying to retrieve the nested value field state in a type-safe approach.
  *
@@ -567,10 +569,7 @@ export type UseFormClearErrors<TFieldValues extends FieldValues> = (
     | FieldPath<TFieldValues>
     | FieldPath<TFieldValues>[]
     | readonly FieldPath<TFieldValues>[]
-    | `root.${string}`
-    | 'root'
-    | 'form'
-    | `form.${string}`,
+    | ErrorNamespacePath,
 ) => void;
 
 /**
@@ -637,12 +636,7 @@ export type UseFormSetValues<TFieldValues extends FieldValues> = (
  * ```
  */
 export type UseFormSetError<TFieldValues extends FieldValues> = (
-  name:
-    | FieldPath<TFieldValues>
-    | `root.${string}`
-    | 'root'
-    | 'form'
-    | `form.${string}`,
+  name: FieldPath<TFieldValues> | ErrorNamespacePath,
   error: ErrorOption,
   options?: {
     shouldFocus: boolean;

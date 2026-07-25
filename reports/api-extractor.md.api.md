@@ -704,8 +704,10 @@ export type UseFieldArrayUpdate<TFieldValues extends FieldValues, TFieldArrayNam
 // @public
 export function useForm<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues>(props?: UseFormProps<TFieldValues, TContext, TTransformedValues>): UseFormReturn<TFieldValues, TContext, TTransformedValues>;
 
+// Warning: (ae-forgotten-export) The symbol "ErrorNamespacePath" needs to be exported by the entry point index.d.ts
+//
 // @public
-export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | `root.${string}` | 'root' | 'form' | `form.${string}`) => void;
+export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | ErrorNamespacePath) => void;
 
 // @public
 export const useFormContext: <TFieldValues extends FieldValues, TContext = any, TTransformedValues = TFieldValues>() => UseFormReturn<TFieldValues, TContext, TTransformedValues>;
@@ -802,7 +804,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
 };
 
 // @public
-export type UseFormSetError<TFieldValues extends FieldValues> = (name: FieldPath<TFieldValues> | `root.${string}` | 'root' | 'form' | `form.${string}`, error: ErrorOption, options?: {
+export type UseFormSetError<TFieldValues extends FieldValues> = (name: FieldPath<TFieldValues> | ErrorNamespacePath, error: ErrorOption, options?: {
     shouldFocus: boolean;
 }) => void;
 
@@ -1016,8 +1018,8 @@ export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValue
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:511:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:893:3 - (ae-forgotten-export) The symbol "FormState_2" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:513:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:887:3 - (ae-forgotten-export) The symbol "FormState_2" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
