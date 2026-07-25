@@ -51,7 +51,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _options: UseFormProps<TFieldValues, TContext, TTransformedValues>;
     _getDirty: GetIsDirty;
     _resetDefaultValues: Noop;
-    _formState: FormState<TFieldValues>;
+    _formState: FormState_2<TFieldValues>;
     _setValid: (shouldUpdateValid?: boolean) => void;
     _fields: FieldRefs;
     _formValues: FieldValues;
@@ -311,22 +311,11 @@ export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TC
 } & UseFormReturn<TFieldValues, TContext, TTransformedValues>;
 
 // @public (undocumented)
-export type FormState<TFieldValues extends FieldValues> = {
-    isDirty: boolean;
-    isLoading: boolean;
-    isSubmitted: boolean;
-    isSubmitSuccessful: boolean;
-    isSubmitting: boolean;
-    isValidating: boolean;
-    isValid: boolean;
-    disabled: boolean;
-    submitCount: number;
-    defaultValues?: undefined | Readonly<DeepPartial<TFieldValues>>;
-    dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
-    touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
-    validatingFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
-    errors: FieldErrors<TFieldValues>;
-    isReady: boolean;
+export const FormState: <TFieldValues extends FieldValues, TTransformedValues = TFieldValues>(input: FormStateProps<TFieldValues, TTransformedValues>) => ReactNode;
+
+// @public (undocumented)
+export type FormStateProps<TFieldValues extends FieldValues, TTransformedValues = TFieldValues> = UseFormStateProps<TFieldValues, TTransformedValues> & {
+    render: (values: UseFormStateReturn<TFieldValues>) => ReactNode;
 };
 
 // @public (undocumented)
@@ -343,19 +332,17 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
 // Warning: (ae-forgotten-export) The symbol "Subject" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type FormStateSubjectRef<TFieldValues extends FieldValues> = Subject<Partial<FormState<TFieldValues>> & {
+export type FormStateSubjectRef<TFieldValues extends FieldValues> = Subject<Partial<FormState_2<TFieldValues>> & {
     name?: InternalFieldName;
     values?: TFieldValues;
     type?: EventType;
 }>;
 
-// @public (undocumented)
-export const FormStateSubscribe: <TFieldValues extends FieldValues, TTransformedValues = TFieldValues>(input: FormStateSubscribeProps<TFieldValues, TTransformedValues>) => ReactNode;
+// @public @deprecated (undocumented)
+export const FormStateSubscribe: <TFieldValues extends FieldValues, TTransformedValues = TFieldValues>(input: FormStateProps<TFieldValues, TTransformedValues>) => ReactNode;
 
-// @public (undocumented)
-export type FormStateSubscribeProps<TFieldValues extends FieldValues, TTransformedValues = TFieldValues> = UseFormStateProps<TFieldValues, TTransformedValues> & {
-    render: (values: UseFormStateReturn<TFieldValues>) => ReactNode;
-};
+// @public @deprecated (undocumented)
+export type FormStateSubscribeProps<TFieldValues extends FieldValues, TTransformedValues = TFieldValues> = FormStateProps<TFieldValues, TTransformedValues>;
 
 // @public (undocumented)
 export type FormSubmitHandler<TTransformedValues> = (payload: {
@@ -376,7 +363,7 @@ export type FormValidateResult<T> = Partial<Record<keyof T, {
 export type FromSubscribe<TFieldValues extends FieldValues> = <TFieldNames extends readonly FieldPath<TFieldValues>[]>(payload: {
     name?: readonly [...TFieldNames] | TFieldNames[number];
     formState?: Partial<ReadFormState>;
-    callback: (data: Partial<FormState<TFieldValues>> & {
+    callback: (data: Partial<FormState_2<TFieldValues>> & {
         values: TFieldValues;
         name?: InternalFieldName;
     }) => void;
@@ -724,7 +711,7 @@ export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: Field
 export const useFormContext: <TFieldValues extends FieldValues, TContext = any, TTransformedValues = TFieldValues>() => UseFormReturn<TFieldValues, TContext, TTransformedValues>;
 
 // @public
-export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState<TFieldValues>) => {
+export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState_2<TFieldValues>) => {
     invalid: boolean;
     isDirty: boolean;
     isTouched: boolean;
@@ -802,7 +789,7 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
     setValue: UseFormSetValue<TFieldValues>;
     setValues: UseFormSetValues<TFieldValues>;
     trigger: UseFormTrigger<TFieldValues>;
-    formState: FormState<TFieldValues>;
+    formState: FormState_2<TFieldValues>;
     resetField: UseFormResetField<TFieldValues>;
     reset: UseFormReset<TFieldValues>;
     resetDefaultValues: UseFormResetDefaultValues<TFieldValues>;
@@ -840,13 +827,13 @@ export type UseFormStateProps<TFieldValues extends FieldValues, TTransformedValu
 }>;
 
 // @public (undocumented)
-export type UseFormStateReturn<TFieldValues extends FieldValues> = FormState<TFieldValues>;
+export type UseFormStateReturn<TFieldValues extends FieldValues> = FormState_2<TFieldValues>;
 
 // @public
 export type UseFormSubscribe<TFieldValues extends FieldValues> = <TFieldNames extends readonly FieldPath<TFieldValues>[]>(payload: {
     name?: readonly [...TFieldNames] | TFieldNames[number];
     formState?: Partial<ReadFormState>;
-    callback: (data: Partial<FormState<TFieldValues>> & {
+    callback: (data: Partial<FormState_2<TFieldValues>> & {
         values: TFieldValues;
         name?: InternalFieldName;
         type?: EventType;
@@ -951,7 +938,7 @@ export type Validate<TFieldValue, TFormValues> = (value: TFieldValue, formValues
 // @public (undocumented)
 export type ValidateForm<TFormValues extends FieldValues, TFieldName extends FieldPath<TFormValues> = FieldPath<TFormValues>> = (props: {
     formValues: TFormValues;
-    formState: FormState<TFormValues>;
+    formState: FormState_2<TFormValues>;
     eventType?: ValidateFormEventType;
     name?: TFieldName | TFieldName[];
 }) => FormValidateResult<TFormValues> | Promise<FormValidateResult<TFormValues>>;
@@ -1030,6 +1017,7 @@ export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValue
 // Warnings were encountered during analysis:
 //
 // src/types/form.ts:511:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:893:3 - (ae-forgotten-export) The symbol "FormState_2" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
