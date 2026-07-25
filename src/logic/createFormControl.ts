@@ -111,6 +111,19 @@ const defaultOptions = {
 
 const FORM_ERROR_TYPE = 'form';
 
+const updateDirtyFields = (
+  dirtyFields: Record<string, unknown>,
+  nextDirtyFields: Record<string, unknown>,
+) => {
+  for (const key in dirtyFields) {
+    if (!(key in nextDirtyFields)) {
+      delete dirtyFields[key];
+    }
+  }
+
+  Object.assign(dirtyFields, nextDirtyFields);
+};
+
 export const DEFAULT_FORM_STATE = {
   submitCount: 0,
   isDirty: false,
@@ -464,11 +477,14 @@ export function createFormControl<
         isPreviousDirty = !!get(_formState.dirtyFields, name);
 
         if (isCurrentFieldPristine !== _formState.isDirty) {
-          _formState.dirtyFields = getDirtyFields(
-            _defaultValues,
-            _formValues,
-            undefined,
-            _fields,
+          updateDirtyFields(
+            _formState.dirtyFields as Record<string, unknown>,
+            getDirtyFields(
+              _defaultValues,
+              _formValues,
+              undefined,
+              _fields,
+            ) as Record<string, unknown>,
           );
         } else {
           isCurrentFieldPristine
@@ -1306,8 +1322,9 @@ export function createFormControl<
         });
       });
     } else {
+      _formState.errors = {};
       _subjects.state.next({
-        errors: {},
+        errors: _formState.errors,
       });
     }
   };
@@ -1558,20 +1575,23 @@ export function createFormControl<
             return;
           }
 
+          const newField = {
+            ...field._f,
+          };
+          if (radioOrCheckbox) {
+            newField.refs = [
+              ...refs.filter(live),
+              fieldRef,
+              ...(Array.isArray(get(_defaultValues, name)) ? [{}] : []),
+            ];
+            newField.ref = { type: fieldRef.type, name };
+          } else {
+            newField.ref = fieldRef;
+            delete newField.refs;
+          }
+
           set(_fields, name, {
-            _f: {
-              ...field._f,
-              ...(radioOrCheckbox
-                ? {
-                    refs: [
-                      ...refs.filter(live),
-                      fieldRef,
-                      ...(Array.isArray(get(_defaultValues, name)) ? [{}] : []),
-                    ],
-                    ref: { type: fieldRef.type, name },
-                  }
-                : { ref: fieldRef }),
-            },
+            _f: newField,
           });
 
           updateValidAndValue(name, false, undefined, fieldRef);
