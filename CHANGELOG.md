@@ -1,5 +1,20 @@
 # Changelog
 
+## [7.83.0] - 2026-07-25
+
+### Improvements
+
+- Enhance `getEventValue` to handle file inputs
+- Improve TypeScript performance with a hard cap at 10 levels of recursive type depth
+
+### Fixed
+
+- Clear internal errors state on argument-less `clearErrors()`
+- Preserve `dirtyFields` reference stability
+- Old checkbox/radio elements polluting internal field state
+- `useController` not re-subscribing `onChange`/`onBlur` when `control` changes
+- Allow validation messages to be defined even if their related value is `undefined`
+
 ## [7.82.0] - 2026-07-18
 
 ### Added
