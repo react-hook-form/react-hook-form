@@ -311,6 +311,102 @@ describe('Form', () => {
     });
   });
 
+  it('should call a function action with FormData instead of fetching', async () => {
+    const fetchSpy = jest.spyOn(global, 'fetch');
+    const actionFn = jest.fn<(formData: FormData) => Promise<void>>(
+      async () => {},
+    );
+
+    const App = () => {
+      const { register, control } = useForm({
+        defaultValues: { name: 'bill' },
+      });
+
+      return (
+        <Form control={control} action={actionFn}>
+          <input {...register('name')} />
+          <button>Submit</button>
+        </Form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(actionFn).toHaveBeenCalledTimes(1);
+    });
+
+    const formData = actionFn.mock.calls[0][0];
+    expect(formData.get('name')).toBe('bill');
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('should invoke onError when a function action throws', async () => {
+    const onError = jest.fn();
+    const actionFn = jest.fn(async () => {
+      throw new Error('boom');
+    });
+
+    const App = () => {
+      const { control } = useForm();
+
+      return (
+        <Form control={control} action={actionFn} onError={onError}>
+          <button>Submit</button>
+        </Form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(onError).toHaveBeenCalledTimes(1);
+    });
+    expect((onError.mock.calls[0][0] as { error: Error }).error.message).toBe(
+      'boom',
+    );
+  });
+
+  it('should not render method/encType on the form element when action is a function', () => {
+    const App = () => {
+      const { control } = useForm();
+
+      return (
+        <Form control={control} action={async () => {}} encType="text/plain">
+          <button>Submit</button>
+        </Form>
+      );
+    };
+
+    const { container } = render(<App />);
+    const form = container.querySelector('form') as HTMLFormElement;
+
+    expect(form.hasAttribute('method')).toBe(false);
+    expect(form.hasAttribute('enctype')).toBe(false);
+  });
+
+  it('should still render method/encType on the form element when action is a URL string', () => {
+    const App = () => {
+      const { control } = useForm();
+
+      return (
+        <Form control={control} action="/api" encType="text/plain">
+          <button>Submit</button>
+        </Form>
+      );
+    };
+
+    const { container } = render(<App />);
+    const form = container.querySelector('form') as HTMLFormElement;
+
+    expect(form.getAttribute('method')).toBe('post');
+    expect(form.getAttribute('enctype')).toBe('text/plain');
+  });
+
   it('should support explicit "multipart/form-data" encType', async () => {
     jest
       .spyOn(global, 'fetch')

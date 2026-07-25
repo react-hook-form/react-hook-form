@@ -1,10 +1,18 @@
 import React from 'react';
 
-import { flatten } from './utils/flatten';
+import { jsonToFormData } from './utils/formData';
+import isFunction from './utils/isFunction';
+import isString from './utils/isString';
+import { safeJSONStringify } from './utils/json';
+import noop from './utils/noop';
 import type { FieldValues, FormProps } from './types';
 import { useFormContext } from './useFormContext';
 
 const POST_REQUEST = 'post';
+
+function defaultValidateStatus(status: number) {
+  return status >= 200 && status < 300;
+}
 
 /**
  * Form component to manage submission.
@@ -31,128 +39,123 @@ const POST_REQUEST = 'post';
 function Form<
   TFieldValues extends FieldValues,
   TTransformedValues = TFieldValues,
->(props: FormProps<TFieldValues, TTransformedValues>) {
+>(props: FormProps<TFieldValues, TTransformedValues>): React.ReactNode {
   const methods = useFormContext<TFieldValues, any, TTransformedValues>();
   const [mounted, setMounted] = React.useState(false);
   const {
     control = methods.control,
-    onSubmit,
+    onSubmit = noop,
     children,
     action,
     method = POST_REQUEST,
     headers,
     encType,
-    onError,
+    onError = noop,
     render,
-    onSuccess,
-    validateStatus,
+    onSuccess = noop,
+    validateStatus = defaultValidateStatus,
     ...rest
   } = props;
 
-  const submit = React.useCallback(
-    async (event?: React.BaseSyntheticEvent) => {
-      let hasError = false;
-      let type = '';
+  const handleSubmit = React.useMemo(() => {
+    return control.handleSubmit(async (data, event) => {
+      const formData = jsonToFormData(data);
+      const formDataJson = safeJSONStringify(data);
 
-      await control.handleSubmit(async (data) => {
-        const formData = new FormData();
-        let formDataJson = '';
-
-        try {
-          formDataJson = JSON.stringify(data);
-        } catch {}
-
-        const flattenFormValues = flatten(data as FieldValues);
-
-        for (const key in flattenFormValues) {
-          formData.append(key, flattenFormValues[key]);
-        }
-
-        if (onSubmit) {
-          await onSubmit({
-            data,
-            event,
-            method,
-            formData,
-            formDataJson,
-          });
-        }
-
-        if (action) {
-          try {
-            const shouldStringifySubmissionData = [
-              headers && headers['Content-Type'],
-              encType,
-            ].some((value) => value && value.includes('json'));
-
-            const response = await fetch(String(action), {
-              method,
-              headers: {
-                ...headers,
-                ...(encType && encType !== 'multipart/form-data'
-                  ? { 'Content-Type': encType }
-                  : {}),
-              },
-              body: shouldStringifySubmissionData ? formDataJson : formData,
-            });
-
-            if (
-              response &&
-              (validateStatus
-                ? !validateStatus(response.status)
-                : response.status < 200 || response.status >= 300)
-            ) {
-              hasError = true;
-              onError && onError({ response });
-              type = String(response.status);
-            } else {
-              onSuccess && onSuccess({ response });
-            }
-          } catch (error: unknown) {
-            hasError = true;
-            onError && onError({ error });
-          }
-        }
-      })(event);
-
-      if (hasError && control) {
-        control._subjects.state.next({
-          isSubmitSuccessful: false,
-        });
-        control.setError('root.server', {
-          type,
+      if (onSubmit) {
+        await onSubmit({
+          data,
+          event,
+          method,
+          formData,
+          formDataJson,
         });
       }
+
+      if (isString(action)) {
+        try {
+          const shouldStringifySubmissionData =
+            (headers &&
+              headers['Content-Type'] &&
+              headers['Content-Type'].includes('json')) ||
+            (encType && encType.includes('json'));
+
+          const response = await fetch(action, {
+            method,
+            headers: {
+              ...headers,
+              ...(encType &&
+                encType !== 'multipart/form-data' && {
+                  'Content-Type': encType,
+                }),
+            },
+            body: shouldStringifySubmissionData ? formDataJson : formData,
+          });
+
+          if (response && !validateStatus(response.status)) {
+            onError({ response });
+            return { type: String(response.status) };
+          } else {
+            onSuccess({ response });
+          }
+        } catch (error: unknown) {
+          onError({ error });
+          return { type: '' };
+        }
+      }
+
+      if (isFunction(action)) {
+        try {
+          await action(formData);
+        } catch (error: unknown) {
+          onError({ error });
+          return { type: '' };
+        }
+      }
+
+      // Return nothing when successful.
+      return;
+    });
+  }, [
+    control,
+    onSubmit,
+    method,
+    action,
+    headers,
+    encType,
+    validateStatus,
+    onError,
+    onSuccess,
+  ]);
+
+  const submit = React.useCallback(
+    async (event?: React.BaseSyntheticEvent) => {
+      const err = await handleSubmit(event);
+
+      if (err && control) {
+        control._subjects.state.next({ isSubmitSuccessful: false });
+        control.setError('root.server', err);
+      }
     },
-    [
-      control,
-      onSubmit,
-      method,
-      action,
-      headers,
-      encType,
-      validateStatus,
-      onError,
-      onSuccess,
-    ],
+    [handleSubmit, control],
   );
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
 
-  return render ? (
-    <>
-      {render({
-        submit,
-      })}
-    </>
-  ) : (
+  if (render) {
+    return render({ submit });
+  }
+
+  // React forbids passing `method`/`encType` alongside a function `action`
+  // (a Server-Action-style submission) -- it manages those itself and warns
+  // if they're present, so they're only rendered for string/URL actions.
+  return (
     <form
       noValidate={mounted}
       action={action}
-      method={method}
-      encType={encType}
+      {...(!isFunction(action) && { method, encType })}
       onSubmit={submit}
       {...rest}
     >
