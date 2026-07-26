@@ -3,6 +3,7 @@ import {
   INPUT_VALIDATION_RULES,
   ROOT_ERROR_TYPE,
   VALIDATION_MODE,
+  VALIDATION_SCOPE,
 } from '../constants';
 import type {
   BatchFieldArrayUpdate,
@@ -571,6 +572,42 @@ export function createFormControl<
     }
   };
 
+  const shouldRenderByFormErrors = (
+    name: InternalFieldName,
+    previousErrors: FieldErrors<TFieldValues>,
+    isValid?: boolean,
+    fieldState?: {
+      dirty?: FieldNamesMarkedBoolean<TFieldValues>;
+      isDirty?: boolean;
+      touched?: FieldNamesMarkedBoolean<TFieldValues>;
+    },
+  ) => {
+    const shouldUpdateValid =
+      (_proxyFormState.isValid || _proxySubscribeFormState.isValid) &&
+      isBoolean(isValid) &&
+      _formState.isValid !== isValid;
+
+    if (
+      !deepEqual(previousErrors, _formState.errors) ||
+      !isEmptyObject(fieldState) ||
+      shouldUpdateValid
+    ) {
+      const updatedFormState = {
+        ...fieldState,
+        ...(shouldUpdateValid && isBoolean(isValid) ? { isValid } : {}),
+        errors: _formState.errors,
+        name,
+      };
+
+      _formState = {
+        ..._formState,
+        ...updatedFormState,
+      };
+
+      _subjects.state.next(updatedFormState);
+    }
+  };
+
   const _runSchema = async (name?: InternalFieldName[]) => {
     _updateIsValidating(name, true);
     return await _options.resolver!(
@@ -1046,6 +1083,7 @@ export function createFormControl<
     if (field) {
       let error;
       let isValid;
+      const isFormScope = _options.validationScope === VALIDATION_SCOPE.form;
       const fieldValue = target.type
         ? getFieldValue(field._f)
         : getEventValue(event);
@@ -1113,7 +1151,7 @@ export function createFormControl<
         );
       }
 
-      if (!_options.resolver && props.validate) {
+      if (!_options.resolver && !isFormScope && props.validate) {
         await validateForm({
           name: name as FieldPath<TFieldValues>,
           eventType: event.type,
@@ -1121,6 +1159,35 @@ export function createFormControl<
       }
 
       !isBlurEvent && watched && _subjects.state.next({ ..._formState });
+
+      if (isFormScope) {
+        const previousErrors = cloneObject(_formState.errors);
+
+        isValid = _options.resolver
+          ? isEmptyObject(await executeSchemaAndUpdateState())
+          : await executeBuiltInValidation({
+              fields: _fields,
+              eventType: event.type,
+            });
+
+        _updateIsFieldValueUpdated(fieldValue);
+
+        if (!isFieldValueUpdated) {
+          !isEmptyObject(fieldState) && _subjects.state.next(fieldState);
+          return;
+        }
+
+        field._f.deps &&
+          (!Array.isArray(field._f.deps) || field._f.deps.length > 0) &&
+          trigger(
+            field._f.deps as
+              | FieldPath<TFieldValues>
+              | FieldPath<TFieldValues>[],
+          );
+
+        shouldRenderByFormErrors(name, previousErrors, isValid, fieldState);
+        return;
+      }
 
       if (_options.resolver) {
         const { errors } = await _runSchema([name]);
