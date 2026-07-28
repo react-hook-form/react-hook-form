@@ -314,6 +314,9 @@ export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TC
 } & UseFormReturn<TFieldValues, TContext, TTransformedValues>;
 
 // @public (undocumented)
+export type FormState<TFieldValues extends FieldValues> = FormState_2<TFieldValues>;
+
+// @public (undocumented)
 export const FormState: <TFieldValues extends FieldValues, TTransformedValues = TFieldValues>(input: FormStateProps<TFieldValues, TTransformedValues>) => ReactNode;
 
 // @public (undocumented)
