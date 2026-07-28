@@ -190,6 +190,9 @@ export type Field = {
     } & RegisterOptions;
 };
 
+// @public (undocumented)
+export type FieldArray<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = FieldArray_2<TFieldValues, TFieldArrayName>;
+
 // @public
 export const FieldArray: <TFieldValues extends FieldValues = FieldValues, TName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = "id">(props: FieldArrayProps<TFieldValues, TName, TKeyName>) => ReactElement<unknown, string | JSXElementConstructor<any>>;
 
