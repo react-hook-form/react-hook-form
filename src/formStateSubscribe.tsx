@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 
 import type {
   FieldValues,
+  FormState as FormStateType,
   UseFormStateProps,
   UseFormStateReturn,
 } from './types';
@@ -13,6 +14,9 @@ export type FormStateProps<
 > = UseFormStateProps<TFieldValues, TTransformedValues> & {
   render: (values: UseFormStateReturn<TFieldValues>) => ReactNode;
 };
+
+export type FormState<TFieldValues extends FieldValues> =
+  FormStateType<TFieldValues>;
 
 export const FormState = <
   TFieldValues extends FieldValues,
