@@ -1,5 +1,16 @@
-import type { FieldArrayPath, FieldArrayProps, FieldValues } from './types';
+import type {
+  FieldArray as FieldArrayType,
+  FieldArrayPath,
+  FieldArrayProps,
+  FieldValues,
+} from './types';
 import { useFieldArray } from './useFieldArray';
+
+type FieldArray<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> =
+    FieldArrayPath<TFieldValues>,
+> = FieldArrayType<TFieldValues, TFieldArrayName>;
 
 /**
  * Component based on `useFieldArray` hook to work with controlled component.
