@@ -903,6 +903,13 @@ export function createFormControl<
     skipClone = false,
     skipRender = false,
   ) => {
+    if (_names.array.has(name)) {
+      _subjects.array.next({
+        name,
+        values: skipClone ? _formValues : cloneObject(_formValues),
+      });
+    }
+
     for (const fieldKey in value) {
       if (!value.hasOwnProperty(fieldKey)) {
         return;
