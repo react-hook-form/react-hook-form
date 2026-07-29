@@ -72,21 +72,26 @@ import { _ } from './__fixtures__';
       date: Date;
       file: File;
       fileList: FileList;
+      blob: Blob;
       record: {
         date: Date;
         file: File;
         fileList: FileList;
+        blob: Blob;
       };
     }>;
     const recordDate = actual.record?.date;
     const recordFile = actual.record?.file;
     const recordFileList = actual.record?.fileList;
+    const recordBlob = actual.record?.blob;
     type _t1 = Expect<Equal<typeof actual.date, FieldError | undefined>>;
     type _t2 = Expect<Equal<typeof actual.file, FieldError | undefined>>;
     type _t3 = Expect<Equal<typeof actual.fileList, FieldError | undefined>>;
     type _t4 = Expect<Equal<typeof recordDate, FieldError | undefined>>;
     type _t5 = Expect<Equal<typeof recordFile, FieldError | undefined>>;
     type _t6 = Expect<Equal<typeof recordFileList, FieldError | undefined>>;
+    type _t7 = Expect<Equal<typeof actual.blob, FieldError | undefined>>;
+    type _t8 = Expect<Equal<typeof recordBlob, FieldError | undefined>>;
   }
 
   /** it should handle field name conflicts with FieldError properties correctly */
