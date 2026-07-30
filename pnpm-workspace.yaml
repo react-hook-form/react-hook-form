@@ -1,4 +1,5 @@
 allowBuilds:
   '@swc/core': false
   esbuild: false
+  jest-preview: true
   unrs-resolver: false

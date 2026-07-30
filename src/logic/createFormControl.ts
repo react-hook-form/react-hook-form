@@ -1765,7 +1765,9 @@ export function createFormControl<
         const fieldsToCheck = new Set([
           ..._names.mount,
           ...Object.keys(
-            getDirtyFields(_defaultValues, _formValues, undefined, fieldRefs),
+            flatten(
+              getDirtyFields(_defaultValues, _formValues, undefined, fieldRefs),
+            ),
           ),
         ]);
         for (const fieldName of Array.from(fieldsToCheck)) {

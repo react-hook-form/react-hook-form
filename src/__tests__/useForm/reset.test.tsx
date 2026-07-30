@@ -908,6 +908,62 @@ describe('reset', () => {
         );
       });
     });
+
+    it('should merge nested object at leaf granularity, keeping only the dirty leaf and updating a clean sibling that is not bound to an input (#13627)', async () => {
+      type FormValues = {
+        user: { name: string; email: string };
+      };
+
+      let submittedValue: FormValues | undefined = undefined;
+      let doReset: (() => void) | undefined;
+
+      function App() {
+        const { register, handleSubmit, reset, getValues } =
+          useForm<FormValues>({
+            values: {
+              user: { name: 'bill', email: 'bill@old.com' },
+            },
+            resetOptions: { keepDirtyValues: true },
+          });
+
+        doReset = () =>
+          reset(
+            { user: { name: getValues('user.name'), email: 'bill@new.com' } },
+            { keepDirtyValues: true },
+          );
+
+        return (
+          <form
+            onSubmit={handleSubmit((data) => {
+              submittedValue = data;
+            })}
+          >
+            <input {...register('user.name')} placeholder="Name" />
+            <button>submit</button>
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      fireEvent.change(screen.getByPlaceholderText('Name'), {
+        target: { value: 'edited-name' },
+      });
+
+      act(() => doReset!());
+
+      expect(
+        (screen.getByPlaceholderText('Name') as HTMLInputElement).value,
+      ).toEqual('edited-name');
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(submittedValue).toEqual({
+          user: { name: 'edited-name', email: 'bill@new.com' },
+        }),
+      );
+    });
   });
 
   it('should allow resetting unmounted field array', () => {
