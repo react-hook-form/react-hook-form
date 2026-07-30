@@ -1,0 +1,5 @@
+allowBuilds:
+  '@swc/core': true
+  cypress: true
+  jest-preview: true
+  msw: true

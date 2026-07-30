@@ -1,6 +1,8 @@
 import React from 'react';
 
 import generateWatchOutput from './logic/generateWatchOutput';
+import cloneObject from './utils/cloneObject';
+import deepEqual from './utils/deepEqual';
 import {
   Control,
   DeepPartialSkipArrayKey,
@@ -151,31 +153,49 @@ export function useWatch<TFieldValues extends FieldValues>(
   } = props || {};
   const _name = React.useRef(name);
   const _defaultValue = React.useRef(defaultValue);
+  const _connected = React.useRef(false);
+  const _prevFormOutput = React.useRef<unknown>(undefined);
 
   _name.current = name;
 
-  React.useEffect(
-    () =>
-      control._subscribe({
-        name: _name.current as InternalFieldName,
-        formState: {
-          values: true,
-        },
-        exact,
-        callback: (formState) =>
-          !disabled &&
-          updateValue(
-            generateWatchOutput(
-              _name.current as InternalFieldName | InternalFieldName[],
-              control._names,
-              formState.values || control._formValues,
-              false,
-              _defaultValue.current,
-            ),
-          ),
-      }),
-    [control, disabled, exact],
-  );
+  React.useEffect(() => {
+    const getCurrentFormOutput = (values?: FieldValues) =>
+      generateWatchOutput(
+        _name.current as InternalFieldName | InternalFieldName[],
+        control._names,
+        values || control._formValues,
+        false,
+        _defaultValue.current,
+      );
+
+    if (!disabled && _connected.current) {
+      const currentFormOutput = getCurrentFormOutput();
+
+      if (!deepEqual(_prevFormOutput.current, currentFormOutput)) {
+        updateValue(currentFormOutput);
+      }
+    }
+
+    _connected.current = true;
+
+    const unsubscribe = control._subscribe({
+      name: _name.current as InternalFieldName,
+      formState: {
+        values: true,
+      },
+      exact,
+      callback: (formState) =>
+        !disabled && updateValue(getCurrentFormOutput(formState.values)),
+    });
+
+    return () => {
+      unsubscribe();
+
+      if (!disabled) {
+        _prevFormOutput.current = cloneObject(getCurrentFormOutput());
+      }
+    };
+  }, [control, disabled, exact]);
 
   const [value, updateValue] = React.useState(
     control._getWatch(
