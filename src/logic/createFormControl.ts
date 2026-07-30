@@ -82,6 +82,7 @@ import set from '../utils/set';
 import stringToPath from '../utils/stringToPath';
 import unset from '../utils/unset';
 
+import collectDirtyFieldNames from './collectDirtyFieldNames';
 import generateWatchOutput from './generateWatchOutput';
 import getDirtyFields from './getDirtyFields';
 import getEventValue from './getEventValue';
@@ -1764,10 +1765,9 @@ export function createFormControl<
       if (keepStateOptions.keepDirtyValues) {
         const fieldsToCheck = new Set([
           ..._names.mount,
-          ...Object.keys(
-            flatten(
-              getDirtyFields(_defaultValues, _formValues, undefined, fieldRefs),
-            ),
+          ...collectDirtyFieldNames(
+            getDirtyFields(_defaultValues, _formValues, undefined, fieldRefs),
+            _formState.dirtyFields,
           ),
         ]);
         for (const fieldName of Array.from(fieldsToCheck)) {
