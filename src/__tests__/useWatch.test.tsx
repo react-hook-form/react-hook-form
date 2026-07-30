@@ -1283,6 +1283,150 @@ describe('useWatch', () => {
   });
 
   describe('reset', () => {
+    it('should synchronize watched and controlled values after Activity restoration', () => {
+      type FormValues = {
+        name: string;
+      };
+
+      let getName = (): string => {
+        throw new Error('Form methods are not initialized.');
+      };
+
+      const ActivityContent = ({
+        control,
+      }: {
+        control: Control<FormValues>;
+      }) => {
+        const name = useWatch({ control, name: 'name' });
+
+        return (
+          <>
+            <span data-testid="watched-name">{name}</span>
+            <Controller
+              control={control}
+              name="name"
+              render={({ field }) => (
+                <input data-testid="controlled-name" {...field} />
+              )}
+            />
+          </>
+        );
+      };
+
+      const Component = () => {
+        const { control, getValues, reset, setValue } = useForm<FormValues>({
+          defaultValues: {
+            name: 'initial',
+          },
+        });
+        const [mode, setMode] = React.useState<'hidden' | 'visible'>('visible');
+
+        getName = () => getValues('name');
+
+        return (
+          <>
+            <button type="button" onClick={() => setMode('hidden')}>
+              Hide
+            </button>
+            <button type="button" onClick={() => reset({ name: 'updated' })}>
+              Reset
+            </button>
+            <button
+              type="button"
+              onClick={() => setValue('name', 'updated in place')}
+            >
+              Update
+            </button>
+            <button type="button" onClick={() => setMode('visible')}>
+              Show
+            </button>
+            <React.Activity mode={mode}>
+              <ActivityContent control={control} />
+            </React.Activity>
+          </>
+        );
+      };
+
+      render(
+        <React.StrictMode>
+          <Component />
+        </React.StrictMode>,
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: 'Hide' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+
+      expect(getName()).toBe('updated');
+
+      fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+      // Layout Effect reconciliation must commit before restored content paints.
+      expect(screen.getByTestId('watched-name')).toHaveTextContent('updated');
+      expect(screen.getByTestId('controlled-name')).toHaveValue('updated');
+
+      fireEvent.click(screen.getByRole('button', { name: 'Hide' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+
+      expect(getName()).toBe('updated in place');
+
+      fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+      expect(screen.getByTestId('watched-name')).toHaveTextContent(
+        'updated in place',
+      );
+      expect(screen.getByTestId('controlled-name')).toHaveValue(
+        'updated in place',
+      );
+    });
+
+    it('should synchronize an initially hidden Activity on first subscription', () => {
+      type FormValues = {
+        name: string;
+      };
+
+      const ActivityContent = ({
+        control,
+      }: {
+        control: Control<FormValues>;
+      }) => {
+        const name = useWatch({ control, name: 'name' });
+
+        return <span data-testid="watched-name">{name}</span>;
+      };
+
+      const Component = () => {
+        const { control, reset } = useForm<FormValues>({
+          defaultValues: {
+            name: 'initial',
+          },
+        });
+        const [mode, setMode] = React.useState<'hidden' | 'visible'>('hidden');
+
+        return (
+          <>
+            <button type="button" onClick={() => reset({ name: 'updated' })}>
+              Reset
+            </button>
+            <button type="button" onClick={() => setMode('visible')}>
+              Show
+            </button>
+            <React.Activity mode={mode}>
+              <ActivityContent control={control} />
+            </React.Activity>
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      expect(screen.getByTestId('watched-name')).toHaveTextContent('initial');
+
+      fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+      expect(screen.getByTestId('watched-name')).toHaveTextContent('updated');
+    });
+
     it('should return updated default value with watched field after reset', async () => {
       type FormValues = {
         test: string;
@@ -1961,6 +2105,109 @@ describe('useWatch', () => {
   });
 
   describe('compute ', () => {
+    it('should reconcile a changed compute callback after Activity restoration', () => {
+      type FormValues = {
+        name: string;
+      };
+
+      let renderCount = 0;
+
+      const ActivityContent = ({
+        control,
+        uppercase,
+      }: {
+        control: Control<FormValues>;
+        uppercase: boolean;
+      }) => {
+        // Change only derived output so reconnection cannot rely on form updates.
+        const name = useWatch({
+          control,
+          compute: (values: FormValues) =>
+            uppercase ? values.name.toUpperCase() : values.name,
+        });
+
+        renderCount++;
+
+        return <span data-testid="computed-name">{name}</span>;
+      };
+
+      const Component = () => {
+        const { control, setValue } = useForm<FormValues>({
+          defaultValues: {
+            name: 'initial',
+          },
+        });
+        const [mode, setMode] = React.useState<'hidden' | 'visible'>('visible');
+        const [uppercase, setUppercase] = React.useState(false);
+
+        return (
+          <>
+            <button type="button" onClick={() => setMode('hidden')}>
+              Hide
+            </button>
+            <button type="button" onClick={() => setUppercase(true)}>
+              Change compute
+            </button>
+            <button type="button" onClick={() => setValue('name', 'initial')}>
+              Emit unchanged value
+            </button>
+            <button type="button" onClick={() => setMode('visible')}>
+              Show
+            </button>
+            <React.Activity mode={mode}>
+              <ActivityContent control={control} uppercase={uppercase} />
+            </React.Activity>
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      expect(screen.getByTestId('computed-name')).toHaveTextContent('initial');
+
+      fireEvent.click(screen.getByRole('button', { name: 'Hide' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Change compute' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+      expect(screen.getByTestId('computed-name')).toHaveTextContent('INITIAL');
+
+      const renderCountAfterRestore = renderCount;
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Emit unchanged value' }),
+      );
+
+      expect(renderCount).toBe(renderCountAfterRestore);
+    });
+
+    it('should preserve inline defaults across compute callback reconnections', () => {
+      type FormValues = {
+        firstName: string;
+        lastName: string;
+      };
+
+      const { result, rerender } = renderHook(() => {
+        const { control } = useForm<FormValues>();
+
+        return useWatch({
+          control,
+          name: ['firstName', 'lastName'],
+          defaultValue: {
+            firstName: 'John',
+            lastName: 'Smith',
+          },
+          compute: ([firstName, lastName]) => `${firstName} ${lastName}`,
+        });
+      });
+
+      expect(result.current).toBe('John Smith');
+
+      // Inline arrays and compute callbacks establish a new subscription.
+      rerender();
+
+      expect(result.current).toBe('John Smith');
+    });
+
     it('should only update when value changed within compute', () => {
       type FormValue = {
         test: string;
@@ -2005,7 +2252,8 @@ describe('useWatch', () => {
 
       screen.getByText('yes');
 
-      expect(renderCount).toEqual(4);
+      // Effect setup aligns the compute snapshot, so unchanged output is skipped.
+      expect(renderCount).toEqual(3);
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: { value: '12' },
@@ -2013,7 +2261,7 @@ describe('useWatch', () => {
 
       screen.getByText('no');
 
-      expect(renderCount).toEqual(5);
+      expect(renderCount).toEqual(4);
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: { value: '1' },
@@ -2021,7 +2269,7 @@ describe('useWatch', () => {
 
       screen.getByText('no');
 
-      expect(renderCount).toEqual(5);
+      expect(renderCount).toEqual(4);
     });
   });
 });

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import generateWatchOutput from './logic/generateWatchOutput';
+import cloneObject from './utils/cloneObject';
 import deepEqual from './utils/deepEqual';
 import type {
   Control,
@@ -268,8 +269,12 @@ export function useWatch<TFieldValues extends FieldValues>(
   const _defaultValue = React.useRef(defaultValue);
   const _compute = React.useRef(compute);
   const _computeFormValues = React.useRef<undefined | unknown>(undefined);
+  const _currentFormOutput = React.useRef<unknown>(undefined);
+  const _effectFormOutput = React.useRef<unknown>(undefined);
+  const _effectInitialized = React.useRef(false);
 
   const _prevControl = React.useRef(control);
+  const _prevCompute = React.useRef(compute);
   const _prevName = React.useRef(name);
 
   _compute.current = compute;
@@ -280,22 +285,34 @@ export function useWatch<TFieldValues extends FieldValues>(
       _defaultValue.current as DeepPartialSkipArrayKey<TFieldValues>,
     );
 
+    _currentFormOutput.current = defaultValue;
+
     return _compute.current ? _compute.current(defaultValue) : defaultValue;
   });
+  const _currentOutput = React.useRef(value);
 
-  const getCurrentOutput = React.useCallback(
+  _currentOutput.current = value;
+
+  const getCurrentFormOutput = React.useCallback(
     (values?: TFieldValues) => {
-      const formValues = generateWatchOutput(
+      return generateWatchOutput(
         name as InternalFieldName | InternalFieldName[],
         control._names,
         values || control._formValues,
         false,
         _defaultValue.current,
       );
+    },
+    [control._formValues, control._names, name],
+  );
+
+  const getCurrentOutput = React.useCallback(
+    (values?: TFieldValues) => {
+      const formValues = getCurrentFormOutput(values);
 
       return _compute.current ? _compute.current(formValues) : formValues;
     },
-    [control._formValues, control._names, name],
+    [getCurrentFormOutput],
   );
 
   const refreshValue = React.useCallback(
@@ -308,6 +325,8 @@ export function useWatch<TFieldValues extends FieldValues>(
           false,
           _defaultValue.current,
         );
+
+        _currentFormOutput.current = formValues;
 
         if (_compute.current) {
           const computedFormValues = _compute.current(formValues);
@@ -324,17 +343,59 @@ export function useWatch<TFieldValues extends FieldValues>(
     [control._formValues, control._names, disabled, name],
   );
 
-  useIsomorphicLayoutEffect(() => {
-    if (
-      _prevControl.current !== control ||
-      !deepEqual(_prevName.current, name)
-    ) {
-      _prevControl.current = control;
-      _prevName.current = name;
-      refreshValue();
-    }
+  const refreshValueOnEffect = React.useCallback(() => {
+    if (!disabled) {
+      const currentFormOutput = getCurrentFormOutput();
 
-    return control._subscribe({
+      // A mounted control on first setup may have updated while Activity was hidden.
+      const formOutputChanged =
+        _prevControl.current !== control ||
+        !deepEqual(_prevName.current, name) ||
+        (!_effectInitialized.current
+          ? control._state.mount
+          : !deepEqual(_effectFormOutput.current, currentFormOutput));
+      const computeChanged = _prevCompute.current !== _compute.current;
+      const shouldReconcile = formOutputChanged || computeChanged;
+
+      // Reapply changed compute callbacks to the form output behind local state.
+      const reconciledFormOutput = formOutputChanged
+        ? currentFormOutput
+        : _currentFormOutput.current;
+      const currentOutput = _compute.current
+        ? _compute.current(reconciledFormOutput as TFieldValues)
+        : reconciledFormOutput;
+
+      // Keep compute's comparison snapshot aligned with reconciled form data.
+      if (_compute.current) {
+        _computeFormValues.current = shouldReconcile
+          ? currentOutput
+          : _currentOutput.current;
+      }
+
+      _currentFormOutput.current = reconciledFormOutput;
+
+      // Preserve a detached snapshot because form values can mutate in place.
+      _effectFormOutput.current = cloneObject(currentFormOutput);
+      _effectInitialized.current = true;
+
+      if (
+        !shouldReconcile ||
+        deepEqual(_currentOutput.current, currentOutput)
+      ) {
+        return;
+      }
+
+      _currentOutput.current = currentOutput;
+      updateValue((previousOutput: unknown) =>
+        deepEqual(previousOutput, currentOutput)
+          ? previousOutput
+          : currentOutput,
+      );
+    }
+  }, [control, disabled, getCurrentFormOutput, name]);
+
+  useIsomorphicLayoutEffect(() => {
+    const unsubscribe = control._subscribe({
       name,
       formState: {
         values: true,
@@ -344,7 +405,35 @@ export function useWatch<TFieldValues extends FieldValues>(
         refreshValue(formState.values);
       },
     });
-  }, [control, exact, name, refreshValue]);
+
+    // Activity and Strict Mode can reconnect Effects while preserving hook state.
+    refreshValueOnEffect();
+
+    _prevControl.current = control;
+    _prevName.current = name;
+
+    if (!disabled) {
+      // Disabled subscriptions defer compute reconciliation until re-enabled.
+      _prevCompute.current = _compute.current;
+    }
+
+    return () => {
+      unsubscribe();
+
+      if (!disabled) {
+        // Snapshot connected data before cleanup to detect in-place updates.
+        _effectFormOutput.current = cloneObject(getCurrentFormOutput());
+      }
+    };
+  }, [
+    control,
+    disabled,
+    exact,
+    getCurrentFormOutput,
+    name,
+    refreshValue,
+    refreshValueOnEffect,
+  ]);
 
   React.useEffect(() => control._removeUnmounted());
 
