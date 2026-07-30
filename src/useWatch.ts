@@ -303,7 +303,8 @@ export function useWatch<TFieldValues extends FieldValues>(
         _defaultValue.current,
       );
     },
-    [control._formValues, control._names, name],
+    // Read mutable control state when invoked without reconnecting on reset.
+    [control, name],
   );
 
   const getCurrentOutput = React.useCallback(
@@ -340,7 +341,7 @@ export function useWatch<TFieldValues extends FieldValues>(
         }
       }
     },
-    [control._formValues, control._names, disabled, name],
+    [control, disabled, name],
   );
 
   const refreshValueOnEffect = React.useCallback(() => {
@@ -373,9 +374,6 @@ export function useWatch<TFieldValues extends FieldValues>(
       }
 
       _currentFormOutput.current = reconciledFormOutput;
-
-      // Preserve a detached snapshot because form values can mutate in place.
-      _effectFormOutput.current = cloneObject(currentFormOutput);
       _effectInitialized.current = true;
 
       if (
