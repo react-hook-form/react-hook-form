@@ -195,6 +195,224 @@ describe('reconcileFieldArraysById', () => {
     expect(result.rows.root).toEqual({ type: 'min', message: 'too short' });
   });
 
+  it('should match rows with a custom getRowId', () => {
+    const previousValues = {
+      rows: [
+        { uuid: 'a', name: 'Alpha' },
+        { uuid: 'b', name: 'Bravo' },
+      ],
+    };
+    const nextValues = {
+      rows: [
+        { uuid: 'b', name: 'Bravo' },
+        { uuid: 'a', name: 'Alpha' },
+      ],
+    };
+
+    expect(
+      reconcileFieldArraysById(
+        { rows: [{ name: true }, undefined] },
+        previousValues,
+        nextValues,
+        (row) => (row as { uuid: string }).uuid,
+      ),
+    ).toEqual({
+      rows: [undefined, { name: true }],
+    });
+  });
+
+  it('should let getRowId opt arrays in or out per array path', () => {
+    const previousValues = {
+      keyed: [
+        { key: 'a', name: 'Alpha' },
+        { key: 'b', name: 'Bravo' },
+      ],
+      positional: [
+        { key: 'a', name: 'One' },
+        { key: 'b', name: 'Two' },
+      ],
+    };
+    const nextValues = {
+      keyed: [
+        { key: 'b', name: 'Bravo' },
+        { key: 'a', name: 'Alpha' },
+      ],
+      positional: [
+        { key: 'b', name: 'Two' },
+        { key: 'a', name: 'One' },
+      ],
+    };
+    const tree = {
+      keyed: [{ name: true }, undefined],
+      positional: [{ name: true }, undefined],
+    };
+
+    expect(
+      reconcileFieldArraysById(tree, previousValues, nextValues, (row, path) =>
+        path === 'keyed' ? (row as { key: string }).key : undefined,
+      ),
+    ).toEqual({
+      keyed: [undefined, { name: true }],
+      positional: [{ name: true }, undefined],
+    });
+  });
+
+  it('should call getRowId with the array path including parent row indexes', () => {
+    const previousValues = {
+      groups: [{ id: 'a', items: [{ id: 'x', label: 'one' }] }],
+    };
+    const nextValues = {
+      groups: [{ id: 'a', items: [{ id: 'x', label: 'one' }] }],
+    };
+    const paths = new Set<string>();
+
+    reconcileFieldArraysById(
+      previousValues,
+      previousValues,
+      nextValues,
+      (row, path) => {
+        paths.add(path);
+        return (row as { id: string }).id;
+      },
+    );
+
+    expect(Array.from(paths).sort()).toEqual(['groups', 'groups.0.items']);
+  });
+
+  it('should pass class instances such as File through by reference instead of copying them', () => {
+    const file = new File(['content'], 'avatar.png');
+    class Money {
+      constructor(public amount: number) {}
+    }
+    const price = new Money(10);
+    const previousValues = {
+      avatar: file,
+      price,
+      rows: [{ id: 'a', name: 'Alpha' }],
+    };
+    const nextValues = {
+      avatar: null,
+      price: null,
+      rows: [{ id: 'a', name: 'Alpha' }],
+    };
+
+    const result = reconcileFieldArraysById(
+      previousValues,
+      previousValues,
+      nextValues,
+    );
+
+    expect(result.avatar).toBe(file);
+    expect(result.price).toBe(price);
+  });
+
+  it('should fall back to index behavior when a row id is itself dirty under the default matcher', () => {
+    const previousValues = {
+      rows: [
+        { id: 'edited', name: 'Alpha edited' },
+        { id: 'b', name: 'Bravo' },
+      ],
+    };
+    const nextValues = {
+      rows: [
+        { id: 'a', name: 'Alpha' },
+        { id: 'b', name: 'Bravo' },
+      ],
+    };
+    const dirtyFields = { rows: [{ id: true, name: true }] };
+
+    expect(
+      reconcileFieldArraysById(
+        dirtyFields,
+        previousValues,
+        nextValues,
+        undefined,
+        dirtyFields,
+      ),
+    ).toEqual(dirtyFields);
+
+    expect(
+      reconcileFieldArraysById(
+        previousValues,
+        previousValues,
+        nextValues,
+        undefined,
+        dirtyFields,
+      ),
+    ).toEqual(previousValues);
+  });
+
+  it('should keep matching with a custom getRowId even when the id field is dirty', () => {
+    const previousValues = {
+      rows: [
+        { id: 'edited', key: 'a', name: 'Alpha' },
+        { id: 'b-id', key: 'b', name: 'Bravo' },
+      ],
+    };
+    const nextValues = {
+      rows: [
+        { id: 'b-id', key: 'b', name: 'Bravo' },
+        { id: 'a-id', key: 'a', name: 'Alpha' },
+      ],
+    };
+    const dirtyFields = { rows: [{ id: true }] };
+
+    expect(
+      reconcileFieldArraysById(
+        dirtyFields,
+        previousValues,
+        nextValues,
+        (row) => (row as { key: string }).key,
+        dirtyFields,
+      ),
+    ).toEqual({
+      rows: [undefined, { id: true }],
+    });
+  });
+
+  it('should preserve non-index array properties in the index fallback branch', () => {
+    const previousValues = { rows: [{ name: '' }] };
+    const nextValues = { rows: [{ name: '' }] };
+    const rowsErrors: Record<string, any>[] = [];
+    (rowsErrors as Record<string, any>).root = {
+      type: 'min',
+      message: 'too short',
+    };
+
+    const result: Record<string, any> = reconcileFieldArraysById(
+      { rows: rowsErrors },
+      previousValues,
+      nextValues,
+    );
+
+    expect(result.rows.root).toEqual({ type: 'min', message: 'too short' });
+  });
+
+  it('should match rows whose id flips between number and string', () => {
+    const previousValues = {
+      rows: [
+        { id: 1, name: 'Alpha' },
+        { id: 2, name: 'Bravo' },
+      ],
+    };
+    const nextValues = {
+      rows: [
+        { id: '2', name: 'Bravo' },
+        { id: '1', name: 'Alpha' },
+      ],
+    };
+
+    expect(
+      reconcileFieldArraysById(
+        { rows: [{ name: true }, undefined] },
+        previousValues,
+        nextValues,
+      ),
+    ).toEqual({
+      rows: [undefined, { name: true }],
+    });
+  });
+
   it('should not descend into state leaves that have no matching value container', () => {
     const ref = { focus: () => {} };
     const previousValues = { user: { name: '' } };

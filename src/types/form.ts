@@ -188,6 +188,7 @@ export type KeepStateOptions = Partial<{
   keepIsValid: boolean;
   keepSubmitCount: boolean;
   keepFieldsRef: boolean;
+  getRowId: (row: unknown, arrayPath: string) => string | number | undefined;
 }>;
 
 export type SetFieldValue<TFieldValues extends FieldValues> =

@@ -1769,26 +1769,37 @@ export function createFormControl<
         // row order first, so the path-based merge below keeps dirty state
         // with its row instead of whichever row now occupies its old index.
         const previousFormValues = _formValues;
+        const previousDirtyFields = _formState.dirtyFields;
         _formValues = reconcileFieldArraysById(
           previousFormValues,
           previousFormValues,
           values,
+          keepStateOptions.getRowId,
+          previousDirtyFields,
         );
         _formState.dirtyFields = reconcileFieldArraysById(
-          _formState.dirtyFields,
+          previousDirtyFields,
           previousFormValues,
           values,
+          keepStateOptions.getRowId,
+          previousDirtyFields,
         );
         _formState.touchedFields = reconcileFieldArraysById(
           _formState.touchedFields,
           previousFormValues,
           values,
+          keepStateOptions.getRowId,
+          previousDirtyFields,
         );
-        _formState.errors = reconcileFieldArraysById(
-          _formState.errors,
-          previousFormValues,
-          values,
-        );
+        if (keepStateOptions.keepErrors) {
+          _formState.errors = reconcileFieldArraysById(
+            _formState.errors,
+            previousFormValues,
+            values,
+            keepStateOptions.getRowId,
+            previousDirtyFields,
+          );
+        }
 
         const fieldsToCheck = new Set([
           ..._names.mount,
@@ -1804,6 +1815,14 @@ export function createFormControl<
 
           if (isDirty && !isUndefined(existingValue)) {
             set(values, fieldName, existingValue);
+            // A kept dirty value normally already sits in its input, but
+            // when array reconciliation moved the row to another index the
+            // input at that index still shows the previous occupant — push
+            // the value into the field refs. Skipped for unmoved fields so
+            // an input being typed in is never rewritten.
+            if (!deepEqual(get(previousFormValues, fieldName), existingValue)) {
+              setValue(fieldName as FieldPath<TFieldValues>, existingValue);
+            }
           } else if (!isDirty && !isUndefined(newValue)) {
             setValue(fieldName as FieldPath<TFieldValues>, newValue);
           }

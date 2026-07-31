@@ -1367,6 +1367,614 @@ describe('reset', () => {
         rows: [undefined, { name: true }],
       });
     });
+
+    it('should reconcile rows through the values prop refetch flow and stay stable on an identical refetch (#13627)', async () => {
+      type FormValues = {
+        rows: { id: string; name: string }[];
+      };
+
+      let submittedValue: FormValues | undefined;
+
+      function App({ rows }: { rows: FormValues['rows'] }) {
+        const { register, control, handleSubmit } = useForm<FormValues>({
+          values: { rows },
+          resetOptions: { keepDirtyValues: true },
+        });
+        const { fields } = useFieldArray({
+          control,
+          name: 'rows',
+          keyName: 'key',
+        });
+
+        return (
+          <form
+            onSubmit={handleSubmit((data) => {
+              submittedValue = data;
+            })}
+          >
+            {fields.map((field, index) => (
+              <input
+                key={field.key}
+                {...register(`rows.${index}.name`)}
+                placeholder={`row${index}`}
+              />
+            ))}
+            <button>submit</button>
+          </form>
+        );
+      }
+
+      const { rerender } = render(
+        <App
+          rows={[
+            { id: 'a', name: 'Alpha' },
+            { id: 'b', name: 'Bravo' },
+          ]}
+        />,
+      );
+
+      fireEvent.change(screen.getByPlaceholderText('row0'), {
+        target: { value: 'Alpha edited' },
+      });
+
+      const reordered = [
+        { id: 'b', name: 'Bravo updated' },
+        { id: 'a', name: 'Alpha' },
+      ];
+
+      rerender(<App rows={reordered} />);
+      // A refetch returning the identical payload again must not undo the
+      // reconciled state (#13627 described this latch: the corrupted merge
+      // used to become the new defaults, blocking later resyncs).
+      rerender(<App rows={[...reordered]} />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(submittedValue).toEqual({
+          rows: [
+            { id: 'b', name: 'Bravo updated' },
+            { id: 'a', name: 'Alpha edited' },
+          ],
+        }),
+      );
+    });
+
+    it('should merge a moved row at leaf granularity, keeping the dirty leaf and adopting server changes to clean siblings (#13627)', async () => {
+      type FormValues = {
+        rows: { id: string; name: string; note: string }[];
+      };
+
+      let submittedValue: FormValues | undefined;
+      let doReset: (() => void) | undefined;
+
+      function App() {
+        const { register, control, handleSubmit, reset } = useForm<FormValues>({
+          defaultValues: {
+            rows: [
+              { id: 'a', name: 'Alpha', note: 'old note a' },
+              { id: 'b', name: 'Bravo', note: 'old note b' },
+            ],
+          },
+        });
+        const { fields } = useFieldArray({
+          control,
+          name: 'rows',
+          keyName: 'key',
+        });
+
+        doReset = () =>
+          reset(
+            {
+              rows: [
+                { id: 'b', name: 'Bravo', note: 'new note b' },
+                { id: 'a', name: 'Alpha', note: 'new note a' },
+              ],
+            },
+            { keepDirtyValues: true },
+          );
+
+        return (
+          <form
+            onSubmit={handleSubmit((data) => {
+              submittedValue = data;
+            })}
+          >
+            {fields.map((field, index) => (
+              <React.Fragment key={field.key}>
+                <input
+                  {...register(`rows.${index}.name`)}
+                  placeholder={`name${index}`}
+                />
+                <input
+                  {...register(`rows.${index}.note`)}
+                  placeholder={`note${index}`}
+                />
+              </React.Fragment>
+            ))}
+            <button>submit</button>
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      fireEvent.change(screen.getByPlaceholderText('name0'), {
+        target: { value: 'Alpha edited' },
+      });
+
+      act(() => doReset!());
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(submittedValue).toEqual({
+          rows: [
+            { id: 'b', name: 'Bravo', note: 'new note b' },
+            { id: 'a', name: 'Alpha edited', note: 'new note a' },
+          ],
+        }),
+      );
+    });
+
+    it('should adopt a reordering reset entirely and stay pristine when nothing is dirty (#13627)', async () => {
+      type FormValues = {
+        rows: { id: string; name: string }[];
+      };
+
+      let currentDirtyFields: object = {};
+      let currentIsDirty = false;
+      let doReset: (() => void) | undefined;
+
+      function App() {
+        const {
+          register,
+          control,
+          reset,
+          formState: { dirtyFields, isDirty },
+        } = useForm<FormValues>({
+          defaultValues: {
+            rows: [
+              { id: 'a', name: 'Alpha' },
+              { id: 'b', name: 'Bravo' },
+            ],
+          },
+        });
+        const { fields } = useFieldArray({
+          control,
+          name: 'rows',
+          keyName: 'key',
+        });
+
+        currentDirtyFields = dirtyFields;
+        currentIsDirty = isDirty;
+
+        doReset = () =>
+          reset(
+            {
+              rows: [
+                { id: 'b', name: 'Bravo' },
+                { id: 'a', name: 'Alpha' },
+              ],
+            },
+            { keepDirtyValues: true },
+          );
+
+        return (
+          <form>
+            {fields.map((field, index) => (
+              <input
+                key={field.key}
+                {...register(`rows.${index}.name`)}
+                placeholder={`row${index}`}
+              />
+            ))}
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      act(() => doReset!());
+
+      expect(
+        (screen.getByPlaceholderText('row0') as HTMLInputElement).value,
+      ).toEqual('Bravo');
+      expect(
+        (screen.getByPlaceholderText('row1') as HTMLInputElement).value,
+      ).toEqual('Alpha');
+      expect(currentDirtyFields).toEqual({});
+      expect(currentIsDirty).toBeFalsy();
+    });
+
+    it('should produce the same result when the same reordering reset runs twice (#13627)', async () => {
+      type FormValues = {
+        rows: { id: string; name: string }[];
+      };
+
+      let submittedValue: FormValues | undefined;
+      let doReset: (() => void) | undefined;
+
+      function App() {
+        const { register, control, handleSubmit, reset } = useForm<FormValues>({
+          defaultValues: {
+            rows: [
+              { id: 'a', name: 'Alpha' },
+              { id: 'b', name: 'Bravo' },
+            ],
+          },
+        });
+        const { fields } = useFieldArray({
+          control,
+          name: 'rows',
+          keyName: 'key',
+        });
+
+        doReset = () =>
+          reset(
+            {
+              rows: [
+                { id: 'b', name: 'Bravo' },
+                { id: 'a', name: 'Alpha' },
+              ],
+            },
+            { keepDirtyValues: true },
+          );
+
+        return (
+          <form
+            onSubmit={handleSubmit((data) => {
+              submittedValue = data;
+            })}
+          >
+            {fields.map((field, index) => (
+              <input
+                key={field.key}
+                {...register(`rows.${index}.name`)}
+                placeholder={`row${index}`}
+              />
+            ))}
+            <button>submit</button>
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      fireEvent.change(screen.getByPlaceholderText('row0'), {
+        target: { value: 'Alpha edited' },
+      });
+
+      act(() => doReset!());
+      act(() => doReset!());
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(submittedValue).toEqual({
+          rows: [
+            { id: 'b', name: 'Bravo' },
+            { id: 'a', name: 'Alpha edited' },
+          ],
+        }),
+      );
+    });
+
+    it('should repaint fixed-position registered inputs when a dirty row moves without useFieldArray (#13627)', async () => {
+      type FormValues = {
+        rows: { id: string; name: string }[];
+      };
+
+      let doReset: (() => void) | undefined;
+
+      function App() {
+        const { register, reset } = useForm<FormValues>({
+          defaultValues: {
+            rows: [
+              { id: 'a', name: 'Alpha' },
+              { id: 'b', name: 'Bravo' },
+              { id: 'c', name: 'Charlie' },
+            ],
+          },
+        });
+
+        doReset = () =>
+          reset(
+            {
+              rows: [
+                { id: 'c', name: 'Charlie' },
+                { id: 'b', name: 'Bravo' },
+                { id: 'a', name: 'Alpha' },
+              ],
+            },
+            { keepDirtyValues: true },
+          );
+
+        return (
+          <form>
+            {[0, 1, 2].map((index) => (
+              <input
+                key={index}
+                {...register(`rows.${index}.name`)}
+                placeholder={`row${index}`}
+              />
+            ))}
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      fireEvent.change(screen.getByPlaceholderText('row0'), {
+        target: { value: 'Alpha edited' },
+      });
+
+      act(() => doReset!());
+
+      expect(
+        (screen.getByPlaceholderText('row0') as HTMLInputElement).value,
+      ).toEqual('Charlie');
+      expect(
+        (screen.getByPlaceholderText('row1') as HTMLInputElement).value,
+      ).toEqual('Bravo');
+      expect(
+        (screen.getByPlaceholderText('row2') as HTMLInputElement).value,
+      ).toEqual('Alpha edited');
+    });
+
+    it('should keep a moved dirty Controller field attached to its row (#13627)', async () => {
+      type FormValues = {
+        rows: { id: string; name: string }[];
+      };
+
+      let submittedValue: FormValues | undefined;
+      let doReset: (() => void) | undefined;
+
+      function App() {
+        const { control, handleSubmit, reset } = useForm<FormValues>({
+          defaultValues: {
+            rows: [
+              { id: 'a', name: 'Alpha' },
+              { id: 'b', name: 'Bravo' },
+            ],
+          },
+        });
+        const { fields } = useFieldArray({
+          control,
+          name: 'rows',
+          keyName: 'key',
+        });
+
+        doReset = () =>
+          reset(
+            {
+              rows: [
+                { id: 'b', name: 'Bravo' },
+                { id: 'a', name: 'Alpha' },
+              ],
+            },
+            { keepDirtyValues: true },
+          );
+
+        return (
+          <form
+            onSubmit={handleSubmit((data) => {
+              submittedValue = data;
+            })}
+          >
+            {fields.map((field, index) => (
+              <Controller
+                key={field.key}
+                control={control}
+                name={`rows.${index}.name`}
+                render={({ field: controllerField }) => (
+                  <input {...controllerField} placeholder={`row${index}`} />
+                )}
+              />
+            ))}
+            <button>submit</button>
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      fireEvent.change(screen.getByPlaceholderText('row0'), {
+        target: { value: 'Alpha edited' },
+      });
+
+      act(() => doReset!());
+
+      expect(
+        (screen.getByPlaceholderText('row1') as HTMLInputElement).value,
+      ).toEqual('Alpha edited');
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(submittedValue).toEqual({
+          rows: [
+            { id: 'b', name: 'Bravo' },
+            { id: 'a', name: 'Alpha edited' },
+          ],
+        }),
+      );
+    });
+
+    it('should keep a dirty File value intact across a keepDirtyValues reset', () => {
+      const file = new File(['content'], 'avatar.png');
+      const { result } = renderHook(() =>
+        useForm<{ avatar: File | null; name: string }>({
+          defaultValues: { avatar: null, name: 'a' },
+        }),
+      );
+
+      act(() => result.current.setValue('avatar', file, { shouldDirty: true }));
+      act(() =>
+        result.current.reset(
+          { avatar: null, name: 'server' },
+          { keepDirtyValues: true },
+        ),
+      );
+
+      expect(result.current.getValues('avatar')).toBe(file);
+      expect(result.current.getValues('name')).toBe('server');
+    });
+
+    it('should keep edits to a row id field by falling back to index behavior instead of treating the row as replaced (#13627)', async () => {
+      type FormValues = {
+        rows: { id: string; name: string }[];
+      };
+
+      let submittedValue: FormValues | undefined;
+      let doReset: (() => void) | undefined;
+
+      function App() {
+        const { register, control, handleSubmit, reset } = useForm<FormValues>({
+          defaultValues: {
+            rows: [
+              { id: 'a', name: 'Alpha' },
+              { id: 'b', name: 'Bravo' },
+            ],
+          },
+        });
+        const { fields } = useFieldArray({
+          control,
+          name: 'rows',
+          keyName: 'key',
+        });
+
+        doReset = () =>
+          reset(
+            {
+              rows: [
+                { id: 'a', name: 'Alpha' },
+                { id: 'b', name: 'Bravo' },
+              ],
+            },
+            { keepDirtyValues: true },
+          );
+
+        return (
+          <form
+            onSubmit={handleSubmit((data) => {
+              submittedValue = data;
+            })}
+          >
+            {fields.map((field, index) => (
+              <React.Fragment key={field.key}>
+                <input
+                  {...register(`rows.${index}.id`)}
+                  placeholder={`id${index}`}
+                />
+                <input
+                  {...register(`rows.${index}.name`)}
+                  placeholder={`name${index}`}
+                />
+              </React.Fragment>
+            ))}
+            <button>submit</button>
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      fireEvent.change(screen.getByPlaceholderText('id0'), {
+        target: { value: 'edited-id' },
+      });
+      fireEvent.change(screen.getByPlaceholderText('name0'), {
+        target: { value: 'Alpha edited' },
+      });
+
+      act(() => doReset!());
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(submittedValue).toEqual({
+          rows: [
+            { id: 'edited-id', name: 'Alpha edited' },
+            { id: 'b', name: 'Bravo' },
+          ],
+        }),
+      );
+    });
+
+    it('should match rows with a custom getRowId reset option (#13627)', async () => {
+      type FormValues = {
+        rows: { uuid: string; name: string }[];
+      };
+
+      let submittedValue: FormValues | undefined;
+      let doReset: (() => void) | undefined;
+
+      function App() {
+        const { register, control, handleSubmit, reset } = useForm<FormValues>({
+          defaultValues: {
+            rows: [
+              { uuid: 'a', name: 'Alpha' },
+              { uuid: 'b', name: 'Bravo' },
+            ],
+          },
+        });
+        const { fields } = useFieldArray({
+          control,
+          name: 'rows',
+          keyName: 'key',
+        });
+
+        doReset = () =>
+          reset(
+            {
+              rows: [
+                { uuid: 'b', name: 'Bravo' },
+                { uuid: 'a', name: 'Alpha' },
+              ],
+            },
+            {
+              keepDirtyValues: true,
+              getRowId: (row) => (row as { uuid: string }).uuid,
+            },
+          );
+
+        return (
+          <form
+            onSubmit={handleSubmit((data) => {
+              submittedValue = data;
+            })}
+          >
+            {fields.map((field, index) => (
+              <input
+                key={field.key}
+                {...register(`rows.${index}.name`)}
+                placeholder={`row${index}`}
+              />
+            ))}
+            <button>submit</button>
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      fireEvent.change(screen.getByPlaceholderText('row0'), {
+        target: { value: 'Alpha edited' },
+      });
+
+      act(() => doReset!());
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(submittedValue).toEqual({
+          rows: [
+            { uuid: 'b', name: 'Bravo' },
+            { uuid: 'a', name: 'Alpha edited' },
+          ],
+        }),
+      );
+    });
   });
 
   it('should allow resetting unmounted field array', () => {
