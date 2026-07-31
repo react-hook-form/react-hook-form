@@ -96,6 +96,7 @@ import hasValidation from './hasValidation';
 import isNameInFieldArray from './isNameInFieldArray';
 import isWatched from './isWatched';
 import iterateFieldsByAction from './iterateFieldsByAction';
+import reconcileFieldArraysById from './reconcileFieldArraysById';
 import schemaErrorLookup from './schemaErrorLookup';
 import shouldRenderFormState from './shouldRenderFormState';
 import shouldSubscribeByName from './shouldSubscribeByName';
@@ -1763,6 +1764,32 @@ export function createFormControl<
 
     if (!keepStateOptions.keepValues) {
       if (keepStateOptions.keepDirtyValues) {
+        // When incoming values reorder, insert or remove id-carrying array
+        // rows, realign the current values and per-field state to the new
+        // row order first, so the path-based merge below keeps dirty state
+        // with its row instead of whichever row now occupies its old index.
+        const previousFormValues = _formValues;
+        _formValues = reconcileFieldArraysById(
+          previousFormValues,
+          previousFormValues,
+          values,
+        );
+        _formState.dirtyFields = reconcileFieldArraysById(
+          _formState.dirtyFields,
+          previousFormValues,
+          values,
+        );
+        _formState.touchedFields = reconcileFieldArraysById(
+          _formState.touchedFields,
+          previousFormValues,
+          values,
+        );
+        _formState.errors = reconcileFieldArraysById(
+          _formState.errors,
+          previousFormValues,
+          values,
+        );
+
         const fieldsToCheck = new Set([
           ..._names.mount,
           ...collectDirtyFieldNames(
