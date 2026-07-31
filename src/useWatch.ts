@@ -271,6 +271,14 @@ export function useWatch<TFieldValues extends FieldValues>(
 
   const _prevControl = React.useRef(control);
   const _prevName = React.useRef(name);
+  const _didCleanup = React.useRef(false);
+  const _subscribed = React.useRef(false);
+  const _prevEffectDeps = React.useRef<{
+    control: typeof control;
+    exact: typeof exact;
+    name: typeof name;
+    refreshValue: typeof refreshValue;
+  } | null>(null);
 
   _compute.current = compute;
 
@@ -282,6 +290,9 @@ export function useWatch<TFieldValues extends FieldValues>(
 
     return _compute.current ? _compute.current(defaultValue) : defaultValue;
   });
+  const _value = React.useRef(value);
+
+  _value.current = value;
 
   const getCurrentOutput = React.useCallback(
     (values?: TFieldValues) => {
@@ -325,16 +336,39 @@ export function useWatch<TFieldValues extends FieldValues>(
   );
 
   useIsomorphicLayoutEffect(() => {
-    if (
-      _prevControl.current !== control ||
-      !deepEqual(_prevName.current, name)
-    ) {
+    const controlOrNameChanged =
+      _prevControl.current !== control || !deepEqual(_prevName.current, name);
+    const effectDepsChanged =
+      _prevEffectDeps.current === null ||
+      _prevEffectDeps.current.control !== control ||
+      _prevEffectDeps.current.exact !== exact ||
+      _prevEffectDeps.current.name !== name ||
+      _prevEffectDeps.current.refreshValue !== refreshValue;
+    const getWatchSnapshot = () => {
+      const watchValue = control._getWatch(
+        name as InternalFieldName,
+        _defaultValue.current as DeepPartialSkipArrayKey<TFieldValues>,
+      );
+
+      return _compute.current ? _compute.current(watchValue) : watchValue;
+    };
+
+    if (controlOrNameChanged) {
       _prevControl.current = control;
       _prevName.current = name;
       refreshValue();
+    } else if (
+      (_didCleanup.current && !effectDepsChanged) ||
+      (!_subscribed.current && !deepEqual(_value.current, getWatchSnapshot()))
+    ) {
+      refreshValue();
     }
 
-    return control._subscribe({
+    _didCleanup.current = false;
+    _subscribed.current = true;
+    _prevEffectDeps.current = { control, exact, name, refreshValue };
+
+    const unsubscribe = control._subscribe({
       name,
       formState: {
         values: true,
@@ -344,6 +378,11 @@ export function useWatch<TFieldValues extends FieldValues>(
         refreshValue(formState.values);
       },
     });
+
+    return () => {
+      _didCleanup.current = true;
+      unsubscribe();
+    };
   }, [control, exact, name, refreshValue]);
 
   React.useEffect(() => control._removeUnmounted());
