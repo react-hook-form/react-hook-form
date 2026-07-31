@@ -188,6 +188,19 @@ export type KeepStateOptions = Partial<{
   keepIsValid: boolean;
   keepSubmitCount: boolean;
   keepFieldsRef: boolean;
+  /**
+   * Row identity used by `keepDirtyValues` to reconcile field array rows when
+   * incoming values reorder, insert or remove rows, so dirty, touched and
+   * error state follow their row instead of staying at its old index.
+   *
+   * Defaults to reading each row's `id` property. Return a different key for
+   * rows keyed differently (`(row) => row.uuid`), compose composite keys, or
+   * return `undefined` to keep index-based behavior — per array via the
+   * `arrayPath` argument (e.g. `"rows"` or `"groups.1.items"`) or entirely.
+   * An array falls back to index-based behavior whenever any row on either
+   * side yields no unique key, or (with the default matcher) when a row's
+   * `id` field is itself dirty.
+   */
   getRowId: (row: unknown, arrayPath: string) => string | number | undefined;
 }>;
 
@@ -759,6 +772,14 @@ type ResetAction<TFieldValues> = (formValues: TFieldValues) => TFieldValues;
  *}, {
  *   keepErrors: true,
  *   keepDirty: true
+ *});
+ *
+ * // resync refetched server data while keeping the user's edits;
+ * // field array rows are matched by their id so edits follow their row
+ * // even when the server reorders, inserts or removes rows
+ * reset(serverData, {
+ *   keepDirtyValues: true,
+ *   getRowId: (row) => row.uuid, // optional, defaults to row.id
  *});
  * ```
  */
