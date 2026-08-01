@@ -260,6 +260,11 @@ export type FieldPathByValue<TFieldValues extends FieldValues, TValue> = {
 }[FieldPath<TFieldValues>];
 
 // @public
+export type FieldPathError<TFieldValues extends FieldValues, TFieldPath extends FieldPath<TFieldValues>> = TFieldPath extends FieldPath<TFieldValues> ? TFieldPath extends `${string}.root` ? GlobalError : DeepRequired<NonNullable<FieldPathValue<TFieldValues, TFieldPath>>> extends infer TFieldValue ? IsAny<TFieldValue> extends true ? FieldError : NonNullable<FieldErrorsImpl<{
+    value: TFieldValue;
+}>['value']> : never : never;
+
+// @public
 export type FieldPathValue<TFieldValues extends FieldValues, TFieldPath extends FieldPath<TFieldValues>> = PathValue<TFieldValues, TFieldPath>;
 
 // @public
@@ -724,7 +729,7 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName
     isDirty: boolean;
     isTouched: boolean;
     isValidating: boolean;
-    error?: FieldError;
+    error?: FieldPathError<TFieldValues, TFieldName>;
 };
 
 // @public (undocumented)
