@@ -1,5 +1,19 @@
 # Changelog
 
+## [7.84.0] - 2026-08-01
+
+### Improvements
+
+- `handleSubmit` returns the typed result of the `onValid` callback instead of discarding it
+- `<Form />` supports a function-based `action` (Server Action style) in addition to URL-string actions
+- Improve performance and reduce bundle size
+
+### Fixed
+
+- `reset()` with `resetOptions.keepDirtyValues` freezing clean sibling fields in a nested object when another field in that object is dirty
+- Restore missing `FieldArray` and `FormState` type exports
+- `setValues` not notifying `useFieldArray` subscribers, leaving rendered fields stale
+
 ## [7.83.0] - 2026-07-25
 
 ### Improvements
