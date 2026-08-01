@@ -1,5 +1,6 @@
 import type { FieldValues, InternalFieldName, Ref } from './fields';
-import type { BrowserNativeObject, LiteralUnion, Merge } from './utils';
+import type { FieldPath, FieldPathValue } from './path';
+import type { BrowserNativeObject, IsAny, LiteralUnion, Merge } from './utils';
 import type { RegisterOptions, ValidateResult } from './validator';
 
 export type Message = string;
@@ -51,6 +52,23 @@ export type FieldErrors<T extends FieldValues = FieldValues> = Partial<
   root?: Record<string, GlobalError> & GlobalError;
   form?: GlobalError;
 };
+
+/** Resolves the error type stored by {@link FieldErrors} for a field path. */
+export type FieldPathError<
+  TFieldValues extends FieldValues,
+  TFieldPath extends FieldPath<TFieldValues>,
+> =
+  TFieldPath extends FieldPath<TFieldValues>
+    ? TFieldPath extends `${string}.root`
+      ? GlobalError
+      : DeepRequired<
+            NonNullable<FieldPathValue<TFieldValues, TFieldPath>>
+          > extends infer TFieldValue
+        ? IsAny<TFieldValue> extends true
+          ? FieldError
+          : NonNullable<FieldErrorsImpl<{ value: TFieldValue }>['value']>
+        : never
+    : never;
 
 export type InternalFieldErrors = Partial<
   Record<InternalFieldName, FieldError>
