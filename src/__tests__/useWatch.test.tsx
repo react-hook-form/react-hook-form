@@ -26,6 +26,15 @@ let i = 0;
 
 jest.mock('../logic/generateId', () => () => String(i++));
 
+// Activity is a React 19.2+ API. Only run Activity-dependent tests when the
+// installed React actually provides it.
+const Activity = (React as unknown as { Activity?: unknown })
+  .Activity as React.ComponentType<{
+  mode: 'hidden' | 'visible';
+  children?: React.ReactNode;
+}>;
+const itWithActivity = Activity ? it : it.skip;
+
 describe('useWatch', () => {
   beforeEach(() => {
     i = 0;
@@ -1283,6 +1292,106 @@ describe('useWatch', () => {
   });
 
   describe('reset', () => {
+    itWithActivity(
+      'should synchronize watched and controlled values after Activity restoration',
+      () => {
+        type FormValues = {
+          name: string;
+        };
+
+        let getName = (): string => {
+          throw new Error('Form methods are not initialized.');
+        };
+
+        const ActivityContent = ({
+          control,
+        }: {
+          control: Control<FormValues>;
+        }) => {
+          const name = useWatch({ control, name: 'name' });
+
+          return (
+            <>
+              <span data-testid="watched-name">{name}</span>
+              <Controller
+                control={control}
+                name="name"
+                render={({ field }) => (
+                  <input data-testid="controlled-name" {...field} />
+                )}
+              />
+            </>
+          );
+        };
+
+        const Component = () => {
+          const { control, getValues, reset, setValue } = useForm<FormValues>({
+            defaultValues: {
+              name: 'initial',
+            },
+          });
+          const [mode, setMode] = React.useState<'hidden' | 'visible'>(
+            'visible',
+          );
+
+          getName = () => getValues('name');
+
+          return (
+            <>
+              <button type="button" onClick={() => setMode('hidden')}>
+                Hide
+              </button>
+              <button type="button" onClick={() => reset({ name: 'updated' })}>
+                Reset
+              </button>
+              <button
+                type="button"
+                onClick={() => setValue('name', 'updated in place')}
+              >
+                Update
+              </button>
+              <button type="button" onClick={() => setMode('visible')}>
+                Show
+              </button>
+              <Activity mode={mode}>
+                <ActivityContent control={control} />
+              </Activity>
+            </>
+          );
+        };
+
+        render(
+          <React.StrictMode>
+            <Component />
+          </React.StrictMode>,
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: 'Hide' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+
+        expect(getName()).toBe('updated');
+
+        fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+        expect(screen.getByTestId('watched-name')).toHaveTextContent('updated');
+        expect(screen.getByTestId('controlled-name')).toHaveValue('updated');
+
+        fireEvent.click(screen.getByRole('button', { name: 'Hide' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+
+        expect(getName()).toBe('updated in place');
+
+        fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+        expect(screen.getByTestId('watched-name')).toHaveTextContent(
+          'updated in place',
+        );
+        expect(screen.getByTestId('controlled-name')).toHaveValue(
+          'updated in place',
+        );
+      },
+    );
+
     it('should return updated default value with watched field after reset', async () => {
       type FormValues = {
         test: string;

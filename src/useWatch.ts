@@ -14,6 +14,7 @@ import type {
 } from './types';
 import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
+import { useResyncOnReconnect } from './useResyncOnReconnect';
 
 /**
  * Subscribes to all form value changes and re-renders at the hook level.
@@ -324,6 +325,19 @@ export function useWatch<TFieldValues extends FieldValues>(
     [control._formValues, control._names, disabled, name],
   );
 
+  const { resyncIfNeeded, snapshot } = useResyncOnReconnect<unknown>();
+
+  // `refreshValue`/`getCurrentOutput` change identity on every `_formValues`
+  // update (not just a genuine reconnect), and by the time this effect would
+  // re-run for that reason the still-active subscription below has already
+  // applied the update. Forwarding the latest versions through refs keeps
+  // the effect's own deps limited to things that change on a real
+  // mount/reconnect, so the resync check below only ever runs then.
+  const _refreshValue = React.useRef(refreshValue);
+  _refreshValue.current = refreshValue;
+  const _getCurrentOutput = React.useRef(getCurrentOutput);
+  _getCurrentOutput.current = getCurrentOutput;
+
   useIsomorphicLayoutEffect(() => {
     if (
       _prevControl.current !== control ||
@@ -331,20 +345,34 @@ export function useWatch<TFieldValues extends FieldValues>(
     ) {
       _prevControl.current = control;
       _prevName.current = name;
-      refreshValue();
+      _refreshValue.current();
+    } else {
+      resyncIfNeeded(
+        !disabled,
+        () => _getCurrentOutput.current(),
+        (currentValue) => {
+          updateValue(currentValue);
+          _computeFormValues.current = currentValue;
+        },
+      );
     }
 
-    return control._subscribe({
+    const unsubscribe = control._subscribe({
       name,
       formState: {
         values: true,
       },
       exact,
       callback: (formState) => {
-        refreshValue(formState.values);
+        _refreshValue.current(formState.values);
       },
     });
-  }, [control, exact, name, refreshValue]);
+
+    return () => {
+      unsubscribe();
+      snapshot(!disabled, () => _getCurrentOutput.current());
+    };
+  }, [control, exact, name, disabled, resyncIfNeeded, snapshot]);
 
   React.useEffect(() => control._removeUnmounted());
 
