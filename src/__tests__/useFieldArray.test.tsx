@@ -1705,6 +1705,60 @@ describe('useFieldArray', () => {
       expect(renderCount).toBe(rendersAfterMount);
     });
 
+    it('should resize a nested field array when setValue targets an ancestor object path (#13621)', async () => {
+      let setValue: UseFormReturn<{
+        myForm: { userDetails: { firstName: string; lastName: string }[] };
+      }>['setValue'];
+      let fieldsLength = 0;
+
+      const Component = () => {
+        const {
+          register,
+          control,
+          setValue: tempSetValue,
+        } = useForm({
+          defaultValues: {
+            myForm: {
+              userDetails: [{ firstName: '', lastName: '' }],
+            },
+          },
+        });
+        const { fields } = useFieldArray({
+          name: 'myForm.userDetails',
+          control,
+        });
+
+        setValue = tempSetValue;
+        fieldsLength = fields.length;
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                {...register(`myForm.userDetails.${i}.firstName` as const)}
+              />
+            ))}
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      expect(fieldsLength).toBe(1);
+
+      await act(async () => {
+        setValue('myForm', {
+          userDetails: [
+            { firstName: 'Foo', lastName: 'Far' },
+            { firstName: 'Boo', lastName: 'Bar' },
+          ],
+        });
+      });
+
+      expect(fieldsLength).toBe(2);
+    });
+
     it.each(['dirtyFields'])(
       'should unset name from dirtyFieldRef if array field values are not different with default value when formState.%s is defined',
       (property) => {

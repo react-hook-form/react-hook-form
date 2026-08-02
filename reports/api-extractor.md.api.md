@@ -190,6 +190,9 @@ export type Field = {
     } & RegisterOptions;
 };
 
+// @public (undocumented)
+export type FieldArray<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = FieldArray_2<TFieldValues, TFieldArrayName>;
+
 // @public
 export const FieldArray: <TFieldValues extends FieldValues = FieldValues, TName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = "id">(props: FieldArrayProps<TFieldValues, TName, TKeyName>) => ReactElement<unknown, string | JSXElementConstructor<any>>;
 
@@ -257,6 +260,11 @@ export type FieldPathByValue<TFieldValues extends FieldValues, TValue> = {
 }[FieldPath<TFieldValues>];
 
 // @public
+export type FieldPathError<TFieldValues extends FieldValues, TFieldPath extends FieldPath<TFieldValues>> = TFieldPath extends FieldPath<TFieldValues> ? TFieldPath extends `${string}.root` ? GlobalError : DeepRequired<NonNullable<FieldPathValue<TFieldValues, TFieldPath>>> extends infer TFieldValue ? IsAny<TFieldValue> extends true ? FieldError : NonNullable<FieldErrorsImpl<{
+    value: TFieldValue;
+}>['value']> : never : never;
+
+// @public
 export type FieldPathValue<TFieldValues extends FieldValues, TFieldPath extends FieldPath<TFieldValues>> = PathValue<TFieldValues, TFieldPath>;
 
 // @public
@@ -309,6 +317,9 @@ export const FormProvider: <TFieldValues extends FieldValues, TContext = any, TT
 export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues> = {
     children: React_2.ReactNode | React_2.ReactNode[];
 } & UseFormReturn<TFieldValues, TContext, TTransformedValues>;
+
+// @public (undocumented)
+export type FormState<TFieldValues extends FieldValues> = FormState_2<TFieldValues>;
 
 // @public (undocumented)
 export const FormState: <TFieldValues extends FieldValues, TTransformedValues = TFieldValues>(input: FormStateProps<TFieldValues, TTransformedValues>) => ReactNode;
@@ -718,7 +729,7 @@ export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName
     isDirty: boolean;
     isTouched: boolean;
     isValidating: boolean;
-    error?: FieldError;
+    error?: FieldPathError<TFieldValues, TFieldName>;
 };
 
 // @public (undocumented)

@@ -1,10 +1,11 @@
 // types/__tests__/formState.tsd.ts
 import { FormStateSubscribe } from '../formStateSubscribe';
+import { FormState } from '../index';
 import type { FieldValues } from '../types';
 import { type UseFormStateReturn } from '../types';
 import { useForm } from '../useForm';
 
-import type { Equal, Expect } from './__fixtures__';
+import type { Equal, Expect, NotEqual } from './__fixtures__';
 
 /** {@link FormState} */ {
   type FormType = {
@@ -116,6 +117,20 @@ import type { Equal, Expect } from './__fixtures__';
         return null;
       },
     });
+  }
+
+  /**
+   * regression test for https://github.com/react-hook-form/react-hook-form/issues/13618
+   *
+   * `FormState` is exported both as a type (the form state shape) and as a
+   * component (renamed back from `FormStateSubscribe` in #13602). Importing
+   * both from the package root must not let one shadow the other.
+   */ {
+    type FS = FormState<FormType>;
+    type _t1 = Expect<NotEqual<FS, never>>;
+    const isDirty: FS['isDirty'] = true;
+
+    const Component: typeof FormState = FormState;
   }
 
   /** it should allow using context (no control prop) and still infer types when provided upstream */ {

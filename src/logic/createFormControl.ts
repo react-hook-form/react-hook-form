@@ -83,6 +83,7 @@ import set from '../utils/set';
 import stringToPath from '../utils/stringToPath';
 import unset from '../utils/unset';
 
+import collectDirtyFieldNames from './collectDirtyFieldNames';
 import generateWatchOutput from './generateWatchOutput';
 import getDirtyFields from './getDirtyFields';
 import getEventValue from './getEventValue';
@@ -940,6 +941,13 @@ export function createFormControl<
     skipClone = false,
     skipRender = false,
   ) => {
+    if (_names.array.has(name)) {
+      _subjects.array.next({
+        name,
+        values: skipClone ? _formValues : cloneObject(_formValues),
+      });
+    }
+
     for (const fieldKey in value) {
       if (!value.hasOwnProperty(fieldKey)) {
         return;
@@ -1824,8 +1832,9 @@ export function createFormControl<
       if (keepStateOptions.keepDirtyValues) {
         const fieldsToCheck = new Set([
           ..._names.mount,
-          ...Object.keys(
+          ...collectDirtyFieldNames(
             getDirtyFields(_defaultValues, _formValues, undefined, fieldRefs),
+            _formState.dirtyFields,
           ),
         ]);
         for (const fieldName of Array.from(fieldsToCheck)) {
