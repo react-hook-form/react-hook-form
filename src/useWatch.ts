@@ -1,8 +1,6 @@
 import React from 'react';
 
 import generateWatchOutput from './logic/generateWatchOutput';
-import cloneObject from './utils/cloneObject';
-import deepEqual from './utils/deepEqual';
 import {
   Control,
   DeepPartialSkipArrayKey,
@@ -14,6 +12,7 @@ import {
   UseWatchProps,
 } from './types';
 import { useFormContext } from './useFormContext';
+import { useResyncOnReconnect } from './useResyncOnReconnect';
 
 /**
  * Subscribe to the entire form values change and re-render at the hook level.
@@ -153,8 +152,7 @@ export function useWatch<TFieldValues extends FieldValues>(
   } = props || {};
   const _name = React.useRef(name);
   const _defaultValue = React.useRef(defaultValue);
-  const _connected = React.useRef(false);
-  const _prevFormOutput = React.useRef<unknown>(undefined);
+  const { resyncIfNeeded, snapshot } = useResyncOnReconnect<unknown>();
 
   _name.current = name;
 
@@ -168,15 +166,7 @@ export function useWatch<TFieldValues extends FieldValues>(
         _defaultValue.current,
       );
 
-    if (!disabled && _connected.current) {
-      const currentFormOutput = getCurrentFormOutput();
-
-      if (!deepEqual(_prevFormOutput.current, currentFormOutput)) {
-        updateValue(currentFormOutput);
-      }
-    }
-
-    _connected.current = true;
+    resyncIfNeeded(!disabled, getCurrentFormOutput, updateValue);
 
     const unsubscribe = control._subscribe({
       name: _name.current as InternalFieldName,
@@ -190,12 +180,9 @@ export function useWatch<TFieldValues extends FieldValues>(
 
     return () => {
       unsubscribe();
-
-      if (!disabled) {
-        _prevFormOutput.current = cloneObject(getCurrentFormOutput());
-      }
+      snapshot(!disabled, getCurrentFormOutput);
     };
-  }, [control, disabled, exact]);
+  }, [control, disabled, exact, resyncIfNeeded, snapshot]);
 
   const [value, updateValue] = React.useState(
     control._getWatch(

@@ -1701,6 +1701,9 @@ describe('useForm', () => {
   it('should unsubscribe to all subject when hook unmounts', () => {
     let tempControl: any;
 
+    const baselineObserverCount = createFormControl({}).control._subjects.state
+      .observers.length;
+
     const App = () => {
       const { control } = useForm();
       tempControl = control;
@@ -1710,11 +1713,15 @@ describe('useForm', () => {
 
     const { unmount } = render(<App />);
 
-    expect(tempControl._subjects.state.observers.length).toBeTruthy();
+    expect(tempControl._subjects.state.observers.length).toBeGreaterThan(
+      baselineObserverCount,
+    );
 
     unmount();
 
-    expect(tempControl._subjects.state.observers.length).toBeFalsy();
+    expect(tempControl._subjects.state.observers.length).toBe(
+      baselineObserverCount,
+    );
   });
 
   it('should update isValidating form and field states correctly', async () => {

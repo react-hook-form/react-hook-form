@@ -6,6 +6,7 @@ import deepEqual from './utils/deepEqual';
 import isEmptyObject from './utils/isEmptyObject';
 import isFunction from './utils/isFunction';
 import { FieldValues, FormState, UseFormProps, UseFormReturn } from './types';
+import { useResyncOnReconnect } from './useResyncOnReconnect';
 
 /**
  * Custom hook to manage the entire form.
@@ -84,15 +85,25 @@ export function useForm<
   const control = _formControl.current.control;
   control._options = props;
 
-  React.useLayoutEffect(
-    () =>
-      control._subscribe({
-        formState: control._proxyFormState,
-        callback: () => updateFormState({ ...control._formState }),
-        reRenderRoot: true,
-      }),
-    [control],
-  );
+  const { resyncIfNeeded, snapshot } =
+    useResyncOnReconnect<FormState<TFieldValues>>();
+
+  React.useLayoutEffect(() => {
+    const getCurrentFormState = () => ({ ...control._formState });
+
+    resyncIfNeeded(true, getCurrentFormState, updateFormState);
+
+    const unsubscribe = control._subscribe({
+      formState: control._proxyFormState,
+      callback: () => updateFormState({ ...control._formState }),
+      reRenderRoot: true,
+    });
+
+    return () => {
+      unsubscribe();
+      snapshot(true, getCurrentFormState);
+    };
+  }, [control, resyncIfNeeded, snapshot]);
 
   React.useEffect(
     () => control._disableForm(props.disabled),

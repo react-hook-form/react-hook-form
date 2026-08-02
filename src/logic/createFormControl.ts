@@ -1448,6 +1448,11 @@ export function createFormControl<
     };
   };
 
+  // `_formState` is updated via subscriber side effects (see `_subscribe`).
+  // If all subscribers unmount while hidden, updates would be missed and
+  // hooks could not resync later. Keep `_formState` authoritative.
+  _subjects.state.subscribe({ next: _setFormState });
+
   const _resetDefaultValues = () =>
     isFunction(_options.defaultValues) &&
     (_options.defaultValues as Function)().then((values: TFieldValues) => {
