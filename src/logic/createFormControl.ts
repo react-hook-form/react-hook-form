@@ -788,13 +788,14 @@ export function createFormControl<
       names,
       _names,
       {
+        // Before mount the form's own default values are the source of truth.
+        // For a single name the caller supplied `defaultValue` is only a
+        // fallback, applied by generateWatchOutput when the path is absent.
         ...(_state.mount
           ? _formValues
-          : isUndefined(defaultValue)
+          : isUndefined(defaultValue) || isString(names)
             ? _defaultValues
-            : isString(names)
-              ? { [names]: defaultValue }
-              : defaultValue),
+            : defaultValue),
       },
       isGlobal,
       defaultValue,
