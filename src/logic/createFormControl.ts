@@ -1951,13 +1951,6 @@ export function createFormControl<
     };
   };
 
-  // `_formState` is otherwise only kept current as a side effect of a
-  // subscriber's own `next` handler running (see `_subscribe` above). If
-  // every subscriber is torn down at once (e.g. a `<Activity mode="hidden">`
-  // subtree unmounting the only mounted `useForm`/`useFormState`), a state
-  // change published while hidden would never reach `_formState` at all, so
-  // there'd be nothing correct left to resync to once a hook reconnects.
-  // This keeps `_formState` authoritative regardless of what's mounted.
   _subjects.state.subscribe({ next: _setFormState });
 
   const _resetDefaultValues = () =>

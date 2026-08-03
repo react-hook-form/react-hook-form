@@ -327,12 +327,6 @@ export function useWatch<TFieldValues extends FieldValues>(
 
   const { resyncIfNeeded, snapshot } = useResyncOnReconnect<unknown>();
 
-  // `refreshValue`/`getCurrentOutput` change identity on every `_formValues`
-  // update (not just a genuine reconnect), and by the time this effect would
-  // re-run for that reason the still-active subscription below has already
-  // applied the update. Forwarding the latest versions through refs keeps
-  // the effect's own deps limited to things that change on a real
-  // mount/reconnect, so the resync check below only ever runs then.
   const _refreshValue = React.useRef(refreshValue);
   _refreshValue.current = refreshValue;
   const _getCurrentOutput = React.useRef(getCurrentOutput);
