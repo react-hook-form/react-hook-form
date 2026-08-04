@@ -989,8 +989,6 @@ export function createFormControl<
         (Array.isArray(cloneValue) && !cloneValue.length) ||
         isEmptyObject(cloneValue);
 
-      // When the value changed, `_setValue` emits the `values` state update
-      // below, so the field-level emit would be a duplicate notification.
       const skipValueRender = !isValueUnchanged && !skipStateEmit;
       if (!field || field._f || isNullOrUndefined(cloneValue) || isEmpty) {
         setFieldValue(
