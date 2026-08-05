@@ -27,12 +27,15 @@ const TMP_BENCH = join(tmpdir(), 'rhf-bench.ts');
 // ---------------------------------------------------------------------------
 
 function git(cmd: string, opts: { silent?: boolean } = {}) {
-  return execSync(`git ${cmd}`, {
+  const result = spawnSync('git', cmd.split(' '), {
     encoding: 'utf8',
     stdio: opts.silent
       ? ['ignore', 'pipe', 'ignore']
       : ['ignore', 'pipe', 'inherit'],
-  }).trim();
+  });
+  if (result.error) throw result.error;
+  if (result.status !== 0) throw new Error(`git ${cmd} exited with code ${result.status}`);
+  return (result.stdout || '').trim();
 }
 
 function currentBranch() {
