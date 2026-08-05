@@ -90,6 +90,7 @@ export const FormProvider = <
   children,
   watch,
   getValues,
+  getErrors,
   getFieldState,
   setError,
   clearErrors,
@@ -113,6 +114,7 @@ export const FormProvider = <
     () => ({
       watch,
       getValues,
+      getErrors,
       getFieldState,
       setError,
       clearErrors,
@@ -134,6 +136,7 @@ export const FormProvider = <
       clearErrors,
       control,
       formState,
+      getErrors,
       getFieldState,
       getValues,
       handleSubmit,
