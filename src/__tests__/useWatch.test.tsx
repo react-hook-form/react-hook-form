@@ -116,6 +116,23 @@ describe('useWatch', () => {
     expect(result.current).toEqual('test');
   });
 
+  it('should prefer the form default value over its own default value for single input', () => {
+    const { result } = renderHook(() => {
+      const { control } = useForm<{ test: string }>({
+        defaultValues: {
+          test: 'form default',
+        },
+      });
+      return useWatch({
+        control,
+        name: 'test',
+        defaultValue: 'inline fallback',
+      });
+    });
+
+    expect(result.current).toEqual('form default');
+  });
+
   it('should return own default value for array of inputs', () => {
     const { result } = renderHook(() => {
       const { control } = useForm<{ test: string; test1: string }>({});
