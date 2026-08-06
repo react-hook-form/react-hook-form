@@ -9,6 +9,7 @@ import type {
 } from './types';
 import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
+import { useResyncOnReconnect } from './useResyncOnReconnect';
 
 /**
  * Subscribes to each form state and isolates re-renders at the custom hook level. It has its own scope for form state subscriptions, so it will not affect other useFormState or useForm instances. Using this hook can reduce the re-render impact on large and complex form applications.
@@ -70,24 +71,38 @@ export function useFormState<
     errors: false,
   });
 
-  useIsomorphicLayoutEffect(
-    () =>
-      control._subscribe({
-        name,
-        formState: _localProxyFormState.current,
-        exact,
-        callback: (formState) => {
-          !disabled &&
-            updateFormState({
-              ...control._formState,
-              ...formState,
-              defaultValues:
-                control._defaultValues as FormState<TFieldValues>['defaultValues'],
-            });
-        },
-      }),
-    [name, disabled, exact],
-  );
+  const { resyncIfNeeded, snapshot } =
+    useResyncOnReconnect<FormState<TFieldValues>>();
+
+  useIsomorphicLayoutEffect(() => {
+    const getCurrentFormState = () => ({
+      ...control._formState,
+      defaultValues:
+        control._defaultValues as FormState<TFieldValues>['defaultValues'],
+    });
+
+    resyncIfNeeded(!disabled, getCurrentFormState, updateFormState);
+
+    const unsubscribe = control._subscribe({
+      name,
+      formState: _localProxyFormState.current,
+      exact,
+      callback: (formState) => {
+        !disabled &&
+          updateFormState({
+            ...control._formState,
+            ...formState,
+            defaultValues:
+              control._defaultValues as FormState<TFieldValues>['defaultValues'],
+          });
+      },
+    });
+
+    return () => {
+      unsubscribe();
+      snapshot(!disabled, getCurrentFormState);
+    };
+  }, [name, disabled, exact, resyncIfNeeded, snapshot]);
 
   React.useEffect(() => {
     _localProxyFormState.current.isValid && control._setValid(true);

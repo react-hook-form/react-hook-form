@@ -1980,6 +1980,8 @@ export function createFormControl<
     };
   };
 
+  _subjects.state.subscribe({ next: _setFormState });
+
   const _resetDefaultValues = () =>
     isFunction(_options.defaultValues) &&
     (_options.defaultValues as Function)().then((values: TFieldValues) => {
