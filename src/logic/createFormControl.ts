@@ -386,6 +386,37 @@ export function createFormControl<
     return false;
   };
 
+  // A field array action (move/remove/swap/...) relocates or drops the
+  // `_fields`/`_formValues` entries at a path synchronously. A component that
+  // is still rendering the pre-action arrangement can register that same
+  // path again on its next render (e.g. via useController), which lands
+  // here as a fresh registration — recreating an entry the action already
+  // removed and extending a nested array past its current length. Only an
+  // out-of-range index reachable while an action is in flight is stale in
+  // this way, so this only short-circuits during that window.
+  const isStaleArrayIndex = (name: InternalFieldName): boolean => {
+    if (!_state.action) {
+      return false;
+    }
+
+    const segments = isKey(name) ? [name] : stringToPath(name);
+    let node: unknown = _formValues;
+
+    for (const key of segments) {
+      if (isNullOrUndefined(node)) {
+        return false;
+      }
+
+      if (Array.isArray(node) && +key >= node.length) {
+        return true;
+      }
+
+      node = (node as Record<string, unknown>)[key];
+    }
+
+    return false;
+  };
+
   const updateValidAndValue = (
     name: InternalFieldName,
     shouldSkipSetValueAs: boolean,
@@ -395,7 +426,7 @@ export function createFormControl<
     const field: Field = get(_fields, name);
 
     if (field) {
-      if (hasExplicitNullIntermediate(name)) {
+      if (hasExplicitNullIntermediate(name) || isStaleArrayIndex(name)) {
         return;
       }
 
