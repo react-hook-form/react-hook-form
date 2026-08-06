@@ -178,6 +178,7 @@ export function createFormControl<
     : (cloneObject(_defaultValues) as TFieldValues);
   let _state = {
     action: false,
+    actionNames: new Map<InternalFieldName, number>(),
     mount: false,
     watch: false,
     keepIsValid: false,
@@ -300,6 +301,13 @@ export function createFormControl<
   ) => {
     if (args && method && !_options.disabled) {
       _state.action = true;
+      if (!_state.actionNames.has(name)) {
+        const preActionFields = get(_fields, name);
+        _state.actionNames.set(
+          name,
+          Array.isArray(preActionFields) ? preActionFields.length : 0,
+        );
+      }
       if (shouldUpdateFieldsAndState && Array.isArray(get(_fields, name))) {
         const fieldValues = method(get(_fields, name), args.argA, args.argB);
         shouldSetValues && set(_fields, name, fieldValues);
@@ -386,6 +394,55 @@ export function createFormControl<
     return false;
   };
 
+  const hasOutOfRangeArrayIndex = (name: InternalFieldName) => {
+    if (!_state.actionNames.size) {
+      return false;
+    }
+
+    const segments = stringToPath(name);
+    let ownerDepth = 0;
+    let ownerPreActionLength = 0;
+
+    for (const [actionName, preActionLength] of _state.actionNames) {
+      const actionSegments = stringToPath(actionName);
+
+      if (
+        actionSegments.length > ownerDepth &&
+        actionSegments.length <= segments.length &&
+        actionSegments.every((segment, i) => segment === segments[i])
+      ) {
+        ownerDepth = actionSegments.length;
+        ownerPreActionLength = preActionLength;
+      }
+    }
+
+    if (!ownerDepth) {
+      return false;
+    }
+
+    let node: unknown = _formValues;
+
+    for (let i = 0; i < segments.length; i++) {
+      if (isNullOrUndefined(node)) {
+        return false;
+      }
+
+      const key = segments[i];
+
+      if (Array.isArray(node) && +key >= node.length) {
+        // At the acted array itself, an index inside the pre-action bounds
+        // is one the action vacated, while an index beyond them is a caller
+        // staging an entry the action never owned. Below the acted array
+        // every out-of-range index comes from a stale arrangement.
+        return i === ownerDepth ? +key < ownerPreActionLength : i > ownerDepth;
+      }
+
+      node = (node as Record<string, unknown>)[key];
+    }
+
+    return false;
+  };
+
   const updateValidAndValue = (
     name: InternalFieldName,
     shouldSkipSetValueAs: boolean,
@@ -395,7 +452,10 @@ export function createFormControl<
     const field: Field = get(_fields, name);
 
     if (field) {
-      if (hasExplicitNullIntermediate(name)) {
+      // A render that still holds a pre-action field array arrangement can
+      // register a path the array operation has just removed; materializing
+      // it would resize the array, so leave `_formValues` untouched.
+      if (hasExplicitNullIntermediate(name) || hasOutOfRangeArrayIndex(name)) {
         return;
       }
 
@@ -1887,6 +1947,7 @@ export function createFormControl<
     _state.watch = !!_options.shouldUnregister;
     _state.keepIsValid = !!keepStateOptions.keepIsValid;
     _state.action = false;
+    _state.actionNames.clear();
 
     if (!keepStateOptions.keepErrors) {
       _formState.errors = {};

@@ -11,8 +11,10 @@ import {
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
 import type { Control, DeepMap, FieldError } from '../../types';
+import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import { useWatch } from '../../useWatch';
 import noop from '../../utils/noop';
 
 jest.useFakeTimers();
@@ -1501,5 +1503,207 @@ describe('remove', () => {
     fireEvent.click(screen.getByRole('button', { name: 'append' }));
     expect(screen.getByTestId('fields-count')).toHaveTextContent('1');
     expect(screen.getAllByRole('textbox')).toHaveLength(1);
+  });
+
+  it('should not resize nested arrays when index-keyed children render the pre-remove arrangement', async () => {
+    type NestedFormValues = {
+      steps: { approvers: { value: string }[] }[];
+    };
+
+    let getValues: () => NestedFormValues = () => ({ steps: [] });
+
+    const Step = ({
+      index,
+      control,
+    }: {
+      index: number;
+      control: Control<NestedFormValues>;
+    }) => {
+      const step = useWatch({ control, name: `steps.${index}` as const });
+
+      return (
+        <div>
+          {(step?.approvers ?? []).map((_: unknown, j: number) => (
+            <Controller
+              key={j}
+              control={control}
+              name={`steps.${index}.approvers.${j}.value` as const}
+              render={({ field }) => <input {...field} />}
+            />
+          ))}
+        </div>
+      );
+    };
+
+    const App = () => {
+      const methods = useForm<NestedFormValues>({
+        defaultValues: {
+          steps: [
+            { approvers: [{ value: 'a1' }] },
+            { approvers: [{ value: 'b1' }, { value: 'b2' }] },
+            { approvers: [{ value: 'c1' }] },
+          ],
+        },
+      });
+      getValues = methods.getValues;
+      const { fields, remove } = useFieldArray({
+        control: methods.control,
+        name: 'steps',
+      });
+
+      return (
+        <div>
+          {fields.map((_, i) => (
+            <Step key={i} index={i} control={methods.control} />
+          ))}
+          <button type="button" onClick={() => remove(0)}>
+            remove
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+    await act(async () => {});
+
+    expect(
+      getValues().steps.map((step) => (step.approvers ?? []).length),
+    ).toEqual([2, 1]);
+  });
+
+  it('should not resurrect removed items when the list itself renders from useWatch', async () => {
+    type NestedFormValues = {
+      steps: { approvers: { value: string }[] }[];
+    };
+
+    let getValues: () => NestedFormValues = () => ({ steps: [] });
+
+    const Step = ({
+      index,
+      control,
+    }: {
+      index: number;
+      control: Control<NestedFormValues>;
+    }) => {
+      const step = useWatch({ control, name: `steps.${index}` as const });
+
+      return (
+        <div>
+          {(step?.approvers ?? []).map((_: unknown, j: number) => (
+            <Controller
+              key={j}
+              control={control}
+              name={`steps.${index}.approvers.${j}.value` as const}
+              render={({ field }) => <input {...field} />}
+            />
+          ))}
+        </div>
+      );
+    };
+
+    const App = () => {
+      const methods = useForm<NestedFormValues>({
+        defaultValues: {
+          steps: [
+            { approvers: [{ value: 'a1' }] },
+            { approvers: [{ value: 'b1' }, { value: 'b2' }] },
+            { approvers: [{ value: 'c1' }] },
+          ],
+        },
+      });
+      getValues = methods.getValues;
+      const { remove } = useFieldArray({
+        control: methods.control,
+        name: 'steps',
+      });
+      const steps = useWatch({ control: methods.control, name: 'steps' }) || [];
+
+      return (
+        <div>
+          {steps.map((_, i) => (
+            <Step key={i} index={i} control={methods.control} />
+          ))}
+          <button type="button" onClick={() => remove(0)}>
+            remove
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+    await act(async () => {});
+
+    expect(
+      getValues().steps.map((step) => (step.approvers ?? []).length),
+    ).toEqual([2, 1]);
+  });
+
+  // A registration at an index the action just vacated is indistinguishable
+  // from the stale re-registration that resurrects removed items, so it is
+  // treated as stale; staging a replacement belongs to insert() or update(),
+  // and staging past the pre-action end still materializes (see append tests).
+  it('should treat a controlled field staged at a vacated index as the stale arrangement', async () => {
+    type FormValues = { test: { value: string }[] };
+
+    let getValues: () => unknown = () => ({});
+
+    const StagedInput = ({ control }: { control: Control<FormValues> }) => {
+      const { field } = useController({
+        control,
+        name: 'test.2.value',
+        defaultValue: 'replacement',
+      });
+      return <input {...field} />;
+    };
+
+    const App = () => {
+      const methods = useForm<FormValues>({
+        defaultValues: {
+          test: [{ value: 't0' }, { value: 't1' }, { value: 't2' }],
+        },
+      });
+      getValues = methods.getValues;
+      const { fields, remove } = useFieldArray({
+        control: methods.control,
+        name: 'test',
+      });
+      const [staged, setStaged] = React.useState(false);
+
+      return (
+        <div>
+          {fields.map((field, i) => (
+            <Controller
+              key={field.id}
+              control={methods.control}
+              name={`test.${i}.value` as const}
+              render={({ field }) => <input {...field} />}
+            />
+          ))}
+          {staged && <StagedInput control={methods.control} />}
+          <button
+            type="button"
+            onClick={() => {
+              remove(2);
+              setStaged(true);
+            }}
+          >
+            remove
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+    await act(async () => {});
+
+    expect(getValues()).toEqual({
+      test: [{ value: 't0' }, { value: 't1' }],
+    });
   });
 });

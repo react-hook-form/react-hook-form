@@ -45,6 +45,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _state: {
         mount: boolean;
         action: boolean;
+        actionNames: Map<InternalFieldName, number>;
         watch: boolean;
     };
     _reset: UseFormReset<TFieldValues>;
@@ -1030,7 +1031,7 @@ export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValue
 // Warnings were encountered during analysis:
 //
 // src/types/form.ts:513:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:887:3 - (ae-forgotten-export) The symbol "FormState_2" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:888:3 - (ae-forgotten-export) The symbol "FormState_2" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

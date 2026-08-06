@@ -9,8 +9,11 @@ import {
 } from '@testing-library/react';
 
 import { VALIDATION_MODE } from '../../constants';
+import { Controller } from '../../controller';
+import type { Control, UseFormGetValues } from '../../types';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import { useWatch } from '../../useWatch';
 import noop from '../../utils/noop';
 
 let i = 0;
@@ -460,5 +463,180 @@ describe('move', () => {
         '{"test":[{"id":"whatever1","test":"12341"},{"id":"whatever0","test":"12340"}]}',
       ),
     ).toBeVisible();
+  });
+
+  describe('when a render still holds the pre-move arrangement', () => {
+    type NestedFormValues = {
+      steps: { approvers: { value: string }[] }[];
+    };
+
+    const nestedDefaultValues: NestedFormValues = {
+      steps: [
+        { approvers: [{ value: 'a1' }] },
+        { approvers: [{ value: 'b1' }, { value: 'b2' }] },
+        { approvers: [{ value: 'c1' }] },
+      ],
+    };
+
+    const Step = ({
+      index,
+      control,
+    }: {
+      index: number;
+      control: Control<NestedFormValues>;
+    }) => {
+      const step = useWatch({ control, name: `steps.${index}` as const });
+
+      return (
+        <div>
+          {(step?.approvers ?? []).map((_: unknown, j: number) => (
+            <Controller
+              key={j}
+              control={control}
+              name={`steps.${index}.approvers.${j}.value` as const}
+              render={({ field, fieldState }) => (
+                <span>
+                  <input {...field} />
+                  {fieldState.error ? 'err' : ''}
+                </span>
+              )}
+            />
+          ))}
+        </div>
+      );
+    };
+
+    // Red on the parent commit only while React commits the synchronous
+    // setError pass before the transition pass; the index-keyed test below
+    // covers the same guard without that scheduling dependency.
+    it('should not materialize a vacated path when a leaf re-renders before the move commits', async () => {
+      let getValues: UseFormGetValues<NestedFormValues> = () => ({}) as never;
+
+      const App = () => {
+        const methods = useForm<NestedFormValues>({
+          defaultValues: nestedDefaultValues,
+        });
+        getValues = methods.getValues;
+        const { fields, move } = useFieldArray({
+          control: methods.control,
+          name: 'steps',
+        });
+
+        return (
+          <div>
+            {fields.map((field, i) => (
+              <Step key={field.id} index={i} control={methods.control} />
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                React.startTransition(() => move(1, 2));
+                methods.setError('steps', { type: 'server', message: 'x' });
+              }}
+            >
+              move
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button'));
+      await act(async () => {});
+
+      expect(
+        getValues().steps.map((step) => (step.approvers ?? []).length),
+      ).toEqual([1, 1, 2]);
+    });
+
+    it('should keep guarding the moved array when another array acts in the same handler', async () => {
+      type TwoArrayValues = NestedFormValues & { others: { value: string }[] };
+
+      let getValues: UseFormGetValues<TwoArrayValues> = () => ({}) as never;
+
+      const App = () => {
+        const methods = useForm<TwoArrayValues>({
+          defaultValues: { ...nestedDefaultValues, others: [{ value: 'o1' }] },
+        });
+        getValues = methods.getValues;
+        const { fields, move } = useFieldArray({
+          control: methods.control,
+          name: 'steps',
+        });
+        const { append } = useFieldArray({
+          control: methods.control,
+          name: 'others',
+        });
+
+        return (
+          <div>
+            {fields.map((_, i) => (
+              <Step
+                key={i}
+                index={i}
+                control={
+                  methods.control as unknown as Control<NestedFormValues>
+                }
+              />
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                move(1, 2);
+                append({ value: 'o2' });
+              }}
+            >
+              move
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button'));
+      await act(async () => {});
+
+      expect(
+        getValues().steps.map((step) => (step.approvers ?? []).length),
+      ).toEqual([1, 1, 2]);
+      expect(getValues().others).toEqual([{ value: 'o1' }, { value: 'o2' }]);
+    });
+
+    it('should not resize nested arrays when index-keyed children render the pre-move arrangement', async () => {
+      let getValues: UseFormGetValues<NestedFormValues> = () => ({}) as never;
+
+      const App = () => {
+        const methods = useForm<NestedFormValues>({
+          defaultValues: nestedDefaultValues,
+        });
+        getValues = methods.getValues;
+        const { fields, move } = useFieldArray({
+          control: methods.control,
+          name: 'steps',
+        });
+
+        return (
+          <div>
+            {fields.map((_, i) => (
+              <Step key={i} index={i} control={methods.control} />
+            ))}
+            <button type="button" onClick={() => move(1, 2)}>
+              move
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button'));
+      await act(async () => {});
+
+      expect(
+        getValues().steps.map((step) => (step.approvers ?? []).length),
+      ).toEqual([1, 1, 2]);
+    });
   });
 });
