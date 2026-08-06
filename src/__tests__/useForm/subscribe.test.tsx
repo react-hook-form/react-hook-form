@@ -714,4 +714,41 @@ describe('call setValue within subscribe', () => {
 
     expect(dirtyFieldsSpy).toMatchObject({ name: true, nameLength: true });
   });
+
+  it('should invoke the values callback only once per setValue call', () => {
+    const callbackFn = jest.fn();
+
+    const App = () => {
+      const { subscribe, setValue, register } = useForm({
+        defaultValues: { weight: 0 },
+      });
+      register('weight');
+
+      React.useEffect(
+        () =>
+          subscribe({
+            formState: { values: true },
+            callback: callbackFn,
+          }),
+        [subscribe],
+      );
+
+      return (
+        <button type="button" onClick={() => setValue('weight', 100)}>
+          set
+        </button>
+      );
+    };
+
+    render(<App />);
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(callbackFn).toHaveBeenCalledTimes(1);
+    expect(callbackFn).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'weight', values: { weight: 100 } }),
+    );
+  });
 });

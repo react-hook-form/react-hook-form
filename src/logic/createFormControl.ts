@@ -821,11 +821,9 @@ export function createFormControl<
       {
         ...(_state.mount
           ? _formValues
-          : isUndefined(defaultValue)
+          : isUndefined(defaultValue) || isString(names)
             ? _defaultValues
-            : isString(names)
-              ? { [names]: defaultValue }
-              : defaultValue),
+            : defaultValue),
       },
       isGlobal,
       defaultValue,
@@ -848,6 +846,7 @@ export function createFormControl<
     options: SetValueConfig = {},
     skipClone = false,
     skipRender = false,
+    skipValueRender = false,
   ) => {
     const field: Field = get(_fields, name);
     let fieldValue: unknown = value;
@@ -896,7 +895,7 @@ export function createFormControl<
         } else {
           fieldReference.ref.value = fieldValue;
 
-          if (!fieldReference.ref.type && !skipRender) {
+          if (!fieldReference.ref.type && !skipRender && !skipValueRender) {
             _subjects.state.next({
               name,
               values: skipClone ? _formValues : cloneObject(_formValues),
@@ -934,6 +933,7 @@ export function createFormControl<
     options: U,
     skipClone = false,
     skipRender = false,
+    skipValueRender = false,
   ) => {
     if (_names.array.has(name)) {
       _subjects.array.next({
@@ -954,8 +954,22 @@ export function createFormControl<
         isObject(fieldValue) ||
         (field && !field._f)) &&
       !isDateObject(fieldValue)
-        ? setFieldValues(fieldName, fieldValue, options, skipClone, skipRender)
-        : setFieldValue(fieldName, fieldValue, options, skipClone, skipRender);
+        ? setFieldValues(
+            fieldName,
+            fieldValue,
+            options,
+            skipClone,
+            skipRender,
+            skipValueRender,
+          )
+        : setFieldValue(
+            fieldName,
+            fieldValue,
+            options,
+            skipClone,
+            skipRender,
+            skipValueRender,
+          );
     }
   };
 
@@ -1006,10 +1020,25 @@ export function createFormControl<
         (Array.isArray(cloneValue) && !cloneValue.length) ||
         isEmptyObject(cloneValue);
 
+      const skipValueRender = !isValueUnchanged && !skipStateEmit;
       if (!field || field._f || isNullOrUndefined(cloneValue) || isEmpty) {
-        setFieldValue(name, cloneValue, options, skipClone, skipStateEmit);
+        setFieldValue(
+          name,
+          cloneValue,
+          options,
+          skipClone,
+          skipStateEmit,
+          skipValueRender,
+        );
       } else {
-        setFieldValues(name, cloneValue, options, skipClone, skipStateEmit);
+        setFieldValues(
+          name,
+          cloneValue,
+          options,
+          skipClone,
+          skipStateEmit,
+          skipValueRender,
+        );
       }
     }
 
@@ -1981,6 +2010,8 @@ export function createFormControl<
       ...formState,
     };
   };
+
+  _subjects.state.subscribe({ next: _setFormState });
 
   const _resetDefaultValues = () =>
     isFunction(_options.defaultValues) &&
