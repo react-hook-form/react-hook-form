@@ -680,4 +680,120 @@ describe('append', () => {
       await screen.findByText('{"test":[{"id":"whatever","test":"1234"}]}'),
     ).toBeVisible();
   });
+
+  it('should keep the value of a controlled field mounted in the same commit as an append to another field array', async () => {
+    let getValues: () => unknown = () => ({});
+
+    const OtherInput = ({ control }: { control: Control<FormValues> }) => {
+      const { field } = useController({
+        control,
+        name: 'b.1.value',
+        defaultValue: 'mounted-with-append',
+      });
+      return <input {...field} />;
+    };
+
+    type FormValues = {
+      a: { value: string }[];
+      b: { value: string }[];
+    };
+
+    const App = () => {
+      const [extra, setExtra] = React.useState(false);
+      const methods = useForm<FormValues>({
+        defaultValues: { a: [{ value: 'a0' }], b: [{ value: 'b0' }] },
+      });
+      getValues = methods.getValues;
+      const { fields: aFields, append } = useFieldArray({
+        control: methods.control,
+        name: 'a',
+      });
+      useFieldArray({ control: methods.control, name: 'b' });
+
+      return (
+        <div>
+          <p>{aFields.length}</p>
+          {extra && <OtherInput control={methods.control} />}
+          <button
+            type="button"
+            onClick={() => {
+              append({ value: 'a1' });
+              setExtra(true);
+            }}
+          >
+            append
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+    await act(async () => {});
+
+    expect(getValues()).toEqual({
+      a: [{ value: 'a0' }, { value: 'a1' }],
+      b: [{ value: 'b0' }, { value: 'mounted-with-append' }],
+    });
+  });
+
+  it('should materialize a controlled field staged at the end of the array appended to in the same commit', async () => {
+    type FormValues = { test: { value: string }[] };
+
+    let getValues: () => unknown = () => ({});
+
+    const StagedInput = ({
+      control,
+      index,
+    }: {
+      control: Control<FormValues>;
+      index: number;
+    }) => {
+      const { field } = useController({
+        control,
+        name: `test.${index}.value` as const,
+        defaultValue: 'staged-by-user',
+      });
+      return <input {...field} />;
+    };
+
+    const App = () => {
+      const methods = useForm<FormValues>({
+        defaultValues: { test: [{ value: 't0' }] },
+      });
+      getValues = methods.getValues;
+      const { fields, append } = useFieldArray({
+        control: methods.control,
+        name: 'test',
+      });
+      const [staged, setStaged] = React.useState(false);
+
+      return (
+        <div>
+          {staged && (
+            <StagedInput control={methods.control} index={fields.length} />
+          )}
+          <button
+            type="button"
+            onClick={() => {
+              append({ value: 't1' });
+              setStaged(true);
+            }}
+          >
+            append
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+    await act(async () => {});
+
+    expect(getValues()).toEqual({
+      test: [{ value: 't0' }, { value: 't1' }, { value: 'staged-by-user' }],
+    });
+  });
 });
