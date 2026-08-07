@@ -77,7 +77,7 @@
     "@playwright/test": "^1.61.1",
     "@rollup/plugin-commonjs": "^28.0.9",
     "@rollup/plugin-node-resolve": "^16.0.3",
-    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-terser": "^1.0.0",
     "@swc/core": "^1.15.41",
     "@swc/jest": "^0.2.39",
     "@testing-library/jest-dom": "^6.9.1",
