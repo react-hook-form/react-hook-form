@@ -310,9 +310,12 @@ export function createFormControl<
         Array.isArray(get(_formState.errors, name))
       ) {
         const fieldArrayErrors = get(_formState.errors, name);
-        const errors = method(fieldArrayErrors, args.argA, args.argB);
+        // swap mutates the array in place and returns void, so fall back to
+        // the (now mutated) original array instead of overwriting with undefined
+        const errors =
+          method(fieldArrayErrors, args.argA, args.argB) ?? fieldArrayErrors;
         const rootError = (fieldArrayErrors as { root?: FieldError }).root;
-        if (rootError) {
+        if (rootError && !(errors as { root?: FieldError }).root) {
           (errors as { root?: FieldError }).root = rootError;
         }
         shouldSetValues && set(_formState.errors, name, errors);
