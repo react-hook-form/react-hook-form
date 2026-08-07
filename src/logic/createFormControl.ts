@@ -178,6 +178,7 @@ export function createFormControl<
     : (cloneObject(_defaultValues) as TFieldValues);
   let _state = {
     action: false,
+    actionArrayLengths: new Map<InternalFieldName, number>(),
     mount: false,
     watch: false,
     keepIsValid: false,
@@ -300,6 +301,13 @@ export function createFormControl<
   ) => {
     if (args && method && !_options.disabled) {
       _state.action = true;
+      if (!_state.actionArrayLengths.has(name)) {
+        const preActionFields = get(_fields, name);
+        _state.actionArrayLengths.set(
+          name,
+          Array.isArray(preActionFields) ? preActionFields.length : 0,
+        );
+      }
       if (shouldUpdateFieldsAndState && Array.isArray(get(_fields, name))) {
         const fieldValues = method(get(_fields, name), args.argA, args.argB);
         shouldSetValues && set(_fields, name, fieldValues);
@@ -309,13 +317,18 @@ export function createFormControl<
         shouldUpdateFieldsAndState &&
         Array.isArray(get(_formState.errors, name))
       ) {
-        const fieldArrayErrors = get(_formState.errors, name);
+        const fieldArrayErrors: FieldError[] & { root?: FieldError } = get(
+          _formState.errors,
+          name,
+        );
+        const rootError = fieldArrayErrors.root;
         const errors =
-          method(fieldArrayErrors, args.argA, args.argB) ?? fieldArrayErrors;
-        const rootError = (fieldArrayErrors as { root?: FieldError }).root;
-        if (rootError && !(errors as { root?: FieldError }).root) {
-          (errors as { root?: FieldError }).root = rootError;
+          method(fieldArrayErrors, args.argA, args.argB) || fieldArrayErrors;
+
+        if (rootError) {
+          errors.root = rootError;
         }
+
         shouldSetValues && set(_formState.errors, name, errors);
         unsetEmptyArray(_formState.errors, name);
       }
@@ -388,6 +401,44 @@ export function createFormControl<
     return false;
   };
 
+  const isStaleArrayIndex = (name: InternalFieldName): boolean => {
+    if (!_state.actionArrayLengths.size) {
+      return false;
+    }
+
+    const segments = isKey(name) ? [name] : stringToPath(name);
+    let node: unknown = _formValues;
+    let path = '';
+    let ownerDepth = -1;
+    let ownerPreActionLength = 0;
+
+    for (let i = 0; i < segments.length; i++) {
+      if (isNullOrUndefined(node)) {
+        return false;
+      }
+
+      const key = segments[i];
+      path = path ? `${path}.${key}` : key;
+
+      if (Array.isArray(node) && +key >= node.length) {
+        return ownerDepth === -1
+          ? false
+          : i === ownerDepth
+            ? +key < ownerPreActionLength
+            : true;
+      }
+
+      if (_state.actionArrayLengths.has(path)) {
+        ownerDepth = i + 1;
+        ownerPreActionLength = _state.actionArrayLengths.get(path)!;
+      }
+
+      node = (node as Record<string, unknown>)[key];
+    }
+
+    return false;
+  };
+
   const updateValidAndValue = (
     name: InternalFieldName,
     shouldSkipSetValueAs: boolean,
@@ -397,7 +448,7 @@ export function createFormControl<
     const field: Field = get(_fields, name);
 
     if (field) {
-      if (hasExplicitNullIntermediate(name)) {
+      if (hasExplicitNullIntermediate(name) || isStaleArrayIndex(name)) {
         return;
       }
 
@@ -1889,6 +1940,7 @@ export function createFormControl<
     _state.watch = !!_options.shouldUnregister;
     _state.keepIsValid = !!keepStateOptions.keepIsValid;
     _state.action = false;
+    _state.actionArrayLengths.clear();
 
     if (!keepStateOptions.keepErrors) {
       _formState.errors = {};
