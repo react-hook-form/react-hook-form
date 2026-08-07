@@ -13,6 +13,7 @@ import type {
 import get from '../utils/get';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
+import isDateObject from '../utils/isDateObject';
 import isEmptyObject from '../utils/isEmptyObject';
 import isFileInput from '../utils/isFileInput';
 import isFunction from '../utils/isFunction';
@@ -134,7 +135,11 @@ export default async <T extends FieldValues>(
     const maxOutput = getValueAndMessage(max);
     const minOutput = getValueAndMessage(min);
 
-    if (!isNullOrUndefined(inputValue) && !isNaN(inputValue as number)) {
+    if (
+      !isNullOrUndefined(inputValue) &&
+      !isDateObject(inputValue) &&
+      !isNaN(inputValue as number)
+    ) {
       const valueNumber =
         (ref as HTMLInputElement).valueAsNumber ||
         (inputValue ? +inputValue : inputValue);
