@@ -309,11 +309,12 @@ export function createFormControl<
         shouldUpdateFieldsAndState &&
         Array.isArray(get(_formState.errors, name))
       ) {
-        const errors = method(
-          get(_formState.errors, name),
-          args.argA,
-          args.argB,
-        );
+        const fieldArrayErrors = get(_formState.errors, name);
+        const errors = method(fieldArrayErrors, args.argA, args.argB);
+        const rootError = (fieldArrayErrors as { root?: FieldError }).root;
+        if (rootError) {
+          (errors as { root?: FieldError }).root = rootError;
+        }
         shouldSetValues && set(_formState.errors, name, errors);
         unsetEmptyArray(_formState.errors, name);
       }
