@@ -455,15 +455,25 @@ export function createFormControl<
         isUndefined(value) ? get(_defaultValues, name) : value,
       );
 
-      isUndefined(defaultValue) ||
-      (ref && (ref as HTMLInputElement).defaultChecked) ||
-      shouldSkipSetValueAs
-        ? set(
-            _formValues,
-            name,
-            shouldSkipSetValueAs ? defaultValue : getFieldValue(field._f),
-          )
-        : setFieldValue(name, defaultValue);
+      if (
+        isUndefined(defaultValue) ||
+        (ref && (ref as HTMLInputElement).defaultChecked) ||
+        shouldSkipSetValueAs
+      ) {
+        set(
+          _formValues,
+          name,
+          shouldSkipSetValueAs ? defaultValue : getFieldValue(field._f),
+        );
+        if (
+          _proxyFormState.dirtyFields ||
+          _proxySubscribeFormState.dirtyFields
+        ) {
+          _state.dirtyFieldsStale = true;
+        }
+      } else {
+        setFieldValue(name, defaultValue);
+      }
 
       if (_state.mount && !_state.action) {
         _setValid();
@@ -526,8 +536,11 @@ export function createFormControl<
 
         isPreviousDirty = !!get(_formState.dirtyFields, name);
 
+        let didResyncDirtyFields = false;
+
         if (_state.dirtyFieldsStale) {
           _state.dirtyFieldsStale = false;
+          didResyncDirtyFields = true;
           updateDirtyFields(
             _formState.dirtyFields as Record<string, unknown>,
             getDirtyFields(
@@ -544,10 +557,7 @@ export function createFormControl<
           set(
             _formState.dirtyFields,
             name,
-            isObject(defaultFieldValue) ||
-              Array.isArray(defaultFieldValue) ||
-              isObject(fieldValue) ||
-              Array.isArray(fieldValue)
+            isObject(defaultFieldValue) || Array.isArray(defaultFieldValue)
               ? getDirtyFields(
                   defaultFieldValue,
                   fieldValue,
@@ -563,7 +573,8 @@ export function createFormControl<
           shouldUpdateField ||
           ((_proxyFormState.dirtyFields ||
             _proxySubscribeFormState.dirtyFields) &&
-            isPreviousDirty !== !isCurrentFieldPristine);
+            (didResyncDirtyFields ||
+              isPreviousDirty !== !isCurrentFieldPristine));
       }
 
       if (isBlurEvent) {
