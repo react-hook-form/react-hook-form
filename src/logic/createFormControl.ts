@@ -267,7 +267,7 @@ export function createFormControl<
         _proxySubscribeFormState.isValidating ||
         _proxySubscribeFormState.validatingFields)
     ) {
-      (names || Array.from(_names.mount)).forEach((name) => {
+      (names || _names.mount).forEach((name) => {
         if (name) {
           isValidating
             ? set(_formState.validatingFields, name, isValidating)
@@ -301,26 +301,22 @@ export function createFormControl<
   ) => {
     if (args && method && !_options.disabled) {
       _state.action = true;
+      const fields = get(_fields, name);
       if (!_state.actionArrayLengths.has(name)) {
-        const preActionFields = get(_fields, name);
         _state.actionArrayLengths.set(
           name,
-          Array.isArray(preActionFields) ? preActionFields.length : 0,
+          Array.isArray(fields) ? fields.length : 0,
         );
       }
-      if (shouldUpdateFieldsAndState && Array.isArray(get(_fields, name))) {
-        const fieldValues = method(get(_fields, name), args.argA, args.argB);
+      if (shouldUpdateFieldsAndState && Array.isArray(fields)) {
+        const fieldValues = method(fields, args.argA, args.argB);
         shouldSetValues && set(_fields, name, fieldValues);
       }
 
-      if (
-        shouldUpdateFieldsAndState &&
-        Array.isArray(get(_formState.errors, name))
-      ) {
-        const fieldArrayErrors: FieldError[] & { root?: FieldError } = get(
-          _formState.errors,
-          name,
-        );
+      const fieldArrayErrors:
+        | (FieldError[] & { root?: FieldError })
+        | undefined = get(_formState.errors, name);
+      if (shouldUpdateFieldsAndState && Array.isArray(fieldArrayErrors)) {
         const rootError = fieldArrayErrors.root;
         const errors =
           method(fieldArrayErrors, args.argA, args.argB) || fieldArrayErrors;
@@ -333,17 +329,14 @@ export function createFormControl<
         unsetEmptyArray(_formState.errors, name);
       }
 
+      const touchedFieldsArray = get(_formState.touchedFields, name);
       if (
         (_proxyFormState.touchedFields ||
           _proxySubscribeFormState.touchedFields) &&
         shouldUpdateFieldsAndState &&
-        Array.isArray(get(_formState.touchedFields, name))
+        Array.isArray(touchedFieldsArray)
       ) {
-        const touchedFields = method(
-          get(_formState.touchedFields, name),
-          args.argA,
-          args.argB,
-        );
+        const touchedFields = method(touchedFieldsArray, args.argA, args.argB);
         shouldSetValues && set(_formState.touchedFields, name, touchedFields);
       }
 
@@ -1391,13 +1384,18 @@ export function createFormControl<
   const getFieldState: UseFormGetFieldState<TFieldValues> = (
     name,
     formState,
-  ) => ({
-    invalid: !!get((formState || _formState).errors, name),
-    isDirty: !!get((formState || _formState).dirtyFields, name),
-    error: get((formState || _formState).errors, name),
-    isValidating: !!get(_formState.validatingFields, name),
-    isTouched: !!get((formState || _formState).touchedFields, name),
-  });
+  ) => {
+    const targetFormState = formState || _formState;
+    const error = get(targetFormState.errors, name);
+
+    return {
+      invalid: !!error,
+      isDirty: !!get(targetFormState.dirtyFields, name),
+      error,
+      isValidating: !!get(_formState.validatingFields, name),
+      isTouched: !!get(targetFormState.touchedFields, name),
+    };
+  };
 
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
     const names = name ? convertToArrayPayload(name) : undefined;
@@ -1852,7 +1850,7 @@ export function createFormControl<
             _formState.dirtyFields,
           ),
         ]);
-        for (const fieldName of Array.from(fieldsToCheck)) {
+        for (const fieldName of fieldsToCheck) {
           const isDirty = get(_formState.dirtyFields, fieldName);
           const existingValue = get(_formValues, fieldName);
           const newValue = get(values, fieldName);
