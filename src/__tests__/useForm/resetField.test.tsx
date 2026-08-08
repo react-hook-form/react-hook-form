@@ -1,7 +1,8 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 
 import { useForm } from '../../useForm';
+import { useFormState } from '../../useFormState';
 
 describe('resetField', () => {
   it('should reset input value', () => {
@@ -225,6 +226,69 @@ describe('resetField', () => {
     fireEvent.click(screen.getByRole('button', { name: 'reset' }));
 
     expect(getValuesFn).toHaveBeenCalledWith({ test: '' });
+  });
+
+  it('should notify a memoized field-scoped subscriber after an unrelated field validated via onChange', async () => {
+    const BWatcher = React.memo(({ control }: { control: any }) => {
+      const { touchedFields } = useFormState({
+        control,
+        name: 'b',
+        exact: true,
+      });
+      return <p>b-touched:{String(!!touchedFields.b)}</p>;
+    });
+
+    const App = () => {
+      const { register, control, resetField } = useForm({
+        mode: 'onChange',
+        defaultValues: { a: '', b: '' },
+      });
+
+      return (
+        <div>
+          <input {...register('a', { required: true })} />
+          <input {...register('b')} />
+          <BWatcher control={control} />
+          <button
+            type={'button'}
+            onClick={() => resetField('b', { keepTouched: false })}
+          >
+            resetB
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    // Touch field 'b' so there is a real touched:true -> false transition
+    // to observe.
+    await act(async () => {
+      fireEvent.blur(screen.getAllByRole('textbox')[1]);
+    });
+    expect(await screen.findByText('b-touched:true')).toBeVisible();
+
+    // Drive an unrelated field 'a' through onChange validation. Before the
+    // fix, this permanently leaked `name: 'a'` into `_formState`, which
+    // caused later notifications that don't set their own `name` (like
+    // resetField's) to inherit it and get gated out for any other
+    // field-scoped subscriber.
+    await act(async () => {
+      fireEvent.input(screen.getAllByRole('textbox')[0], {
+        target: { value: 'x' },
+      });
+    });
+    await act(async () => {
+      fireEvent.input(screen.getAllByRole('textbox')[0], {
+        target: { value: '' },
+      });
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'resetB' }));
+    });
+
+    expect(await screen.findByText('b-touched:false')).toBeVisible();
   });
 
   describe('when provided with options', () => {
