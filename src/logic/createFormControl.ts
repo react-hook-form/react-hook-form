@@ -182,6 +182,7 @@ export function createFormControl<
     mount: false,
     watch: false,
     keepIsValid: false,
+    dirtyFieldsStale: false,
   };
   let _names: Names = {
     mount: new Set(),
@@ -342,6 +343,11 @@ export function createFormControl<
 
       if (_proxyFormState.dirtyFields || _proxySubscribeFormState.dirtyFields) {
         _updateDirtyFields();
+      } else {
+        // dirtyFields wasn't recomputed for this array change (nobody's
+        // reading it), so it may be stale relative to the new array —
+        // resync it once on the next dirty-tracked field update.
+        _state.dirtyFieldsStale = true;
       }
 
       _subjects.state.next({
@@ -523,7 +529,8 @@ export function createFormControl<
 
         isPreviousDirty = !!get(_formState.dirtyFields, name);
 
-        if (isCurrentFieldPristine !== _formState.isDirty) {
+        if (_state.dirtyFieldsStale) {
+          _state.dirtyFieldsStale = false;
           updateDirtyFields(
             _formState.dirtyFields as Record<string, unknown>,
             getDirtyFields(
@@ -533,10 +540,30 @@ export function createFormControl<
               _fields,
             ) as Record<string, unknown>,
           );
+        } else if (isCurrentFieldPristine) {
+          unset(_formState.dirtyFields, name);
         } else {
-          isCurrentFieldPristine
-            ? unset(_formState.dirtyFields, name)
-            : set(_formState.dirtyFields, name, true);
+          // A flat `true` only makes sense for a primitive-valued field.
+          // When the field itself holds an object/array, dirtyFields is
+          // expected to mirror its shape (which nested keys are dirty),
+          // so scope a getDirtyFields pass to just this field's value
+          // instead of a full-form walk.
+          const defaultFieldValue = get(_defaultValues, name);
+          set(
+            _formState.dirtyFields,
+            name,
+            isObject(defaultFieldValue) ||
+              Array.isArray(defaultFieldValue) ||
+              isObject(fieldValue) ||
+              Array.isArray(fieldValue)
+              ? getDirtyFields(
+                  defaultFieldValue,
+                  fieldValue,
+                  undefined,
+                  get(_fields, name),
+                )
+              : true,
+          );
         }
 
         output.dirtyFields = _formState.dirtyFields;
@@ -915,7 +942,7 @@ export function createFormControl<
       }
     }
 
-    (options.shouldDirty || options.shouldTouch) &&
+    if (options.shouldDirty || options.shouldTouch) {
       updateTouchAndDirty(
         name,
         fieldValue,
@@ -923,6 +950,15 @@ export function createFormControl<
         options.shouldDirty,
         !skipRender,
       );
+    } else {
+      // This value changed without going through the per-field dirty
+      // tracking above (e.g. setValue(..., { shouldDirty: false })), so
+      // `_formState.dirtyFields` may no longer reflect every field that's
+      // actually non-pristine. Flag it for a one-time resync on the next
+      // real dirty-tracked update, instead of resyncing on every future
+      // keystroke regardless of whether anything is actually stale.
+      _state.dirtyFieldsStale = true;
+    }
 
     options.shouldValidate &&
       trigger(
@@ -1934,6 +1970,7 @@ export function createFormControl<
     _state.keepIsValid = !!keepStateOptions.keepIsValid;
     _state.action = false;
     _state.actionArrayLengths.clear();
+    _state.dirtyFieldsStale = false;
 
     if (!keepStateOptions.keepErrors) {
       _formState.errors = {};

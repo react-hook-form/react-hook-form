@@ -1,8 +1,17 @@
 import { createFormControl } from '../../logic/createFormControl';
+import getDirtyFields from '../../logic/getDirtyFields';
 import isEmptyObject from '../../utils/isEmptyObject';
 
 jest.mock('../../utils/isEmptyObject', () => {
   const original = jest.requireActual('../../utils/isEmptyObject');
+  return {
+    __esModule: true,
+    default: jest.fn(original.default),
+  };
+});
+
+jest.mock('../../logic/getDirtyFields', () => {
+  const original = jest.requireActual('../../logic/getDirtyFields');
   return {
     __esModule: true,
     default: jest.fn(original.default),
@@ -113,5 +122,38 @@ describe('createFormControl', () => {
     expect(getFieldState('foo').invalid).toBe(false);
     expect(getFieldState('bar').invalid).toBe(false);
     expect(control._formState.errors).toEqual({});
+  });
+
+  it('does not recompute dirtyFields from scratch on every change once isDirty is tracked and true', async () => {
+    const fields = Array.from({ length: 20 }, (_, i) => `f${i}`);
+    const { register, subscribe } = createFormControl<Record<string, string>>({
+      defaultValues: Object.fromEntries(fields.map((n) => [n, ''])),
+    });
+
+    subscribe({ formState: { isDirty: true }, callback: jest.fn() });
+
+    const onChanges = fields.map((name) => register(name).onChange);
+
+    // The first dirtying change legitimately needs (at most) one full
+    // dirtyFields resync.
+    await onChanges[0]({
+      type: 'change',
+      target: { name: 'f0', value: 'x' },
+    } as any);
+
+    (getDirtyFields as jest.Mock).mockClear();
+
+    // Once the form is dirty, changing OTHER fields must not each trigger
+    // a full-form getDirtyFields walk — that's an O(field count) cost per
+    // keystroke that should only happen when dirtyFields could actually
+    // be stale (e.g. after a silent setValue(..., { shouldDirty: false })).
+    for (let i = 1; i < fields.length; i++) {
+      await onChanges[i]({
+        type: 'change',
+        target: { name: fields[i], value: `v${i}` },
+      } as any);
+    }
+
+    expect(getDirtyFields).not.toHaveBeenCalled();
   });
 });
