@@ -881,6 +881,7 @@ export type Control<
   _state: {
     mount: boolean;
     action: boolean;
+    actionArrayLengths: Map<InternalFieldName, number>;
     watch: boolean;
   };
   _reset: UseFormReset<TFieldValues>;

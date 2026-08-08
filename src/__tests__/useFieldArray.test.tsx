@@ -4386,6 +4386,115 @@ describe('useFieldArray', () => {
 
       expect(screen.queryByAltText('Please enter some data')).toBeNull();
     });
+
+    it('should keep the root error after append/prepend/insert/remove when triggered before submit', async () => {
+      const App = () => {
+        const {
+          control,
+          trigger,
+          formState: { errors },
+        } = useForm({
+          defaultValues: {
+            test: [{ test: '' }],
+          },
+        });
+
+        const { append } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            validate: (values) =>
+              (Array.isArray(values) && values.length >= 3) ||
+              'Min length should be 3',
+          },
+        });
+
+        return (
+          <div>
+            <p>{errors.test?.root?.message}</p>
+            <button type={'button'} onClick={() => trigger('test')}>
+              trigger
+            </button>
+            <button type={'button'} onClick={() => append({ test: '' })}>
+              append
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+      });
+
+      screen.getByText('Min length should be 3');
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      screen.getByText('Min length should be 3');
+    });
+
+    it('should keep the root error after swap/move when triggered before submit', async () => {
+      const App = () => {
+        const {
+          control,
+          trigger,
+          formState: { errors },
+        } = useForm({
+          defaultValues: {
+            test: [{ test: 'a' }, { test: 'b' }, { test: 'c' }],
+          },
+        });
+
+        const { swap, move } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            validate: (values) =>
+              (Array.isArray(values) && values.length >= 5) ||
+              'Min length should be 5',
+          },
+        });
+
+        return (
+          <div>
+            <p>{errors.test?.root?.message}</p>
+            <button type={'button'} onClick={() => trigger('test')}>
+              trigger
+            </button>
+            <button type={'button'} onClick={() => swap(0, 1)}>
+              swap
+            </button>
+            <button type={'button'} onClick={() => move(0, 2)}>
+              move
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+      });
+
+      screen.getByText('Min length should be 5');
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'swap' }));
+      });
+
+      screen.getByText('Min length should be 5');
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'move' }));
+      });
+
+      screen.getByText('Min length should be 5');
+    });
   });
 
   describe('with nested field array ', () => {

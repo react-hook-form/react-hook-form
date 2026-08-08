@@ -1,5 +1,20 @@
 # Changelog
 
+## [7.85.0] - 2026-08-08
+
+### Added
+
+- Support `<Activity />`
+
+### Fixed
+
+- `getFieldState` error resolution from a field path
+- `useWatch` discarding `useForm({ defaultValues })` in favor of its own `defaultValue` before the form mounts
+- `setValue` emitting a duplicate `values` state notification for fields without a native input ref
+- Stale render re-creating a field array path vacated by an array action
+- `useFieldArray` root-level error (`errors.name.root`) being lost on `append`/`prepend`/`insert`/`remove`
+- `min`/`max` validation being skipped for `valueAsDate` fields
+
 ## [7.84.0] - 2026-08-01
 
 ### Improvements

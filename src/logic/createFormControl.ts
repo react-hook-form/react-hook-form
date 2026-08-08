@@ -179,6 +179,7 @@ export function createFormControl<
     : (cloneObject(_defaultValues) as TFieldValues);
   let _state = {
     action: false,
+    actionArrayLengths: new Map<InternalFieldName, number>(),
     mount: false,
     watch: false,
     keepIsValid: false,
@@ -301,6 +302,13 @@ export function createFormControl<
   ) => {
     if (args && method && !_options.disabled) {
       _state.action = true;
+      if (!_state.actionArrayLengths.has(name)) {
+        const preActionFields = get(_fields, name);
+        _state.actionArrayLengths.set(
+          name,
+          Array.isArray(preActionFields) ? preActionFields.length : 0,
+        );
+      }
       if (shouldUpdateFieldsAndState && Array.isArray(get(_fields, name))) {
         const fieldValues = method(get(_fields, name), args.argA, args.argB);
         shouldSetValues && set(_fields, name, fieldValues);
@@ -310,11 +318,18 @@ export function createFormControl<
         shouldUpdateFieldsAndState &&
         Array.isArray(get(_formState.errors, name))
       ) {
-        const errors = method(
-          get(_formState.errors, name),
-          args.argA,
-          args.argB,
+        const fieldArrayErrors: FieldError[] & { root?: FieldError } = get(
+          _formState.errors,
+          name,
         );
+        const rootError = fieldArrayErrors.root;
+        const errors =
+          method(fieldArrayErrors, args.argA, args.argB) || fieldArrayErrors;
+
+        if (rootError) {
+          errors.root = rootError;
+        }
+
         shouldSetValues && set(_formState.errors, name, errors);
         unsetEmptyArray(_formState.errors, name);
       }
@@ -387,6 +402,44 @@ export function createFormControl<
     return false;
   };
 
+  const isStaleArrayIndex = (name: InternalFieldName): boolean => {
+    if (!_state.actionArrayLengths.size) {
+      return false;
+    }
+
+    const segments = isKey(name) ? [name] : stringToPath(name);
+    let node: unknown = _formValues;
+    let path = '';
+    let ownerDepth = -1;
+    let ownerPreActionLength = 0;
+
+    for (let i = 0; i < segments.length; i++) {
+      if (isNullOrUndefined(node)) {
+        return false;
+      }
+
+      const key = segments[i];
+      path = path ? `${path}.${key}` : key;
+
+      if (Array.isArray(node) && +key >= node.length) {
+        return ownerDepth === -1
+          ? false
+          : i === ownerDepth
+            ? +key < ownerPreActionLength
+            : true;
+      }
+
+      if (_state.actionArrayLengths.has(path)) {
+        ownerDepth = i + 1;
+        ownerPreActionLength = _state.actionArrayLengths.get(path)!;
+      }
+
+      node = (node as Record<string, unknown>)[key];
+    }
+
+    return false;
+  };
+
   const updateValidAndValue = (
     name: InternalFieldName,
     shouldSkipSetValueAs: boolean,
@@ -396,7 +449,7 @@ export function createFormControl<
     const field: Field = get(_fields, name);
 
     if (field) {
-      if (hasExplicitNullIntermediate(name)) {
+      if (hasExplicitNullIntermediate(name) || isStaleArrayIndex(name)) {
         return;
       }
 
@@ -827,11 +880,9 @@ export function createFormControl<
       {
         ...(_state.mount
           ? _formValues
-          : isUndefined(defaultValue)
+          : isUndefined(defaultValue) || isString(names)
             ? _defaultValues
-            : isString(names)
-              ? { [names]: defaultValue }
-              : defaultValue),
+            : defaultValue),
       },
       isGlobal,
       defaultValue,
@@ -854,6 +905,7 @@ export function createFormControl<
     options: SetValueConfig = {},
     skipClone = false,
     skipRender = false,
+    skipValueRender = false,
   ) => {
     const field: Field = get(_fields, name);
     let fieldValue: unknown = value;
@@ -902,7 +954,7 @@ export function createFormControl<
         } else {
           fieldReference.ref.value = fieldValue;
 
-          if (!fieldReference.ref.type && !skipRender) {
+          if (!fieldReference.ref.type && !skipRender && !skipValueRender) {
             _subjects.state.next({
               name,
               values: skipClone ? _formValues : cloneObject(_formValues),
@@ -940,6 +992,7 @@ export function createFormControl<
     options: U,
     skipClone = false,
     skipRender = false,
+    skipValueRender = false,
   ) => {
     if (_names.array.has(name)) {
       _subjects.array.next({
@@ -960,8 +1013,22 @@ export function createFormControl<
         isObject(fieldValue) ||
         (field && !field._f)) &&
       !isDateObject(fieldValue)
-        ? setFieldValues(fieldName, fieldValue, options, skipClone, skipRender)
-        : setFieldValue(fieldName, fieldValue, options, skipClone, skipRender);
+        ? setFieldValues(
+            fieldName,
+            fieldValue,
+            options,
+            skipClone,
+            skipRender,
+            skipValueRender,
+          )
+        : setFieldValue(
+            fieldName,
+            fieldValue,
+            options,
+            skipClone,
+            skipRender,
+            skipValueRender,
+          );
     }
   };
 
@@ -1012,10 +1079,25 @@ export function createFormControl<
         (Array.isArray(cloneValue) && !cloneValue.length) ||
         isEmptyObject(cloneValue);
 
+      const skipValueRender = !isValueUnchanged && !skipStateEmit;
       if (!field || field._f || isNullOrUndefined(cloneValue) || isEmpty) {
-        setFieldValue(name, cloneValue, options, skipClone, skipStateEmit);
+        setFieldValue(
+          name,
+          cloneValue,
+          options,
+          skipClone,
+          skipStateEmit,
+          skipValueRender,
+        );
       } else {
-        setFieldValues(name, cloneValue, options, skipClone, skipStateEmit);
+        setFieldValues(
+          name,
+          cloneValue,
+          options,
+          skipClone,
+          skipStateEmit,
+          skipValueRender,
+        );
       }
     }
 
@@ -1925,6 +2007,7 @@ export function createFormControl<
     _state.watch = !!_options.shouldUnregister;
     _state.keepIsValid = !!keepStateOptions.keepIsValid;
     _state.action = false;
+    _state.actionArrayLengths.clear();
 
     if (!keepStateOptions.keepErrors) {
       _formState.errors = {};
@@ -2017,6 +2100,8 @@ export function createFormControl<
       ...formState,
     };
   };
+
+  _subjects.state.subscribe({ next: _setFormState });
 
   const _resetDefaultValues = () =>
     isFunction(_options.defaultValues) &&

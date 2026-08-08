@@ -372,10 +372,12 @@ export function useFieldArray<
 
   React.useEffect(() => {
     if (disabled) {
+      control._state.actionArrayLengths.delete(name);
       return;
     }
 
     control._state.action = false;
+    control._state.actionArrayLengths.delete(name);
 
     isWatched(name, control._names) &&
       control._subjects.state.next({
@@ -492,6 +494,8 @@ export function useFieldArray<
     }
 
     return () => {
+      control._state.actionArrayLengths.delete(name);
+
       if (disabled) {
         return;
       }

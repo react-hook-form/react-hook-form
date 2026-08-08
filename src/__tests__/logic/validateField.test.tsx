@@ -1053,6 +1053,80 @@ describe('validateField', () => {
     });
   });
 
+  it('should return min error when the field value is already a Date object (valueAsDate)', async () => {
+    expect(
+      await validateField(
+        {
+          _f: {
+            mount: true,
+            name: 'test',
+            ref: {
+              type: 'date',
+              name: 'test',
+            },
+            value: new Date('2019-2-12'),
+            valueAsDate: true,
+            required: true,
+            min: {
+              value: '2019-3-12',
+              message: 'min',
+            },
+          },
+        },
+        new Set(),
+        {
+          test: new Date('2019-2-12'),
+        },
+        false,
+      ),
+    ).toEqual({
+      test: {
+        type: 'min',
+        message: 'min',
+        ref: {
+          type: 'date',
+          name: 'test',
+        },
+      },
+    });
+
+    expect(
+      await validateField(
+        {
+          _f: {
+            mount: true,
+            name: 'test',
+            ref: {
+              type: 'date',
+              name: 'test',
+            },
+            value: new Date('2025-1-1'),
+            valueAsDate: true,
+            required: true,
+            max: {
+              value: '2010-1-1',
+              message: 'max',
+            },
+          },
+        },
+        new Set(),
+        {
+          test: new Date('2025-1-1'),
+        },
+        false,
+      ),
+    ).toEqual({
+      test: {
+        type: 'max',
+        message: 'max',
+        ref: {
+          type: 'date',
+          name: 'test',
+        },
+      },
+    });
+  });
+
   it('should return min and max error for custom input', async () => {
     expect(
       await validateField(
