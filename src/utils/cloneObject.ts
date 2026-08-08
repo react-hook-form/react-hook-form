@@ -1,10 +1,6 @@
 import isWeb from './isWeb';
 
 export default function cloneObject<T>(data: T): T {
-  // Primitives (and null) can't be Date/Blob/plain-object instances, so
-  // bail out before any of those checks — this also avoids boxing `data`
-  // to look up `.constructor` below, which matters here since most leaf
-  // values in a form are primitives.
   if (data === null || typeof data !== 'object') {
     return data;
   }
@@ -22,10 +18,6 @@ export default function cloneObject<T>(data: T): T {
 
   const isArray = Array.isArray(data);
 
-  // Equivalent to the old `isObject(data) && isPlainObject(data)` check:
-  // `isPlainObject` ultimately tested whether `data`'s prototype chain
-  // resolves to `Object` as its constructor, which `data.constructor`
-  // already gives us directly (JS walks the prototype chain for us).
   if (!isArray && (data as object).constructor !== Object) {
     return data;
   }
