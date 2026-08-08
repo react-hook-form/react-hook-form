@@ -609,11 +609,6 @@ export function createFormControl<
         name,
       };
 
-      // `_subjects.state`'s first subscriber is `_setFormState` (registered
-      // during setup, below), which merges this into `_formState` on every
-      // `next()` call while correctly excluding `name`/`type`/`values`.
-      // Merging here too would additionally leak `name` into `_formState`
-      // permanently, since nothing else strips it back out.
       _subjects.state.next(updatedFormState);
     }
   };
