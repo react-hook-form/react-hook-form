@@ -759,6 +759,7 @@ export type UseFormProps<TFieldValues extends FieldValues = FieldValues, TContex
     shouldUseNativeValidation: boolean;
     progressive: boolean;
     criteriaMode: CriteriaMode;
+    validationScope: ValidationScope;
     delayError: number;
     formControl?: Omit<UseFormReturn<TFieldValues, TContext, TTransformedValues>, 'formState'>;
     validate: ValidateForm<TFieldValues>;
@@ -983,6 +984,9 @@ export type ValidationModeFlags = {
 export type ValidationRule<TValidationValue extends ValidationValue = ValidationValue> = TValidationValue | ValidationValueMessage<TValidationValue>;
 
 // @public (undocumented)
+export type ValidationScope = 'field' | 'form';
+
+// @public (undocumented)
 export type ValidationValue = boolean | number | string | RegExp;
 
 // @public (undocumented)
@@ -1030,8 +1034,8 @@ export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValue
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:513:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:888:3 - (ae-forgotten-export) The symbol "FormState_2" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:516:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:891:3 - (ae-forgotten-export) The symbol "FormState_2" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
