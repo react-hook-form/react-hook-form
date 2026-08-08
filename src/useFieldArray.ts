@@ -334,17 +334,10 @@ export function useFieldArray<
     );
     updateValues(updatedFieldArrayValues);
     setFields([...updatedFieldArrayValues]);
-    control._setFieldArray(
-      name,
-      updatedFieldArrayValues,
-      updateAt,
-      {
-        argA: index,
-        argB: updateValue,
-      },
-      true,
-      false,
-    );
+    control._setFieldArray(name, updatedFieldArrayValues, updateAt, {
+      argA: index,
+      argB: fillEmptyArray(value),
+    });
   };
 
   const replace = (
