@@ -43,4 +43,27 @@ describe('flatten', () => {
       label: 'year',
     });
   });
+
+  it('should preserve File and Blob values as leaf nodes and not drop them', () => {
+    const file = new File(['content'], 'resume.pdf');
+    const blob = new Blob(['content']);
+
+    expect(flatten({ name: 'Alice', resume: file, avatar: blob })).toEqual({
+      name: 'Alice',
+      resume: file,
+      avatar: blob,
+    });
+  });
+
+  it('should preserve nested and indexed File values as leaf nodes', () => {
+    const first = new File(['1'], 'first.pdf');
+    const second = new File(['2'], 'second.pdf');
+
+    expect(
+      flatten({ profile: { resume: first }, attachments: [second] }),
+    ).toEqual({
+      'profile.resume': first,
+      'attachments.0': second,
+    });
+  });
 });
