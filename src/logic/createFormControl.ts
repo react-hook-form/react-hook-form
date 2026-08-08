@@ -344,9 +344,6 @@ export function createFormControl<
       if (_proxyFormState.dirtyFields || _proxySubscribeFormState.dirtyFields) {
         _updateDirtyFields();
       } else {
-        // dirtyFields wasn't recomputed for this array change (nobody's
-        // reading it), so it may be stale relative to the new array —
-        // resync it once on the next dirty-tracked field update.
         _state.dirtyFieldsStale = true;
       }
 
@@ -543,11 +540,6 @@ export function createFormControl<
         } else if (isCurrentFieldPristine) {
           unset(_formState.dirtyFields, name);
         } else {
-          // A flat `true` only makes sense for a primitive-valued field.
-          // When the field itself holds an object/array, dirtyFields is
-          // expected to mirror its shape (which nested keys are dirty),
-          // so scope a getDirtyFields pass to just this field's value
-          // instead of a full-form walk.
           const defaultFieldValue = get(_defaultValues, name);
           set(
             _formState.dirtyFields,
@@ -951,12 +943,6 @@ export function createFormControl<
         !skipRender,
       );
     } else {
-      // This value changed without going through the per-field dirty
-      // tracking above (e.g. setValue(..., { shouldDirty: false })), so
-      // `_formState.dirtyFields` may no longer reflect every field that's
-      // actually non-pristine. Flag it for a one-time resync on the next
-      // real dirty-tracked update, instead of resyncing on every future
-      // keystroke regardless of whether anything is actually stale.
       _state.dirtyFieldsStale = true;
     }
 
