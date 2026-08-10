@@ -343,6 +343,38 @@ describe('Form', () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
+  it('should include file values in the submitted FormData', async () => {
+    const actionFn = jest.fn<(formData: FormData) => Promise<void>>(
+      async () => {},
+    );
+    const resume = new Blob(['content'], { type: 'text/plain' });
+
+    const App = () => {
+      const { register, control } = useForm({
+        defaultValues: { name: 'bill', resume },
+      });
+
+      return (
+        <Form control={control} action={actionFn}>
+          <input {...register('name')} />
+          <button>Submit</button>
+        </Form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(actionFn).toHaveBeenCalledTimes(1);
+    });
+
+    const formData = actionFn.mock.calls[0][0];
+    expect(formData.get('name')).toBe('bill');
+    expect(formData.get('resume')).toBeInstanceOf(Blob);
+  });
+
   it('should invoke onError when a function action throws', async () => {
     const onError = jest.fn();
     const actionFn = jest.fn(async () => {
