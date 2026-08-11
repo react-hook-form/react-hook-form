@@ -169,6 +169,9 @@ export type EmptyObject = {
 };
 
 // @public (undocumented)
+export type ErrorNamespacePath = 'root' | `root.${string}` | 'form' | `form.${string}`;
+
+// @public (undocumented)
 export type ErrorOption = {
     message?: Message;
     type?: LiteralUnion<keyof RegisterOptions, string>;
@@ -385,6 +388,9 @@ export type FromSubscribe<TFieldValues extends FieldValues> = <TFieldNames exten
 
 // @public (undocumented)
 export const get: <T>(object: T, path?: string | null, defaultValue?: unknown) => any;
+
+// @public
+export type GetErrorsResult<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues> | ErrorNamespacePath> = TName extends 'root' ? (Record<string, GlobalError> & GlobalError) | undefined : TName extends ErrorNamespacePath ? GlobalError | undefined : TName extends FieldPath<TFieldValues> ? FieldPathError<TFieldValues, TName> | undefined : never;
 
 // @public (undocumented)
 export type GetIsDirty = <TName extends InternalFieldName, TData>(name?: TName, data?: TData) => boolean;
@@ -716,13 +722,20 @@ export type UseFieldArrayUpdate<TFieldValues extends FieldValues, TFieldArrayNam
 // @public
 export function useForm<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues>(props?: UseFormProps<TFieldValues, TContext, TTransformedValues>): UseFormReturn<TFieldValues, TContext, TTransformedValues>;
 
-// Warning: (ae-forgotten-export) The symbol "ErrorNamespacePath" needs to be exported by the entry point index.d.ts
-//
 // @public
 export type UseFormClearErrors<TFieldValues extends FieldValues> = (name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[] | ErrorNamespacePath) => void;
 
 // @public
 export const useFormContext: <TFieldValues extends FieldValues, TContext = any, TTransformedValues = TFieldValues>() => UseFormReturn<TFieldValues, TContext, TTransformedValues>;
+
+// @public
+export type UseFormGetErrors<TFieldValues extends FieldValues> = {
+    (name?: undefined): FieldErrors<TFieldValues>;
+    <TName extends FieldPath<TFieldValues> | ErrorNamespacePath>(name: TName): GetErrorsResult<TFieldValues, TName>;
+    <TNames extends (FieldPath<TFieldValues> | ErrorNamespacePath)[]>(names: readonly [...TNames]): {
+        [K in keyof TNames]: GetErrorsResult<TFieldValues, TNames[K]>;
+    };
+};
 
 // @public
 export type UseFormGetFieldState<TFieldValues extends FieldValues> = <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, formState?: FormState_2<TFieldValues>) => {
@@ -797,6 +810,7 @@ export type UseFormResetField<TFieldValues extends FieldValues> = <TFieldName ex
 export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues> = {
     watch: UseFormWatch<TFieldValues>;
     getValues: UseFormGetValues<TFieldValues>;
+    getErrors: UseFormGetErrors<TFieldValues>;
     getFieldState: UseFormGetFieldState<TFieldValues>;
     setError: UseFormSetError<TFieldValues>;
     clearErrors: UseFormClearErrors<TFieldValues>;
@@ -1030,8 +1044,8 @@ export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValue
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:513:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:888:3 - (ae-forgotten-export) The symbol "FormState_2" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:583:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:958:3 - (ae-forgotten-export) The symbol "FormState_2" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
