@@ -1,5 +1,5 @@
 // types/__tests__/formState.tsd.ts
-import { FormStateSubscribe } from '../formStateSubscribe';
+import { FormStateSubscribe } from '../formState';
 import { FormState } from '../index';
 import type { FieldValues } from '../types';
 import { type UseFormStateReturn } from '../types';
