@@ -31,7 +31,7 @@ export default (options?: HTMLInputElement[]): CheckboxFieldResult => {
     return defaultResult;
   }
 
-  if (!option.hasAttribute('value')) {
+  if (!option.attributes || !('value' in option.attributes)) {
     return validResult;
   }
 
