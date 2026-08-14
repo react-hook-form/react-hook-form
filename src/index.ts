@@ -1,11 +1,8 @@
 export * from './controller';
 export { FieldArray } from './fieldArray';
 export * from './form';
-export type {
-  FormStateProps,
-  FormStateSubscribeProps,
-} from './formStateSubscribe';
-export { FormState, FormStateSubscribe } from './formStateSubscribe';
+export type { FormStateProps, FormStateSubscribeProps } from './formState';
+export { FormState, FormStateSubscribe } from './formState';
 export * from './logic';
 export * from './types';
 export * from './useController';
