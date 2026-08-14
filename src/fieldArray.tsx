@@ -44,10 +44,12 @@ type FieldArray<
  * }
  * ```
  */
-export const FieldArray = <
+const FieldArray = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
 >(
   props: FieldArrayProps<TFieldValues, TName, TKeyName>,
 ) => props.render(useFieldArray<TFieldValues, TName, TKeyName>(props));
+
+export { FieldArray };
