@@ -11,11 +11,6 @@ const options = [
   },
   { name, format: 'esm', input: pkg.source },
   {
-    name: 'react-server',
-    format: 'esm',
-    input: 'src/index.react-server.ts',
-  },
-  {
     name,
     format: 'umd',
     input: pkg.source,
