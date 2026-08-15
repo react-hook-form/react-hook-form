@@ -832,10 +832,8 @@ describe('_valuesSubscriberCount idempotency', () => {
     const nextSpy = jest.spyOn(control._subjects.state, 'next');
     fireEvent.change(screen.getByTestId('name'), { target: { value: 'x' } });
 
-    const emits = nextSpy.mock.calls
-      .map(([p]: [any]) => p)
-      .filter((p: any) => p != null && typeof p === 'object' && 'type' in p);
+    const emits = changeEmits(nextSpy);
     expect(emits.length).toBeGreaterThan(0);
-    expect(emits.every((p: any) => !('values' in p))).toBe(true);
+    expect(emits.every((p) => !('values' in p))).toBe(true);
   });
 });
