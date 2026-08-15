@@ -628,6 +628,183 @@ describe('setValues _valuesSubscriberCount guard', () => {
   });
 });
 
+describe('unregister _valuesSubscriberCount guard', () => {
+  it('omits the values broadcast when no value subscriber is active', () => {
+    const { result } = renderHook(() =>
+      useForm({ defaultValues: { a: '', b: '' } }),
+    );
+
+    result.current.register('a' as any);
+    result.current.register('b' as any);
+
+    const control = result.current.control as any;
+    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+
+    act(() => {
+      result.current.unregister('a' as any);
+    });
+
+    const emits = nextSpy.mock.calls.map(([p]) => p);
+    expect(emits.length).toBeGreaterThan(0);
+    expect(emits.every((p: any) => !('values' in p))).toBe(true);
+    expect(emits).not.toContainEqual({});
+  });
+
+  it('still delivers unregistered values to a watch(fn) subscriber', () => {
+    const seen: Record<string, unknown>[] = [];
+
+    const { result } = renderHook(() =>
+      useForm({ defaultValues: { a: 'a', b: 'b' } }),
+    );
+
+    result.current.register('a' as any);
+    result.current.register('b' as any);
+
+    const watchSub = result.current.watch((values) => {
+      seen.push(values as Record<string, unknown>);
+    });
+
+    act(() => {
+      result.current.unregister('a' as any);
+    });
+
+    watchSub.unsubscribe();
+
+    expect(seen.length).toBeGreaterThan(0);
+    expect(seen[seen.length - 1]).toEqual({ b: 'b' });
+  });
+
+  it('tracks a public values subscriber through unsubscribe', () => {
+    const seen: Record<string, unknown>[] = [];
+
+    const { result } = renderHook(() =>
+      useForm({ defaultValues: { a: 'a', b: 'b' } }),
+    );
+
+    result.current.register('a' as any);
+    result.current.register('b' as any);
+
+    const unsubscribe = result.current.subscribe({
+      formState: { values: true },
+      callback: ({ values }) => {
+        seen.push(values as Record<string, unknown>);
+      },
+    });
+
+    act(() => {
+      result.current.unregister('a' as any);
+    });
+
+    expect(seen.length).toBeGreaterThan(0);
+    expect(seen[seen.length - 1]).toEqual({ b: 'b' });
+
+    unsubscribe();
+
+    const control = result.current.control as any;
+    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+
+    act(() => {
+      result.current.unregister('b' as any);
+    });
+
+    const emits = nextSpy.mock.calls.map(([p]) => p);
+    expect(emits.length).toBeGreaterThan(0);
+    expect(emits.every((p: any) => !('values' in p))).toBe(true);
+  });
+
+  it('omits values broadcasts while _removeUnmounted drains many fields', () => {
+    const names = Array.from({ length: 50 }, (_, i) => `f${i}`);
+
+    const { result } = renderHook(() =>
+      useForm({
+        defaultValues: Object.fromEntries(names.map((n) => [n, 'v'])) as Record<
+          string,
+          string
+        >,
+        shouldUnregister: true,
+      }),
+    );
+
+    const control = result.current.control as any;
+
+    for (const n of names) {
+      const { ref } = result.current.register(n as any);
+      ref({ name: n, value: 'v', type: 'text' } as any);
+    }
+
+    // Queue every field so `_removeUnmounted` unregisters them in one drain.
+    for (const n of names) {
+      result.current.register(n as any).ref(null);
+    }
+    expect(control._names.unMount.size).toBe(names.length);
+
+    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+
+    act(() => {
+      control._removeUnmounted();
+    });
+
+    const emits = nextSpy.mock.calls.map(([p]) => p);
+    expect(emits.length).toBeGreaterThan(0);
+    expect(emits.filter((p: any) => 'values' in p)).toHaveLength(0);
+  });
+
+  it('a returning subscriber sees values that changed while it was away', () => {
+    let formControl: any;
+
+    function Watcher({ ctrl }: { ctrl: Control<{ a: string; b: string }> }) {
+      const values = useWatch({ control: ctrl });
+      return <p data-testid="watched">{JSON.stringify(values)}</p>;
+    }
+
+    function Form() {
+      const { register, control } = useForm({
+        defaultValues: { a: 'a', b: 'b' },
+        shouldUnregister: true,
+      });
+      formControl = control;
+      const [showField, setShowField] = React.useState(true);
+      const [showWatcher, setShowWatcher] = React.useState(true);
+
+      return (
+        <form>
+          {showField && <input {...register('a')} />}
+          <input {...register('b')} />
+          {showWatcher && <Watcher ctrl={control} />}
+          <button type="button" onClick={() => setShowWatcher(false)}>
+            watcher off
+          </button>
+          <button type="button" onClick={() => setShowField(false)}>
+            drop a
+          </button>
+          <button type="button" onClick={() => setShowWatcher(true)}>
+            watcher on
+          </button>
+        </form>
+      );
+    }
+
+    render(<Form />);
+    expect(screen.getByTestId('watched')).toHaveTextContent(
+      '{"a":"a","b":"b"}',
+    );
+
+    // Unregister `a` while no values subscriber is active, then resubscribe.
+    fireEvent.click(screen.getByRole('button', { name: 'watcher off' }));
+
+    const nextSpy = jest.spyOn(formControl._subjects.state, 'next');
+    fireEvent.click(screen.getByRole('button', { name: 'drop a' }));
+
+    const emits = nextSpy.mock.calls.map(([p]) => p);
+    expect(emits.length).toBeGreaterThan(0);
+    expect(emits.every((p: any) => !('values' in p))).toBe(true);
+
+    fireEvent.click(screen.getByRole('button', { name: 'watcher on' }));
+
+    expect(screen.getByTestId('watched')).toHaveTextContent('{"b":"b"}');
+  });
+});
+
 describe('_valuesSubscriberCount idempotency', () => {
   it('does not go negative when watch(fn) unsubscribe is called twice', () => {
     let control: any;

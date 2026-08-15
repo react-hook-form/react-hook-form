@@ -1559,9 +1559,10 @@ export function createFormControl<
         unset(_defaultValues, fieldName);
     }
 
-    _subjects.state.next({
-      values: cloneObject(_formValues),
-    });
+    _valuesSubscriberCount &&
+      _subjects.state.next({
+        values: cloneObject(_formValues),
+      });
 
     _subjects.state.next({
       ..._formState,
