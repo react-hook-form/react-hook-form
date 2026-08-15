@@ -1,4 +1,4 @@
-function safeJSONStringify(value?: any) {
+function safeJSONStringify(value?: unknown) {
   try {
     return JSON.stringify(value);
   } catch {
@@ -6,9 +6,9 @@ function safeJSONStringify(value?: any) {
   }
 }
 
-function safeJSONParse(value?: any) {
+function safeJSONParse(value?: string) {
   try {
-    return JSON.parse(value);
+    return JSON.parse(value as string);
   } catch {
     return;
   }
