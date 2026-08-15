@@ -6,7 +6,7 @@ export default function cloneObject<T>(data: T): T {
   }
 
   if (data instanceof Date) {
-    return new Date(data) as any;
+    return new Date(data) as T;
   }
 
   const isFileListInstance =

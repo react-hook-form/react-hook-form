@@ -291,6 +291,9 @@ export default async <T extends FieldValues>(
     }
   }
 
-  setCustomValidity(true);
+  const fieldError = error[name];
+
+  setCustomValidity(fieldError ? fieldError.message : true);
+
   return error;
 };

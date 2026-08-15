@@ -33,6 +33,7 @@ import type {
   Subjects,
   TriggerConfig,
   UseFormClearErrors,
+  UseFormGetErrors,
   UseFormGetFieldState,
   UseFormGetValues,
   UseFormHandleSubmit,
@@ -1376,6 +1377,15 @@ export function createFormControl<
         : fieldNames.map((name) => get(values, name));
   };
 
+  const getErrors: UseFormGetErrors<TFieldValues> = (
+    fieldNames?: InternalFieldName | ReadonlyArray<InternalFieldName>,
+  ) =>
+    isUndefined(fieldNames)
+      ? { ..._formState.errors }
+      : isString(fieldNames)
+        ? get(_formState.errors, fieldNames)
+        : fieldNames.map((name) => get(_formState.errors, name));
+
   const getFieldState: UseFormGetFieldState<TFieldValues> = (
     name,
     formState,
@@ -2136,6 +2146,7 @@ export function createFormControl<
     setValue,
     setValues,
     getValues,
+    getErrors,
     reset,
     resetField,
     resetDefaultValues,

@@ -36,11 +36,11 @@ function defaultValidateStatus(status: number) {
  * }
  * ```
  */
-function Form<
+export function Form<
   TFieldValues extends FieldValues,
   TTransformedValues = TFieldValues,
 >(props: FormProps<TFieldValues, TTransformedValues>): React.ReactNode {
-  const methods = useFormContext<TFieldValues, any, TTransformedValues>();
+  const methods = useFormContext<TFieldValues, unknown, TTransformedValues>();
   const [mounted, setMounted] = React.useState(false);
   const {
     control = methods.control,
@@ -163,5 +163,3 @@ function Form<
     </form>
   );
 }
-
-export { Form };
