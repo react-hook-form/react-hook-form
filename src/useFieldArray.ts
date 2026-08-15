@@ -97,7 +97,7 @@ export function useFieldArray<
 ): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> {
   const formControl = useFormControlContext<
     TFieldValues,
-    any,
+    unknown,
     TTransformedValues
   >();
   const {
@@ -124,7 +124,7 @@ export function useFieldArray<
       !disabled &&
       rules &&
       fields.length >= 0 &&
-      (control as Control<TFieldValues, any, TTransformedValues>).register(
+      (control as Control<TFieldValues, unknown, TTransformedValues>).register(
         name as FieldPath<TFieldValues>,
         rules as RegisterOptions<TFieldValues>,
       ),
