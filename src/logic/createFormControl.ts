@@ -87,6 +87,7 @@ import collectDirtyFieldNames from './collectDirtyFieldNames';
 import generateWatchOutput from './generateWatchOutput';
 import getDirtyFields from './getDirtyFields';
 import getEventValue from './getEventValue';
+import getFieldArrayItemNames from './getFieldArrayItemNames';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
 import getResolverOptions from './getResolverOptions';
@@ -1062,6 +1063,12 @@ export function createFormControl<
         name: _state.mount || watched ? name : undefined,
         values,
       });
+
+      if (!isFieldArray) {
+        for (const itemName of getFieldArrayItemNames(_names.array, name)) {
+          _subjects.state.next({ name: itemName, values });
+        }
+      }
     }
   };
 
