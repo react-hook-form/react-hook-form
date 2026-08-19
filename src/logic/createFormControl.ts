@@ -61,8 +61,8 @@ import convertToArrayPayload from '../utils/convertToArrayPayload';
 import createSubject from '../utils/createSubject';
 import deepEqual from '../utils/deepEqual';
 import extractFormValues from '../utils/extractFormValues';
-import { flatten } from '../utils/flatten';
 import get from '../utils/get';
+import has from '../utils/has';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDateObject from '../utils/isDateObject';
@@ -1089,13 +1089,11 @@ export function createFormControl<
         ...updatedFormValues,
       };
 
-      const flattenedUpdates = flatten(updatedFormValues as FieldValues);
-
       for (const fieldName of _names.mount) {
-        if (fieldName in flattenedUpdates) {
+        if (has(updatedFormValues, fieldName)) {
           _setValue(
             fieldName as FieldPath<TFieldValues>,
-            flattenedUpdates[fieldName],
+            get(updatedFormValues, fieldName),
             options,
             true,
             true,
