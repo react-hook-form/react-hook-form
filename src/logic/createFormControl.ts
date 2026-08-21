@@ -1581,7 +1581,7 @@ export function createFormControl<
 
     _subjects.state.next({
       ..._formState,
-      ...(!options.keepDirty ? {} : { isDirty: _getDirty() }),
+      ...(options.keepDirty ? {} : { isDirty: _getDirty() }),
     });
 
     !options.keepIsValid && _setValid();

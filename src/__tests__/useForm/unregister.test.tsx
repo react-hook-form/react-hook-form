@@ -91,6 +91,94 @@ describe('unregister', () => {
     await waitFor(() => expect(isDirty).toBe(false));
   });
 
+  it('should recompute isDirty when a dirty field is unregistered', async () => {
+    let isDirty: boolean | null = null;
+    let dirtyFields: Record<string, unknown> = {};
+
+    const App = () => {
+      const [show, setShow] = React.useState(true);
+      const { register, unregister, formState } = useForm({
+        defaultValues: { firstName: 'bill', lastName: 'luo' },
+      });
+
+      isDirty = formState.isDirty;
+      dirtyFields = formState.dirtyFields;
+
+      return (
+        <form>
+          {show && <input {...register('firstName')} placeholder="firstName" />}
+          <input {...register('lastName')} placeholder="lastName" />
+          <button
+            type="button"
+            onClick={() => {
+              unregister('firstName');
+              setShow(false);
+            }}
+          >
+            unregister
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByPlaceholderText('firstName'), {
+      target: { value: 'changed' },
+    });
+
+    await waitFor(() => expect(isDirty).toBe(true));
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => expect(dirtyFields).toEqual({}));
+    expect(isDirty).toBe(false);
+  });
+
+  it('should preserve isDirty when a dirty field is unregistered with keepDirty', async () => {
+    let isDirty: boolean | null = null;
+    let dirtyFields: Record<string, unknown> = {};
+
+    const App = () => {
+      const [show, setShow] = React.useState(true);
+      const { register, unregister, formState } = useForm({
+        defaultValues: { firstName: 'bill', lastName: 'luo' },
+      });
+
+      isDirty = formState.isDirty;
+      dirtyFields = formState.dirtyFields;
+
+      return (
+        <form>
+          {show && <input {...register('firstName')} placeholder="firstName" />}
+          <input {...register('lastName')} placeholder="lastName" />
+          <button
+            type="button"
+            onClick={() => {
+              unregister('firstName', { keepDirty: true });
+              setShow(false);
+            }}
+          >
+            unregister
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByPlaceholderText('firstName'), {
+      target: { value: 'changed' },
+    });
+
+    await waitFor(() => expect(isDirty).toBe(true));
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => expect(dirtyFields).toEqual({ firstName: true }));
+    expect(isDirty).toBe(true);
+  });
+
   it('should not flip isDirty to true when a field with no defaultValue is registered from useEffect', async () => {
     let isDirty: boolean | null = null;
 
