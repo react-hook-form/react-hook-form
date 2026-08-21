@@ -378,18 +378,17 @@ export function useWatch<TFieldValues extends FieldValues>(
   const controlChanged = _prevControl.current !== control;
   const prevName = _prevName.current;
 
-  // Cache the computed output to avoid duplicate calls within the same render
-  // We include shouldReturnImmediate in deps to ensure proper recomputation
-  const computedOutput = React.useMemo(() => {
+  // `null`/`undefined` are valid watched values, so a boolean flag (rather
+  // than a sentinel return value) decides whether to return the freshly
+  // computed output instead of the possibly-stale state value.
+  const shouldReturnImmediate = React.useMemo(() => {
     if (disabled) {
-      return null;
+      return false;
     }
 
     const nameChanged = !controlChanged && !deepEqual(prevName, name);
-    const shouldReturnImmediate = controlChanged || nameChanged;
+    return controlChanged || nameChanged;
+  }, [disabled, controlChanged, name, prevName]);
 
-    return shouldReturnImmediate ? getCurrentOutput() : null;
-  }, [disabled, controlChanged, name, prevName, getCurrentOutput]);
-
-  return computedOutput !== null ? computedOutput : value;
+  return shouldReturnImmediate ? getCurrentOutput() : value;
 }

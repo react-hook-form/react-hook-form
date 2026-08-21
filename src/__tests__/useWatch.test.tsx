@@ -989,6 +989,41 @@ describe('useWatch', () => {
       expect(result.current).toBe('value1');
     });
 
+    it('should return the new field value synchronously on the same render even when that value is null', () => {
+      type FormValues = {
+        a: string;
+        c: string | null;
+      };
+
+      const { result: formResult } = renderHook(() =>
+        useForm<FormValues>({
+          defaultValues: {
+            a: 'x',
+            c: null,
+          },
+        }),
+      );
+
+      const renders: (string | null)[] = [];
+
+      const Test = ({ name }: { name: 'a' | 'c' }) => {
+        const value = useWatch({
+          control: formResult.current.control,
+          name,
+        });
+        renders.push(value);
+        return null;
+      };
+
+      const { rerender } = render(<Test name="a" />);
+      rerender(<Test name="c" />);
+
+      // The render triggered directly by the name change must already
+      // reflect the new field's value (null), not the previous field's
+      // stale value ('x').
+      expect(renders[1]).toBe(null);
+    });
+
     it('should react to changing control', () => {
       type FormValues = {
         name: string;
