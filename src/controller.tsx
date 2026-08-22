@@ -43,7 +43,7 @@ import { useController } from './useController';
  * }
  * ```
  */
-const Controller = <
+export const Controller = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
   TTransformedValues = TFieldValues,
@@ -51,5 +51,3 @@ const Controller = <
   props: ControllerProps<TFieldValues, TName, TTransformedValues>,
 ) =>
   props.render(useController<TFieldValues, TName, TTransformedValues>(props));
-
-export { Controller };

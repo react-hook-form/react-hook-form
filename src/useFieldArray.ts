@@ -97,7 +97,7 @@ export function useFieldArray<
 ): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> {
   const formControl = useFormControlContext<
     TFieldValues,
-    any,
+    unknown,
     TTransformedValues
   >();
   const {
@@ -124,7 +124,7 @@ export function useFieldArray<
       !disabled &&
       rules &&
       fields.length >= 0 &&
-      (control as Control<TFieldValues, any, TTransformedValues>).register(
+      (control as Control<TFieldValues, unknown, TTransformedValues>).register(
         name as FieldPath<TFieldValues>,
         rules as RegisterOptions<TFieldValues>,
       ),
@@ -334,17 +334,10 @@ export function useFieldArray<
     );
     updateValues(updatedFieldArrayValues);
     setFields([...updatedFieldArrayValues]);
-    control._setFieldArray(
-      name,
-      updatedFieldArrayValues,
-      updateAt,
-      {
-        argA: index,
-        argB: updateValue,
-      },
-      true,
-      false,
-    );
+    control._setFieldArray(name, updatedFieldArrayValues, updateAt, {
+      argA: index,
+      argB: fillEmptyArray(value),
+    });
   };
 
   const replace = (
@@ -430,14 +423,7 @@ export function useFieldArray<
         });
       } else {
         const field: Field = get(control._fields, name);
-        if (
-          field &&
-          field._f &&
-          !(
-            getValidationModes(control._options.reValidateMode).isOnSubmit &&
-            getValidationModes(control._options.mode).isOnSubmit
-          )
-        ) {
+        if (field && field._f) {
           validateField(
             field,
             control._names.disabled,

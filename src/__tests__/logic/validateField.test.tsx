@@ -2468,6 +2468,99 @@ describe('validateField', () => {
         ),
       ).toEqual({});
     });
+
+    it('should invoke setCustomValidity with the required message when all criteria are collected', async () => {
+      const setCustomValidity = jest.fn();
+      const reportValidity = jest.fn();
+
+      await validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: {
+              setCustomValidity,
+              reportValidity,
+              name: 'test',
+              value: '',
+            },
+            value: '',
+            required: 'something is wrong',
+            mount: true,
+          },
+        },
+        new Set(),
+        {
+          test: '',
+        },
+        true,
+        true,
+      );
+
+      expect(setCustomValidity).toHaveBeenLastCalledWith('something is wrong');
+      expect(reportValidity).toHaveBeenCalled();
+    });
+
+    it('should invoke setCustomValidity with the validate message when all criteria are collected', async () => {
+      const setCustomValidity = jest.fn();
+      const reportValidity = jest.fn();
+
+      await validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: {
+              setCustomValidity,
+              reportValidity,
+              name: 'test',
+              value: 'bill',
+            },
+            value: 'bill',
+            validate: () => 'this is not allowed',
+            mount: true,
+          },
+        },
+        new Set(),
+        {
+          test: 'bill',
+        },
+        true,
+        true,
+      );
+
+      expect(setCustomValidity).toHaveBeenLastCalledWith('this is not allowed');
+      expect(reportValidity).toHaveBeenCalled();
+    });
+
+    it('should invoke setCustomValidity with an empty string for a valid input when all criteria are collected', async () => {
+      const setCustomValidity = jest.fn();
+      const reportValidity = jest.fn();
+
+      await validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: {
+              setCustomValidity,
+              reportValidity,
+              name: 'test',
+              value: 'bill',
+            },
+            value: 'bill',
+            required: 'something is wrong',
+            mount: true,
+          },
+        },
+        new Set(),
+        {
+          test: 'bill',
+        },
+        true,
+        true,
+      );
+
+      expect(setCustomValidity).toHaveBeenLastCalledWith('');
+      expect(reportValidity).toHaveBeenCalled();
+    });
   });
 
   it('should validate field array with required attribute', async () => {

@@ -1,5 +1,28 @@
 # Changelog
 
+## [7.86.0] - 2026-08-22
+
+### Added
+
+- Type-safe `getErrors` method
+
+### Performance
+
+- Improve `createFormControl`
+- Improve clone object check
+- Avoid cloning values in `unregister` without subscribers
+
+### Fixed
+
+- Field array update leaving stale errors and touched state at the updated index
+- `flatten` discarding `File` and `Blob` values instead of treating them as leaf nodes
+- `validateField` not passing the field error to `setCustomValidity` when `criteriaMode` is `all`
+- `hasValidation` treating falsy but valid values (`min: 0`, `max: 0`, `minLength: 0`, `maxLength: 0`, `required: ''`) as no validation
+- `setValue` targeting a nested leaf not notifying a `Controller` registered on a field array item root
+- `setValues` not updating fields registered under an object or array value
+- `useWatch` returning a stale value on name change when the new value is `null`
+- `unregister` inverting `keepDirty` when broadcasting `isDirty`
+
 ## [7.85.0] - 2026-08-08
 
 ### Added

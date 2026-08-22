@@ -3,7 +3,12 @@ import type React from 'react';
 import type { VALIDATION_MODE } from '../constants';
 import type { Subject, Subscription } from '../utils/createSubject';
 
-import type { ErrorOption, FieldErrors, FieldPathError } from './errors';
+import type {
+  ErrorOption,
+  FieldErrors,
+  FieldPathError,
+  GlobalError,
+} from './errors';
 import type { EventType } from './events';
 import type { FieldArray } from './fieldArray';
 import type {
@@ -363,7 +368,72 @@ export type UseFormGetValues<TFieldValues extends FieldValues> = {
   ): [...FieldPathValues<TFieldValues, TFieldNames>];
 };
 
-type ErrorNamespacePath = 'root' | `root.${string}` | 'form' | `form.${string}`;
+export type ErrorNamespacePath =
+  | 'root'
+  | `root.${string}`
+  | 'form'
+  | `form.${string}`;
+
+/** Resolves the error type returned for a single `getErrors` path. */
+export type GetErrorsResult<
+  TFieldValues extends FieldValues,
+  TName extends FieldPath<TFieldValues> | ErrorNamespacePath,
+> = TName extends 'root'
+  ? (Record<string, GlobalError> & GlobalError) | undefined
+  : TName extends ErrorNamespacePath
+    ? GlobalError | undefined
+    : TName extends FieldPath<TFieldValues>
+      ? FieldPathError<TFieldValues, TName> | undefined
+      : never;
+
+/** Gets currently stored form errors without subscribing or running validation. */
+export type UseFormGetErrors<TFieldValues extends FieldValues> = {
+  /**
+   * Get all currently stored form errors without subscribing or running validation.
+   *
+   * @returns Form errors.
+   *
+   * @example
+   * ```tsx
+   * const errors = getErrors();
+   * ```
+   */
+  (name?: undefined): FieldErrors<TFieldValues>;
+
+  /**
+   * Get a currently stored field or global error without subscribing or running validation.
+   *
+   * @param name - The path to the error.
+   *
+   * @returns The error at the given path.
+   *
+   * @example
+   * ```tsx
+   * const emailError = getErrors("email");
+   * ```
+   */
+  <TName extends FieldPath<TFieldValues> | ErrorNamespacePath>(
+    name: TName,
+  ): GetErrorsResult<TFieldValues, TName>;
+
+  /**
+   * Get currently stored errors for multiple paths without subscribing or running validation.
+   *
+   * @param names - An array of error paths.
+   *
+   * @returns Errors for the given paths in the same order.
+   *
+   * @example
+   * ```tsx
+   * const [emailError, nameError] = getErrors(["email", "name"]);
+   * ```
+   */
+  <TNames extends (FieldPath<TFieldValues> | ErrorNamespacePath)[]>(
+    names: readonly [...TNames],
+  ): {
+    [K in keyof TNames]: GetErrorsResult<TFieldValues, TNames[K]>;
+  };
+};
 
 /**
  * This method will return individual field states. It will be useful when you are trying to retrieve the nested value field state in a type-safe approach.
@@ -935,6 +1005,7 @@ export type UseFormReturn<
 > = {
   watch: UseFormWatch<TFieldValues>;
   getValues: UseFormGetValues<TFieldValues>;
+  getErrors: UseFormGetErrors<TFieldValues>;
   getFieldState: UseFormGetFieldState<TFieldValues>;
   setError: UseFormSetError<TFieldValues>;
   clearErrors: UseFormClearErrors<TFieldValues>;

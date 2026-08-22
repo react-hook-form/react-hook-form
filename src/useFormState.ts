@@ -49,7 +49,7 @@ export function useFormState<
 ): UseFormStateReturn<TFieldValues> {
   const formControl = useFormControlContext<
     TFieldValues,
-    any,
+    unknown,
     TTransformedValues
   >();
   const { control = formControl, disabled, name, exact } = props || {};
