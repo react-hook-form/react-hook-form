@@ -767,6 +767,24 @@ describe('trigger', () => {
     expect(result.current.formState.touchedFields.test2).toEqual(true);
   });
 
+  it('should mark the field as touched when shouldTouch is true with schema validation', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ test: string }>({
+        defaultValues: { test: '' },
+        resolver: async (values) => ({ values, errors: {} }),
+      }),
+    );
+
+    result.current.register('test');
+    result.current.formState.touchedFields;
+
+    await act(async () => {
+      await result.current.trigger('test', { shouldTouch: true });
+    });
+
+    expect(result.current.formState.touchedFields.test).toEqual(true);
+  });
+
   it('should not mark the field as touched when shouldTouch is not supplied', async () => {
     const { result } = renderHook(() =>
       useForm<{ test: string }>({ defaultValues: { test: '' } }),
