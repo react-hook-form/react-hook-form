@@ -1337,6 +1337,12 @@ export function createFormControl<
       }
     }
 
+    if (options.shouldTouch) {
+      for (const fieldName of name ? fieldNames : _names.mount) {
+        set(_formState.touchedFields, fieldName, true);
+      }
+    }
+
     _subjects.state.next({
       ...(!isString(name) ||
       ((_proxyFormState.isValid || _proxySubscribeFormState.isValid) &&
@@ -1344,6 +1350,9 @@ export function createFormControl<
         ? {}
         : { name }),
       ...(_options.resolver || !name ? { isValid } : {}),
+      ...(options.shouldTouch
+        ? { touchedFields: _formState.touchedFields }
+        : {}),
       errors: _formState.errors,
     });
 

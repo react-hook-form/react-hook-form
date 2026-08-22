@@ -711,6 +711,76 @@ describe('trigger', () => {
     });
   });
 
+  it('should mark the targeted field as touched when shouldTouch is true', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ test: string }>({ defaultValues: { test: '' } }),
+    );
+
+    result.current.register('test', { required: true });
+
+    expect(result.current.formState.touchedFields.test).toBeUndefined();
+
+    await act(async () => {
+      await result.current.trigger('test', { shouldTouch: true });
+    });
+
+    expect(result.current.formState.touchedFields.test).toEqual(true);
+  });
+
+  it('should mark all triggered fields as touched when shouldTouch is true with an array of names', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ test1: string; test2: string; test3: string }>({
+        defaultValues: { test1: '', test2: '', test3: '' },
+      }),
+    );
+
+    result.current.register('test1');
+    result.current.register('test2');
+    result.current.register('test3');
+    result.current.formState.touchedFields;
+
+    await act(async () => {
+      await result.current.trigger(['test1', 'test2'], { shouldTouch: true });
+    });
+
+    expect(result.current.formState.touchedFields.test1).toEqual(true);
+    expect(result.current.formState.touchedFields.test2).toEqual(true);
+    expect(result.current.formState.touchedFields.test3).toBeUndefined();
+  });
+
+  it('should mark every mounted field as touched when shouldTouch is true and no name is provided', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ test1: string; test2: string }>({
+        defaultValues: { test1: '', test2: '' },
+      }),
+    );
+
+    result.current.register('test1');
+    result.current.register('test2');
+    result.current.formState.touchedFields;
+
+    await act(async () => {
+      await result.current.trigger(undefined, { shouldTouch: true });
+    });
+
+    expect(result.current.formState.touchedFields.test1).toEqual(true);
+    expect(result.current.formState.touchedFields.test2).toEqual(true);
+  });
+
+  it('should not mark the field as touched when shouldTouch is not supplied', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ test: string }>({ defaultValues: { test: '' } }),
+    );
+
+    result.current.register('test', { required: true });
+
+    await act(async () => {
+      await result.current.trigger('test');
+    });
+
+    expect(result.current.formState.touchedFields.test).toBeUndefined();
+  });
+
   it('should return isValid for the entire form', async () => {
     const App = () => {
       const [isValid, setIsValid] = React.useState(true);
