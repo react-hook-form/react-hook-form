@@ -51,7 +51,7 @@ describe('Watch', () => {
       return (
         <Watch
           control={form.control}
-          names="test"
+          name="test"
           render={(value) => {
             watched = value;
             return null;
@@ -76,7 +76,7 @@ describe('Watch', () => {
       return (
         <Watch
           control={form.control}
-          names={['test', 'test1']}
+          name={['test', 'test1']}
           render={(value) => {
             watched = value;
             return null;
@@ -96,7 +96,7 @@ describe('Watch', () => {
       return (
         <Watch
           control={form.control}
-          names="test"
+          name="test"
           defaultValue="somevalue"
           render={(value) => {
             watched = value;
@@ -117,7 +117,7 @@ describe('Watch', () => {
       return (
         <Watch
           control={form.control}
-          names={['test', 'test1']}
+          name={['test', 'test1']}
           defaultValue={{ test: 'somevalue', test1: 'somevalue1' }}
           render={(value) => {
             watched = value;
@@ -138,7 +138,7 @@ describe('Watch', () => {
       return (
         <Watch
           control={form.control}
-          names={['test']}
+          name={['test']}
           render={(value) => {
             watched = value;
             return null;
@@ -158,7 +158,7 @@ describe('Watch', () => {
       return (
         <Watch
           control={form.control}
-          names="test"
+          name="test"
           render={(value) => {
             watched = value;
             return null;
@@ -180,7 +180,7 @@ describe('Watch', () => {
           <input {...register('test.0.data')} />
           <Watch
             control={control}
-            names="test"
+            name="test"
             exact={true}
             defaultValue="test"
             render={(value) => <p>{value}</p>}
@@ -218,7 +218,7 @@ describe('Watch', () => {
         <>
           <Watch
             control={control}
-            names={['childSecond']}
+            name={['childSecond']}
             render={() => {
               childCount++;
               return null;
@@ -238,7 +238,7 @@ describe('Watch', () => {
           <Watch
             control={control}
             exact={true}
-            names={['childSecond']}
+            name={['childSecond']}
             render={() => {
               childSecondCount++;
               return null;
@@ -340,7 +340,7 @@ describe('Watch', () => {
             </button>
             <Watch
               control={control}
-              names="test"
+              name="test"
               disabled={disabled}
               render={(test) => {
                 return <p>{test}</p>;
@@ -420,7 +420,7 @@ describe('Watch', () => {
             </button>
             <Watch
               control={control}
-              names="test"
+              name="test"
               disabled={disabled}
               render={(test) => <p>{test}</p>}
             />
@@ -544,17 +544,17 @@ describe('Watch', () => {
           <input data-testid="baz_qux" {...register('baz.qux')} />
           <Watch
             control={control}
-            names={['foo']}
+            name={['foo']}
             render={([foo]) => <span data-testid="fooText">{foo}</span>}
           />
           <Watch
             control={control}
-            names={['bar']}
+            name={['bar']}
             render={([bar]) => <span data-testid="barText">{bar}</span>}
           />
           <Watch
             control={control}
-            names={['baz.qux']}
+            name={['baz.qux']}
             render={([bazQux]) => (
               <span data-testid="bazQuxText">{bazQux}</span>
             )}
@@ -609,17 +609,17 @@ describe('Watch', () => {
           <OnRender callback={outerCallback} />
           <Watch
             control={control}
-            names={['foo']}
+            name={['foo']}
             render={() => <OnRender callback={fooCallback} />}
           />
           <Watch
             control={control}
-            names={['bar']}
+            name={['bar']}
             render={() => <OnRender callback={barCallback} />}
           />
           <Watch
             control={control}
-            names={['baz.qux']}
+            name={['baz.qux']}
             render={() => <OnRender callback={bazQuxCallback} />}
           />
         </form>

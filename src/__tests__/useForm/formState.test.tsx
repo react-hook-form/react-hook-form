@@ -638,7 +638,7 @@ describe('formState', () => {
           />
           {fields.map((field, index) => {
             return (
-              <div key={field.id}>
+              <div key={field.key}>
                 <Controller
                   render={({ field }) => (
                     <input {...field} placeholder={field.name} />
@@ -873,7 +873,7 @@ describe('formState', () => {
     expect(screen.getByText(JSON.stringify({ fruits: true }))).toBeVisible();
   });
 
-  it('should update isDirty with getFieldState at child component', () => {
+  it('should update isDirty with getFieldState at child component', async () => {
     type FormValues = {
       test?: string;
     };
@@ -903,10 +903,11 @@ describe('formState', () => {
       const { formState, getFieldState, control } = useForm<FormValues>({
         values: {},
       });
-      formState.isDirty;
 
       return (
         <form>
+          <p>{formState.isDirty}</p>
+          <p>{formState.dirtyFields.test}</p>
           <TextInput control={control} />
           <Output getFieldState={getFieldState} formState={formState} />
         </form>
@@ -921,7 +922,7 @@ describe('formState', () => {
       },
     });
 
-    waitFor(() => {
+    await waitFor(() => {
       screen.getByText('true');
     });
   });
@@ -982,7 +983,7 @@ describe('formState', () => {
           <ul>
             {fields.map((item, index) => {
               return (
-                <li key={item.id}>
+                <li key={item.key}>
                   <input
                     {...register(`test.${index}.firstName`, { required: true })}
                   />

@@ -21,7 +21,7 @@ type FormData = {
 
     void Watch({
       control,
-      names: ['foo', 'fie', 'quux', 'baz', 'baz.qux'],
+      name: ['foo', 'fie', 'quux', 'baz', 'baz.qux'],
       render: (values) => {
         type _t = Expect<
           Equal<typeof values, [string, null, number, { qux: string }, string]>
@@ -37,7 +37,7 @@ type FormData = {
 
     void Watch({
       control,
-      names: 'baz.qux',
+      name: 'baz.qux',
       render: (value) => {
         type _t = Expect<Equal<typeof value, string>>;
         return null;
@@ -64,7 +64,7 @@ type FormData = {
 
     void Watch({
       control,
-      names: 'baz.qux',
+      name: 'baz.qux',
       compute: (val) => val.length > 2,
       render: (value) => {
         type _t = Expect<Equal<typeof value, boolean>>;
@@ -79,7 +79,7 @@ type FormData = {
 
     void Watch({
       control,
-      names: 'baz.qux',
+      name: 'baz.qux',
       compute: (val) => {
         type _t = Expect<Equal<typeof val, string>>;
         return val;
@@ -94,7 +94,7 @@ type FormData = {
 
     void Watch({
       control,
-      names: ['baz.qux', 'fie', 'quux'],
+      name: ['baz.qux', 'fie', 'quux'],
       compute: (val) => {
         type _t = Expect<Equal<typeof val, [string, null, number]>>;
         return val;
