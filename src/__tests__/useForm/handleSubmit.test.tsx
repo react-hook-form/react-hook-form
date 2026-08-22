@@ -28,6 +28,64 @@ describe('handleSubmit', () => {
     expect(callback).toHaveBeenCalled();
   });
 
+  it('should resolve with the typed return value of onValid', async () => {
+    const { result } = renderHook(() =>
+      useForm({ defaultValues: { test: 'data' } }),
+    );
+
+    let returned: string | undefined;
+
+    await act(async () => {
+      returned = await result.current.handleSubmit(
+        (data) => `hello ${data.test}`,
+      )({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    expect(returned).toBe('hello data');
+  });
+
+  it('should resolve with the awaited return value when onValid is async', async () => {
+    const { result } = renderHook(() =>
+      useForm({ defaultValues: { test: 'data' } }),
+    );
+
+    let returned: number | undefined;
+
+    await act(async () => {
+      returned = await result.current.handleSubmit(async (data) => {
+        return data.test.length;
+      })({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    expect(returned).toBe(4);
+  });
+
+  it('should resolve with undefined when validation fails', async () => {
+    const { result } = renderHook(() =>
+      useForm({ defaultValues: { test: '' } }),
+    );
+    result.current.register('test', { required: true });
+    const onValid = jest.fn(() => 'should not be returned');
+
+    let returned: string | undefined;
+
+    await act(async () => {
+      returned = await result.current.handleSubmit(onValid)({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    expect(onValid).not.toHaveBeenCalled();
+    expect(returned).toBeUndefined();
+  });
+
   it('should pass default value', async () => {
     const { result } = renderHook(() =>
       useForm<{ test: string; deep: { nested: string; values: string } }>({

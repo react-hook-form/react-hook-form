@@ -1,10 +1,12 @@
-import isObject from './isObject';
-import isPlainObject from './isPlainObject';
 import isWeb from './isWeb';
 
 export default function cloneObject<T>(data: T): T {
+  if (data === null || typeof data !== 'object') {
+    return data;
+  }
+
   if (data instanceof Date) {
-    return new Date(data) as any;
+    return new Date(data) as T;
   }
 
   const isFileListInstance =
@@ -16,7 +18,7 @@ export default function cloneObject<T>(data: T): T {
 
   const isArray = Array.isArray(data);
 
-  if (!isArray && !(isObject(data) && isPlainObject(data))) {
+  if (!isArray && (data as object).constructor !== Object) {
     return data;
   }
 

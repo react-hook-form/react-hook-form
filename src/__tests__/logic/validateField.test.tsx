@@ -1053,6 +1053,80 @@ describe('validateField', () => {
     });
   });
 
+  it('should return min error when the field value is already a Date object (valueAsDate)', async () => {
+    expect(
+      await validateField(
+        {
+          _f: {
+            mount: true,
+            name: 'test',
+            ref: {
+              type: 'date',
+              name: 'test',
+            },
+            value: new Date('2019-2-12'),
+            valueAsDate: true,
+            required: true,
+            min: {
+              value: '2019-3-12',
+              message: 'min',
+            },
+          },
+        },
+        new Set(),
+        {
+          test: new Date('2019-2-12'),
+        },
+        false,
+      ),
+    ).toEqual({
+      test: {
+        type: 'min',
+        message: 'min',
+        ref: {
+          type: 'date',
+          name: 'test',
+        },
+      },
+    });
+
+    expect(
+      await validateField(
+        {
+          _f: {
+            mount: true,
+            name: 'test',
+            ref: {
+              type: 'date',
+              name: 'test',
+            },
+            value: new Date('2025-1-1'),
+            valueAsDate: true,
+            required: true,
+            max: {
+              value: '2010-1-1',
+              message: 'max',
+            },
+          },
+        },
+        new Set(),
+        {
+          test: new Date('2025-1-1'),
+        },
+        false,
+      ),
+    ).toEqual({
+      test: {
+        type: 'max',
+        message: 'max',
+        ref: {
+          type: 'date',
+          name: 'test',
+        },
+      },
+    });
+  });
+
   it('should return min and max error for custom input', async () => {
     expect(
       await validateField(
@@ -2393,6 +2467,99 @@ describe('validateField', () => {
           false,
         ),
       ).toEqual({});
+    });
+
+    it('should invoke setCustomValidity with the required message when all criteria are collected', async () => {
+      const setCustomValidity = jest.fn();
+      const reportValidity = jest.fn();
+
+      await validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: {
+              setCustomValidity,
+              reportValidity,
+              name: 'test',
+              value: '',
+            },
+            value: '',
+            required: 'something is wrong',
+            mount: true,
+          },
+        },
+        new Set(),
+        {
+          test: '',
+        },
+        true,
+        true,
+      );
+
+      expect(setCustomValidity).toHaveBeenLastCalledWith('something is wrong');
+      expect(reportValidity).toHaveBeenCalled();
+    });
+
+    it('should invoke setCustomValidity with the validate message when all criteria are collected', async () => {
+      const setCustomValidity = jest.fn();
+      const reportValidity = jest.fn();
+
+      await validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: {
+              setCustomValidity,
+              reportValidity,
+              name: 'test',
+              value: 'bill',
+            },
+            value: 'bill',
+            validate: () => 'this is not allowed',
+            mount: true,
+          },
+        },
+        new Set(),
+        {
+          test: 'bill',
+        },
+        true,
+        true,
+      );
+
+      expect(setCustomValidity).toHaveBeenLastCalledWith('this is not allowed');
+      expect(reportValidity).toHaveBeenCalled();
+    });
+
+    it('should invoke setCustomValidity with an empty string for a valid input when all criteria are collected', async () => {
+      const setCustomValidity = jest.fn();
+      const reportValidity = jest.fn();
+
+      await validateField(
+        {
+          _f: {
+            name: 'test',
+            ref: {
+              setCustomValidity,
+              reportValidity,
+              name: 'test',
+              value: 'bill',
+            },
+            value: 'bill',
+            required: 'something is wrong',
+            mount: true,
+          },
+        },
+        new Set(),
+        {
+          test: 'bill',
+        },
+        true,
+        true,
+      );
+
+      expect(setCustomValidity).toHaveBeenLastCalledWith('');
+      expect(reportValidity).toHaveBeenCalled();
     });
   });
 

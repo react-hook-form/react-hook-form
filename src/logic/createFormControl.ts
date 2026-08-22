@@ -33,6 +33,7 @@ import type {
   Subjects,
   TriggerConfig,
   UseFormClearErrors,
+  UseFormGetErrors,
   UseFormGetFieldState,
   UseFormGetValues,
   UseFormHandleSubmit,
@@ -59,8 +60,8 @@ import convertToArrayPayload from '../utils/convertToArrayPayload';
 import createSubject from '../utils/createSubject';
 import deepEqual from '../utils/deepEqual';
 import extractFormValues from '../utils/extractFormValues';
-import { flatten } from '../utils/flatten';
 import get from '../utils/get';
+import has from '../utils/has';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDateObject from '../utils/isDateObject';
@@ -81,9 +82,11 @@ import set from '../utils/set';
 import stringToPath from '../utils/stringToPath';
 import unset from '../utils/unset';
 
+import collectDirtyFieldNames from './collectDirtyFieldNames';
 import generateWatchOutput from './generateWatchOutput';
 import getDirtyFields from './getDirtyFields';
 import getEventValue from './getEventValue';
+import getFieldArrayItemNames from './getFieldArrayItemNames';
 import getFieldValue from './getFieldValue';
 import getFieldValueAs from './getFieldValueAs';
 import getResolverOptions from './getResolverOptions';
@@ -109,6 +112,19 @@ const defaultOptions = {
 } as const;
 
 const FORM_ERROR_TYPE = 'form';
+
+const updateDirtyFields = (
+  dirtyFields: Record<string, unknown>,
+  nextDirtyFields: Record<string, unknown>,
+) => {
+  for (const key in dirtyFields) {
+    if (!(key in nextDirtyFields)) {
+      delete dirtyFields[key];
+    }
+  }
+
+  Object.assign(dirtyFields, nextDirtyFields);
+};
 
 export const DEFAULT_FORM_STATE = {
   submitCount: 0,
@@ -163,6 +179,7 @@ export function createFormControl<
     : (cloneObject(_defaultValues) as TFieldValues);
   let _state = {
     action: false,
+    actionArrayLengths: new Map<InternalFieldName, number>(),
     mount: false,
     watch: false,
     keepIsValid: false,
@@ -251,7 +268,7 @@ export function createFormControl<
         _proxySubscribeFormState.isValidating ||
         _proxySubscribeFormState.validatingFields)
     ) {
-      (names || Array.from(_names.mount)).forEach((name) => {
+      (names || _names.mount).forEach((name) => {
         if (name) {
           isValidating
             ? set(_formState.validatingFields, name, isValidating)
@@ -285,35 +302,42 @@ export function createFormControl<
   ) => {
     if (args && method && !_options.disabled) {
       _state.action = true;
-      if (shouldUpdateFieldsAndState && Array.isArray(get(_fields, name))) {
-        const fieldValues = method(get(_fields, name), args.argA, args.argB);
+      const fields = get(_fields, name);
+      if (!_state.actionArrayLengths.has(name)) {
+        _state.actionArrayLengths.set(
+          name,
+          Array.isArray(fields) ? fields.length : 0,
+        );
+      }
+      if (shouldUpdateFieldsAndState && Array.isArray(fields)) {
+        const fieldValues = method(fields, args.argA, args.argB);
         shouldSetValues && set(_fields, name, fieldValues);
       }
 
-      if (
-        shouldUpdateFieldsAndState &&
-        Array.isArray(get(_formState.errors, name))
-      ) {
-        const errors = method(
-          get(_formState.errors, name),
-          args.argA,
-          args.argB,
-        );
+      const fieldArrayErrors:
+        | (FieldError[] & { root?: FieldError })
+        | undefined = get(_formState.errors, name);
+      if (shouldUpdateFieldsAndState && Array.isArray(fieldArrayErrors)) {
+        const rootError = fieldArrayErrors.root;
+        const errors =
+          method(fieldArrayErrors, args.argA, args.argB) || fieldArrayErrors;
+
+        if (rootError) {
+          errors.root = rootError;
+        }
+
         shouldSetValues && set(_formState.errors, name, errors);
         unsetEmptyArray(_formState.errors, name);
       }
 
+      const touchedFieldsArray = get(_formState.touchedFields, name);
       if (
         (_proxyFormState.touchedFields ||
           _proxySubscribeFormState.touchedFields) &&
         shouldUpdateFieldsAndState &&
-        Array.isArray(get(_formState.touchedFields, name))
+        Array.isArray(touchedFieldsArray)
       ) {
-        const touchedFields = method(
-          get(_formState.touchedFields, name),
-          args.argA,
-          args.argB,
-        );
+        const touchedFields = method(touchedFieldsArray, args.argA, args.argB);
         shouldSetValues && set(_formState.touchedFields, name, touchedFields);
       }
 
@@ -371,6 +395,44 @@ export function createFormControl<
     return false;
   };
 
+  const isStaleArrayIndex = (name: InternalFieldName): boolean => {
+    if (!_state.actionArrayLengths.size) {
+      return false;
+    }
+
+    const segments = isKey(name) ? [name] : stringToPath(name);
+    let node: unknown = _formValues;
+    let path = '';
+    let ownerDepth = -1;
+    let ownerPreActionLength = 0;
+
+    for (let i = 0; i < segments.length; i++) {
+      if (isNullOrUndefined(node)) {
+        return false;
+      }
+
+      const key = segments[i];
+      path = path ? `${path}.${key}` : key;
+
+      if (Array.isArray(node) && +key >= node.length) {
+        return ownerDepth === -1
+          ? false
+          : i === ownerDepth
+            ? +key < ownerPreActionLength
+            : true;
+      }
+
+      if (_state.actionArrayLengths.has(path)) {
+        ownerDepth = i + 1;
+        ownerPreActionLength = _state.actionArrayLengths.get(path)!;
+      }
+
+      node = (node as Record<string, unknown>)[key];
+    }
+
+    return false;
+  };
+
   const updateValidAndValue = (
     name: InternalFieldName,
     shouldSkipSetValueAs: boolean,
@@ -380,7 +442,7 @@ export function createFormControl<
     const field: Field = get(_fields, name);
 
     if (field) {
-      if (hasExplicitNullIntermediate(name)) {
+      if (hasExplicitNullIntermediate(name) || isStaleArrayIndex(name)) {
         return;
       }
 
@@ -463,11 +525,14 @@ export function createFormControl<
         isPreviousDirty = !!get(_formState.dirtyFields, name);
 
         if (isCurrentFieldPristine !== _formState.isDirty) {
-          _formState.dirtyFields = getDirtyFields(
-            _defaultValues,
-            _formValues,
-            undefined,
-            _fields,
+          updateDirtyFields(
+            _formState.dirtyFields as Record<string, unknown>,
+            getDirtyFields(
+              _defaultValues,
+              _formValues,
+              undefined,
+              _fields,
+            ) as Record<string, unknown>,
           );
         } else {
           isCurrentFieldPristine
@@ -543,11 +608,6 @@ export function createFormControl<
         ...(shouldUpdateValid && isBoolean(isValid) ? { isValid } : {}),
         errors: _formState.errors,
         name,
-      };
-
-      _formState = {
-        ..._formState,
-        ...updatedFormState,
       };
 
       _subjects.state.next(updatedFormState);
@@ -772,11 +832,9 @@ export function createFormControl<
       {
         ...(_state.mount
           ? _formValues
-          : isUndefined(defaultValue)
+          : isUndefined(defaultValue) || isString(names)
             ? _defaultValues
-            : isString(names)
-              ? { [names]: defaultValue }
-              : defaultValue),
+            : defaultValue),
       },
       isGlobal,
       defaultValue,
@@ -799,6 +857,7 @@ export function createFormControl<
     options: SetValueConfig = {},
     skipClone = false,
     skipRender = false,
+    skipValueRender = false,
   ) => {
     const field: Field = get(_fields, name);
     let fieldValue: unknown = value;
@@ -847,7 +906,7 @@ export function createFormControl<
         } else {
           fieldReference.ref.value = fieldValue;
 
-          if (!fieldReference.ref.type && !skipRender) {
+          if (!fieldReference.ref.type && !skipRender && !skipValueRender) {
             _subjects.state.next({
               name,
               values: skipClone ? _formValues : cloneObject(_formValues),
@@ -885,7 +944,15 @@ export function createFormControl<
     options: U,
     skipClone = false,
     skipRender = false,
+    skipValueRender = false,
   ) => {
+    if (_names.array.has(name)) {
+      _subjects.array.next({
+        name,
+        values: skipClone ? _formValues : cloneObject(_formValues),
+      });
+    }
+
     for (const fieldKey in value) {
       if (!value.hasOwnProperty(fieldKey)) {
         return;
@@ -898,8 +965,22 @@ export function createFormControl<
         isObject(fieldValue) ||
         (field && !field._f)) &&
       !isDateObject(fieldValue)
-        ? setFieldValues(fieldName, fieldValue, options, skipClone, skipRender)
-        : setFieldValue(fieldName, fieldValue, options, skipClone, skipRender);
+        ? setFieldValues(
+            fieldName,
+            fieldValue,
+            options,
+            skipClone,
+            skipRender,
+            skipValueRender,
+          )
+        : setFieldValue(
+            fieldName,
+            fieldValue,
+            options,
+            skipClone,
+            skipRender,
+            skipValueRender,
+          );
     }
   };
 
@@ -950,10 +1031,25 @@ export function createFormControl<
         (Array.isArray(cloneValue) && !cloneValue.length) ||
         isEmptyObject(cloneValue);
 
+      const skipValueRender = !isValueUnchanged && !skipStateEmit;
       if (!field || field._f || isNullOrUndefined(cloneValue) || isEmpty) {
-        setFieldValue(name, cloneValue, options, skipClone, skipStateEmit);
+        setFieldValue(
+          name,
+          cloneValue,
+          options,
+          skipClone,
+          skipStateEmit,
+          skipValueRender,
+        );
       } else {
-        setFieldValues(name, cloneValue, options, skipClone, skipStateEmit);
+        setFieldValues(
+          name,
+          cloneValue,
+          options,
+          skipClone,
+          skipStateEmit,
+          skipValueRender,
+        );
       }
     }
 
@@ -966,6 +1062,12 @@ export function createFormControl<
         name: _state.mount || watched ? name : undefined,
         values,
       });
+
+      if (!isFieldArray) {
+        for (const itemName of getFieldArrayItemNames(_names.array, name)) {
+          _subjects.state.next({ name: itemName, values });
+        }
+      }
     }
   };
 
@@ -986,13 +1088,11 @@ export function createFormControl<
         ...updatedFormValues,
       };
 
-      const flattenedUpdates = flatten(updatedFormValues as FieldValues);
-
       for (const fieldName of _names.mount) {
-        if (fieldName in flattenedUpdates) {
+        if (has(updatedFormValues, fieldName)) {
           _setValue(
             fieldName as FieldPath<TFieldValues>,
-            flattenedUpdates[fieldName],
+            get(updatedFormValues, fieldName),
             options,
             true,
             true,
@@ -1281,16 +1381,30 @@ export function createFormControl<
         : fieldNames.map((name) => get(values, name));
   };
 
+  const getErrors: UseFormGetErrors<TFieldValues> = (
+    fieldNames?: InternalFieldName | ReadonlyArray<InternalFieldName>,
+  ) =>
+    isUndefined(fieldNames)
+      ? { ..._formState.errors }
+      : isString(fieldNames)
+        ? get(_formState.errors, fieldNames)
+        : fieldNames.map((name) => get(_formState.errors, name));
+
   const getFieldState: UseFormGetFieldState<TFieldValues> = (
     name,
     formState,
-  ) => ({
-    invalid: !!get((formState || _formState).errors, name),
-    isDirty: !!get((formState || _formState).dirtyFields, name),
-    error: get((formState || _formState).errors, name),
-    isValidating: !!get(_formState.validatingFields, name),
-    isTouched: !!get((formState || _formState).touchedFields, name),
-  });
+  ) => {
+    const targetFormState = formState || _formState;
+    const error = get(targetFormState.errors, name);
+
+    return {
+      invalid: !!error,
+      isDirty: !!get(targetFormState.dirtyFields, name),
+      error,
+      isValidating: !!get(_formState.validatingFields, name),
+      isTouched: !!get(targetFormState.touchedFields, name),
+    };
+  };
 
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
     const names = name ? convertToArrayPayload(name) : undefined;
@@ -1305,8 +1419,9 @@ export function createFormControl<
         });
       });
     } else {
+      _formState.errors = {};
       _subjects.state.next({
-        errors: {},
+        errors: _formState.errors,
       });
     }
   };
@@ -1465,13 +1580,14 @@ export function createFormControl<
         unset(_defaultValues, fieldName);
     }
 
-    _subjects.state.next({
-      values: cloneObject(_formValues),
-    });
+    _valuesSubscriberCount &&
+      _subjects.state.next({
+        values: cloneObject(_formValues),
+      });
 
     _subjects.state.next({
       ..._formState,
-      ...(!options.keepDirty ? {} : { isDirty: _getDirty() }),
+      ...(options.keepDirty ? {} : { isDirty: _getDirty() }),
     });
 
     !options.keepIsValid && _setValid();
@@ -1629,6 +1745,7 @@ export function createFormControl<
 
   const handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues> =
     (onValid, onInvalid) => async (e) => {
+      let result: any = undefined;
       let onValidError = undefined;
       if (e) {
         e.preventDefault && e.preventDefault();
@@ -1669,7 +1786,7 @@ export function createFormControl<
           errors: {},
         });
         try {
-          await onValid(fieldValues as TTransformedValues, e);
+          result = await onValid(fieldValues as TTransformedValues, e);
         } catch (error) {
           onValidError = error;
         }
@@ -1692,6 +1809,7 @@ export function createFormControl<
       if (onValidError) {
         throw onValidError;
       }
+      return result;
     };
 
   const resetField: UseFormResetField<TFieldValues> = (name, options = {}) => {
@@ -1744,11 +1862,12 @@ export function createFormControl<
       if (keepStateOptions.keepDirtyValues) {
         const fieldsToCheck = new Set([
           ..._names.mount,
-          ...Object.keys(
+          ...collectDirtyFieldNames(
             getDirtyFields(_defaultValues, _formValues, undefined, fieldRefs),
+            _formState.dirtyFields,
           ),
         ]);
-        for (const fieldName of Array.from(fieldsToCheck)) {
+        for (const fieldName of fieldsToCheck) {
           const isDirty = get(_formState.dirtyFields, fieldName);
           const existingValue = get(_formValues, fieldName);
           const newValue = get(values, fieldName);
@@ -1836,6 +1955,7 @@ export function createFormControl<
     _state.watch = !!_options.shouldUnregister;
     _state.keepIsValid = !!keepStateOptions.keepIsValid;
     _state.action = false;
+    _state.actionArrayLengths.clear();
 
     if (!keepStateOptions.keepErrors) {
       _formState.errors = {};
@@ -1928,6 +2048,8 @@ export function createFormControl<
       ...formState,
     };
   };
+
+  _subjects.state.subscribe({ next: _setFormState });
 
   const _resetDefaultValues = () =>
     isFunction(_options.defaultValues) &&
@@ -2035,6 +2157,7 @@ export function createFormControl<
     setValue,
     setValues,
     getValues,
+    getErrors,
     reset,
     resetField,
     resetDefaultValues,

@@ -3,7 +3,7 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { Controller } from '../controller';
-import { FormStateSubscribe } from '../formStateSubscribe';
+import { FormStateSubscribe } from '../formState';
 import type { Control } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';

@@ -703,7 +703,7 @@ describe('update', () => {
     ).toBeVisible();
   });
 
-  it('should not update errors state', async () => {
+  it('should remove stale errors for the updated field', async () => {
     const App = () => {
       const {
         control,
@@ -759,6 +759,127 @@ describe('update', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    expect(await screen.findByText('This is required')).toBeVisible();
+    await waitFor(() =>
+      expect(screen.queryByText('This is required')).toBeNull(),
+    );
+  });
+
+  it('should keep errors of other fields when updating an index', async () => {
+    const App = () => {
+      const {
+        control,
+        register,
+        trigger,
+        formState: { errors },
+      } = useForm({
+        defaultValues: {
+          test: [
+            {
+              firstName: '',
+            },
+            {
+              firstName: '',
+            },
+          ],
+        },
+      });
+      const { fields, update } = useFieldArray({
+        name: 'test',
+        control,
+      });
+
+      React.useEffect(() => {
+        trigger();
+      }, [trigger]);
+
+      return (
+        <form>
+          {fields.map((field, i) => (
+            <input
+              key={field.id}
+              {...register(`test.${i}.firstName` as const, {
+                required: true,
+              })}
+            />
+          ))}
+          <p>{errors?.test?.[0]?.firstName ? 'error0' : 'noError0'}</p>
+          <p>{errors?.test?.[1]?.firstName ? 'error1' : 'noError1'}</p>
+          <button
+            type={'button'}
+            onClick={() =>
+              update(1, {
+                firstName: 'firstName',
+              })
+            }
+          >
+            update
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    expect(await screen.findByText('error0')).toBeVisible();
+    expect(screen.getByText('error1')).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(await screen.findByText('noError1')).toBeVisible();
+    expect(screen.getByText('error0')).toBeVisible();
+  });
+
+  it('should clear touched state for the updated field', async () => {
+    const App = () => {
+      const {
+        control,
+        register,
+        formState: { touchedFields },
+      } = useForm({
+        defaultValues: {
+          test: [
+            {
+              firstName: '',
+            },
+          ],
+        },
+      });
+      const { fields, update } = useFieldArray({
+        name: 'test',
+        control,
+      });
+
+      return (
+        <form>
+          {fields.map((field, i) => (
+            <input
+              key={field.id}
+              {...register(`test.${i}.firstName` as const)}
+            />
+          ))}
+          <p>{touchedFields.test?.[0]?.firstName ? 'touched' : 'untouched'}</p>
+          <button
+            type={'button'}
+            onClick={() =>
+              update(0, {
+                firstName: 'firstName',
+              })
+            }
+          >
+            update
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.blur(screen.getByRole('textbox'));
+
+    expect(await screen.findByText('touched')).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button', { name: 'update' }));
+
+    expect(await screen.findByText('untouched')).toBeVisible();
   });
 });

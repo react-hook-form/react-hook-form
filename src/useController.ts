@@ -55,7 +55,7 @@ export function useController<
 ): UseControllerReturn<TFieldValues, TName> {
   const formControl = useFormControlContext<
     TFieldValues,
-    any,
+    unknown,
     TTransformedValues
   >();
   const {
@@ -135,7 +135,7 @@ export function useController<
   );
 
   const onChange = React.useCallback(
-    (event: any) => {
+    (event: unknown) => {
       const value = getEventValue(event);
 
       if (!get(control._fields, name)) {

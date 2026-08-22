@@ -1711,6 +1711,60 @@ describe('useFieldArray', () => {
       expect(renderCount).toBe(rendersAfterMount);
     });
 
+    it('should resize a nested field array when setValue targets an ancestor object path (#13621)', async () => {
+      let setValue: UseFormReturn<{
+        myForm: { userDetails: { firstName: string; lastName: string }[] };
+      }>['setValue'];
+      let fieldsLength = 0;
+
+      const Component = () => {
+        const {
+          register,
+          control,
+          setValue: tempSetValue,
+        } = useForm({
+          defaultValues: {
+            myForm: {
+              userDetails: [{ firstName: '', lastName: '' }],
+            },
+          },
+        });
+        const { fields } = useFieldArray({
+          name: 'myForm.userDetails',
+          control,
+        });
+
+        setValue = tempSetValue;
+        fieldsLength = fields.length;
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                {...register(`myForm.userDetails.${i}.firstName` as const)}
+              />
+            ))}
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      expect(fieldsLength).toBe(1);
+
+      await act(async () => {
+        setValue('myForm', {
+          userDetails: [
+            { firstName: 'Foo', lastName: 'Far' },
+            { firstName: 'Boo', lastName: 'Bar' },
+          ],
+        });
+      });
+
+      expect(fieldsLength).toBe(2);
+    });
+
     it.each(['dirtyFields'])(
       'should unset name from dirtyFieldRef if array field values are not different with default value when formState.%s is defined',
       (property) => {
@@ -4340,6 +4394,115 @@ describe('useFieldArray', () => {
       });
 
       expect(screen.queryByAltText('Please enter some data')).toBeNull();
+    });
+
+    it('should keep the root error after append/prepend/insert/remove when triggered before submit', async () => {
+      const App = () => {
+        const {
+          control,
+          trigger,
+          formState: { errors },
+        } = useForm({
+          defaultValues: {
+            test: [{ test: '' }],
+          },
+        });
+
+        const { append } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            validate: (values) =>
+              (Array.isArray(values) && values.length >= 3) ||
+              'Min length should be 3',
+          },
+        });
+
+        return (
+          <div>
+            <p>{errors.test?.root?.message}</p>
+            <button type={'button'} onClick={() => trigger('test')}>
+              trigger
+            </button>
+            <button type={'button'} onClick={() => append({ test: '' })}>
+              append
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+      });
+
+      screen.getByText('Min length should be 3');
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      screen.getByText('Min length should be 3');
+    });
+
+    it('should keep the root error after swap/move when triggered before submit', async () => {
+      const App = () => {
+        const {
+          control,
+          trigger,
+          formState: { errors },
+        } = useForm({
+          defaultValues: {
+            test: [{ test: 'a' }, { test: 'b' }, { test: 'c' }],
+          },
+        });
+
+        const { swap, move } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            validate: (values) =>
+              (Array.isArray(values) && values.length >= 5) ||
+              'Min length should be 5',
+          },
+        });
+
+        return (
+          <div>
+            <p>{errors.test?.root?.message}</p>
+            <button type={'button'} onClick={() => trigger('test')}>
+              trigger
+            </button>
+            <button type={'button'} onClick={() => swap(0, 1)}>
+              swap
+            </button>
+            <button type={'button'} onClick={() => move(0, 2)}>
+              move
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+      });
+
+      screen.getByText('Min length should be 5');
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'swap' }));
+      });
+
+      screen.getByText('Min length should be 5');
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'move' }));
+      });
+
+      screen.getByText('Min length should be 5');
     });
   });
 

@@ -573,6 +573,106 @@ describe('setValues', () => {
     expect(result.current.formState.errors.username).toBeDefined();
   });
 
+  it('should update a multiple select registered under an array value', async () => {
+    const Component = () => {
+      const { register, setValues } = useForm<{ tags: string[] }>({
+        defaultValues: { tags: ['a'] },
+      });
+
+      return (
+        <>
+          <select multiple {...register('tags')} aria-label="tags">
+            <option value="a">a</option>
+            <option value="b">b</option>
+            <option value="c">c</option>
+          </select>
+          <button type="button" onClick={() => setValues({ tags: ['b', 'c'] })}>
+            set
+          </button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'set' }));
+    });
+
+    const select = screen.getByLabelText('tags') as HTMLSelectElement;
+
+    expect(
+      Array.from(select.selectedOptions, (option) => option.value),
+    ).toEqual(['b', 'c']);
+  });
+
+  it('should update a checkbox group registered under an array value', async () => {
+    const Component = () => {
+      const { register, setValues } = useForm<{ choices: string[] }>({
+        defaultValues: { choices: ['a'] },
+      });
+
+      return (
+        <>
+          <input
+            type="checkbox"
+            value="a"
+            {...register('choices')}
+            aria-label="a"
+          />
+          <input
+            type="checkbox"
+            value="b"
+            {...register('choices')}
+            aria-label="b"
+          />
+          <button type="button" onClick={() => setValues({ choices: ['b'] })}>
+            set
+          </button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'set' }));
+    });
+
+    expect(screen.getByLabelText('a')).not.toBeChecked();
+    expect(screen.getByLabelText('b')).toBeChecked();
+  });
+
+  it('should clear a multiple select when an empty array is provided', async () => {
+    const Component = () => {
+      const { register, setValues } = useForm<{ tags: string[] }>({
+        defaultValues: { tags: ['a'] },
+      });
+
+      return (
+        <>
+          <select multiple {...register('tags')} aria-label="tags">
+            <option value="a">a</option>
+            <option value="b">b</option>
+          </select>
+          <button type="button" onClick={() => setValues({ tags: [] })}>
+            set
+          </button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'set' }));
+    });
+
+    const select = screen.getByLabelText('tags') as HTMLSelectElement;
+
+    expect(select.selectedOptions).toHaveLength(0);
+  });
+
   it('should not validate when shouldValidate is not provided', async () => {
     const { result } = renderHook(() =>
       useForm<{ firstName: string }>({

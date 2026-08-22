@@ -1099,6 +1099,47 @@ describe('setValue', () => {
     expect(screen.getByTestId(inputId)).toHaveValue('updated value');
   });
 
+  it('should notify a Controller registered on a field array item root when setValue targets a nested leaf', async () => {
+    const App = () => {
+      const { control, setValue } = useForm<{
+        items: { note: number }[];
+      }>({
+        defaultValues: { items: [{ note: 0 }] },
+      });
+      const { fields } = useFieldArray({ control, name: 'items' });
+
+      return (
+        <div>
+          {fields.map((field, index) => (
+            <Controller
+              key={field.id}
+              control={control}
+              name={`items.${index}` as const}
+              render={({ field: { value } }) => (
+                <p data-testid="note">{value.note}</p>
+              )}
+            />
+          ))}
+          <button
+            onClick={() => setValue('items.0.note', 5, { shouldDirty: true })}
+          >
+            update
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByTestId('note').textContent).toEqual('0');
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('note').textContent).toEqual('5'),
+    );
+  });
+
   it('should set field array correctly without affect the parent field array', async () => {
     const fieldsValue: unknown[] = [];
     type FormValues = {

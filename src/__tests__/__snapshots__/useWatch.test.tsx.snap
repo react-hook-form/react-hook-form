@@ -4,11 +4,9 @@ exports[`useWatch fieldArray with shouldUnregister true should watch correct inp
 [
   [
     {
-      "key": "0",
       "prop": "test",
     },
     {
-      "key": "1",
       "prop": "test1",
     },
   ],

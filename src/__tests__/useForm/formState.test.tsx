@@ -16,6 +16,15 @@ import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import noop from '../../utils/noop';
 
+// Activity is a React 19.2+ API. Only run Activity-dependent tests when the
+// installed React actually provides it.
+const Activity = (React as unknown as { Activity?: unknown })
+  .Activity as React.ComponentType<{
+  mode: 'hidden' | 'visible';
+  children?: React.ReactNode;
+}>;
+const itWithActivity = Activity ? it : it.skip;
+
 describe('formState', () => {
   describe('isValid', () => {
     it('should return isValid correctly with resolver', async () => {
@@ -1576,5 +1585,84 @@ describe('formState', () => {
 
     expect(refAfterFirstError).not.toBe(refAfterCleared);
     expect(refAfterCleared).not.toBe(refAfterSecondError);
+  });
+
+  describe('with Activity', () => {
+    itWithActivity(
+      'should resync isSubmitting after Activity restoration when a submit resolves while hidden',
+      async () => {
+        type FormValues = { amount: string };
+
+        let resolveSubmit: () => void = () => {
+          throw new Error('Submit was not started.');
+        };
+
+        const ActivityContent = () => {
+          const { register, handleSubmit, formState } = useForm<FormValues>();
+
+          return (
+            <form
+              onSubmit={handleSubmit(
+                () =>
+                  new Promise<void>((resolve) => {
+                    resolveSubmit = resolve;
+                  }),
+              )}
+            >
+              <input {...register('amount')} />
+              <button
+                type="submit"
+                disabled={formState.isSubmitting}
+                data-testid="submit"
+              >
+                Review
+              </button>
+            </form>
+          );
+        };
+
+        const Component = () => {
+          const [mode, setMode] = React.useState<'hidden' | 'visible'>(
+            'visible',
+          );
+
+          return (
+            <>
+              <button type="button" onClick={() => setMode('hidden')}>
+                Hide
+              </button>
+              <button type="button" onClick={() => setMode('visible')}>
+                Show
+              </button>
+              <Activity mode={mode}>
+                <ActivityContent />
+              </Activity>
+            </>
+          );
+        };
+
+        render(<Component />);
+
+        await act(async () => {
+          fireEvent.submit(screen.getByTestId('submit').closest('form')!);
+          await Promise.resolve();
+        });
+
+        expect(screen.getByTestId('submit')).toBeDisabled();
+
+        // The parent hides the subtree while the submit is still in flight,
+        // matching the reported race in #13563.
+        fireEvent.click(screen.getByRole('button', { name: 'Hide' }));
+
+        await act(async () => {
+          resolveSubmit();
+          await Promise.resolve();
+        });
+
+        fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+        expect(screen.getByTestId('submit')).not.toBeDisabled();
+      },
+    );
   });
 });
