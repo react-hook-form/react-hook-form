@@ -1978,4 +1978,42 @@ describe('useController', () => {
 
     expect(preset.first).toBe('x');
   });
+
+  it('should submit null instead of undefined for a nested Controller field under a null parent default value (#13674)', async () => {
+    const onSubmit = jest.fn();
+
+    function App() {
+      const { control, handleSubmit } = useForm<{
+        address: { street?: string } | null;
+      }>({
+        defaultValues: {
+          address: null,
+        },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Controller
+            control={control}
+            name="address.street"
+            render={({ field }) => (
+              <input {...field} value={field.value ?? ''} />
+            )}
+          />
+          <button type="submit">Submit</button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByText('Submit'));
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(
+        { address: { street: null } },
+        expect.anything(),
+      ),
+    );
+  });
 });
