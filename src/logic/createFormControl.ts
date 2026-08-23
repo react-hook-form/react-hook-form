@@ -1152,7 +1152,7 @@ export function createFormControl<
         );
       const watched = isWatched(name, _names, isBlurEvent);
 
-      set(_formValues, name, fieldValue);
+      set(_formValues, name, cloneObject(fieldValue));
 
       if (isBlurEvent) {
         if (!target || !target.readOnly) {
