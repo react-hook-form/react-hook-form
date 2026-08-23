@@ -1152,7 +1152,13 @@ export function createFormControl<
         );
       const watched = isWatched(name, _names, isBlurEvent);
 
-      set(_formValues, name, fieldValue);
+      // A field's incoming value (e.g. an object passed to a controlled
+      // field.onChange) may be a reference the caller still holds onto.
+      // Clone it before it enters _formValues -- the same guarantee
+      // setValue() already gives via cloneObject -- so a later onChange on
+      // a nested path can't mutate the caller's object through set()'s
+      // in-place ancestor reuse.
+      set(_formValues, name, cloneObject(fieldValue));
 
       if (isBlurEvent) {
         if (!target || !target.readOnly) {
