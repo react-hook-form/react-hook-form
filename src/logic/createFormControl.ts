@@ -1339,11 +1339,6 @@ export function createFormControl<
 
     if (options.shouldTouch) {
       for (const fieldName of name ? fieldNames : _names.mount) {
-        // A field array's own name (e.g. `items`, registered for its own
-        // `rules`) is a container, not a leaf -- its touchedFields entry has
-        // to stay an array so `_setFieldArray` can keep shifting it on
-        // append/remove/etc. Marking it `true` here would overwrite that
-        // array and corrupt the field array's touched state.
         !_names.array.has(fieldName) &&
           set(_formState.touchedFields, fieldName, true);
       }
