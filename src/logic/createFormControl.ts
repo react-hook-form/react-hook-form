@@ -1190,7 +1190,7 @@ export function createFormControl<
         );
       const watched = isWatched(name, _names, isBlurEvent);
 
-      set(_formValues, name, fieldValue);
+      set(_formValues, name, cloneObject(fieldValue));
 
       if (isBlurEvent) {
         if (!target || !target.readOnly) {
@@ -1404,6 +1404,13 @@ export function createFormControl<
       }
     }
 
+    if (options.shouldTouch) {
+      for (const fieldName of name ? fieldNames : _names.mount) {
+        !_names.array.has(fieldName) &&
+          set(_formState.touchedFields, fieldName, true);
+      }
+    }
+
     _subjects.state.next({
       ...(!isString(name) ||
       ((_proxyFormState.isValid || _proxySubscribeFormState.isValid) &&
@@ -1411,6 +1418,10 @@ export function createFormControl<
         ? {}
         : { name }),
       ...(_options.resolver || !name ? { isValid } : {}),
+      ...(options.shouldTouch &&
+      (_proxyFormState.touchedFields || _proxySubscribeFormState.touchedFields)
+        ? { touchedFields: _formState.touchedFields }
+        : {}),
       errors: _formState.errors,
     });
 

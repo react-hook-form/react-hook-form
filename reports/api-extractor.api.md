@@ -642,6 +642,7 @@ export type SubmitHandler<T, TResult = unknown> = (data: T, event?: React_2.Base
 // @public (undocumented)
 export type TriggerConfig = Partial<{
     shouldFocus: boolean;
+    shouldTouch: boolean;
 }>;
 
 // @public
@@ -1048,8 +1049,8 @@ export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValue
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:586:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:961:3 - (ae-forgotten-export) The symbol "FormState_2" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:587:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:962:3 - (ae-forgotten-export) The symbol "FormState_2" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

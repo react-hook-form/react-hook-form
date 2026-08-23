@@ -1943,4 +1943,39 @@ describe('useController', () => {
     );
     expect(screen.getByText('watch:undefined')).toBeVisible();
   });
+
+  it('should not mutate an externally-owned object passed to a parent field.onChange when a nested field later changes', async () => {
+    const preset = { first: 'x' };
+
+    function App() {
+      const { control } = useForm<{ name: { first: string } }>({
+        defaultValues: { name: { first: '' } },
+      });
+
+      const parent = useController({ name: 'name', control });
+      const leaf = useController({ name: 'name.first', control });
+
+      return (
+        <div>
+          <button type="button" onClick={() => parent.field.onChange(preset)}>
+            set
+          </button>
+          <input
+            data-testid="leaf"
+            value={leaf.field.value}
+            onChange={(e) => leaf.field.onChange(e.target.value)}
+          />
+        </div>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'set' }));
+    fireEvent.change(screen.getByTestId('leaf'), { target: { value: 'a' } });
+
+    await waitFor(() => expect(screen.getByTestId('leaf')).toHaveValue('a'));
+
+    expect(preset.first).toBe('x');
+  });
 });

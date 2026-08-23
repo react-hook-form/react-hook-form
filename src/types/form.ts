@@ -92,6 +92,7 @@ export type SetValueConfig = Partial<{
 
 export type TriggerConfig = Partial<{
   shouldFocus: boolean;
+  shouldTouch: boolean;
 }>;
 
 export type ResetFieldConfig<
@@ -596,7 +597,7 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
  * [API](https://react-hook-form.com/docs/useform/trigger) • [Demo](https://codesandbox.io/s/react-hook-form-v7-ts-triggervalidation-forked-xs7hl) • [Video](https://www.youtube.com/watch?v=-bcyJCDjksE)
  *
  * @param name - Providing no argument will trigger the entire form validation; an array of field names will validate those fields, and a single field name will only trigger that field's validation.
- * @param options - Should focus on the error field.
+ * @param options - Should focus on the error field, and/or mark the triggered field(s) as touched.
  *
  * @returns Validation result.
  *
