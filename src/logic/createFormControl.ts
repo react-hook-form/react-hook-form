@@ -1356,7 +1356,8 @@ export function createFormControl<
         ? {}
         : { name }),
       ...(_options.resolver || !name ? { isValid } : {}),
-      ...(options.shouldTouch
+      ...(options.shouldTouch &&
+      (_proxyFormState.touchedFields || _proxySubscribeFormState.touchedFields)
         ? { touchedFields: _formState.touchedFields }
         : {}),
       errors: _formState.errors,
