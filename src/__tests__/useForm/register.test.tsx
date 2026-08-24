@@ -54,6 +54,24 @@ describe('register', () => {
     });
   });
 
+  it('should return a cleanup function from ref for React 19 ref cleanup support', () => {
+    const { result } = renderHook(() =>
+      useForm<{ test: string }>({
+        defaultValues: {
+          test: 'testData',
+        },
+      }),
+    );
+
+    const { ref } = result.current.register('test');
+    const input = document.createElement('input');
+    input.name = 'test';
+
+    const cleanup = ref(input);
+
+    expect(typeof cleanup).toBe('function');
+  });
+
   test.each([['text'], ['radio'], ['checkbox']])(
     'should register field for %s type and remain its value after unmount',
     async (type) => {
