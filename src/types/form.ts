@@ -193,7 +193,7 @@ export type KeepStateOptions = Partial<{
 export type SetFieldValue<TFieldValues extends FieldValues> =
   FieldValue<TFieldValues>;
 
-export type RefCallBack = (instance: any) => void;
+export type RefCallBack = (instance: any) => void | (() => void);
 
 export type UseFormRegisterReturn<
   TFieldName extends InternalFieldName = InternalFieldName,

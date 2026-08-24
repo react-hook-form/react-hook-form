@@ -1657,7 +1657,19 @@ export function createFormControl<
       name,
       onChange,
       onBlur: onChange,
-      ref: (ref: HTMLInputElement | null): void => {
+      ref: (ref: HTMLInputElement | null): void | (() => void) => {
+        const cleanup = () => {
+          field = get(_fields, name, {});
+
+          if (field._f) {
+            field._f.mount = false;
+          }
+
+          (_options.shouldUnregister || options.shouldUnregister) &&
+            !(isNameInFieldArray(_names.array, name) && _state.action) &&
+            _names.unMount.add(name);
+        };
+
         if (ref) {
           _names.registerName.add(name);
           register(name, options);
@@ -1677,7 +1689,7 @@ export function createFormControl<
               ? refs.find((option: Ref) => option === fieldRef)
               : fieldRef === field._f.ref
           ) {
-            return;
+            return cleanup;
           }
 
           const newField = {
@@ -1700,16 +1712,10 @@ export function createFormControl<
           });
 
           updateValidAndValue(name, false, undefined, fieldRef);
+
+          return cleanup;
         } else {
-          field = get(_fields, name, {});
-
-          if (field._f) {
-            field._f.mount = false;
-          }
-
-          (_options.shouldUnregister || options.shouldUnregister) &&
-            !(isNameInFieldArray(_names.array, name) && _state.action) &&
-            _names.unMount.add(name);
+          cleanup();
         }
       },
     };

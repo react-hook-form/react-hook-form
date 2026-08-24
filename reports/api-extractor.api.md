@@ -536,7 +536,7 @@ export type ReadFormState = {
 export type Ref = FieldElement;
 
 // @public (undocumented)
-export type RefCallBack = (instance: any) => void;
+export type RefCallBack = (instance: any) => void | (() => void);
 
 // @public (undocumented)
 export type RegisterOptions<TFieldValues extends FieldValues = FieldValues, TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = Partial<{
