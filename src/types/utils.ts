@@ -140,7 +140,10 @@ export type IsEqual<T1, T2> = T1 extends T2
 export type DeepMap<T, TValue> =
   IsAny<T> extends true
     ? any
-    : T extends BrowserNativeObject | NestedValue
+    : T extends
+          | BrowserNativeObject
+          | NestedValue
+          | OpaqueTypes[keyof OpaqueTypes]
       ? TValue
       : T extends ReadonlyArray<infer U>
         ? Array<DeepMap<NonUndefined<U>, TValue> | undefined>

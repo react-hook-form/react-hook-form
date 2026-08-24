@@ -1,4 +1,6 @@
 import type {
+  ArrayPath,
+  DeepMap,
   DeepPartial,
   DeepPartialSkipArrayKey,
   DeepRequired,
@@ -24,6 +26,7 @@ interface OpaqueValue {
   [opaqueBrand]: true;
   unit: string;
   nested: { value: number };
+  entries: { id: string }[];
 }
 
 declare module '../types/utils' {
@@ -36,6 +39,32 @@ declare module '../types/utils' {
   /** it should treat registered opaque types as leaves in Path */ {
     const actual = _ as Path<{ foo: OpaqueValue; bar: { baz: string } }>;
     type _t = Expect<Equal<typeof actual, 'foo' | 'bar' | 'bar.baz'>>;
+  }
+
+  /** it should treat registered opaque types as leaves in ArrayPath */ {
+    const actual = _ as ArrayPath<{
+      foo: OpaqueValue;
+      bar: { baz: number }[];
+    }>;
+    type _t = Expect<Equal<typeof actual, 'bar'>>;
+  }
+
+  /** it should not produce an array path for arrays of registered opaque types */ {
+    const actual = _ as ArrayPath<{
+      foo: OpaqueValue[];
+      bar: { baz: number }[];
+    }>;
+    type _t = Expect<Equal<typeof actual, 'bar'>>;
+  }
+
+  /** it should map registered opaque types as a whole in DeepMap */ {
+    const actual = _ as DeepMap<
+      { foo: OpaqueValue; bar: { baz: string } },
+      boolean
+    >;
+    type _t = Expect<
+      Equal<typeof actual, { foo: boolean; bar: { baz: boolean } }>
+    >;
   }
 
   /** it should not recurse into registered opaque types in DeepPartial */ {

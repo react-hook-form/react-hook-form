@@ -90,12 +90,12 @@ type ArrayPathImpl<
   V,
   TraversedTypes,
   D extends number = 9,
-> = V extends Primitive | BrowserNativeObject
+> = V extends Primitive | BrowserNativeObject | OpaqueTypes[keyof OpaqueTypes]
   ? IsAny<V> extends true
     ? string
     : never
   : V extends ReadonlyArray<infer U>
-    ? U extends Primitive | BrowserNativeObject
+    ? U extends Primitive | BrowserNativeObject | OpaqueTypes[keyof OpaqueTypes]
       ? IsAny<V> extends true
         ? string
         : never
