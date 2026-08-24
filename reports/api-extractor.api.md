@@ -139,19 +139,19 @@ export type DeepMap<T, TValue> = IsAny<T> extends true ? any : T extends Browser
 // Warning: (ae-forgotten-export) The symbol "IsPrimitiveLike" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type DeepPartial<T> = IsPrimitiveLike<T> extends true ? T : T extends BrowserNativeObject | NestedValue ? T : {
+export type DeepPartial<T> = IsPrimitiveLike<T> extends true ? T : T extends BrowserNativeObject | NestedValue | OpaqueTypes[keyof OpaqueTypes] ? T : {
     [K in keyof T]?: ExtractObjects<T[K]> extends never ? T[K] : DeepPartial<T[K]>;
 };
 
 // @public (undocumented)
-export type DeepPartialSkipArrayKey<T> = IsPrimitiveLike<T> extends true ? T : T extends BrowserNativeObject | NestedValue ? T : T extends ReadonlyArray<any> ? {
+export type DeepPartialSkipArrayKey<T> = IsPrimitiveLike<T> extends true ? T : T extends BrowserNativeObject | NestedValue | OpaqueTypes[keyof OpaqueTypes] ? T : T extends ReadonlyArray<any> ? {
     [K in keyof T]: DeepPartialSkipArrayKey<T[K]>;
 } : {
     [K in keyof T]?: DeepPartialSkipArrayKey<T[K]>;
 };
 
 // @public (undocumented)
-export type DeepRequired<T> = T extends BrowserNativeObject | Blob ? T : {
+export type DeepRequired<T> = T extends BrowserNativeObject | Blob | OpaqueTypes[keyof OpaqueTypes] ? T : {
     [K in keyof T]-?: NonNullable<DeepRequired<T[K]>>;
 };
 
@@ -246,7 +246,7 @@ export type FieldErrors<T extends FieldValues = FieldValues> = Partial<FieldErro
 
 // @public (undocumented)
 export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
-    [K in keyof T]?: T[K] extends BrowserNativeObject | Blob ? FieldError : K extends 'root' | `root.${string}` ? GlobalError : T[K] extends object ? Merge<FieldError, FieldErrorsImpl<T[K]>> : FieldError;
+    [K in keyof T]?: T[K] extends BrowserNativeObject | Blob | OpaqueTypes[keyof OpaqueTypes] ? FieldError : K extends 'root' | `root.${string}` ? GlobalError : T[K] extends object ? Merge<FieldError, FieldErrorsImpl<T[K]>> : FieldError;
 };
 
 // @public (undocumented)
@@ -505,6 +505,10 @@ export type NonUndefined<T> = T extends undefined ? never : T;
 
 // @public (undocumented)
 export type Noop = () => void;
+
+// @public
+export interface OpaqueTypes {
+}
 
 // Warning: (ae-forgotten-export) The symbol "PathInternal" needs to be exported by the entry point index.d.ts
 //

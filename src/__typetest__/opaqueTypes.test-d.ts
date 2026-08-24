@@ -1,0 +1,89 @@
+import type {
+  DeepPartial,
+  DeepPartialSkipArrayKey,
+  DeepRequired,
+  FieldError,
+  FieldErrors,
+  GlobalError,
+  Merge,
+  Path,
+} from '../types';
+
+import type { Equal, Expect } from './__fixtures__';
+import { _ } from './__fixtures__';
+
+declare const opaqueBrand: unique symbol;
+
+/**
+ * Stand-in for a rich third-party value type (Dayjs, Decimal, ...) whose
+ * members should never be addressed by a form path. The brand keeps the
+ * registration below from matching any other type in the typetests, since
+ * the interface merging applies program-wide.
+ */
+interface OpaqueValue {
+  [opaqueBrand]: true;
+  unit: string;
+  nested: { value: number };
+}
+
+declare module '../types/utils' {
+  interface OpaqueTypes {
+    opaqueValue: OpaqueValue;
+  }
+}
+
+/** {@link OpaqueTypes} */ {
+  /** it should treat registered opaque types as leaves in Path */ {
+    const actual = _ as Path<{ foo: OpaqueValue; bar: { baz: string } }>;
+    type _t = Expect<Equal<typeof actual, 'foo' | 'bar' | 'bar.baz'>>;
+  }
+
+  /** it should not recurse into registered opaque types in DeepPartial */ {
+    const actual = _ as DeepPartial<{
+      foo: OpaqueValue;
+      bar: { baz: string };
+    }>;
+    type _t = Expect<
+      Equal<typeof actual, { foo?: OpaqueValue; bar?: { baz?: string } }>
+    >;
+  }
+
+  /** it should not recurse into registered opaque types in DeepPartialSkipArrayKey */ {
+    const actual = _ as DeepPartialSkipArrayKey<{
+      foo: OpaqueValue[];
+      bar: { baz: string };
+    }>;
+    type _t = Expect<
+      Equal<typeof actual, { foo?: OpaqueValue[]; bar?: { baz?: string } }>
+    >;
+  }
+
+  /** it should keep registered opaque types intact in DeepRequired */ {
+    const actual = _ as DeepRequired<{
+      foo?: OpaqueValue;
+      bar?: { baz?: string };
+    }>;
+    type _t = Expect<
+      Equal<typeof actual, { foo: OpaqueValue; bar: { baz: string } }>
+    >;
+  }
+
+  /** it should produce a single FieldError for registered opaque types */ {
+    const actual = _ as FieldErrors<{
+      foo: OpaqueValue;
+      bar: { baz: string };
+    }>;
+    type _t = Expect<
+      Equal<
+        typeof actual,
+        {
+          foo?: FieldError;
+          bar?: Merge<FieldError, { baz?: FieldError }>;
+        } & {
+          root?: Record<string, GlobalError> & GlobalError;
+          form?: GlobalError;
+        }
+      >
+    >;
+  }
+}

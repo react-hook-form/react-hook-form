@@ -1,5 +1,11 @@
 import type { FieldValues } from '../fields';
-import type { BrowserNativeObject, IsAny, IsEqual, Primitive } from '../utils';
+import type {
+  BrowserNativeObject,
+  IsAny,
+  IsEqual,
+  OpaqueTypes,
+  Primitive,
+} from '../utils';
 
 import type { ArrayKey, IsTuple, Prev, TupleKeys } from './common';
 
@@ -26,7 +32,7 @@ type PathImpl<
   V,
   TraversedTypes,
   D extends number = 9,
-> = V extends Primitive | BrowserNativeObject
+> = V extends Primitive | BrowserNativeObject | OpaqueTypes[keyof OpaqueTypes]
   ? `${K}`
   : // Check so that we don't recurse into the same type
     // by ensuring that the types are mutually assignable
