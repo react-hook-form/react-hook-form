@@ -6,7 +6,9 @@ import type {
   DeepRequired,
   FieldError,
   FieldErrors,
+  FieldName,
   GlobalError,
+  IsFlatObject,
   Merge,
   Path,
 } from '../types';
@@ -55,6 +57,16 @@ declare module '../types/utils' {
       bar: { baz: number }[];
     }>;
     type _t = Expect<Equal<typeof actual, 'bar'>>;
+  }
+
+  /** it should keep an object flat for IsFlatObject when it only contains registered opaque leaves */ {
+    const actual = _ as IsFlatObject<{ foo: OpaqueValue; bar: string }>;
+    type _t = Expect<Equal<typeof actual, true>>;
+  }
+
+  /** it should preserve literal FieldName keys for forms with registered opaque fields */ {
+    const actual = _ as FieldName<{ foo: OpaqueValue; bar: string }>;
+    type _t = Expect<Equal<typeof actual, 'foo' | 'bar'>>;
   }
 
   /** it should map registered opaque types as a whole in DeepMap */ {

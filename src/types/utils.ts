@@ -153,7 +153,10 @@ export type DeepMap<T, TValue> =
 
 export type IsFlatObject<T extends object> =
   Extract<
-    Exclude<T[keyof T], NestedValue | Date | FileList>,
+    Exclude<
+      T[keyof T],
+      NestedValue | Date | FileList | OpaqueTypes[keyof OpaqueTypes]
+    >,
     any[] | object
   > extends never
     ? true
