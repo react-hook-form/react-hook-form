@@ -33,6 +33,33 @@ export type Primitive =
 
 export type BrowserNativeObject = Date | FileList | File;
 
+/**
+ * Registry of types which the recursive type helpers ({@link Path},
+ * {@link DeepPartial}, FieldErrors, ...) treat as opaque leaf values
+ * instead of recursing into their properties.
+ *
+ * Empty by default, so it has no effect until a consumer registers a type
+ * via declaration merging. Useful for rich third-party value types (Dayjs,
+ * Decimal, Luxon DateTime, ...) whose members should never be addressed by
+ * a form path and can be expensive for the compiler to traverse.
+ * @example
+ * ```
+ * declare module 'react-hook-form' {
+ *   interface OpaqueTypes {
+ *     dayjs: Dayjs;
+ *   }
+ * }
+ * ```
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface OpaqueTypes {}
+
+/**
+ * Union of all types registered in {@link OpaqueTypes}. `never` while the
+ * registry is empty.
+ */
+export type OpaqueType = OpaqueTypes[keyof OpaqueTypes];
+
 export type EmptyObject = { [K in string | number]: never };
 
 export type NonUndefined<T> = T extends undefined ? never : T;
@@ -52,7 +79,7 @@ type IsPrimitiveLike<T> = T extends Primitive ? true : false;
 export type DeepPartial<T> =
   IsPrimitiveLike<T> extends true
     ? T
-    : T extends BrowserNativeObject | NestedValue
+    : T extends BrowserNativeObject | NestedValue | OpaqueType
       ? T
       : {
           [K in keyof T]?: ExtractObjects<T[K]> extends never
@@ -63,7 +90,7 @@ export type DeepPartial<T> =
 export type DeepPartialSkipArrayKey<T> =
   IsPrimitiveLike<T> extends true
     ? T
-    : T extends BrowserNativeObject | NestedValue
+    : T extends BrowserNativeObject | NestedValue | OpaqueType
       ? T
       : T extends ReadonlyArray<any>
         ? { [K in keyof T]: DeepPartialSkipArrayKey<T[K]> }
@@ -113,7 +140,7 @@ export type IsEqual<T1, T2> = T1 extends T2
 export type DeepMap<T, TValue> =
   IsAny<T> extends true
     ? any
-    : T extends BrowserNativeObject | NestedValue
+    : T extends BrowserNativeObject | NestedValue | OpaqueType
       ? TValue
       : T extends ReadonlyArray<infer U>
         ? Array<DeepMap<NonUndefined<U>, TValue> | undefined>
@@ -123,7 +150,7 @@ export type DeepMap<T, TValue> =
 
 export type IsFlatObject<T extends object> =
   Extract<
-    Exclude<T[keyof T], NestedValue | Date | FileList>,
+    Exclude<T[keyof T], NestedValue | Date | FileList | OpaqueType>,
     any[] | object
   > extends never
     ? true
