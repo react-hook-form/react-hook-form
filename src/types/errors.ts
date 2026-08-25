@@ -5,7 +5,7 @@ import type {
   IsAny,
   LiteralUnion,
   Merge,
-  OpaqueTypes,
+  OpaqueType,
 } from './utils';
 import type { RegisterOptions, ValidateResult } from './validator';
 
@@ -31,20 +31,14 @@ export type ErrorOption = {
   types?: MultipleFieldErrors;
 };
 
-export type DeepRequired<T> = T extends
-  | BrowserNativeObject
-  | Blob
-  | OpaqueTypes[keyof OpaqueTypes]
+export type DeepRequired<T> = T extends BrowserNativeObject | Blob | OpaqueType
   ? T
   : {
       [K in keyof T]-?: NonNullable<DeepRequired<T[K]>>;
     };
 
 export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
-  [K in keyof T]?: T[K] extends
-    | BrowserNativeObject
-    | Blob
-    | OpaqueTypes[keyof OpaqueTypes]
+  [K in keyof T]?: T[K] extends BrowserNativeObject | Blob | OpaqueType
     ? FieldError
     : K extends 'root' | `root.${string}`
       ? GlobalError

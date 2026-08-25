@@ -54,6 +54,12 @@ export type BrowserNativeObject = Date | FileList | File;
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface OpaqueTypes {}
 
+/**
+ * Union of all types registered in {@link OpaqueTypes}. `never` while the
+ * registry is empty.
+ */
+export type OpaqueType = OpaqueTypes[keyof OpaqueTypes];
+
 export type EmptyObject = { [K in string | number]: never };
 
 export type NonUndefined<T> = T extends undefined ? never : T;
@@ -73,10 +79,7 @@ type IsPrimitiveLike<T> = T extends Primitive ? true : false;
 export type DeepPartial<T> =
   IsPrimitiveLike<T> extends true
     ? T
-    : T extends
-          | BrowserNativeObject
-          | NestedValue
-          | OpaqueTypes[keyof OpaqueTypes]
+    : T extends BrowserNativeObject | NestedValue | OpaqueType
       ? T
       : {
           [K in keyof T]?: ExtractObjects<T[K]> extends never
@@ -87,10 +90,7 @@ export type DeepPartial<T> =
 export type DeepPartialSkipArrayKey<T> =
   IsPrimitiveLike<T> extends true
     ? T
-    : T extends
-          | BrowserNativeObject
-          | NestedValue
-          | OpaqueTypes[keyof OpaqueTypes]
+    : T extends BrowserNativeObject | NestedValue | OpaqueType
       ? T
       : T extends ReadonlyArray<any>
         ? { [K in keyof T]: DeepPartialSkipArrayKey<T[K]> }
@@ -140,10 +140,7 @@ export type IsEqual<T1, T2> = T1 extends T2
 export type DeepMap<T, TValue> =
   IsAny<T> extends true
     ? any
-    : T extends
-          | BrowserNativeObject
-          | NestedValue
-          | OpaqueTypes[keyof OpaqueTypes]
+    : T extends BrowserNativeObject | NestedValue | OpaqueType
       ? TValue
       : T extends ReadonlyArray<infer U>
         ? Array<DeepMap<NonUndefined<U>, TValue> | undefined>
@@ -153,10 +150,7 @@ export type DeepMap<T, TValue> =
 
 export type IsFlatObject<T extends object> =
   Extract<
-    Exclude<
-      T[keyof T],
-      NestedValue | Date | FileList | OpaqueTypes[keyof OpaqueTypes]
-    >,
+    Exclude<T[keyof T], NestedValue | Date | FileList | OpaqueType>,
     any[] | object
   > extends never
     ? true

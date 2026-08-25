@@ -3,7 +3,7 @@ import type {
   BrowserNativeObject,
   IsAny,
   IsEqual,
-  OpaqueTypes,
+  OpaqueType,
   Primitive,
 } from '../utils';
 
@@ -32,7 +32,7 @@ type PathImpl<
   V,
   TraversedTypes,
   D extends number = 9,
-> = V extends Primitive | BrowserNativeObject | OpaqueTypes[keyof OpaqueTypes]
+> = V extends Primitive | BrowserNativeObject | OpaqueType
   ? `${K}`
   : // Check so that we don't recurse into the same type
     // by ensuring that the types are mutually assignable
@@ -90,12 +90,12 @@ type ArrayPathImpl<
   V,
   TraversedTypes,
   D extends number = 9,
-> = V extends Primitive | BrowserNativeObject | OpaqueTypes[keyof OpaqueTypes]
+> = V extends Primitive | BrowserNativeObject | OpaqueType
   ? IsAny<V> extends true
     ? string
     : never
   : V extends ReadonlyArray<infer U>
-    ? U extends Primitive | BrowserNativeObject | OpaqueTypes[keyof OpaqueTypes]
+    ? U extends Primitive | BrowserNativeObject | OpaqueType
       ? IsAny<V> extends true
         ? string
         : never
