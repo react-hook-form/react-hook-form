@@ -11,13 +11,6 @@ export function useResyncOnReconnect<T>(getInitialValue?: () => T) {
 
   _renderCount.current++;
 
-  // A subtree (e.g. a hidden React `Activity`) can render more than once
-  // before its effects ever commit, and form values may change while it's
-  // still disconnected. Seed the snapshot from render time so the first
-  // effect run can detect that drift, but only trust it once more than one
-  // render has actually happened first - an ordinary mount only ever
-  // renders once before its effect commits, so this keeps ordinary mounts
-  // from resyncing against transient, not-yet-mounted values.
   if (!_initialized.current && getInitialValue) {
     _initialized.current = true;
     _prevValue.current = cloneObject(getInitialValue());
