@@ -275,14 +275,16 @@ export function useWatch<TFieldValues extends FieldValues>(
 
   _compute.current = compute;
 
-  const [value, updateValue] = React.useState(() => {
+  const getInitialOutput = () => {
     const defaultValue = control._getWatch(
       name as InternalFieldName,
       _defaultValue.current as DeepPartialSkipArrayKey<TFieldValues>,
     );
 
     return _compute.current ? _compute.current(defaultValue) : defaultValue;
-  });
+  };
+
+  const [value, updateValue] = React.useState(getInitialOutput);
 
   const getCurrentOutput = React.useCallback(
     (values?: TFieldValues) => {
@@ -325,7 +327,8 @@ export function useWatch<TFieldValues extends FieldValues>(
     [control._formValues, control._names, disabled, name],
   );
 
-  const { resyncIfNeeded, snapshot } = useResyncOnReconnect<unknown>();
+  const { resyncIfNeeded, snapshot } =
+    useResyncOnReconnect<unknown>(getInitialOutput);
 
   const _refreshValue = React.useRef(refreshValue);
   _refreshValue.current = refreshValue;
