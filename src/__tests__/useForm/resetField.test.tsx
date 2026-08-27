@@ -529,4 +529,54 @@ describe('resetField', () => {
       expect(await screen.findByText('isDirty')).toBeVisible();
     });
   });
+
+  it('should update isValid state for a subscribe only consumer', async () => {
+    const App = () => {
+      const { register, resetField, subscribe } = useForm({
+        defaultValues: {
+          test: 'test',
+        },
+        mode: 'onChange',
+      });
+      const [isValid, setIsValid] = React.useState(false);
+
+      React.useEffect(() => {
+        return subscribe({
+          formState: {
+            isValid: true,
+          },
+          callback: (formState) => setIsValid(formState.isValid),
+        });
+      }, [subscribe]);
+
+      return (
+        <form>
+          <input {...register('test', { required: true })} />
+          <p>{isValid ? 'valid' : 'NotValid'}</p>
+          <button
+            type={'button'}
+            onClick={() => {
+              resetField('test');
+            }}
+          >
+            reset
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: '',
+      },
+    });
+
+    expect(await screen.findByText('NotValid')).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(await screen.findByText('valid')).toBeVisible();
+  });
 });
