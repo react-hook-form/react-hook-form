@@ -551,6 +551,32 @@ describe('setValue', () => {
     });
   });
 
+  it('should apply every own property and skip only an inherited one', () => {
+    const { result } = renderHook(() =>
+      useForm<{
+        test: {
+          bill: string;
+          luo: string;
+        };
+      }>(),
+    );
+
+    result.current.register('test.bill');
+    result.current.register('test.luo');
+
+    const proto = { inherited: 'skip-me' };
+    const value = Object.create(proto);
+    value.bill = '1';
+    value.luo = '2';
+
+    act(() => result.current.setValue('test', value));
+
+    expect(result.current.getValues('test')).toEqual({
+      bill: '1',
+      luo: '2',
+    });
+  });
+
   it('should work for nested fields which are not registered', () => {
     const { result } = renderHook(() => useForm());
 
