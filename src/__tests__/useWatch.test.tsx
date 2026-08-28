@@ -149,6 +149,34 @@ describe('useWatch', () => {
     expect(result.current).toEqual(['test', 'test1']);
   });
 
+  it('should keep its own default value for array of inputs after a value change', async () => {
+    const Form = () => {
+      const { control, setValue } = useForm<{ test: string; test1: string }>(
+        {},
+      );
+      const [test, test1] = useWatch({
+        control,
+        name: ['test', 'test1'],
+        defaultValue: {
+          test: 'test',
+          test1: 'test1',
+        },
+      });
+
+      React.useEffect(() => {
+        setValue('test', 'changed');
+      }, [setValue]);
+
+      return <>{`${test},${test1}`}</>;
+    };
+
+    render(<Form />);
+
+    await waitFor(() => {
+      screen.getByText('changed,test1');
+    });
+  });
+
   it('should return default value when name is undefined', () => {
     const { result } = renderHook(() => {
       const { control } = useForm<{ test: string; test1: string }>({
