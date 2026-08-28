@@ -1842,7 +1842,7 @@ export function createFormControl<
 
       if (!options.keepError) {
         unset(_formState.errors, name);
-        _proxyFormState.isValid && _setValid();
+        _setValid();
       }
 
       _subjects.state.next({ ..._formState });
