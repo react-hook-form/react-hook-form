@@ -939,5 +939,136 @@ describe('useFormState', () => {
         expect(screen.getByTestId('submitting')).toHaveTextContent('no');
       },
     );
+
+    itWithActivity(
+      'should synchronize form state when an Activity subtree becomes visible for the first time',
+      () => {
+        type FormValues = { name: string };
+
+        const ActivityContent = ({
+          control,
+        }: {
+          control: Control<FormValues>;
+        }) => {
+          const { isDirty } = useFormState({ control });
+
+          return (
+            <span data-testid="dirty">{isDirty ? 'dirty' : 'pristine'}</span>
+          );
+        };
+
+        const Component = () => {
+          const { control, setValue } = useForm<FormValues>({
+            defaultValues: { name: 'initial' },
+          });
+          const [mode, setMode] = React.useState<'hidden' | 'visible'>(
+            'hidden',
+          );
+
+          return (
+            <>
+              <button
+                type="button"
+                onClick={() =>
+                  setValue('name', 'updated', { shouldDirty: true })
+                }
+              >
+                Update
+              </button>
+              <button type="button" onClick={() => setMode('visible')}>
+                Show
+              </button>
+              <Activity mode={mode}>
+                <ActivityContent control={control} />
+              </Activity>
+            </>
+          );
+        };
+
+        render(
+          <React.StrictMode>
+            <Component />
+          </React.StrictMode>,
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+        expect(screen.getByTestId('dirty')).toHaveTextContent('dirty');
+      },
+    );
+
+    itWithActivity(
+      'should synchronize Controller field state when an Activity subtree becomes visible for the first time',
+      () => {
+        type FormValues = { name: string };
+
+        const ActivityContent = ({
+          control,
+        }: {
+          control: Control<FormValues>;
+        }) => (
+          <Controller
+            control={control}
+            name="name"
+            render={({ field, fieldState }) => (
+              <>
+                <input {...field} />
+                <span data-testid="error">
+                  {fieldState.error?.message || 'no-error'}
+                </span>
+              </>
+            )}
+          />
+        );
+
+        const Component = () => {
+          const { control, setError, clearErrors } = useForm<FormValues>({
+            defaultValues: { name: 'initial' },
+          });
+          const [mode, setMode] = React.useState<'hidden' | 'visible' | null>(
+            null,
+          );
+
+          return (
+            <>
+              <button
+                type="button"
+                onClick={() => setError('name', { message: 'Server said no.' })}
+              >
+                Set error
+              </button>
+              <button type="button" onClick={() => setMode('hidden')}>
+                Mount hidden
+              </button>
+              <button type="button" onClick={() => clearErrors()}>
+                Clear errors
+              </button>
+              <button type="button" onClick={() => setMode('visible')}>
+                Show
+              </button>
+              {mode && (
+                <Activity mode={mode}>
+                  <ActivityContent control={control} />
+                </Activity>
+              )}
+            </>
+          );
+        };
+
+        render(
+          <React.StrictMode>
+            <Component />
+          </React.StrictMode>,
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: 'Set error' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Mount hidden' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Clear errors' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+        expect(screen.getByTestId('error')).toHaveTextContent('no-error');
+      },
+    );
   });
 });

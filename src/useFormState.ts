@@ -53,13 +53,15 @@ export function useFormState<
     TTransformedValues
   >();
   const { control = formControl, disabled, name, exact } = props || {};
-  const [formState, updateFormState] = React.useState<FormState<TFieldValues>>(
-    () => ({
-      ...control._formState,
-      defaultValues:
-        control._defaultValues as FormState<TFieldValues>['defaultValues'],
-    }),
-  );
+
+  const getCurrentFormState = () => ({
+    ...control._formState,
+    defaultValues:
+      control._defaultValues as FormState<TFieldValues>['defaultValues'],
+  });
+
+  const [formState, updateFormState] =
+    React.useState<FormState<TFieldValues>>(getCurrentFormState);
   const _localProxyFormState = React.useRef({
     isDirty: false,
     isLoading: false,
@@ -72,15 +74,9 @@ export function useFormState<
   });
 
   const { resyncIfNeeded, snapshot } =
-    useResyncOnReconnect<FormState<TFieldValues>>();
+    useResyncOnReconnect<FormState<TFieldValues>>(getCurrentFormState);
 
   useIsomorphicLayoutEffect(() => {
-    const getCurrentFormState = () => ({
-      ...control._formState,
-      defaultValues:
-        control._defaultValues as FormState<TFieldValues>['defaultValues'],
-    });
-
     resyncIfNeeded(!disabled, getCurrentFormState, updateFormState);
 
     const unsubscribe = control._subscribe({
