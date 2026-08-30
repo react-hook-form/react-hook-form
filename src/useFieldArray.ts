@@ -43,6 +43,7 @@ import type {
 } from './types';
 import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
+import { useResyncOnReconnect } from './useResyncOnReconnect';
 
 /**
  * A custom hook that exposes convenient methods to perform operations with a list of dynamic inputs that need to be appended, updated, removed etc. • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn) • [Video](https://youtu.be/4MrbfGSFY2A)
@@ -108,12 +109,19 @@ export function useFieldArray<
     shouldUnregister,
     rules,
   } = props;
-  const [fields, setFields] = React.useState(control._getFieldArray(name));
+  const getCurrentFieldArray = () => control._getFieldArray(name);
+
+  const [fields, setFields] = React.useState(getCurrentFieldArray);
   const ids = React.useRef<string[]>(
     control._getFieldArray(name).map(generateId),
   );
 
   const _actioned = React.useRef(false);
+
+  const { resyncIfNeeded, snapshot } =
+    useResyncOnReconnect(getCurrentFieldArray);
+  const _prevControl = React.useRef(control);
+  const _prevName = React.useRef(name);
 
   if (!disabled) {
     control._names.array.add(name);
@@ -136,7 +144,17 @@ export function useFieldArray<
       return;
     }
 
-    return control._subjects.array.subscribe({
+    if (_prevControl.current === control && _prevName.current === name) {
+      resyncIfNeeded(true, getCurrentFieldArray, (fieldValues) => {
+        setFields(fieldValues);
+        ids.current = fieldValues.map(generateId);
+      });
+    } else {
+      _prevControl.current = control;
+      _prevName.current = name;
+    }
+
+    const unsubscribe = control._subjects.array.subscribe({
       next: ({
         values,
         name: fieldArrayName,
@@ -156,7 +174,12 @@ export function useFieldArray<
         }
       },
     }).unsubscribe;
-  }, [control, name, disabled]);
+
+    return () => {
+      unsubscribe();
+      snapshot(true, getCurrentFieldArray);
+    };
+  }, [control, name, disabled, resyncIfNeeded, snapshot]);
 
   const updateValues = React.useCallback(
     <
