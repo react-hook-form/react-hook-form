@@ -144,9 +144,6 @@ export function useFieldArray<
       return;
     }
 
-    // A hidden `Activity` subtree keeps this state but destroys the
-    // subscription below, so reconcile against the live array first. A new
-    // `control`/`name` is a different subscription, not a reconnect.
     if (_prevControl.current === control && _prevName.current === name) {
       resyncIfNeeded(true, getCurrentFieldArray, (fieldValues) => {
         setFields(fieldValues);
