@@ -214,6 +214,8 @@ export function createFormControl<
   let _proxySubscribeFormState = {
     ..._proxyFormState,
   };
+  const _isTracked = (key: keyof ReadFormState) =>
+    _proxyFormState[key] || _proxySubscribeFormState[key];
   const _subjects: Subjects<TFieldValues> = {
     array: createSubject(),
     state: createSubject(),
@@ -342,7 +344,7 @@ export function createFormControl<
         shouldSetValues && set(_formState.touchedFields, name, touchedFields);
       }
 
-      if (_proxyFormState.dirtyFields || _proxySubscribeFormState.dirtyFields) {
+      if (_isTracked('dirtyFields')) {
         _updateDirtyFields();
       }
 
@@ -515,7 +517,7 @@ export function createFormControl<
           fieldValue,
         );
 
-        if (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty) {
+        if (_isTracked('isDirty')) {
           isPreviousDirty = _formState.isDirty;
 
           _formState.isDirty = output.isDirty =
@@ -581,7 +583,7 @@ export function createFormControl<
   ) => {
     const previousFieldError = get(_formState.errors, name);
     const shouldUpdateValid =
-      (_proxyFormState.isValid || _proxySubscribeFormState.isValid) &&
+      _isTracked('isValid') &&
       isBoolean(isValid) &&
       _formState.isValid !== isValid;
 
@@ -1180,7 +1182,7 @@ export function createFormControl<
       if (shouldSkipValidation) {
         if (
           (!hasNoValidationEffect || !_formState.isValid) &&
-          (_proxyFormState.isValid || _proxySubscribeFormState.isValid)
+          _isTracked('isValid')
         ) {
           if (_options.mode === 'onBlur') {
             if (isBlurEvent) {
@@ -1346,13 +1348,11 @@ export function createFormControl<
 
     _subjects.state.next({
       ...(!isString(name) ||
-      ((_proxyFormState.isValid || _proxySubscribeFormState.isValid) &&
-        isValid !== _formState.isValid)
+      (_isTracked('isValid') && isValid !== _formState.isValid)
         ? {}
         : { name }),
       ...(_options.resolver || !name ? { isValid } : {}),
-      ...(options.shouldTouch &&
-      (_proxyFormState.touchedFields || _proxySubscribeFormState.touchedFields)
+      ...(options.shouldTouch && _isTracked('touchedFields')
         ? { touchedFields: _formState.touchedFields }
         : {}),
       errors: _formState.errors,
