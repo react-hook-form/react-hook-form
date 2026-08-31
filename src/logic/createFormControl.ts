@@ -472,7 +472,7 @@ export function createFormControl<
         if (
           wasUnsetInFormValues &&
           _formState.isDirty &&
-          (_proxyFormState.isDirty || _proxySubscribeFormState.isDirty)
+          _isTracked('isDirty')
         ) {
           const isDirty = _getDirty();
           if (!isDirty) {
