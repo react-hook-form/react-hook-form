@@ -20,6 +20,7 @@ import type {
   FieldRefs,
   FieldValues,
   FormState,
+  FormStateProxy,
   FromSubscribe,
   GetIsDirty,
   GetValuesConfig,
@@ -214,7 +215,7 @@ export function createFormControl<
   let _proxySubscribeFormState = {
     ..._proxyFormState,
   };
-  const _isTracked = (key: keyof ReadFormState) =>
+  const _isTracked = (key: keyof FormStateProxy) =>
     _proxyFormState[key] || _proxySubscribeFormState[key];
   const _subjects: Subjects<TFieldValues> = {
     array: createSubject(),
@@ -237,12 +238,7 @@ export function createFormControl<
     if (_state.keepIsValid) {
       return;
     }
-    if (
-      !_options.disabled &&
-      (_proxyFormState.isValid ||
-        _proxySubscribeFormState.isValid ||
-        shouldUpdateValid)
-    ) {
+    if (!_options.disabled && (_isTracked('isValid') || shouldUpdateValid)) {
       const callId = ++_setValidCallId;
       let isValid: boolean;
       if (_options.resolver) {
@@ -266,10 +262,7 @@ export function createFormControl<
   const _updateIsValidating = (names?: string[], isValidating?: boolean) => {
     if (
       !_options.disabled &&
-      (_proxyFormState.isValidating ||
-        _proxyFormState.validatingFields ||
-        _proxySubscribeFormState.isValidating ||
-        _proxySubscribeFormState.validatingFields)
+      (_isTracked('isValidating') || _isTracked('validatingFields'))
     ) {
       (names || _names.mount).forEach((name) => {
         if (name) {
@@ -335,8 +328,7 @@ export function createFormControl<
 
       const touchedFieldsArray = get(_formState.touchedFields, name);
       if (
-        (_proxyFormState.touchedFields ||
-          _proxySubscribeFormState.touchedFields) &&
+        _isTracked('touchedFields') &&
         shouldUpdateFieldsAndState &&
         Array.isArray(touchedFieldsArray)
       ) {
@@ -546,8 +538,7 @@ export function createFormControl<
         output.dirtyFields = _formState.dirtyFields;
         shouldUpdateField =
           shouldUpdateField ||
-          ((_proxyFormState.dirtyFields ||
-            _proxySubscribeFormState.dirtyFields) &&
+          (_isTracked('dirtyFields') &&
             isPreviousDirty !== !isCurrentFieldPristine);
       }
 
@@ -559,8 +550,7 @@ export function createFormControl<
           output.touchedFields = _formState.touchedFields;
           shouldUpdateField =
             shouldUpdateField ||
-            ((_proxyFormState.touchedFields ||
-              _proxySubscribeFormState.touchedFields) &&
+            (_isTracked('touchedFields') &&
               isPreviousFieldTouched !== isBlurEvent);
         }
       }
@@ -745,10 +735,7 @@ export function createFormControl<
           const isPromiseFunction =
             field._f && hasPromiseValidation((field as Field)._f);
           const shouldTrackIsValidatingState =
-            _proxyFormState.validatingFields ||
-            _proxyFormState.isValidating ||
-            _proxySubscribeFormState.validatingFields ||
-            _proxySubscribeFormState.isValidating;
+            _isTracked('validatingFields') || _isTracked('isValidating');
 
           if (isPromiseFunction && shouldTrackIsValidatingState) {
             _updateIsValidating([_f.name], true);
@@ -1013,10 +1000,7 @@ export function createFormControl<
       });
 
       if (
-        (_proxyFormState.isDirty ||
-          _proxyFormState.dirtyFields ||
-          _proxySubscribeFormState.isDirty ||
-          _proxySubscribeFormState.dirtyFields) &&
+        (_isTracked('isDirty') || _isTracked('dirtyFields')) &&
         options.shouldDirty
       ) {
         _updateDirtyFields();
@@ -1252,10 +1236,7 @@ export function createFormControl<
         if (isFieldValueUpdated) {
           if (error) {
             isValid = false;
-          } else if (
-            _proxyFormState.isValid ||
-            _proxySubscribeFormState.isValid
-          ) {
+          } else if (_isTracked('isValid')) {
             isValid = await executeBuiltInValidation({
               fields: _fields,
               onlyCheckValid: true,
