@@ -20,6 +20,7 @@ import type {
   FieldRefs,
   FieldValues,
   FormState,
+  FormStateProxy,
   FromSubscribe,
   GetIsDirty,
   GetValuesConfig,
@@ -214,7 +215,7 @@ export function createFormControl<
   let _proxySubscribeFormState = {
     ..._proxyFormState,
   };
-  const _isTracked = (key: keyof ReadFormState) =>
+  const _isTracked = (key: keyof FormStateProxy) =>
     _proxyFormState[key] || _proxySubscribeFormState[key];
   const _subjects: Subjects<TFieldValues> = {
     array: createSubject(),
@@ -544,7 +545,7 @@ export function createFormControl<
         output.dirtyFields = _formState.dirtyFields;
         shouldUpdateField =
           shouldUpdateField ||
-          (!!_isTracked('dirtyFields') &&
+          (_isTracked('dirtyFields') &&
             isPreviousDirty !== !isCurrentFieldPristine);
       }
 
@@ -556,7 +557,7 @@ export function createFormControl<
           output.touchedFields = _formState.touchedFields;
           shouldUpdateField =
             shouldUpdateField ||
-            (!!_isTracked('touchedFields') &&
+            (_isTracked('touchedFields') &&
               isPreviousFieldTouched !== isBlurEvent);
         }
       }
