@@ -38,6 +38,15 @@ import {
 
 jest.useFakeTimers();
 
+// Activity is a React 19.2+ API. Only run Activity-dependent tests when the
+// installed React actually provides it.
+const Activity = (React as unknown as { Activity?: unknown })
+  .Activity as React.ComponentType<{
+  mode: 'hidden' | 'visible';
+  children?: React.ReactNode;
+}>;
+const itWithActivity = Activity ? it : it.skip;
+
 describe('useForm', () => {
   describe('when component unMount', () => {
     it('should call unSubscribe', () => {
@@ -3014,6 +3023,65 @@ describe('useForm', () => {
         );
       });
     });
+
+    itWithActivity(
+      'should synchronize form state when an Activity subtree becomes visible for the first time',
+      () => {
+        type FormValues = { firstName: string };
+
+        const { formControl, setError } = createFormControl<FormValues>({
+          defaultValues: { firstName: '' },
+        });
+
+        const ActivityContent = () => {
+          const { formState } = useForm<FormValues>({ formControl });
+
+          return (
+            <p>
+              {formState.errors.firstName
+                ? formState.errors.firstName.message
+                : 'no error'}
+            </p>
+          );
+        };
+
+        const Component = () => {
+          const [mode, setMode] = React.useState<'hidden' | 'visible'>(
+            'hidden',
+          );
+
+          return (
+            <>
+              <button
+                type={'button'}
+                onClick={() =>
+                  setError('firstName', { message: 'firstName is required' })
+                }
+              >
+                Update
+              </button>
+              <button type={'button'} onClick={() => setMode('visible')}>
+                Show
+              </button>
+              <Activity mode={mode}>
+                <ActivityContent />
+              </Activity>
+            </>
+          );
+        };
+
+        render(
+          <React.StrictMode>
+            <Component />
+          </React.StrictMode>,
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+        expect(screen.getByText('firstName is required')).toBeVisible();
+      },
+    );
   });
 
   describe('When using defaultValues', () => {
