@@ -202,4 +202,52 @@ describe('unregister', () => {
 
     await waitFor(() => expect(isDirty).toBe(false));
   });
+
+  it('should cancel a pending delayError timer when the field is unregistered', async () => {
+    jest.useFakeTimers();
+
+    const message = 'too long.';
+
+    const App = () => {
+      const [show, setShow] = React.useState(true);
+      const {
+        register,
+        formState: { errors },
+      } = useForm<{ test: string }>({
+        delayError: 500,
+        mode: 'onChange',
+        shouldUnregister: true,
+      });
+
+      return (
+        <div>
+          {show && <input {...register('test', { maxLength: 4 })} />}
+          <button type="button" onClick={() => setShow(false)}>
+            hide
+          </button>
+          {errors.test && <p>{message}</p>}
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    // Schedule a delayed error, then unmount the field before the delay elapses.
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '123456' },
+      });
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'hide' }));
+
+    await act(async () => {
+      jest.advanceTimersByTime(500);
+    });
+
+    // The field is gone, so this error would be impossible for a user to clear.
+    expect(screen.queryByText(message)).not.toBeInTheDocument();
+
+    jest.useRealTimers();
+  });
 });
