@@ -233,6 +233,12 @@ export function createFormControl<
       timers[name] = setTimeout(callback, wait);
     };
 
+  const cancelDelayedError = (name: InternalFieldName) => {
+    clearTimeout(timers[name]);
+    delete timers[name];
+    delete delayErrorCallbacks[name];
+  };
+
   const _setValid = async (shouldUpdateValid?: boolean) => {
     if (_state.keepIsValid) {
       return;
@@ -1421,7 +1427,10 @@ export function createFormControl<
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
     const names = name ? convertToArrayPayload(name) : undefined;
 
-    names?.forEach((inputName) => unset(_formState.errors, inputName));
+    names?.forEach((inputName) => {
+      cancelDelayedError(inputName);
+      unset(_formState.errors, inputName);
+    });
 
     if (names) {
       names.forEach((inputName) => {
@@ -1431,6 +1440,7 @@ export function createFormControl<
         });
       });
     } else {
+      Object.keys(delayErrorCallbacks).forEach(cancelDelayedError);
       _formState.errors = {};
       _subjects.state.next({
         errors: _formState.errors,
@@ -1575,7 +1585,10 @@ export function createFormControl<
         unset(_formValues, fieldName);
       }
 
-      !options.keepError && unset(_formState.errors, fieldName);
+      if (!options.keepError) {
+        cancelDelayedError(fieldName);
+        unset(_formState.errors, fieldName);
+      }
       !options.keepDirty && unset(_formState.dirtyFields, fieldName);
       !options.keepTouched && unset(_formState.touchedFields, fieldName);
       !options.keepIsValidating &&
@@ -1857,6 +1870,10 @@ export function createFormControl<
     const isEmptyResetValues = isEmptyObject(formValues);
     const values = cloneUpdatedValues;
     const fieldRefs = _fields;
+
+    if (!keepStateOptions.keepErrors) {
+      Object.keys(delayErrorCallbacks).forEach(cancelDelayedError);
+    }
 
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = updatedValues;
