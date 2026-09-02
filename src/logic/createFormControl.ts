@@ -233,6 +233,12 @@ export function createFormControl<
       timers[name] = setTimeout(callback, wait);
     };
 
+  const cancelDelayedError = (name: InternalFieldName) => {
+    clearTimeout(timers[name]);
+    delete timers[name];
+    delete delayErrorCallbacks[name];
+  };
+
   const _setValid = async (shouldUpdateValid?: boolean) => {
     if (_state.keepIsValid) {
       return;
@@ -369,6 +375,7 @@ export function createFormControl<
   };
 
   const _setErrors = (errors: FieldErrors<TFieldValues>) => {
+    Object.keys(delayErrorCallbacks).forEach(cancelDelayedError);
     _formState.errors = errors;
     _subjects.state.next({
       errors: _formState.errors,
@@ -593,8 +600,7 @@ export function createFormControl<
       );
       delayErrorCallbacks[name](_options.delayError);
     } else {
-      clearTimeout(timers[name]);
-      delete delayErrorCallbacks[name];
+      cancelDelayedError(name);
       error
         ? set(_formState.errors, name, error)
         : unset(_formState.errors, name);
@@ -638,6 +644,7 @@ export function createFormControl<
     if (names) {
       for (const name of names) {
         const error = get(errors, name);
+        cancelDelayedError(name);
         error
           ? _names.array.has(name) &&
             isObject(error) &&
@@ -652,6 +659,7 @@ export function createFormControl<
       }
       _formState.errors = { ..._formState.errors };
     } else {
+      Object.keys(delayErrorCallbacks).forEach(cancelDelayedError);
       _formState.errors = errors;
     }
 
@@ -775,8 +783,9 @@ export function createFormControl<
             }
           }
 
-          !onlyCheckValid &&
-            (get(fieldError, _f.name)
+          if (!onlyCheckValid) {
+            cancelDelayedError(_f.name);
+            get(fieldError, _f.name)
               ? isFieldArrayRoot
                 ? updateFieldArrayRootError(
                     _formState.errors,
@@ -784,7 +793,8 @@ export function createFormControl<
                     _f.name,
                   )
                 : set(_formState.errors, _f.name, fieldError[_f.name])
-              : unset(_formState.errors, _f.name));
+              : unset(_formState.errors, _f.name);
+          }
 
           if (props.shouldUseNativeValidation && fieldError[_f.name]) {
             break;
@@ -1334,8 +1344,7 @@ export function createFormControl<
         );
         delayErrorCallbacks[name](_options.delayError);
       } else {
-        clearTimeout(timers[name]);
-        delete delayErrorCallbacks[name];
+        cancelDelayedError(name);
       }
     }
 
@@ -1423,6 +1432,7 @@ export function createFormControl<
 
     if (names) {
       names.forEach((inputName) => {
+        cancelDelayedError(inputName);
         unset(_formState.errors, inputName);
         _subjects.state.next({
           name: inputName,
@@ -1430,6 +1440,7 @@ export function createFormControl<
         });
       });
     } else {
+      Object.keys(delayErrorCallbacks).forEach(cancelDelayedError);
       _formState.errors = {};
       _subjects.state.next({
         errors: _formState.errors,
@@ -1438,6 +1449,8 @@ export function createFormControl<
   };
 
   const setError: UseFormSetError<TFieldValues> = (name, error, options) => {
+    cancelDelayedError(name);
+
     const ref = (get(_fields, name, { _f: {} })._f || {}).ref;
     const currentError = get(_formState.errors, name) || {};
 
@@ -1574,7 +1587,10 @@ export function createFormControl<
         unset(_formValues, fieldName);
       }
 
-      !options.keepError && unset(_formState.errors, fieldName);
+      if (!options.keepError) {
+        cancelDelayedError(fieldName);
+        unset(_formState.errors, fieldName);
+      }
       !options.keepDirty && unset(_formState.dirtyFields, fieldName);
       !options.keepTouched && unset(_formState.touchedFields, fieldName);
       !options.keepIsValidating &&
@@ -1767,6 +1783,7 @@ export function createFormControl<
       if (_options.resolver) {
         const { errors, values } = await _runSchema();
         _updateIsValidating();
+        Object.keys(delayErrorCallbacks).forEach(cancelDelayedError);
         _formState.errors = errors;
         fieldValues = cloneObject(values);
       } else {
@@ -1839,6 +1856,7 @@ export function createFormControl<
       }
 
       if (!options.keepError) {
+        cancelDelayedError(name);
         unset(_formState.errors, name);
         _setValid();
       }
@@ -1856,6 +1874,8 @@ export function createFormControl<
     const isEmptyResetValues = isEmptyObject(formValues);
     const values = cloneUpdatedValues;
     const fieldRefs = _fields;
+
+    Object.keys(delayErrorCallbacks).forEach(cancelDelayedError);
 
     if (!keepStateOptions.keepDefaultValues) {
       _defaultValues = updatedValues;

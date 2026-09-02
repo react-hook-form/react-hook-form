@@ -2204,4 +2204,66 @@ describe('reset', () => {
     expect(screen.getByText('is valid: true')).toBeInTheDocument();
     expect(formState).toEqual({ isValid: true });
   });
+
+  it('should cancel a pending delayError timer so the reset error does not come back', async () => {
+    jest.useFakeTimers();
+
+    const message = 'too long.';
+
+    const App = () => {
+      const {
+        register,
+        reset,
+        formState: { errors },
+      } = useForm<{ test: string }>({
+        delayError: 500,
+        mode: 'onChange',
+      });
+
+      return (
+        <div>
+          <input {...register('test', { maxLength: 4 })} />
+          <button type="button" onClick={() => reset()}>
+            reset
+          </button>
+          {errors.test && <p>{message}</p>}
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    // Schedule a delayed error, then reset the form before the delay elapses.
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '123456' },
+      });
+    });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await act(async () => {
+      jest.advanceTimersByTime(500);
+    });
+
+    expect(screen.queryByText(message)).not.toBeInTheDocument();
+
+    // The delay itself must still work, otherwise the assertion above would
+    // pass even if no timer had been scheduled in the first place.
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '654321' },
+      });
+    });
+
+    expect(screen.queryByText(message)).not.toBeInTheDocument();
+
+    await act(async () => {
+      jest.advanceTimersByTime(500);
+    });
+
+    expect(screen.getByText(message)).toBeVisible();
+
+    jest.useRealTimers();
+  });
 });
