@@ -10,6 +10,7 @@ import validateField from './logic/validateField';
 import appendAt from './utils/append';
 import cloneObject from './utils/cloneObject';
 import convertToArrayPayload from './utils/convertToArrayPayload';
+import deepEqual from './utils/deepEqual';
 import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
 import insertAt from './utils/insert';
@@ -154,8 +155,10 @@ export function useFieldArray<
       _prevName.current = name;
 
       const fieldValues = getCurrentFieldArray();
-      setFields(fieldValues);
-      ids.current = fieldValues.map(generateId);
+      if (!deepEqual(fields, fieldValues)) {
+        setFields(fieldValues);
+        ids.current = fieldValues.map(generateId);
+      }
       snapshot(true, getCurrentFieldArray);
     }
 
