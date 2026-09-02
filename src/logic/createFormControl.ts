@@ -215,8 +215,8 @@ export function createFormControl<
   let _proxySubscribeFormState = {
     ..._proxyFormState,
   };
-  const _isTracked = (key: keyof FormStateProxy) =>
-    _proxyFormState[key] || _proxySubscribeFormState[key];
+  const _isTracked = (...keys: (keyof FormStateProxy)[]) =>
+    keys.some((key) => _proxyFormState[key] || _proxySubscribeFormState[key]);
   const _subjects: Subjects<TFieldValues> = {
     array: createSubject(),
     state: createSubject(),
@@ -266,10 +266,7 @@ export function createFormControl<
   };
 
   const _updateIsValidating = (names?: string[], isValidating?: boolean) => {
-    if (
-      !_options.disabled &&
-      (_isTracked('isValidating') || _isTracked('validatingFields'))
-    ) {
+    if (!_options.disabled && _isTracked('isValidating', 'validatingFields')) {
       (names || _names.mount).forEach((name) => {
         if (name) {
           isValidating
@@ -742,8 +739,10 @@ export function createFormControl<
           const isFieldArrayRoot = _names.array.has(_f.name);
           const isPromiseFunction =
             field._f && hasPromiseValidation((field as Field)._f);
-          const shouldTrackIsValidatingState =
-            _isTracked('validatingFields') || _isTracked('isValidating');
+          const shouldTrackIsValidatingState = _isTracked(
+            'isValidating',
+            'validatingFields',
+          );
 
           if (isPromiseFunction && shouldTrackIsValidatingState) {
             _updateIsValidating([_f.name], true);
@@ -1009,10 +1008,7 @@ export function createFormControl<
         values: skipClone ? _formValues : cloneObject(_formValues),
       });
 
-      if (
-        (_isTracked('isDirty') || _isTracked('dirtyFields')) &&
-        options.shouldDirty
-      ) {
+      if (_isTracked('isDirty', 'dirtyFields') && options.shouldDirty) {
         _updateDirtyFields();
 
         if (!skipStateEmit) {
