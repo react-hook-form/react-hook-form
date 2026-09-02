@@ -189,6 +189,28 @@ describe('reset', () => {
     act(() => result.current.reset({ test: 'test' }));
   });
 
+  it('should keep dirtyFields in sync with isDirty when reset with keepValues', () => {
+    const { result } = renderHook(() => {
+      const form = useForm({ defaultValues: { test: 'test1' } });
+      form.formState.isDirty;
+      form.formState.dirtyFields;
+      return form;
+    });
+
+    result.current.register('test');
+
+    act(() => {
+      result.current.setValue('test', 'test', { shouldDirty: true });
+    });
+
+    act(() => {
+      result.current.reset(undefined, { keepValues: true });
+    });
+
+    expect(result.current.formState.isDirty).toBeTruthy();
+    expect(result.current.formState.dirtyFields).toEqual({ test: true });
+  });
+
   it('should not reset form values when keepValues is specified', () => {
     const App = () => {
       const { register, reset } = useForm();
