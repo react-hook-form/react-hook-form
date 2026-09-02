@@ -1421,10 +1421,9 @@ export function createFormControl<
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
     const names = name ? convertToArrayPayload(name) : undefined;
 
-    names?.forEach((inputName) => unset(_formState.errors, inputName));
-
     if (names) {
       names.forEach((inputName) => {
+        unset(_formState.errors, inputName);
         _subjects.state.next({
           name: inputName,
           errors: _formState.errors,
