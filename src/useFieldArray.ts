@@ -152,6 +152,11 @@ export function useFieldArray<
     } else {
       _prevControl.current = control;
       _prevName.current = name;
+
+      const fieldValues = getCurrentFieldArray();
+      setFields(fieldValues);
+      ids.current = fieldValues.map(generateId);
+      snapshot(true, getCurrentFieldArray);
     }
 
     const unsubscribe = control._subjects.array.subscribe({
