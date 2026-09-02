@@ -95,16 +95,16 @@ export function useForm<
   const control = _formControl.current.control;
   control._options = props;
 
+  const getCurrentFormState = () => ({
+    ...control._formState,
+    defaultValues:
+      control._defaultValues as FormState<TFieldValues>['defaultValues'],
+  });
+
   const { resyncIfNeeded, snapshot } =
-    useResyncOnReconnect<FormState<TFieldValues>>();
+    useResyncOnReconnect<FormState<TFieldValues>>(getCurrentFormState);
 
   useIsomorphicLayoutEffect(() => {
-    const getCurrentFormState = () => ({
-      ...control._formState,
-      defaultValues:
-        control._defaultValues as FormState<TFieldValues>['defaultValues'],
-    });
-
     resyncIfNeeded(true, getCurrentFormState, updateFormState);
 
     const unsubscribe = control._subscribe({
