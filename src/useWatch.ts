@@ -201,7 +201,7 @@ export function useWatch<
  *     fieldA: "data",
  *     fieldB: 0
  *   },
- *   compute: ([fieldAValue, fieldBValue]) => fieldB === 2 ? fieldA : null,
+ *   compute: ([fieldAValue, fieldBValue]) => fieldBValue === 2 ? fieldAValue : null,
  *   exact: false,
  * })
  * ```
