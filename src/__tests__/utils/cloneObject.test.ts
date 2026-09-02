@@ -148,6 +148,40 @@ describe('clone', () => {
     });
   });
 
+  describe('Blob not a constructor', () => {
+    const blob = globalThis.Blob;
+
+    afterEach(() => {
+      globalThis.Blob = blob;
+    });
+
+    it('should skip clone if Blob is undefined', () => {
+      // @ts-expect-error we want to test that clone skips if Blob is undefined.
+      globalThis.Blob = undefined;
+
+      const data = {
+        a: 1,
+        b: 2,
+      };
+
+      expect(() => cloneObject(data)).not.toThrow();
+      expect(cloneObject(data)).toEqual(data);
+    });
+
+    it('should skip clone if Blob is not defined', () => {
+      // @ts-expect-error we want to test that clone skips if Blob is not defined.
+      delete globalThis.Blob;
+
+      const data = {
+        a: 1,
+        b: 2,
+      };
+
+      expect(() => cloneObject(data)).not.toThrow();
+      expect(cloneObject(data)).toEqual(data);
+    });
+  });
+
   describe('in presence of Array polyfills', () => {
     beforeAll(() => {
       // @ts-expect-error we want to test that clone skips polyfill
