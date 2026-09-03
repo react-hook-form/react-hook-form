@@ -1558,6 +1558,9 @@ export function createFormControl<
     for (const fieldName of name ? convertToArrayPayload(name) : _names.mount) {
       _names.mount.delete(fieldName);
       _names.array.delete(fieldName);
+      // An unregistered field is no longer disabled, otherwise handleSubmit
+      // keeps stripping its value from the payload.
+      _names.disabled.delete(fieldName);
 
       if (!options.keepValue) {
         unset(_fields, fieldName);
