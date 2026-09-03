@@ -1988,7 +1988,14 @@ export function createFormControl<
             ? getDirtyFields(_defaultValues, formValues, undefined, fieldRefs)
             : keepStateOptions.keepDirty
               ? _formState.dirtyFields
-              : {},
+              : keepStateOptions.keepValues
+                ? getDirtyFields(
+                    _defaultValues,
+                    _formValues,
+                    undefined,
+                    fieldRefs,
+                  )
+                : {},
       touchedFields: keepStateOptions.keepTouched
         ? _formState.touchedFields
         : {},
