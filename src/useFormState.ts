@@ -98,7 +98,7 @@ export function useFormState<
       unsubscribe();
       snapshot(!disabled, getCurrentFormState);
     };
-  }, [name, disabled, exact, resyncIfNeeded, snapshot]);
+  }, [control, name, disabled, exact, resyncIfNeeded, snapshot]);
 
   React.useEffect(() => {
     _localProxyFormState.current.isValid && control._setValid(true);

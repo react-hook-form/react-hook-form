@@ -855,6 +855,42 @@ describe('useFormState', () => {
     });
   });
 
+  it('should re-subscribe when the control prop changes identity', async () => {
+    function Consumer({ control }: { control: Control<{ test: string }> }) {
+      const { isDirty } = useFormState({ control });
+      return <p>{isDirty ? 'dirty' : 'pristine'}</p>;
+    }
+
+    function App() {
+      const formA = useForm({ defaultValues: { test: '' } });
+      const formB = useForm({ defaultValues: { test: '' } });
+      const [active, setActive] = React.useState<'a' | 'b'>('a');
+
+      return (
+        <>
+          <input data-testid="inputA" {...formA.register('test')} />
+          <input data-testid="inputB" {...formB.register('test')} />
+          <button onClick={() => setActive('b')}>switch</button>
+          <Consumer control={active === 'a' ? formA.control : formB.control} />
+        </>
+      );
+    }
+
+    render(<App />);
+
+    expect(screen.getByText('pristine')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('switch'));
+
+    fireEvent.change(screen.getByTestId('inputB'), {
+      target: { value: 'changed' },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('dirty')).toBeInTheDocument();
+    });
+  });
+
   describe('with Activity', () => {
     itWithActivity(
       'should resync isSubmitting after Activity restoration when a submit resolves while hidden',
