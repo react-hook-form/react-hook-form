@@ -1558,6 +1558,7 @@ export function createFormControl<
     for (const fieldName of name ? convertToArrayPayload(name) : _names.mount) {
       _names.mount.delete(fieldName);
       _names.array.delete(fieldName);
+      _names.disabled.delete(fieldName);
 
       if (!options.keepValue) {
         unset(_fields, fieldName);

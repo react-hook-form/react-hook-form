@@ -250,4 +250,50 @@ describe('unregister', () => {
 
     jest.useRealTimers();
   });
+
+  it('should keep submitting a value retained by keepValue after a disabled field is unregistered', async () => {
+    const onSubmit = jest.fn();
+
+    const App = () => {
+      const [show, setShow] = React.useState(true);
+      const { register, unregister, handleSubmit } = useForm<{
+        test: string;
+        firstName: string;
+      }>({
+        defaultValues: { test: 'kept', firstName: 'bill' },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {show && <input {...register('test', { disabled: true })} />}
+          <input {...register('firstName')} />
+          <button
+            type="button"
+            onClick={() => {
+              setShow(false);
+              unregister('test', { keepValue: true });
+            }}
+          >
+            hide
+          </button>
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'hide' }));
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    // The field is no longer registered, so it is no longer a disabled field
+    // and handleSubmit must stop stripping the value keepValue retained.
+    expect(onSubmit).toHaveBeenCalledWith(
+      { test: 'kept', firstName: 'bill' },
+      expect.any(Object),
+    );
+  });
 });
