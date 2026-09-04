@@ -1399,7 +1399,7 @@ export function createFormControl<
       invalid: !!error,
       isDirty: !!get(targetFormState.dirtyFields, name),
       error,
-      isValidating: !!get(_formState.validatingFields, name),
+      isValidating: !!get(targetFormState.validatingFields, name),
       isTouched: !!get(targetFormState.touchedFields, name),
     };
   };
