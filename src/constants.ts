@@ -25,6 +25,11 @@ export const INPUT_VALIDATION_RULES = {
   validate: 'validate',
 } as const;
 
+export const VALIDATION_SCOPE = {
+  field: 'field',
+  form: 'form',
+} as const;
+
 export const ROOT_ERROR_TYPE = 'root';
 
 export const PROTOTYPE_KEYWORDS = ['__proto__', 'constructor', 'prototype'];
