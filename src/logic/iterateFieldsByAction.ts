@@ -18,7 +18,7 @@ const iterateFieldsByAction = (
       const { _f } = field;
 
       if (_f) {
-        if (_f.refs && _f.refs[0] && action(_f.refs[0], key)) {
+        if (_f.refs && _f.refs[0] && action(_f.refs[0], _f.name)) {
           return true;
         } else if (_f.ref && action(_f.ref, _f.name)) {
           return true;
