@@ -2561,6 +2561,39 @@ describe('validateField', () => {
       expect(setCustomValidity).toHaveBeenLastCalledWith('');
       expect(reportValidity).toHaveBeenCalled();
     });
+
+    it('should not invoke setCustomValidity per key when collecting all criteria from a validate object', async () => {
+      const setCustomValidity = jest.fn();
+      const reportValidity = jest.fn();
+
+      await validateField(
+        {
+          _f: {
+            mount: true,
+            name: 'test',
+            ref: {
+              name: 'test',
+              setCustomValidity,
+              reportValidity,
+            },
+            validate: {
+              a: () => 'error A',
+              b: () => 'error B',
+              c: () => 'error C',
+            },
+          },
+        },
+        new Set(),
+        {
+          test: 'value',
+        },
+        true,
+        true,
+      );
+
+      expect(setCustomValidity).toHaveBeenCalledTimes(1);
+      expect(reportValidity).toHaveBeenCalledTimes(1);
+    });
   });
 
   it('should validate field array with required attribute', async () => {
