@@ -2036,6 +2036,12 @@ export function createFormControl<
         ? _formState.isSubmitSuccessful
         : false,
       isSubmitting: false,
+      validatingFields: keepStateOptions.keepIsValidating
+        ? _formState.validatingFields
+        : {},
+      isValidating: keepStateOptions.keepIsValidating
+        ? _formState.isValidating
+        : false,
       defaultValues: _defaultValues as FormState<TFieldValues>['defaultValues'],
     });
   };
