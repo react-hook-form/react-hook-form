@@ -272,7 +272,7 @@ describe('subscribe', () => {
   });
 
   it('should notify a subscriber tracking isReady once the form mounts', async () => {
-    const seen: (boolean | undefined)[] = [];
+    const seen: { isReady?: boolean; type?: string }[] = [];
 
     const Child = ({
       subscribe,
@@ -282,8 +282,8 @@ describe('subscribe', () => {
       React.useLayoutEffect(() => {
         return subscribe({
           formState: { isReady: true },
-          callback: ({ isReady }) => {
-            seen.push(isReady);
+          callback: ({ isReady, type }) => {
+            seen.push({ isReady, type });
           },
         });
       }, [subscribe]);
@@ -297,7 +297,50 @@ describe('subscribe', () => {
 
     render(<App />);
 
-    await waitFor(() => expect(seen).toEqual([true]));
+    await waitFor(() =>
+      expect(seen).toEqual([{ isReady: true, type: 'mount' }]),
+    );
+  });
+
+  it('should still notify a late subscriber that mounts after the form is already ready', async () => {
+    const seen: { isReady?: boolean; type?: string }[] = [];
+
+    const LateChild = ({
+      subscribe,
+    }: {
+      subscribe: UseFormSubscribe<{ name: string }>;
+    }) => {
+      // Deliberately a plain (passive) useEffect, and this component
+      // mounts only after the form's own mount effect has already fired —
+      // the subject stream keeps no history, so this only works because
+      // subscribing while already-ready replays the mount notification.
+      React.useEffect(() => {
+        return subscribe({
+          formState: { isReady: true },
+          callback: ({ isReady, type }) => {
+            seen.push({ isReady, type });
+          },
+        });
+      }, [subscribe]);
+      return null;
+    };
+
+    const App = () => {
+      const { subscribe } = useForm({ defaultValues: { name: '' } });
+      const [showLate, setShowLate] = React.useState(false);
+
+      React.useEffect(() => {
+        setShowLate(true);
+      }, []);
+
+      return showLate ? <LateChild subscribe={subscribe} /> : null;
+    };
+
+    render(<App />);
+
+    await waitFor(() =>
+      expect(seen).toEqual([{ isReady: true, type: 'mount' }]),
+    );
   });
 
   it('should not call subscribe callback when setValue is called with the same value and shouldDirty option', async () => {

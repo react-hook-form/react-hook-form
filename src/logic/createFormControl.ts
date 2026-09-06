@@ -1504,35 +1504,44 @@ export function createFormControl<
     if (needsValues) {
       _valuesSubscriberCount++;
     }
-    const { unsubscribe } = _subjects.state.subscribe({
-      next: (
-        formState: Partial<FormState<TFieldValues>> & {
-          name?: InternalFieldName;
-          values?: TFieldValues | undefined;
-          type?: EventType;
-        },
-      ) => {
-        if (
-          shouldSubscribeByName(props.name, formState.name, props.exact) &&
-          shouldRenderFormState(
-            formState,
-            (props.formState as ReadFormState) || _proxyFormState,
-            _setFormState,
-            props.reRenderRoot,
-          )
-        ) {
-          const snapshot = { ..._formValues } as TFieldValues;
 
-          props.callback({
-            values: snapshot,
-            ..._formState,
-            ...formState,
-            defaultValues:
-              _defaultValues as FormState<TFieldValues>['defaultValues'],
-          });
-        }
+    const next = (
+      formState: Partial<FormState<TFieldValues>> & {
+        name?: InternalFieldName;
+        values?: TFieldValues | undefined;
+        type?: EventType;
       },
-    });
+    ) => {
+      if (
+        shouldSubscribeByName(props.name, formState.name, props.exact) &&
+        shouldRenderFormState(
+          formState,
+          (props.formState as ReadFormState) || _proxyFormState,
+          _setFormState,
+          props.reRenderRoot,
+        )
+      ) {
+        const snapshot = { ..._formValues } as TFieldValues;
+
+        props.callback({
+          values: snapshot,
+          ..._formState,
+          ...formState,
+          defaultValues:
+            _defaultValues as FormState<TFieldValues>['defaultValues'],
+        });
+      }
+    };
+
+    const { unsubscribe } = _subjects.state.subscribe({ next });
+
+    if (
+      _formState.isReady &&
+      (props.formState as Record<string, unknown> | undefined)?.isReady
+    ) {
+      next({ isReady: true, type: EVENTS.MOUNT });
+    }
+
     if (!needsValues) {
       return unsubscribe;
     }
