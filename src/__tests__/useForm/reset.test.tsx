@@ -2288,4 +2288,135 @@ describe('reset', () => {
 
     jest.useRealTimers();
   });
+
+  it('should clear isValidating when reset is called while a validation is pending', async () => {
+    let resolveResolver: (() => void) | undefined;
+
+    const App = () => {
+      const [visible, setVisible] = React.useState(true);
+      const {
+        register,
+        reset,
+        formState: { isValid, isValidating, validatingFields },
+      } = useForm<{ test: string }>({
+        defaultValues: { test: '' },
+        resolver: async (values) => {
+          await new Promise<void>((resolve) => {
+            resolveResolver = resolve;
+          });
+          return { values, errors: {} };
+        },
+      });
+
+      return (
+        <div>
+          {visible && <input {...register('test')} />}
+          <p>{`valid:${isValid}`}</p>
+          <p>{`status:${isValidating ? 'validating' : 'idle'}`}</p>
+          <p>{`tracked:${Object.keys(validatingFields).join(',')}`}</p>
+          <button
+            type="button"
+            onClick={() => {
+              reset();
+              setVisible(false);
+            }}
+          >
+            reset
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      resolveResolver && resolveResolver();
+    });
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'a' },
+      });
+    });
+
+    expect(screen.getByText(/^status:/).textContent).toEqual(
+      'status:validating',
+    );
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(screen.getByText(/^status:/).textContent).toEqual('status:idle');
+    expect(screen.getByText(/^tracked:/).textContent).toEqual('tracked:');
+
+    // The field is gone, so the in-flight resolver has no mounted name left to
+    // clear and cannot undo a stale flag on its own.
+    await act(async () => {
+      resolveResolver && resolveResolver();
+    });
+
+    expect(screen.getByText(/^status:/).textContent).toEqual('status:idle');
+    expect(screen.getByText(/^tracked:/).textContent).toEqual('tracked:');
+  });
+
+  it('should keep isValidating when reset is called with keepIsValidating option', async () => {
+    let resolveResolver: (() => void) | undefined;
+
+    const App = () => {
+      const [visible, setVisible] = React.useState(true);
+      const {
+        register,
+        reset,
+        formState: { isValid, isValidating, validatingFields },
+      } = useForm<{ test: string }>({
+        defaultValues: { test: '' },
+        resolver: async (values) => {
+          await new Promise<void>((resolve) => {
+            resolveResolver = resolve;
+          });
+          return { values, errors: {} };
+        },
+      });
+
+      return (
+        <div>
+          {visible && <input {...register('test')} />}
+          <p>{`valid:${isValid}`}</p>
+          <p>{`status:${isValidating ? 'validating' : 'idle'}`}</p>
+          <p>{`tracked:${Object.keys(validatingFields).join(',')}`}</p>
+          <button
+            type="button"
+            onClick={() => {
+              reset(undefined, { keepIsValidating: true });
+              setVisible(false);
+            }}
+          >
+            reset
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      resolveResolver && resolveResolver();
+    });
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'a' },
+      });
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
+
+    expect(screen.getByText(/^status:/).textContent).toEqual(
+      'status:validating',
+    );
+    expect(screen.getByText(/^tracked:/).textContent).toEqual('tracked:test');
+  });
 });

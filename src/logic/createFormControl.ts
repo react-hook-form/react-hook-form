@@ -2000,6 +2000,12 @@ export function createFormControl<
       touchedFields: keepStateOptions.keepTouched
         ? _formState.touchedFields
         : {},
+      validatingFields: keepStateOptions.keepIsValidating
+        ? _formState.validatingFields
+        : {},
+      isValidating: keepStateOptions.keepIsValidating
+        ? _formState.isValidating
+        : false,
       errors: keepStateOptions.keepErrors ? _formState.errors : {},
       isSubmitSuccessful: keepStateOptions.keepIsSubmitSuccessful
         ? _formState.isSubmitSuccessful
