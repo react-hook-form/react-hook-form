@@ -17,8 +17,8 @@ describe('isNameInFieldArray', () => {
 
   it('should find match when field array is nested under a numeric path segment', () => {
     // Field array registered at `steps.0.items`, Controller name is `steps.0.items.2.name`
-    // getNodeParentName returns `steps` (first numeric segment), but the field array
-    // is `steps.0.items` — so isNameInFieldArray must check deeper parents too.
+    // — the field array is not the first numeric segment's parent (`steps`),
+    // so isNameInFieldArray must check deeper parents too.
     expect(
       isNameInFieldArray(new Set(['steps.0.items']), 'steps.0.items.2.name'),
     ).toBeTruthy();

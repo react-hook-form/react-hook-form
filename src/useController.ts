@@ -1,6 +1,7 @@
 import React from 'react';
 
 import getEventValue from './logic/getEventValue';
+import getNullAncestorValue from './logic/getNullAncestorValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import cloneObject from './utils/cloneObject';
 import get from './utils/get';
@@ -44,7 +45,7 @@ export function useController<
 ): UseControllerReturn<TFieldValues, TName> {
   const formControl = useFormControlContext<
     TFieldValues,
-    any,
+    unknown,
     TTransformedValues
   >();
   const {
@@ -57,15 +58,17 @@ export function useController<
   } = props;
   const isArrayField = isNameInFieldArray(control._names.array, name);
 
-  const defaultValueMemo = React.useMemo(
-    () =>
-      get(
-        control._formValues,
-        name,
-        get(control._defaultValues, name, defaultValue),
-      ),
-    [control, name, defaultValue],
-  );
+  const defaultValueMemo = React.useMemo(() => {
+    const resolved = get(
+      control._formValues,
+      name,
+      get(control._defaultValues, name, defaultValue),
+    );
+
+    return isUndefined(resolved)
+      ? getNullAncestorValue(control, name)
+      : resolved;
+  }, [control, name, defaultValue]);
 
   const value = useWatch({
     control,
@@ -124,7 +127,7 @@ export function useController<
   );
 
   const onChange = React.useCallback(
-    (event: any) => {
+    (event: unknown) => {
       const value = getEventValue(event);
 
       if (!get(control._fields, name)) {
@@ -197,7 +200,7 @@ export function useController<
     const _shouldUnregisterField =
       control._options.shouldUnregister || shouldUnregister;
 
-    control.register(name, {
+    _registerProps.current = control.register(name, {
       ..._props.current.rules,
       ...(isBoolean(_props.current.disabled)
         ? { disabled: _props.current.disabled }

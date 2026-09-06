@@ -1751,6 +1751,59 @@ describe('useController', () => {
     expect(result.current.field.value).toBe('form1-value');
   });
 
+  it('should write onChange updates to the newly-passed control (#13163)', async () => {
+    type FormValues = {
+      name: string;
+    };
+
+    const { result: form1Result } = renderHook(() =>
+      useForm<FormValues>({
+        defaultValues: {
+          name: '',
+        },
+      }),
+    );
+
+    const { result: form2Result } = renderHook(() =>
+      useForm<FormValues>({
+        defaultValues: {
+          name: '',
+        },
+      }),
+    );
+
+    const { result, rerender } = renderHook(
+      ({ control }: { control: Control<FormValues> }) =>
+        useController({
+          control,
+          name: 'name',
+        }),
+      {
+        initialProps: { control: form1Result.current.control },
+      },
+    );
+
+    result.current.field.onChange('form1-typed');
+
+    await waitFor(() => {
+      expect(form1Result.current.getValues('name')).toBe('form1-typed');
+    });
+
+    rerender({ control: form2Result.current.control });
+
+    await waitFor(() => {
+      expect(result.current.field.value).toBe('');
+    });
+
+    result.current.field.onChange('form2-typed');
+
+    await waitFor(() => {
+      expect(form2Result.current.getValues('name')).toBe('form2-typed');
+    });
+
+    expect(form1Result.current.getValues('name')).toBe('form1-typed');
+  });
+
   it('should update isValid when Controller with required rule re-mounts via checkbox toggle', async () => {
     type FormValues = {
       items: { checked: boolean; input: string }[];
@@ -1846,5 +1899,121 @@ describe('useController', () => {
     };
 
     render(<Component />);
+  });
+
+  it('should update the field value when a parent object is cleared with setValue', async () => {
+    function App() {
+      const { control, setValue } = useForm<{
+        data: { type: string };
+      }>();
+
+      const { field } = useController({ control, name: 'data.type' });
+      const watched = useWatch({ control, name: 'data.type', exact: false });
+
+      return (
+        <div>
+          <p>controller:{String(field.value)}</p>
+          <p>watch:{String(watched)}</p>
+          <button
+            type="button"
+            onClick={() => setValue('data', { type: 'foo' })}
+          >
+            set
+          </button>
+          <button type="button" onClick={() => setValue('data', null as never)}>
+            clear
+          </button>
+        </div>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'set' }));
+    await waitFor(() =>
+      expect(screen.getByText('controller:foo')).toBeVisible(),
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'clear' }));
+
+    // The controlled field must reflect the cleared parent object and stay in
+    // sync with useWatch, instead of holding on to the stale 'foo' value.
+    await waitFor(() =>
+      expect(screen.getByText('controller:undefined')).toBeVisible(),
+    );
+    expect(screen.getByText('watch:undefined')).toBeVisible();
+  });
+
+  it('should not mutate an externally-owned object passed to a parent field.onChange when a nested field later changes', async () => {
+    const preset = { first: 'x' };
+
+    function App() {
+      const { control } = useForm<{ name: { first: string } }>({
+        defaultValues: { name: { first: '' } },
+      });
+
+      const parent = useController({ name: 'name', control });
+      const leaf = useController({ name: 'name.first', control });
+
+      return (
+        <div>
+          <button type="button" onClick={() => parent.field.onChange(preset)}>
+            set
+          </button>
+          <input
+            data-testid="leaf"
+            value={leaf.field.value}
+            onChange={(e) => leaf.field.onChange(e.target.value)}
+          />
+        </div>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'set' }));
+    fireEvent.change(screen.getByTestId('leaf'), { target: { value: 'a' } });
+
+    await waitFor(() => expect(screen.getByTestId('leaf')).toHaveValue('a'));
+
+    expect(preset.first).toBe('x');
+  });
+
+  it('should submit null instead of undefined for a nested Controller field under a null parent default value (#13674)', async () => {
+    const onSubmit = jest.fn();
+
+    function App() {
+      const { control, handleSubmit } = useForm<{
+        address: { street?: string } | null;
+      }>({
+        defaultValues: {
+          address: null,
+        },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Controller
+            control={control}
+            name="address.street"
+            render={({ field }) => (
+              <input {...field} value={field.value ?? ''} />
+            )}
+          />
+          <button type="submit">Submit</button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByText('Submit'));
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(
+        { address: { street: null } },
+        expect.anything(),
+      ),
+    );
   });
 });

@@ -22,4 +22,48 @@ describe('flatten', () => {
       }),
     ).toMatchSnapshot();
   });
+
+  it('should preserve Date values as leaf nodes and not drop them', () => {
+    const date = new Date('2024-01-01T00:00:00.000Z');
+
+    expect(flatten({ name: 'Alice', createdAt: date, age: 30 })).toEqual({
+      name: 'Alice',
+      createdAt: date,
+      age: 30,
+    });
+  });
+
+  it('should preserve nested Date values as leaf nodes', () => {
+    const start = new Date('2024-01-01');
+    const end = new Date('2024-12-31');
+
+    expect(flatten({ range: { start, end }, label: 'year' })).toEqual({
+      'range.start': start,
+      'range.end': end,
+      label: 'year',
+    });
+  });
+
+  it('should preserve File and Blob values as leaf nodes and not drop them', () => {
+    const file = new File(['content'], 'resume.pdf');
+    const blob = new Blob(['content']);
+
+    expect(flatten({ name: 'Alice', resume: file, avatar: blob })).toEqual({
+      name: 'Alice',
+      resume: file,
+      avatar: blob,
+    });
+  });
+
+  it('should preserve nested and indexed File values as leaf nodes', () => {
+    const first = new File(['1'], 'first.pdf');
+    const second = new File(['2'], 'second.pdf');
+
+    expect(
+      flatten({ profile: { resume: first }, attachments: [second] }),
+    ).toEqual({
+      'profile.resume': first,
+      'attachments.0': second,
+    });
+  });
 });

@@ -3,7 +3,7 @@ import type { Control, FieldValues, FormState, ReadFormState } from '../types';
 
 export default <
   TFieldValues extends FieldValues,
-  TContext = any,
+  TContext = unknown,
   TTransformedValues = TFieldValues,
 >(
   formState: FormState<TFieldValues>,

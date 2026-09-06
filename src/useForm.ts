@@ -13,6 +13,7 @@ import type {
   UseFormReturn,
 } from './types';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
+import { useResyncOnReconnect } from './useResyncOnReconnect';
 
 /**
  * Core hook for managing a form. Returns all methods and state for
@@ -79,8 +80,19 @@ export function useForm<
   const control = _formControl.current.control;
   control._options = props;
 
+  const getCurrentFormState = () => ({
+    ...control._formState,
+    defaultValues:
+      control._defaultValues as FormState<TFieldValues>['defaultValues'],
+  });
+
+  const { resyncIfNeeded, snapshot } =
+    useResyncOnReconnect<FormState<TFieldValues>>(getCurrentFormState);
+
   useIsomorphicLayoutEffect(() => {
-    const sub = control._subscribe({
+    resyncIfNeeded(true, getCurrentFormState, updateFormState);
+
+    const unsubscribe = control._subscribe({
       formState: control._proxyFormState,
       callback: () =>
         updateFormState({
@@ -98,8 +110,11 @@ export function useForm<
 
     control._formState.isReady = true;
 
-    return sub;
-  }, [control]);
+    return () => {
+      unsubscribe();
+      snapshot(true, getCurrentFormState);
+    };
+  }, [control, resyncIfNeeded, snapshot]);
 
   React.useEffect(
     () => control._disableForm(props.disabled),

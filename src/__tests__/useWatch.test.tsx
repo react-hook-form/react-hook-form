@@ -26,6 +26,15 @@ let i = 0;
 
 jest.mock('../logic/generateId', () => () => String(i++));
 
+// Activity is a React 19.2+ API. Only run Activity-dependent tests when the
+// installed React actually provides it.
+const Activity = (React as unknown as { Activity?: unknown })
+  .Activity as React.ComponentType<{
+  mode: 'hidden' | 'visible';
+  children?: React.ReactNode;
+}>;
+const itWithActivity = Activity ? it : it.skip;
+
 describe('useWatch', () => {
   beforeEach(() => {
     i = 0;
@@ -107,6 +116,23 @@ describe('useWatch', () => {
     expect(result.current).toEqual('test');
   });
 
+  it('should prefer the form default value over its own default value for single input', () => {
+    const { result } = renderHook(() => {
+      const { control } = useForm<{ test: string }>({
+        defaultValues: {
+          test: 'form default',
+        },
+      });
+      return useWatch({
+        control,
+        name: 'test',
+        defaultValue: 'inline fallback',
+      });
+    });
+
+    expect(result.current).toEqual('form default');
+  });
+
   it('should return own default value for array of inputs', () => {
     const { result } = renderHook(() => {
       const { control } = useForm<{ test: string; test1: string }>({});
@@ -121,6 +147,34 @@ describe('useWatch', () => {
     });
 
     expect(result.current).toEqual(['test', 'test1']);
+  });
+
+  it('should keep its own default value for array of inputs after a value change', async () => {
+    const Form = () => {
+      const { control, setValue } = useForm<{ test: string; test1: string }>(
+        {},
+      );
+      const [test, test1] = useWatch({
+        control,
+        name: ['test', 'test1'],
+        defaultValue: {
+          test: 'test',
+          test1: 'test1',
+        },
+      });
+
+      React.useEffect(() => {
+        setValue('test', 'changed');
+      }, [setValue]);
+
+      return <>{`${test},${test1}`}</>;
+    };
+
+    render(<Form />);
+
+    await waitFor(() => {
+      screen.getByText('changed,test1');
+    });
   });
 
   it('should return default value when name is undefined', () => {
@@ -963,6 +1017,41 @@ describe('useWatch', () => {
       expect(result.current).toBe('value1');
     });
 
+    it('should return the new field value synchronously on the same render even when that value is null', () => {
+      type FormValues = {
+        a: string;
+        c: string | null;
+      };
+
+      const { result: formResult } = renderHook(() =>
+        useForm<FormValues>({
+          defaultValues: {
+            a: 'x',
+            c: null,
+          },
+        }),
+      );
+
+      const renders: (string | null)[] = [];
+
+      const Test = ({ name }: { name: 'a' | 'c' }) => {
+        const value = useWatch({
+          control: formResult.current.control,
+          name,
+        });
+        renders.push(value);
+        return null;
+      };
+
+      const { rerender } = render(<Test name="a" />);
+      rerender(<Test name="c" />);
+
+      // The render triggered directly by the name change must already
+      // reflect the new field's value (null), not the previous field's
+      // stale value ('x').
+      expect(renders[1]).toBe(null);
+    });
+
     it('should react to changing control', () => {
       type FormValues = {
         name: string;
@@ -1098,9 +1187,6 @@ describe('useWatch', () => {
         'Number',
         'Totals',
         'Type',
-        'Number',
-        'Totals',
-        'Type',
         'Totals',
       ]);
     });
@@ -1229,7 +1315,7 @@ describe('useWatch', () => {
           defaultValue: itemsDefault,
         });
 
-        watchData.push(useWatchedItems);
+        watchData.push(JSON.parse(JSON.stringify(useWatchedItems)));
 
         return (
           <div>
@@ -1286,6 +1372,170 @@ describe('useWatch', () => {
   });
 
   describe('reset', () => {
+    itWithActivity(
+      'should synchronize watched and controlled values after Activity restoration',
+      () => {
+        type FormValues = {
+          name: string;
+        };
+
+        let getName = (): string => {
+          throw new Error('Form methods are not initialized.');
+        };
+
+        const ActivityContent = ({
+          control,
+        }: {
+          control: Control<FormValues>;
+        }) => {
+          const name = useWatch({ control, name: 'name' });
+
+          return (
+            <>
+              <span data-testid="watched-name">{name}</span>
+              <Controller
+                control={control}
+                name="name"
+                render={({ field }) => (
+                  <input data-testid="controlled-name" {...field} />
+                )}
+              />
+            </>
+          );
+        };
+
+        const Component = () => {
+          const { control, getValues, reset, setValue } = useForm<FormValues>({
+            defaultValues: {
+              name: 'initial',
+            },
+          });
+          const [mode, setMode] = React.useState<'hidden' | 'visible'>(
+            'visible',
+          );
+
+          getName = () => getValues('name');
+
+          return (
+            <>
+              <button type="button" onClick={() => setMode('hidden')}>
+                Hide
+              </button>
+              <button type="button" onClick={() => reset({ name: 'updated' })}>
+                Reset
+              </button>
+              <button
+                type="button"
+                onClick={() => setValue('name', 'updated in place')}
+              >
+                Update
+              </button>
+              <button type="button" onClick={() => setMode('visible')}>
+                Show
+              </button>
+              <Activity mode={mode}>
+                <ActivityContent control={control} />
+              </Activity>
+            </>
+          );
+        };
+
+        render(
+          <React.StrictMode>
+            <Component />
+          </React.StrictMode>,
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: 'Hide' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+
+        expect(getName()).toBe('updated');
+
+        fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+        expect(screen.getByTestId('watched-name')).toHaveTextContent('updated');
+        expect(screen.getByTestId('controlled-name')).toHaveValue('updated');
+
+        fireEvent.click(screen.getByRole('button', { name: 'Hide' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+
+        expect(getName()).toBe('updated in place');
+
+        fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+        expect(screen.getByTestId('watched-name')).toHaveTextContent(
+          'updated in place',
+        );
+        expect(screen.getByTestId('controlled-name')).toHaveValue(
+          'updated in place',
+        );
+      },
+    );
+
+    itWithActivity(
+      'should synchronize watched values when an Activity subtree becomes visible for the first time',
+      () => {
+        type FormValues = {
+          name: string;
+        };
+
+        let getName = (): string => {
+          throw new Error('Form methods are not initialized.');
+        };
+
+        const ActivityContent = ({
+          control,
+        }: {
+          control: Control<FormValues>;
+        }) => {
+          const name = useWatch({ control, name: 'name' });
+
+          return <span data-testid="watched-name">{name}</span>;
+        };
+
+        const Component = () => {
+          const { control, getValues, reset } = useForm<FormValues>({
+            defaultValues: {
+              name: 'initial',
+            },
+          });
+          const [mode, setMode] = React.useState<'hidden' | 'visible'>(
+            'hidden',
+          );
+
+          getName = () => getValues('name');
+
+          return (
+            <>
+              <button type="button" onClick={() => reset({ name: 'updated' })}>
+                Reset
+              </button>
+              <button type="button" onClick={() => setMode('visible')}>
+                Show
+              </button>
+              <Activity mode={mode}>
+                <ActivityContent control={control} />
+              </Activity>
+            </>
+          );
+        };
+
+        render(
+          <React.StrictMode>
+            <Component />
+          </React.StrictMode>,
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+
+        expect(getName()).toBe('updated');
+
+        fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+        expect(screen.getByTestId('watched-name')).toHaveTextContent('updated');
+      },
+    );
+
     it('should return updated default value with watched field after reset', async () => {
       type FormValues = {
         test: string;
@@ -1426,7 +1676,7 @@ describe('useWatch', () => {
         const Test = ({ control }: { control: Control<FormValues> }) => {
           const values = useWatch({ control });
           const options = values.options;
-          watchedValue.push(values);
+          watchedValue.push(JSON.parse(JSON.stringify(values)));
 
           return (
             <div>

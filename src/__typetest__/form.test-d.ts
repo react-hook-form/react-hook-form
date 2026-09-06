@@ -1,6 +1,13 @@
 import { z } from 'zod';
 
-import type { FieldError, FieldValues, Resolver } from '../types';
+import type {
+  FieldError,
+  FieldErrors,
+  FieldPath,
+  FieldValues,
+  Resolver,
+  UseFormGetFieldState,
+} from '../types';
 import { useForm } from '../useForm';
 
 import type { Equal, Expect } from './__fixtures__';
@@ -150,6 +157,82 @@ const schema = z.object({
         }
       >
     >;
+  }
+
+  /** it should resolve leaf and parent error nodes from their field paths */ {
+    type FormValues = {
+      leaf: string;
+      user: {
+        name: string;
+      };
+      files: File[];
+    };
+
+    /* eslint-disable react-hooks/rules-of-hooks */
+    const { getFieldState } = useForm<FormValues>();
+
+    const leaf = getFieldState('leaf').error;
+    const user = getFieldState('user').error;
+    const files = getFieldState('files').error;
+    const userMessage = getFieldState('user').error?.message;
+    const userType = getFieldState('user').error?.type;
+
+    type Errors = FieldErrors<FormValues>;
+    type _t1 = Expect<Equal<typeof leaf, FieldError | undefined>>;
+    type _t2 = Expect<
+      Equal<typeof user, NonNullable<Errors['user']> | undefined>
+    >;
+    type _t3 = Expect<
+      Equal<typeof files, NonNullable<Errors['files']> | undefined>
+    >;
+    type _t4 = Expect<
+      Equal<NonNullable<typeof files>[number], FieldError | undefined>
+    >;
+    type _t5 = Expect<Equal<typeof userMessage, string | undefined>>;
+    type _t6 = Expect<Equal<typeof userType, FieldError['type'] | undefined>>;
+  }
+
+  /** it should preserve flat errors for generic forms */ {
+    /* eslint-disable react-hooks/rules-of-hooks */
+    const anyError = useForm<any>().getFieldState('anything').error;
+    const fieldValuesError =
+      useForm<FieldValues>().getFieldState('anything').error;
+    const form = useForm<{ profile: { name: string } }>();
+
+    const getGenericMessage = <
+      TFieldValues extends FieldValues,
+      TName extends FieldPath<TFieldValues>,
+    >(
+      getFieldState: UseFormGetFieldState<TFieldValues>,
+      name: TName,
+    ) => {
+      const error: FieldError | undefined = getFieldState(name).error;
+      const message: string | undefined = error?.message;
+
+      return message;
+    };
+
+    const genericMessage = getGenericMessage(form.getFieldState, 'profile');
+
+    type _t1 = Expect<Equal<typeof anyError, FieldError | undefined>>;
+    type _t2 = Expect<Equal<typeof fieldValuesError, FieldError | undefined>>;
+    type _t3 = Expect<
+      Equal<NonNullable<typeof anyError>['message'], string | undefined>
+    >;
+    type _t4 = Expect<
+      Equal<NonNullable<typeof fieldValuesError>['message'], string | undefined>
+    >;
+    type _t5 = Expect<Equal<typeof genericMessage, string | undefined>>;
+  }
+
+  /** it should resolve deep array paths without widening to unknown */ {
+    /* eslint-disable react-hooks/rules-of-hooks */
+    const { getFieldState } = useForm<{
+      users: Array<{ firstName: string }>;
+    }>();
+
+    const error = getFieldState('users.0.firstName').error;
+    type _t = Expect<Equal<typeof error, FieldError | undefined>>;
   }
 }
 

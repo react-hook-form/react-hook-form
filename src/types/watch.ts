@@ -34,9 +34,7 @@ export type WatchName<TFieldValues extends FieldValues> =
 export type WatchValue<
   TFieldName,
   TFieldValues extends FieldValues = FieldValues,
-> = TFieldName extends
-  | FieldPath<TFieldValues>[]
-  | readonly FieldPath<TFieldValues>[]
+> = TFieldName extends readonly FieldPath<TFieldValues>[]
   ? FieldPathValues<TFieldValues, TFieldName>
   : TFieldName extends FieldPath<TFieldValues>
     ? FieldPathValue<TFieldValues, TFieldName>

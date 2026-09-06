@@ -223,4 +223,11 @@ describe('deepEqual', () => {
     expect(deepEqual(new Set(['test']), new Set(['test']))).toBeFalsy();
     expect(deepEqual(new EmptyObject(), new EmptyObject())).toBeFalsy();
   });
+
+  it('should return false when comparing an empty array with an empty plain object', () => {
+    expect(deepEqual([], {})).toBeFalsy();
+    expect(deepEqual({}, [])).toBeFalsy();
+    expect(deepEqual({ items: [] }, { items: {} })).toBeFalsy();
+    expect(deepEqual({ items: {} }, { items: [] })).toBeFalsy();
+  });
 });

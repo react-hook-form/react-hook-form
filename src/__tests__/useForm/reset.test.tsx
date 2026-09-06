@@ -189,6 +189,28 @@ describe('reset', () => {
     act(() => result.current.reset({ test: 'test' }));
   });
 
+  it('should keep dirtyFields in sync with isDirty when reset with keepValues', () => {
+    const { result } = renderHook(() => {
+      const form = useForm({ defaultValues: { test: 'test1' } });
+      form.formState.isDirty;
+      form.formState.dirtyFields;
+      return form;
+    });
+
+    result.current.register('test');
+
+    act(() => {
+      result.current.setValue('test', 'test', { shouldDirty: true });
+    });
+
+    act(() => {
+      result.current.reset(undefined, { keepValues: true });
+    });
+
+    expect(result.current.formState.isDirty).toBeTruthy();
+    expect(result.current.formState.dirtyFields).toEqual({ test: true });
+  });
+
   it('should not reset form values when keepValues is specified', () => {
     const App = () => {
       const { register, reset } = useForm();
@@ -907,6 +929,62 @@ describe('reset', () => {
           }),
         );
       });
+    });
+
+    it('should merge nested object at leaf granularity, keeping only the dirty leaf and updating a clean sibling that is not bound to an input (#13627)', async () => {
+      type FormValues = {
+        user: { name: string; email: string };
+      };
+
+      let submittedValue: FormValues | undefined = undefined;
+      let doReset: (() => void) | undefined;
+
+      function App() {
+        const { register, handleSubmit, reset, getValues } =
+          useForm<FormValues>({
+            values: {
+              user: { name: 'bill', email: 'bill@old.com' },
+            },
+            resetOptions: { keepDirtyValues: true },
+          });
+
+        doReset = () =>
+          reset(
+            { user: { name: getValues('user.name'), email: 'bill@new.com' } },
+            { keepDirtyValues: true },
+          );
+
+        return (
+          <form
+            onSubmit={handleSubmit((data) => {
+              submittedValue = data;
+            })}
+          >
+            <input {...register('user.name')} placeholder="Name" />
+            <button>submit</button>
+          </form>
+        );
+      }
+
+      render(<App />);
+
+      fireEvent.change(screen.getByPlaceholderText('Name'), {
+        target: { value: 'edited-name' },
+      });
+
+      act(() => doReset!());
+
+      expect(
+        (screen.getByPlaceholderText('Name') as HTMLInputElement).value,
+      ).toEqual('edited-name');
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(submittedValue).toEqual({
+          user: { name: 'edited-name', email: 'bill@new.com' },
+        }),
+      );
     });
   });
 
@@ -2147,5 +2225,67 @@ describe('reset', () => {
 
     expect(screen.getByText('is valid: true')).toBeInTheDocument();
     expect(formState).toEqual({ isValid: true });
+  });
+
+  it('should cancel a pending delayError timer so the reset error does not come back', async () => {
+    jest.useFakeTimers();
+
+    const message = 'too long.';
+
+    const App = () => {
+      const {
+        register,
+        reset,
+        formState: { errors },
+      } = useForm<{ test: string }>({
+        delayError: 500,
+        mode: 'onChange',
+      });
+
+      return (
+        <div>
+          <input {...register('test', { maxLength: 4 })} />
+          <button type="button" onClick={() => reset()}>
+            reset
+          </button>
+          {errors.test && <p>{message}</p>}
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    // Schedule a delayed error, then reset the form before the delay elapses.
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '123456' },
+      });
+    });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await act(async () => {
+      jest.advanceTimersByTime(500);
+    });
+
+    expect(screen.queryByText(message)).not.toBeInTheDocument();
+
+    // The delay itself must still work, otherwise the assertion above would
+    // pass even if no timer had been scheduled in the first place.
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '654321' },
+      });
+    });
+
+    expect(screen.queryByText(message)).not.toBeInTheDocument();
+
+    await act(async () => {
+      jest.advanceTimersByTime(500);
+    });
+
+    expect(screen.getByText(message)).toBeVisible();
+
+    jest.useRealTimers();
   });
 });

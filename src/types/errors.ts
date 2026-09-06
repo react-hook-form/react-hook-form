@@ -1,5 +1,12 @@
 import type { FieldValues, InternalFieldName, Ref } from './fields';
-import type { BrowserNativeObject, IsAny, LiteralUnion, Merge } from './utils';
+import type { FieldPath, FieldPathValue } from './path';
+import type {
+  BrowserNativeObject,
+  IsAny,
+  LiteralUnion,
+  Merge,
+  OpaqueType,
+} from './utils';
 import type { RegisterOptions, ValidateResult } from './validator';
 
 export type Message = string;
@@ -24,14 +31,14 @@ export type ErrorOption = {
   types?: MultipleFieldErrors;
 };
 
-export type DeepRequired<T> = T extends BrowserNativeObject | Blob
+export type DeepRequired<T> = T extends BrowserNativeObject | Blob | OpaqueType
   ? T
   : {
       [K in keyof T]-?: NonNullable<DeepRequired<T[K]>>;
     };
 
 export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
-  [K in keyof T]?: T[K] extends BrowserNativeObject | Blob
+  [K in keyof T]?: T[K] extends BrowserNativeObject | Blob | OpaqueType
     ? FieldError
     : K extends 'root' | `root.${string}`
       ? GlobalError
@@ -46,13 +53,28 @@ export type GlobalError = Partial<{
 }>;
 
 export type FieldErrors<T extends FieldValues = FieldValues> = Partial<
-  FieldValues extends IsAny<FieldValues>
-    ? any
-    : FieldErrorsImpl<DeepRequired<T>>
+  FieldErrorsImpl<DeepRequired<T>>
 > & {
   root?: Record<string, GlobalError> & GlobalError;
   form?: GlobalError;
 };
+
+/** Resolves the error type stored by {@link FieldErrors} for a field path. */
+export type FieldPathError<
+  TFieldValues extends FieldValues,
+  TFieldPath extends FieldPath<TFieldValues>,
+> =
+  TFieldPath extends FieldPath<TFieldValues>
+    ? TFieldPath extends `${string}.root`
+      ? GlobalError
+      : DeepRequired<
+            NonNullable<FieldPathValue<TFieldValues, TFieldPath>>
+          > extends infer TFieldValue
+        ? IsAny<TFieldValue> extends true
+          ? FieldError
+          : NonNullable<FieldErrorsImpl<{ value: TFieldValue }>['value']>
+        : never
+    : never;
 
 export type InternalFieldErrors = Partial<
   Record<InternalFieldName, FieldError>

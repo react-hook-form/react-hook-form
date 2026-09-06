@@ -85,6 +85,9 @@ describe('setValues', () => {
       }),
     );
 
+    // Register a watch(fn) subscriber so values are included in notifications.
+    const watchSub = result.current.watch(() => {});
+
     const control = result.current.control as any;
     const nextSpy = jest.spyOn(control._subjects.state, 'next');
 
@@ -94,6 +97,8 @@ describe('setValues', () => {
         b: '200',
       });
     });
+
+    watchSub.unsubscribe();
 
     const valueNotifications = nextSpy.mock.calls.filter(
       (call) =>
@@ -119,6 +124,9 @@ describe('setValues', () => {
       result.current.setValue('a', 'changed', { shouldValidate: true });
     });
 
+    // Register a watch(fn) subscriber so values are included in notifications.
+    const watchSub = result.current.watch(() => {});
+
     const control = result.current.control as any;
     const nextSpy = jest.spyOn(control._subjects.state, 'next');
 
@@ -128,6 +136,8 @@ describe('setValues', () => {
         b: '20',
       });
     });
+
+    watchSub.unsubscribe();
 
     const valueNotifications = nextSpy.mock.calls.filter(
       (call) =>
@@ -217,6 +227,71 @@ describe('setValues', () => {
     expect(screen.getByRole('textbox')).toHaveValue('111');
   });
 
+  it('should not leave a stale element behind when setValues shrinks a field array', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ test: { name: string }[] }>({
+        defaultValues: {
+          test: [{ name: 'a' }, { name: 'b' }, { name: 'c' }],
+        },
+      }),
+    );
+
+    result.current.register('test.0.name');
+    result.current.register('test.1.name');
+    result.current.register('test.2.name');
+
+    await act(async () => {
+      result.current.setValues({
+        test: [{ name: 'x' }, { name: 'y' }],
+      });
+    });
+
+    expect(result.current.getValues()).toEqual({
+      test: [{ name: 'x' }, { name: 'y' }],
+    });
+  });
+
+  it('should handle setValues shrinking a field array down to empty', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ test: { name: string }[] }>({
+        defaultValues: {
+          test: [{ name: 'a' }, { name: 'b' }],
+        },
+      }),
+    );
+
+    result.current.register('test.0.name');
+    result.current.register('test.1.name');
+
+    await act(async () => {
+      result.current.setValues({
+        test: [],
+      });
+    });
+
+    expect(result.current.getValues()).toEqual({ test: [] });
+  });
+
+  it('should still propagate an explicitly set undefined value to a mounted field', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ a: string | undefined; b: string }>({
+        defaultValues: { a: '1', b: '2' },
+      }),
+    );
+
+    result.current.register('a');
+    result.current.register('b');
+
+    await act(async () => {
+      result.current.setValues({
+        a: undefined,
+        b: '2',
+      });
+    });
+
+    expect(result.current.getValues()).toEqual({ a: undefined, b: '2' });
+  });
+
   it('should update deep nested registered input values when setValues is called', async () => {
     const Component = () => {
       const { register, setValues } = useForm({
@@ -295,22 +370,17 @@ describe('setValues', () => {
     expect(values.b).toBe(nextB);
   });
 
-  it('should not deep clone the form tree per field in setFieldValue broadcasts during setValues', async () => {
+  it('should emit exactly one state notification for a setValues batch', async () => {
     const { result } = renderHook(() =>
-      useForm<{ a: { nested: string } }>({
-        defaultValues: { a: { nested: '1' } },
+      useForm<{ a: { nested: string }; b: string }>({
+        defaultValues: { a: { nested: '1' }, b: 'x' },
       }),
     );
 
-    // Registering on a non-input element gives the field a ref with no `type`,
-    // which is the setFieldValue branch that broadcasts the form tree. The
-    // value stored in _formValues is reference-preserved regardless of
-    // skipClone, so this optimization is only observable at the broadcast
-    // boundary: the per-field snapshot must be the live tree, not an
-    // O(formSize) deep clone produced once per mounted field.
-    const ref = document.createElement('div');
+    const refA = document.createElement('div');
     act(() => {
-      result.current.register('a').ref(ref);
+      result.current.register('a').ref(refA);
+      result.current.register('b');
     });
 
     const deliveredValues: object[] = [];
@@ -320,19 +390,13 @@ describe('setValues', () => {
     });
 
     await act(async () => {
-      result.current.setValues({ a: { nested: '10' } });
+      result.current.setValues({ a: { nested: '10' }, b: 'y' });
     });
     unsubscribe();
 
-    // The setFieldValue !ref.type branch and the _setValue broadcast both fire
-    // for this field, so a batch produces multiple notifications.
-    expect(deliveredValues.length).toBeGreaterThan(1);
-    // skipClone must be threaded through setFieldValue: every per-field
-    // broadcast reuses the one live form tree. A per-field deep clone would
-    // instead hand subscribers distinct object identities.
-    for (const values of deliveredValues) {
-      expect(values).toBe(deliveredValues[0]);
-    }
+    // All per-field emissions are suppressed; only the single final broadcast fires.
+    expect(deliveredValues.length).toBe(1);
+    expect(deliveredValues[0]).toEqual({ a: { nested: '10' }, b: 'y' });
   });
 
   it('should propagate shouldValidate option to trigger validation and update isValid', async () => {
@@ -507,6 +571,106 @@ describe('setValues', () => {
 
     expect(result.current.formState.isValid).toBe(false);
     expect(result.current.formState.errors.username).toBeDefined();
+  });
+
+  it('should update a multiple select registered under an array value', async () => {
+    const Component = () => {
+      const { register, setValues } = useForm<{ tags: string[] }>({
+        defaultValues: { tags: ['a'] },
+      });
+
+      return (
+        <>
+          <select multiple {...register('tags')} aria-label="tags">
+            <option value="a">a</option>
+            <option value="b">b</option>
+            <option value="c">c</option>
+          </select>
+          <button type="button" onClick={() => setValues({ tags: ['b', 'c'] })}>
+            set
+          </button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'set' }));
+    });
+
+    const select = screen.getByLabelText('tags') as HTMLSelectElement;
+
+    expect(
+      Array.from(select.selectedOptions, (option) => option.value),
+    ).toEqual(['b', 'c']);
+  });
+
+  it('should update a checkbox group registered under an array value', async () => {
+    const Component = () => {
+      const { register, setValues } = useForm<{ choices: string[] }>({
+        defaultValues: { choices: ['a'] },
+      });
+
+      return (
+        <>
+          <input
+            type="checkbox"
+            value="a"
+            {...register('choices')}
+            aria-label="a"
+          />
+          <input
+            type="checkbox"
+            value="b"
+            {...register('choices')}
+            aria-label="b"
+          />
+          <button type="button" onClick={() => setValues({ choices: ['b'] })}>
+            set
+          </button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'set' }));
+    });
+
+    expect(screen.getByLabelText('a')).not.toBeChecked();
+    expect(screen.getByLabelText('b')).toBeChecked();
+  });
+
+  it('should clear a multiple select when an empty array is provided', async () => {
+    const Component = () => {
+      const { register, setValues } = useForm<{ tags: string[] }>({
+        defaultValues: { tags: ['a'] },
+      });
+
+      return (
+        <>
+          <select multiple {...register('tags')} aria-label="tags">
+            <option value="a">a</option>
+            <option value="b">b</option>
+          </select>
+          <button type="button" onClick={() => setValues({ tags: [] })}>
+            set
+          </button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'set' }));
+    });
+
+    const select = screen.getByLabelText('tags') as HTMLSelectElement;
+
+    expect(select.selectedOptions).toHaveLength(0);
   });
 
   it('should not validate when shouldValidate is not provided', async () => {

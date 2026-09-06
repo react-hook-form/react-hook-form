@@ -9,6 +9,7 @@ import type {
 } from './types';
 import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
+import { useResyncOnReconnect } from './useResyncOnReconnect';
 
 /**
  * Subscribes to form state with re-renders isolated to this hook.
@@ -29,17 +30,19 @@ export function useFormState<
 ): UseFormStateReturn<TFieldValues> {
   const formControl = useFormControlContext<
     TFieldValues,
-    any,
+    unknown,
     TTransformedValues
   >();
   const { control = formControl, disabled, name, exact } = props || {};
-  const [formState, updateFormState] = React.useState<FormState<TFieldValues>>(
-    () => ({
-      ...control._formState,
-      defaultValues:
-        control._defaultValues as FormState<TFieldValues>['defaultValues'],
-    }),
-  );
+
+  const getCurrentFormState = () => ({
+    ...control._formState,
+    defaultValues:
+      control._defaultValues as FormState<TFieldValues>['defaultValues'],
+  });
+
+  const [formState, updateFormState] =
+    React.useState<FormState<TFieldValues>>(getCurrentFormState);
   const _localProxyFormState = React.useRef({
     isDirty: false,
     isLoading: false,
@@ -51,24 +54,32 @@ export function useFormState<
     errors: false,
   });
 
-  useIsomorphicLayoutEffect(
-    () =>
-      control._subscribe({
-        name,
-        formState: _localProxyFormState.current,
-        exact,
-        callback: (formState) => {
-          !disabled &&
-            updateFormState({
-              ...control._formState,
-              ...formState,
-              defaultValues:
-                control._defaultValues as FormState<TFieldValues>['defaultValues'],
-            });
-        },
-      }),
-    [name, disabled, exact],
-  );
+  const { resyncIfNeeded, snapshot } =
+    useResyncOnReconnect<FormState<TFieldValues>>(getCurrentFormState);
+
+  useIsomorphicLayoutEffect(() => {
+    resyncIfNeeded(!disabled, getCurrentFormState, updateFormState);
+
+    const unsubscribe = control._subscribe({
+      name,
+      formState: _localProxyFormState.current,
+      exact,
+      callback: (formState) => {
+        !disabled &&
+          updateFormState({
+            ...control._formState,
+            ...formState,
+            defaultValues:
+              control._defaultValues as FormState<TFieldValues>['defaultValues'],
+          });
+      },
+    });
+
+    return () => {
+      unsubscribe();
+      snapshot(!disabled, getCurrentFormState);
+    };
+  }, [control, name, disabled, exact, resyncIfNeeded, snapshot]);
 
   React.useEffect(() => {
     _localProxyFormState.current.isValid && control._setValid(true);

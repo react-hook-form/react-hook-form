@@ -14,6 +14,7 @@ import type {
 } from './types';
 import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
+import { useResyncOnReconnect } from './useResyncOnReconnect';
 
 /** Watches the entire form; re-renders when any value changes. */
 export function useWatch<
@@ -137,14 +138,16 @@ export function useWatch<TFieldValues extends FieldValues>(
 
   _compute.current = compute;
 
-  const [value, updateValue] = React.useState(() => {
+  const getInitialOutput = () => {
     const defaultValue = control._getWatch(
       name as InternalFieldName,
       _defaultValue.current as DeepPartialSkipArrayKey<TFieldValues>,
     );
 
     return _compute.current ? _compute.current(defaultValue) : defaultValue;
-  });
+  };
+
+  const [value, updateValue] = React.useState(getInitialOutput);
 
   const getCurrentOutput = React.useCallback(
     (values?: TFieldValues) => {
@@ -187,6 +190,14 @@ export function useWatch<TFieldValues extends FieldValues>(
     [control._formValues, control._names, disabled, name],
   );
 
+  const { resyncIfNeeded, snapshot } =
+    useResyncOnReconnect<unknown>(getInitialOutput);
+
+  const _refreshValue = React.useRef(refreshValue);
+  _refreshValue.current = refreshValue;
+  const _getCurrentOutput = React.useRef(getCurrentOutput);
+  _getCurrentOutput.current = getCurrentOutput;
+
   useIsomorphicLayoutEffect(() => {
     if (
       _prevControl.current !== control ||
@@ -194,20 +205,34 @@ export function useWatch<TFieldValues extends FieldValues>(
     ) {
       _prevControl.current = control;
       _prevName.current = name;
-      refreshValue();
+      _refreshValue.current();
+    } else {
+      resyncIfNeeded(
+        !disabled,
+        () => _getCurrentOutput.current(),
+        (currentValue) => {
+          updateValue(currentValue);
+          _computeFormValues.current = currentValue;
+        },
+      );
     }
 
-    return control._subscribe({
+    const unsubscribe = control._subscribe({
       name,
       formState: {
         values: true,
       },
       exact,
       callback: (formState) => {
-        refreshValue(formState.values);
+        _refreshValue.current(formState.values);
       },
     });
-  }, [control, exact, name, refreshValue]);
+
+    return () => {
+      unsubscribe();
+      snapshot(!disabled, () => _getCurrentOutput.current());
+    };
+  }, [control, exact, name, disabled, resyncIfNeeded, snapshot]);
 
   React.useEffect(() => control._removeUnmounted());
 
@@ -219,18 +244,17 @@ export function useWatch<TFieldValues extends FieldValues>(
   const controlChanged = _prevControl.current !== control;
   const prevName = _prevName.current;
 
-  // Cache the computed output to avoid duplicate calls within the same render
-  // We include shouldReturnImmediate in deps to ensure proper recomputation
-  const computedOutput = React.useMemo(() => {
+  // `null`/`undefined` are valid watched values, so a boolean flag (rather
+  // than a sentinel return value) decides whether to return the freshly
+  // computed output instead of the possibly-stale state value.
+  const shouldReturnImmediate = React.useMemo(() => {
     if (disabled) {
-      return null;
+      return false;
     }
 
     const nameChanged = !controlChanged && !deepEqual(prevName, name);
-    const shouldReturnImmediate = controlChanged || nameChanged;
+    return controlChanged || nameChanged;
+  }, [disabled, controlChanged, name, prevName]);
 
-    return shouldReturnImmediate ? getCurrentOutput() : null;
-  }, [disabled, controlChanged, name, prevName, getCurrentOutput]);
-
-  return computedOutput !== null ? computedOutput : value;
+  return shouldReturnImmediate ? getCurrentOutput() : value;
 }

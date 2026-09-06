@@ -1,5 +1,143 @@
 # Changelog
 
+## [7.87.0] - 2026-08-30
+
+### Added
+
+- `shouldTouch` option for `trigger()`
+- `OpaqueTypes` registry for opaque leaf types
+
+### Fixed
+
+- Inconsistent behavior among `useController().field.onChange()`-like APIs
+- `Controller` under a null parent submitting `undefined` instead of a value
+- `ERR_MODULE_NOT_FOUND` resolving `react-hook-form` due to a `react-server` declaration (Next.js builds)
+- `useWatch` never reconciling when an `Activity` subtree is hidden on its first render
+- `resetField` not recomputing `isValid` for subscribe-only consumers
+- `generateWatchOutput` ignoring `defaultValue` for an array of names
+- `useFormState` never reconciling when an `Activity` subtree is hidden on its first render
+
+## [7.86.0] - 2026-08-22
+
+### Added
+
+- Type-safe `getErrors` method
+
+### Performance
+
+- Improve `createFormControl`
+- Improve clone object check
+- Avoid cloning values in `unregister` without subscribers
+
+### Fixed
+
+- Field array update leaving stale errors and touched state at the updated index
+- `flatten` discarding `File` and `Blob` values instead of treating them as leaf nodes
+- `validateField` not passing the field error to `setCustomValidity` when `criteriaMode` is `all`
+- `hasValidation` treating falsy but valid values (`min: 0`, `max: 0`, `minLength: 0`, `maxLength: 0`, `required: ''`) as no validation
+- `setValue` targeting a nested leaf not notifying a `Controller` registered on a field array item root
+- `setValues` not updating fields registered under an object or array value
+- `useWatch` returning a stale value on name change when the new value is `null`
+- `unregister` inverting `keepDirty` when broadcasting `isDirty`
+
+## [7.85.0] - 2026-08-08
+
+### Added
+
+- Support `<Activity />`
+
+### Fixed
+
+- `getFieldState` error resolution from a field path
+- `useWatch` discarding `useForm({ defaultValues })` in favor of its own `defaultValue` before the form mounts
+- `setValue` emitting a duplicate `values` state notification for fields without a native input ref
+- Stale render re-creating a field array path vacated by an array action
+- `useFieldArray` root-level error (`errors.name.root`) being lost on `append`/`prepend`/`insert`/`remove`
+- `min`/`max` validation being skipped for `valueAsDate` fields
+
+## [7.84.0] - 2026-08-01
+
+### Improvements
+
+- `handleSubmit` returns the typed result of the `onValid` callback instead of discarding it
+- `<Form />` supports a function-based `action` (Server Action style) in addition to URL-string actions
+- Improve performance and reduce bundle size
+
+### Fixed
+
+- `reset()` with `resetOptions.keepDirtyValues` freezing clean sibling fields in a nested object when another field in that object is dirty
+- Restore missing `FieldArray` and `FormState` type exports
+- `setValues` not notifying `useFieldArray` subscribers, leaving rendered fields stale
+
+## [7.83.0] - 2026-07-25
+
+### Improvements
+
+- Enhance `getEventValue` to handle file inputs
+- Improve TypeScript performance with a hard cap at 10 levels of recursive type depth
+
+### Fixed
+
+- Clear internal errors state on argument-less `clearErrors()`
+- Preserve `dirtyFields` reference stability
+- Old checkbox/radio elements polluting internal field state
+- `useController` not re-subscribing `onChange`/`onBlur` when `control` changes
+- Allow validation messages to be defined even if their related value is `undefined`
+
+## [7.82.0] - 2026-07-18
+
+### Added
+
+- Opt-in `delayError` option for `setValue` to delay validation error updates
+
+### Fixed
+
+- Expose `resetDefaultValues` through form context
+- `setValue` with `shouldDirty` not updating dirty state correctly when the form is disabled
+- Preserve `dirtyFields` boolean values for registered array fields
+- Restore `FieldArray` component export
+
+### Performance
+
+- Improve `getDirtyFields` performance, especially for larger forms and deeply nested values
+
+## [7.81.0] - 2026-07-05
+
+### Added
+
+- `FieldArray` component built on `useFieldArray` for controlled field-array rendering
+
+### Fixed
+
+- `clearErrors` changing the `name` value from `form.subscribe`
+- `reset` triggering `subscribe` with the latest name instead of `undefined`
+- `setValues` leaving stale elements behind when shrinking a field array
+- `flatten` preserving `Date` values as leaf nodes
+- `useFieldArray` min length validation error changing location in the `errors` object
+- `useController` not reflecting a cleared parent object in controlled fields
+
+### Security
+
+- Harden `unset()` against prototype-path traversal (`__proto__` / `constructor` / `prototype`), matching the existing `set()` guard
+
+### Performance
+
+- Improve re-render with `useFieldArray` reset
+
+## [7.80.0] - 2026-06-20
+
+### Added
+
+- `disabled` prop support for individual fields within `useFieldArray`
+
+### Fixed
+
+- `deepEqual` incorrectly treating empty array `[]` and empty plain object `{}` as equal
+
+### Performance
+
+- Improve `onChange`, `setValid`, dirty checking, `setValue`, and `setValues` performance
+
 ## [7.79.0] - 2026-06-13
 
 ### Added

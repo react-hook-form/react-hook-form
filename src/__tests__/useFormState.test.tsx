@@ -1,5 +1,11 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 
 import { Controller } from '../controller';
 import type { Control } from '../types';
@@ -9,6 +15,15 @@ import { FormProvider } from '../useFormContext';
 import { useFormState } from '../useFormState';
 import deepEqual from '../utils/deepEqual';
 import noop from '../utils/noop';
+
+// Activity is a React 19.2+ API. Only run Activity-dependent tests when the
+// installed React actually provides it.
+const Activity = (React as unknown as { Activity?: unknown })
+  .Activity as React.ComponentType<{
+  mode: 'hidden' | 'visible';
+  children?: React.ReactNode;
+}>;
+const itWithActivity = Activity ? it : it.skip;
 
 describe('useFormState', () => {
   it('should render correct form state with isDirty, dirty, touched', () => {
@@ -838,5 +853,258 @@ describe('useFormState', () => {
     await waitFor(() => {
       screen.getByText('disabled');
     });
+  });
+
+  it('should re-subscribe when the control prop changes identity', async () => {
+    function Consumer({ control }: { control: Control<{ test: string }> }) {
+      const { isDirty } = useFormState({ control });
+      return <p>{isDirty ? 'dirty' : 'pristine'}</p>;
+    }
+
+    function App() {
+      const formA = useForm({ defaultValues: { test: '' } });
+      const formB = useForm({ defaultValues: { test: '' } });
+      const [active, setActive] = React.useState<'a' | 'b'>('a');
+
+      return (
+        <>
+          <input data-testid="inputA" {...formA.register('test')} />
+          <input data-testid="inputB" {...formB.register('test')} />
+          <button onClick={() => setActive('b')}>switch</button>
+          <Consumer control={active === 'a' ? formA.control : formB.control} />
+        </>
+      );
+    }
+
+    render(<App />);
+
+    expect(screen.getByText('pristine')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('switch'));
+
+    fireEvent.change(screen.getByTestId('inputB'), {
+      target: { value: 'changed' },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('dirty')).toBeInTheDocument();
+    });
+  });
+
+  describe('with Activity', () => {
+    itWithActivity(
+      'should resync isSubmitting after Activity restoration when a submit resolves while hidden',
+      async () => {
+        type FormValues = { amount: string };
+
+        let resolveSubmit: () => void = () => {
+          throw new Error('Submit was not started.');
+        };
+
+        function Watcher({ control }: { control: Control<FormValues> }) {
+          const { isSubmitting } = useFormState({ control });
+
+          return (
+            <span data-testid="submitting">{isSubmitting ? 'yes' : 'no'}</span>
+          );
+        }
+
+        function ActivityContent() {
+          const { register, handleSubmit, control } = useForm<FormValues>();
+
+          return (
+            <>
+              <form
+                onSubmit={handleSubmit(
+                  () =>
+                    new Promise<void>((resolve) => {
+                      resolveSubmit = resolve;
+                    }),
+                )}
+              >
+                <input {...register('amount')} />
+                <button type="submit" data-testid="submit">
+                  Review
+                </button>
+              </form>
+              <Watcher control={control} />
+            </>
+          );
+        }
+
+        function Component() {
+          const [mode, setMode] = React.useState<'hidden' | 'visible'>(
+            'visible',
+          );
+
+          return (
+            <>
+              <button type="button" onClick={() => setMode('hidden')}>
+                Hide
+              </button>
+              <button type="button" onClick={() => setMode('visible')}>
+                Show
+              </button>
+              <Activity mode={mode}>
+                <ActivityContent />
+              </Activity>
+            </>
+          );
+        }
+
+        render(<Component />);
+
+        await act(async () => {
+          fireEvent.submit(screen.getByTestId('submit').closest('form')!);
+          await Promise.resolve();
+        });
+
+        expect(screen.getByTestId('submitting')).toHaveTextContent('yes');
+
+        // The parent hides the subtree while the submit is still in flight,
+        // matching the reported race in #13563.
+        fireEvent.click(screen.getByRole('button', { name: 'Hide' }));
+
+        await act(async () => {
+          resolveSubmit();
+          await Promise.resolve();
+        });
+
+        fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+        expect(screen.getByTestId('submitting')).toHaveTextContent('no');
+      },
+    );
+
+    itWithActivity(
+      'should synchronize form state when an Activity subtree becomes visible for the first time',
+      () => {
+        type FormValues = { name: string };
+
+        const ActivityContent = ({
+          control,
+        }: {
+          control: Control<FormValues>;
+        }) => {
+          const { isDirty } = useFormState({ control });
+
+          return (
+            <span data-testid="dirty">{isDirty ? 'dirty' : 'pristine'}</span>
+          );
+        };
+
+        const Component = () => {
+          const { control, setValue } = useForm<FormValues>({
+            defaultValues: { name: 'initial' },
+          });
+          const [mode, setMode] = React.useState<'hidden' | 'visible'>(
+            'hidden',
+          );
+
+          return (
+            <>
+              <button
+                type="button"
+                onClick={() =>
+                  setValue('name', 'updated', { shouldDirty: true })
+                }
+              >
+                Update
+              </button>
+              <button type="button" onClick={() => setMode('visible')}>
+                Show
+              </button>
+              <Activity mode={mode}>
+                <ActivityContent control={control} />
+              </Activity>
+            </>
+          );
+        };
+
+        render(
+          <React.StrictMode>
+            <Component />
+          </React.StrictMode>,
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+        expect(screen.getByTestId('dirty')).toHaveTextContent('dirty');
+      },
+    );
+
+    itWithActivity(
+      'should synchronize Controller field state when an Activity subtree becomes visible for the first time',
+      () => {
+        type FormValues = { name: string };
+
+        const ActivityContent = ({
+          control,
+        }: {
+          control: Control<FormValues>;
+        }) => (
+          <Controller
+            control={control}
+            name="name"
+            render={({ field, fieldState }) => (
+              <>
+                <input {...field} />
+                <span data-testid="error">
+                  {fieldState.error?.message || 'no-error'}
+                </span>
+              </>
+            )}
+          />
+        );
+
+        const Component = () => {
+          const { control, setError, clearErrors } = useForm<FormValues>({
+            defaultValues: { name: 'initial' },
+          });
+          const [mode, setMode] = React.useState<'hidden' | 'visible' | null>(
+            null,
+          );
+
+          return (
+            <>
+              <button
+                type="button"
+                onClick={() => setError('name', { message: 'Server said no.' })}
+              >
+                Set error
+              </button>
+              <button type="button" onClick={() => setMode('hidden')}>
+                Mount hidden
+              </button>
+              <button type="button" onClick={() => clearErrors()}>
+                Clear errors
+              </button>
+              <button type="button" onClick={() => setMode('visible')}>
+                Show
+              </button>
+              {mode && (
+                <Activity mode={mode}>
+                  <ActivityContent control={control} />
+                </Activity>
+              )}
+            </>
+          );
+        };
+
+        render(
+          <React.StrictMode>
+            <Component />
+          </React.StrictMode>,
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: 'Set error' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Mount hidden' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Clear errors' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+        expect(screen.getByTestId('error')).toHaveTextContent('no-error');
+      },
+    );
   });
 });

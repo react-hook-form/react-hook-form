@@ -91,6 +91,94 @@ describe('unregister', () => {
     await waitFor(() => expect(isDirty).toBe(false));
   });
 
+  it('should recompute isDirty when a dirty field is unregistered', async () => {
+    let isDirty: boolean | null = null;
+    let dirtyFields: Record<string, unknown> = {};
+
+    const App = () => {
+      const [show, setShow] = React.useState(true);
+      const { register, unregister, formState } = useForm({
+        defaultValues: { firstName: 'bill', lastName: 'luo' },
+      });
+
+      isDirty = formState.isDirty;
+      dirtyFields = formState.dirtyFields;
+
+      return (
+        <form>
+          {show && <input {...register('firstName')} placeholder="firstName" />}
+          <input {...register('lastName')} placeholder="lastName" />
+          <button
+            type="button"
+            onClick={() => {
+              unregister('firstName');
+              setShow(false);
+            }}
+          >
+            unregister
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByPlaceholderText('firstName'), {
+      target: { value: 'changed' },
+    });
+
+    await waitFor(() => expect(isDirty).toBe(true));
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => expect(dirtyFields).toEqual({}));
+    expect(isDirty).toBe(false);
+  });
+
+  it('should preserve isDirty when a dirty field is unregistered with keepDirty', async () => {
+    let isDirty: boolean | null = null;
+    let dirtyFields: Record<string, unknown> = {};
+
+    const App = () => {
+      const [show, setShow] = React.useState(true);
+      const { register, unregister, formState } = useForm({
+        defaultValues: { firstName: 'bill', lastName: 'luo' },
+      });
+
+      isDirty = formState.isDirty;
+      dirtyFields = formState.dirtyFields;
+
+      return (
+        <form>
+          {show && <input {...register('firstName')} placeholder="firstName" />}
+          <input {...register('lastName')} placeholder="lastName" />
+          <button
+            type="button"
+            onClick={() => {
+              unregister('firstName', { keepDirty: true });
+              setShow(false);
+            }}
+          >
+            unregister
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByPlaceholderText('firstName'), {
+      target: { value: 'changed' },
+    });
+
+    await waitFor(() => expect(isDirty).toBe(true));
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => expect(dirtyFields).toEqual({ firstName: true }));
+    expect(isDirty).toBe(true);
+  });
+
   it('should not flip isDirty to true when a field with no defaultValue is registered from useEffect', async () => {
     let isDirty: boolean | null = null;
 
@@ -113,5 +201,99 @@ describe('unregister', () => {
     render(<App />);
 
     await waitFor(() => expect(isDirty).toBe(false));
+  });
+
+  it('should cancel a pending delayError timer when the field is unregistered', async () => {
+    jest.useFakeTimers();
+
+    const message = 'too long.';
+
+    const App = () => {
+      const [show, setShow] = React.useState(true);
+      const {
+        register,
+        formState: { errors },
+      } = useForm<{ test: string }>({
+        delayError: 500,
+        mode: 'onChange',
+        shouldUnregister: true,
+      });
+
+      return (
+        <div>
+          {show && <input {...register('test', { maxLength: 4 })} />}
+          <button type="button" onClick={() => setShow(false)}>
+            hide
+          </button>
+          {errors.test && <p>{message}</p>}
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    // Schedule a delayed error, then unmount the field before the delay elapses.
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '123456' },
+      });
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'hide' }));
+
+    await act(async () => {
+      jest.advanceTimersByTime(500);
+    });
+
+    // The field is gone, so this error would be impossible for a user to clear.
+    expect(screen.queryByText(message)).not.toBeInTheDocument();
+
+    jest.useRealTimers();
+  });
+
+  it('should keep submitting a value retained by keepValue after a disabled field is unregistered', async () => {
+    const onSubmit = jest.fn();
+
+    const App = () => {
+      const [show, setShow] = React.useState(true);
+      const { register, unregister, handleSubmit } = useForm<{
+        test: string;
+        firstName: string;
+      }>({
+        defaultValues: { test: 'kept', firstName: 'bill' },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {show && <input {...register('test', { disabled: true })} />}
+          <input {...register('firstName')} />
+          <button
+            type="button"
+            onClick={() => {
+              setShow(false);
+              unregister('test', { keepValue: true });
+            }}
+          >
+            hide
+          </button>
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'hide' }));
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    // The field is no longer registered, so it is no longer a disabled field
+    // and handleSubmit must stop stripping the value keepValue retained.
+    expect(onSubmit).toHaveBeenCalledWith(
+      { test: 'kept', firstName: 'bill' },
+      expect.any(Object),
+    );
   });
 });

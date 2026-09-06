@@ -29,6 +29,15 @@ let i = 0;
 
 jest.mock('../logic/generateId', () => () => String(i++));
 
+// Activity is a React 19.2+ API. Only run Activity-dependent tests when the
+// installed React actually provides it.
+const Activity = (React as unknown as { Activity?: unknown })
+  .Activity as React.ComponentType<{
+  mode: 'hidden' | 'visible';
+  children?: React.ReactNode;
+}>;
+const itWithActivity = Activity ? it : it.skip;
+
 describe('useFieldArray', () => {
   beforeEach(() => {
     i = 0;
@@ -678,7 +687,12 @@ describe('useFieldArray', () => {
 
         return (
           <form>
-            {errors.test?.type && <p>Array error: {errors.test.message}</p>}
+            {(errors.test?.root?.type ?? errors.test?.type) && (
+              <p>
+                Array error:{' '}
+                {errors.test?.root?.message ?? errors.test?.message}
+              </p>
+            )}
             {fields.map((item, i) => (
               <div key={item.id}>
                 <input {...register(`test.${i}.value` as const)} />
@@ -1321,6 +1335,52 @@ describe('useFieldArray', () => {
       expect(fieldsTemp).toEqual([{ id: '5', value: 'default' }]);
     });
 
+    it('should only notify a useWatch subscriber once when reset is called', () => {
+      let renderCount = 0;
+
+      const Watch = ({ control }: { control: Control<any> }) => {
+        useWatch({ control, name: 'test' });
+        renderCount++;
+        return null;
+      };
+
+      const App = () => {
+        const { register, reset, control } = useForm({
+          defaultValues: {
+            test: [{ value: 'default' }],
+          },
+        });
+        const { fields } = useFieldArray({
+          name: 'test',
+          control,
+        });
+
+        return (
+          <form>
+            {fields.map((field, index) => (
+              <input key={field.id} {...register(`test.${index}.value`)} />
+            ))}
+
+            <button
+              type={'button'}
+              onClick={() => reset({ test: [{ value: 'reset' }] })}
+            >
+              reset
+            </button>
+
+            <Watch control={control} />
+          </form>
+        );
+      };
+
+      render(<App />);
+      renderCount = 0;
+
+      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+
+      expect(renderCount).toBe(1);
+    });
+
     it('should reset with field array with shouldUnregister set to false', () => {
       const { result } = renderHook(() => {
         const { register, reset, control } = useForm({
@@ -1652,6 +1712,60 @@ describe('useFieldArray', () => {
       // descendant setValue, which called setFields and re-rendered the host
       // on every keystroke-equivalent write.
       expect(renderCount).toBe(rendersAfterMount);
+    });
+
+    it('should resize a nested field array when setValue targets an ancestor object path (#13621)', async () => {
+      let setValue: UseFormReturn<{
+        myForm: { userDetails: { firstName: string; lastName: string }[] };
+      }>['setValue'];
+      let fieldsLength = 0;
+
+      const Component = () => {
+        const {
+          register,
+          control,
+          setValue: tempSetValue,
+        } = useForm({
+          defaultValues: {
+            myForm: {
+              userDetails: [{ firstName: '', lastName: '' }],
+            },
+          },
+        });
+        const { fields } = useFieldArray({
+          name: 'myForm.userDetails',
+          control,
+        });
+
+        setValue = tempSetValue;
+        fieldsLength = fields.length;
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                {...register(`myForm.userDetails.${i}.firstName` as const)}
+              />
+            ))}
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      expect(fieldsLength).toBe(1);
+
+      await act(async () => {
+        setValue('myForm', {
+          userDetails: [
+            { firstName: 'Foo', lastName: 'Far' },
+            { firstName: 'Boo', lastName: 'Bar' },
+          ],
+        });
+      });
+
+      expect(fieldsLength).toBe(2);
     });
 
     it.each(['dirtyFields'])(
@@ -4281,6 +4395,115 @@ describe('useFieldArray', () => {
 
       expect(screen.queryByAltText('Please enter some data')).toBeNull();
     });
+
+    it('should keep the root error after append/prepend/insert/remove when triggered before submit', async () => {
+      const App = () => {
+        const {
+          control,
+          trigger,
+          formState: { errors },
+        } = useForm({
+          defaultValues: {
+            test: [{ test: '' }],
+          },
+        });
+
+        const { append } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            validate: (values) =>
+              (Array.isArray(values) && values.length >= 3) ||
+              'Min length should be 3',
+          },
+        });
+
+        return (
+          <div>
+            <p>{errors.test?.root?.message}</p>
+            <button type={'button'} onClick={() => trigger('test')}>
+              trigger
+            </button>
+            <button type={'button'} onClick={() => append({ test: '' })}>
+              append
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+      });
+
+      screen.getByText('Min length should be 3');
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      screen.getByText('Min length should be 3');
+    });
+
+    it('should keep the root error after swap/move when triggered before submit', async () => {
+      const App = () => {
+        const {
+          control,
+          trigger,
+          formState: { errors },
+        } = useForm({
+          defaultValues: {
+            test: [{ test: 'a' }, { test: 'b' }, { test: 'c' }],
+          },
+        });
+
+        const { swap, move } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            validate: (values) =>
+              (Array.isArray(values) && values.length >= 5) ||
+              'Min length should be 5',
+          },
+        });
+
+        return (
+          <div>
+            <p>{errors.test?.root?.message}</p>
+            <button type={'button'} onClick={() => trigger('test')}>
+              trigger
+            </button>
+            <button type={'button'} onClick={() => swap(0, 1)}>
+              swap
+            </button>
+            <button type={'button'} onClick={() => move(0, 2)}>
+              move
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+      });
+
+      screen.getByText('Min length should be 5');
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'swap' }));
+      });
+
+      screen.getByText('Min length should be 5');
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'move' }));
+      });
+
+      screen.getByText('Min length should be 5');
+    });
   });
 
   describe('with nested field array ', () => {
@@ -5267,4 +5490,126 @@ it('should not modify form values when disabled methods are called', () => {
 
   expect(result.current.fieldArray.fields).toEqual([]);
   expect(result.current.form.getValues('items')).toEqual([]);
+});
+
+it('should propagate disabled to field objects when disabled is set', () => {
+  type FormValues = { items: { value: string }[] };
+
+  const { result } = renderHook(() => {
+    const form = useForm<FormValues>({
+      defaultValues: { items: [{ value: 'a' }, { value: 'b' }] },
+    });
+    const fieldArray = useFieldArray({
+      control: form.control,
+      name: 'items',
+      disabled: true,
+    });
+    return { form, fieldArray };
+  });
+
+  expect(result.current.fieldArray.fields).toHaveLength(2);
+  expect(result.current.fieldArray.fields[0].disabled).toBe(true);
+  expect(result.current.fieldArray.fields[1].disabled).toBe(true);
+  expect(result.current.fieldArray.fields[0].value).toBe('a');
+  expect(result.current.fieldArray.fields[1].value).toBe('b');
+});
+
+describe('useFieldArray with Activity', () => {
+  type FormValues = { test: { value: string }[] };
+
+  const ActivityContent = ({ control }: { control: Control<FormValues> }) => {
+    const { fields } = useFieldArray({ control, name: 'test' });
+
+    return (
+      <span data-testid="field-array">
+        {fields.map((field) => field.value).join(',')}
+      </span>
+    );
+  };
+
+  itWithActivity(
+    'should synchronize field array values when an Activity subtree becomes visible for the first time',
+    () => {
+      const Component = () => {
+        const { control, reset } = useForm<FormValues>({
+          defaultValues: { test: [{ value: 'a' }] },
+        });
+        const [mode, setMode] = useState<'hidden' | 'visible'>('hidden');
+
+        return (
+          <>
+            <button
+              type="button"
+              onClick={() => reset({ test: [{ value: 'b' }, { value: 'c' }] })}
+            >
+              Reset
+            </button>
+            <button type="button" onClick={() => setMode('visible')}>
+              Show
+            </button>
+            <Activity mode={mode}>
+              <ActivityContent control={control} />
+            </Activity>
+          </>
+        );
+      };
+
+      render(
+        <React.StrictMode>
+          <Component />
+        </React.StrictMode>,
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+      expect(screen.getByTestId('field-array')).toHaveTextContent('b,c');
+    },
+  );
+
+  itWithActivity(
+    'should synchronize field array values after Activity restoration',
+    () => {
+      const Component = () => {
+        const { control, setValue } = useForm<FormValues>({
+          defaultValues: { test: [{ value: 'a' }] },
+        });
+        const [mode, setMode] = useState<'hidden' | 'visible'>('visible');
+
+        return (
+          <>
+            <button
+              type="button"
+              onClick={() => setValue('test', [{ value: 'b' }, { value: 'c' }])}
+            >
+              Update
+            </button>
+            <button type="button" onClick={() => setMode('hidden')}>
+              Hide
+            </button>
+            <button type="button" onClick={() => setMode('visible')}>
+              Show
+            </button>
+            <Activity mode={mode}>
+              <ActivityContent control={control} />
+            </Activity>
+          </>
+        );
+      };
+
+      render(
+        <React.StrictMode>
+          <Component />
+        </React.StrictMode>,
+      );
+
+      expect(screen.getByTestId('field-array')).toHaveTextContent('a');
+
+      fireEvent.click(screen.getByRole('button', { name: 'Hide' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+      expect(screen.getByTestId('field-array')).toHaveTextContent('b,c');
+    },
+  );
 });
