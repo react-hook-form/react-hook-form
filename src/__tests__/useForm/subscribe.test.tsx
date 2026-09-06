@@ -240,6 +240,58 @@ describe('subscribe', () => {
     await waitFor(() => expect(events).toEqual(['blur']));
   });
 
+  it('should preserve the blur event type on the delayed error callback when delayError is set', async () => {
+    jest.useFakeTimers({ doNotFake: ['nextTick'] });
+
+    const calls: { type?: string; hasError: boolean }[] = [];
+
+    const App = () => {
+      const { register, subscribe } = useForm({
+        mode: 'onBlur',
+        delayError: 500,
+        defaultValues: {
+          name: '',
+        },
+      });
+
+      React.useEffect(() => {
+        return subscribe({
+          formState: {
+            errors: true,
+          },
+          callback: ({ type, errors }) => {
+            calls.push({ type, hasError: !!errors?.name });
+          },
+        });
+      }, [subscribe]);
+
+      return (
+        <form>
+          <input aria-label="name" {...register('name', { required: true })} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    // the blur handler is async (it awaits field validation before the
+    // delayed-error path schedules its debounce), so the act() needs to be
+    // async too to let that microtask chain settle before we advance timers.
+    await act(async () => {
+      fireEvent.blur(screen.getByLabelText('name'));
+    });
+
+    await act(async () => {
+      jest.advanceTimersByTime(500);
+    });
+
+    const errorCall = calls.find((call) => call.hasError);
+    expect(errorCall).toBeDefined();
+    expect(errorCall!.type).toBe('blur');
+
+    jest.useRealTimers();
+  });
+
   it('should report a submit event type when the form is submitted', async () => {
     const events: (string | undefined)[] = [];
 

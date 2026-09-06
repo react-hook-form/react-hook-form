@@ -355,11 +355,17 @@ export function createFormControl<
     }
   };
 
-  const updateErrors = (name: InternalFieldName, error: FieldError) => {
+  const updateErrors = (
+    name: InternalFieldName,
+    error: FieldError,
+    type?: EventType,
+  ) => {
     set(_formState.errors, name, error);
     _formState.errors = { ..._formState.errors };
     _subjects.state.next({
+      name,
       errors: _formState.errors,
+      ...(type ? { type } : {}),
     });
   };
 
@@ -584,7 +590,7 @@ export function createFormControl<
 
     if (_options.delayError && error) {
       delayErrorCallbacks[name] = debounce(name, () =>
-        updateErrors(name, error),
+        updateErrors(name, error, type),
       );
       delayErrorCallbacks[name](_options.delayError);
     } else {
