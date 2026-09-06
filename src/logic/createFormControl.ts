@@ -574,6 +574,7 @@ export function createFormControl<
       isDirty?: boolean;
       touched?: FieldNamesMarkedBoolean<TFieldValues>;
     },
+    type?: EventType,
   ) => {
     const previousFieldError = get(_formState.errors, name);
     const shouldUpdateValid =
@@ -604,6 +605,7 @@ export function createFormControl<
         ...(shouldUpdateValid && isBoolean(isValid) ? { isValid } : {}),
         errors: _formState.errors,
         name,
+        ...(type ? { type } : {}),
       };
 
       _subjects.state.next(updatedFormState);
@@ -1185,7 +1187,14 @@ export function createFormControl<
 
         return (
           shouldRender &&
-          _subjects.state.next({ name, ...(watched ? {} : fieldState) })
+          _subjects.state.next({
+            name,
+            // `watched` is always false for blur (see isWatched), so this
+            // never turns an otherwise name-only, force-rendered watch
+            // notification into a non-empty (and therefore skipped) one.
+            ...(isBlurEvent ? { type: event.type } : {}),
+            ...(watched ? {} : fieldState),
+          })
         );
       }
 
@@ -1261,7 +1270,7 @@ export function createFormControl<
               | FieldPath<TFieldValues>
               | FieldPath<TFieldValues>[],
           );
-        shouldRenderByError(name, isValid, error, fieldState);
+        shouldRenderByError(name, isValid, error, fieldState, event.type);
       }
     }
   };
@@ -1798,6 +1807,7 @@ export function createFormControl<
       }
 
       _subjects.state.next({
+        type: EVENTS.SUBMIT,
         isSubmitted: true,
         isSubmitting: false,
         isSubmitSuccessful: isEmptyObject(_formState.errors) && !onValidError,

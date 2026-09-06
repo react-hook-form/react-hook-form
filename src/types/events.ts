@@ -2,6 +2,7 @@ export type EventType =
   | 'focus'
   | 'blur'
   | 'change'
+  | 'submit'
   | 'changeText'
   | 'valueChange'
   | 'contentSizeChange'
