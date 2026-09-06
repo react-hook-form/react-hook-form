@@ -271,6 +271,87 @@ describe('subscribe', () => {
     await waitFor(() => expect(events).toEqual(['submit']));
   });
 
+  it('should report a submit event type even when submission fails validation', async () => {
+    const calls: { type?: string; isSubmitted?: boolean }[] = [];
+
+    const App = () => {
+      const { register, handleSubmit, subscribe } = useForm({
+        defaultValues: { name: '' },
+      });
+
+      React.useEffect(() => {
+        return subscribe({
+          formState: {
+            isSubmitted: true,
+            errors: true,
+          },
+          callback: ({ type, isSubmitted }) => {
+            calls.push({ type, isSubmitted });
+          },
+        });
+      }, [subscribe]);
+
+      return (
+        <form onSubmit={handleSubmit(() => undefined)}>
+          <input aria-label="name" {...register('name', { required: true })} />
+          <button type="submit">Submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+    await waitFor(() =>
+      expect(calls).toEqual([{ type: 'submit', isSubmitted: true }]),
+    );
+  });
+
+  it('should report the submit event type only after an async onValid resolves', async () => {
+    const calls: { type?: string; isSubmitted?: boolean }[] = [];
+    let resolveOnValid: () => void;
+    const onValidPromise = new Promise<void>((resolve) => {
+      resolveOnValid = resolve;
+    });
+
+    const App = () => {
+      const { handleSubmit, subscribe } = useForm();
+
+      React.useEffect(() => {
+        return subscribe({
+          formState: {
+            isSubmitted: true,
+          },
+          callback: ({ type, isSubmitted }) => {
+            calls.push({ type, isSubmitted });
+          },
+        });
+      }, [subscribe]);
+
+      return (
+        <form onSubmit={handleSubmit(() => onValidPromise)}>
+          <button type="submit">Submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+    // the async onValid hasn't resolved yet, so the submit-tagged
+    // notification (which fires after handleSubmit awaits onValid) must
+    // not have been sent yet.
+    expect(calls).toEqual([]);
+
+    resolveOnValid!();
+
+    await waitFor(() =>
+      expect(calls).toEqual([{ type: 'submit', isSubmitted: true }]),
+    );
+  });
+
   it('should notify a subscriber tracking isReady once the form mounts', async () => {
     const seen: { isReady?: boolean; type?: string }[] = [];
 
