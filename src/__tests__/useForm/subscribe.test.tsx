@@ -164,6 +164,113 @@ describe('subscribe', () => {
     );
   });
 
+  it('should report a change event type on change and a blur event type on blur', async () => {
+    const events: (string | undefined)[] = [];
+
+    const App = () => {
+      const { register, subscribe } = useForm({
+        defaultValues: {
+          name: '',
+        },
+      });
+
+      React.useEffect(() => {
+        return subscribe({
+          formState: {
+            touchedFields: true,
+            values: true,
+          },
+          callback: ({ type }) => {
+            events.push(type);
+          },
+        });
+      }, [subscribe]);
+
+      return (
+        <form>
+          <input aria-label="name" {...register('name')} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    const input = screen.getByLabelText('name');
+
+    fireEvent.change(input, { target: { value: 'a' } });
+    fireEvent.blur(input);
+
+    await waitFor(() => expect(events).toEqual(['change', 'blur']));
+  });
+
+  it('should report a blur event type when validation runs on blur', async () => {
+    const events: (string | undefined)[] = [];
+
+    const App = () => {
+      const { register, subscribe } = useForm({
+        mode: 'onBlur',
+        defaultValues: {
+          name: '',
+        },
+      });
+
+      React.useEffect(() => {
+        return subscribe({
+          formState: {
+            errors: true,
+            isValid: true,
+          },
+          callback: ({ type }) => {
+            events.push(type);
+          },
+        });
+      }, [subscribe]);
+
+      return (
+        <form>
+          <input aria-label="name" {...register('name', { required: true })} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.blur(screen.getByLabelText('name'));
+
+    await waitFor(() => expect(events).toEqual(['blur']));
+  });
+
+  it('should report a submit event type when the form is submitted', async () => {
+    const events: (string | undefined)[] = [];
+
+    const App = () => {
+      const { handleSubmit, subscribe } = useForm();
+
+      React.useEffect(() => {
+        return subscribe({
+          formState: {
+            isSubmitted: true,
+          },
+          callback: ({ type }) => {
+            events.push(type);
+          },
+        });
+      }, [subscribe]);
+
+      return (
+        <form onSubmit={handleSubmit(() => undefined)}>
+          <button type="submit">Submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+    await waitFor(() => expect(events).toEqual(['submit']));
+  });
+
   it('should not call subscribe callback when setValue is called with the same value and shouldDirty option', async () => {
     const callbackFn = jest.fn();
 
@@ -343,7 +450,7 @@ describe('subscribe', () => {
       React.useEffect(() => {
         return subscribe({
           formState: {
-            isSubmitting: true,
+            isSubmitted: true,
           },
           callback: ({ name }) => {
             names.push(name);
