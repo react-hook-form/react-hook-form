@@ -271,6 +271,35 @@ describe('subscribe', () => {
     await waitFor(() => expect(events).toEqual(['submit']));
   });
 
+  it('should notify a subscriber tracking isReady once the form mounts', async () => {
+    const seen: (boolean | undefined)[] = [];
+
+    const Child = ({
+      subscribe,
+    }: {
+      subscribe: UseFormSubscribe<{ name: string }>;
+    }) => {
+      React.useLayoutEffect(() => {
+        return subscribe({
+          formState: { isReady: true },
+          callback: ({ isReady }) => {
+            seen.push(isReady);
+          },
+        });
+      }, [subscribe]);
+      return null;
+    };
+
+    const App = () => {
+      const { subscribe } = useForm({ defaultValues: { name: '' } });
+      return <Child subscribe={subscribe} />;
+    };
+
+    render(<App />);
+
+    await waitFor(() => expect(seen).toEqual([true]));
+  });
+
   it('should not call subscribe callback when setValue is called with the same value and shouldDirty option', async () => {
     const callbackFn = jest.fn();
 
