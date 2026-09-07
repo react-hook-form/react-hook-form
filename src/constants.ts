@@ -3,7 +3,7 @@ export const EVENTS = {
   FOCUS_OUT: 'focusout',
   CHANGE: 'change',
   SUBMIT: 'submit',
-  MOUNT: 'mount',
+  READY: 'ready',
   TRIGGER: 'trigger',
   VALID: 'valid',
 } as const;

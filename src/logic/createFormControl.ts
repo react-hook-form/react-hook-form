@@ -132,7 +132,6 @@ export const DEFAULT_FORM_STATE = {
   submitCount: 0,
   isDirty: false,
   isReady: false,
-  isMounted: false,
   isValidating: false,
   isSubmitted: false,
   isSubmitting: false,
@@ -1539,15 +1538,11 @@ export function createFormControl<
 
     const { unsubscribe } = _subjects.state.subscribe({ next });
 
-    const trackedFormState = props.formState as
-      | Record<string, unknown>
-      | undefined;
-
     if (
-      _formState.isMounted &&
-      (trackedFormState?.isReady || trackedFormState?.isMounted)
+      _formState.isReady &&
+      (props.formState as Record<string, unknown> | undefined)?.isReady
     ) {
-      next({ isReady: true, isMounted: true, type: EVENTS.MOUNT });
+      next({ isReady: true, type: EVENTS.READY });
     }
 
     if (!needsValues) {

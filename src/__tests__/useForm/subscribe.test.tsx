@@ -431,7 +431,7 @@ describe('subscribe', () => {
     render(<App />);
 
     await waitFor(() =>
-      expect(seen).toEqual([{ isReady: true, type: 'mount' }]),
+      expect(seen).toEqual([{ isReady: true, type: 'ready' }]),
     );
   });
 
@@ -472,111 +472,7 @@ describe('subscribe', () => {
     render(<App />);
 
     await waitFor(() =>
-      expect(seen).toEqual([{ isReady: true, type: 'mount' }]),
-    );
-  });
-
-  it('should notify a subscriber tracking isMounted once the form mounts', async () => {
-    const seen: { isMounted?: boolean; type?: string }[] = [];
-
-    const Child = ({
-      subscribe,
-    }: {
-      subscribe: UseFormSubscribe<{ name: string }>;
-    }) => {
-      React.useLayoutEffect(() => {
-        return subscribe({
-          formState: { isMounted: true },
-          callback: ({ isMounted, type }) => {
-            seen.push({ isMounted, type });
-          },
-        });
-      }, [subscribe]);
-      return null;
-    };
-
-    const App = () => {
-      const { subscribe } = useForm({ defaultValues: { name: '' } });
-      return <Child subscribe={subscribe} />;
-    };
-
-    render(<App />);
-
-    await waitFor(() =>
-      expect(seen).toEqual([{ isMounted: true, type: 'mount' }]),
-    );
-  });
-
-  it('should still notify a late subscriber tracking isMounted after the form is already mounted', async () => {
-    const seen: { isMounted?: boolean; type?: string }[] = [];
-
-    const LateChild = ({
-      subscribe,
-    }: {
-      subscribe: UseFormSubscribe<{ name: string }>;
-    }) => {
-      // Deliberately a plain (passive) useEffect, and this component
-      // mounts only after the form's own mount effect has already fired —
-      // the subject stream keeps no history, so this only works because
-      // subscribing while already-mounted replays the mount notification.
-      React.useEffect(() => {
-        return subscribe({
-          formState: { isMounted: true },
-          callback: ({ isMounted, type }) => {
-            seen.push({ isMounted, type });
-          },
-        });
-      }, [subscribe]);
-      return null;
-    };
-
-    const App = () => {
-      const { subscribe } = useForm({ defaultValues: { name: '' } });
-      const [showLate, setShowLate] = React.useState(false);
-
-      React.useEffect(() => {
-        setShowLate(true);
-      }, []);
-
-      return showLate ? <LateChild subscribe={subscribe} /> : null;
-    };
-
-    render(<App />);
-
-    await waitFor(() =>
-      expect(seen).toEqual([{ isMounted: true, type: 'mount' }]),
-    );
-  });
-
-  it('should keep isReady and isMounted aligned for a subscriber tracking both', async () => {
-    const seen: { isReady?: boolean; isMounted?: boolean; type?: string }[] =
-      [];
-
-    const Child = ({
-      subscribe,
-    }: {
-      subscribe: UseFormSubscribe<{ name: string }>;
-    }) => {
-      React.useLayoutEffect(() => {
-        return subscribe({
-          formState: { isReady: true, isMounted: true },
-          callback: ({ isReady, isMounted, type }) => {
-            seen.push({ isReady, isMounted, type });
-          },
-        });
-      }, [subscribe]);
-      return null;
-    };
-
-    const App = () => {
-      const { subscribe } = useForm({ defaultValues: { name: '' } });
-      return <Child subscribe={subscribe} />;
-    };
-
-    render(<App />);
-
-    await waitFor(() =>
-      expect(seen).toEqual([{ isReady: true, isMounted: true, type: 'mount' }]),
+      expect(seen).toEqual([{ isReady: true, type: 'ready' }]),
     );
   });
 

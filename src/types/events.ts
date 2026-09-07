@@ -3,7 +3,7 @@ export type EventType =
   | 'blur'
   | 'change'
   | 'submit'
-  | 'mount'
+  | 'ready'
   | 'changeText'
   | 'valueChange'
   | 'contentSizeChange'

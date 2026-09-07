@@ -122,14 +122,9 @@ export function useForm<
     updateFormState((data) => ({
       ...data,
       isReady: true,
-      isMounted: true,
     }));
 
-    control._subjects.state.next({
-      isReady: true,
-      isMounted: true,
-      type: EVENTS.MOUNT,
-    });
+    control._subjects.state.next({ isReady: true, type: EVENTS.READY });
 
     return () => {
       unsubscribe();
