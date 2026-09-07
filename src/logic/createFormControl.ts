@@ -394,7 +394,7 @@ export function createFormControl<
     return false;
   };
 
-  const isStaleArrayIndex = (name: InternalFieldName): boolean => {
+  const isStaleArrayField = (name: InternalFieldName): boolean => {
     if (!_state.actionArrayLengths.size) {
       return false;
     }
@@ -427,6 +427,15 @@ export function createFormControl<
       }
 
       node = (node as Record<string, unknown>)[key];
+
+      if (
+        isUndefined(node) &&
+        ownerDepth !== -1 &&
+        i > ownerDepth &&
+        +segments[ownerDepth] < ownerPreActionLength
+      ) {
+        return true;
+      }
     }
 
     return false;
@@ -441,7 +450,7 @@ export function createFormControl<
     const field: Field = get(_fields, name);
 
     if (field) {
-      if (hasExplicitNullIntermediate(name) || isStaleArrayIndex(name)) {
+      if (hasExplicitNullIntermediate(name) || isStaleArrayField(name)) {
         return;
       }
 
