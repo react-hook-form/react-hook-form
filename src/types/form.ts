@@ -162,6 +162,7 @@ export type ReadFormState = { [K in keyof FormStateProxy]: boolean | 'all' } & {
   isSubmitted?: boolean | 'all';
   submitCount?: boolean | 'all';
   isReady?: boolean | 'all';
+  isMounted?: boolean | 'all';
 };
 
 export type FormState<TFieldValues extends FieldValues> = {
@@ -180,6 +181,7 @@ export type FormState<TFieldValues extends FieldValues> = {
   validatingFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>;
   errors: FieldErrors<TFieldValues>;
   isReady: boolean;
+  isMounted: boolean;
 };
 
 export type KeepStateOptions = Partial<{
