@@ -1196,9 +1196,6 @@ export function createFormControl<
           shouldRender &&
           _subjects.state.next({
             name,
-            // `watched` is always false for blur (see isWatched), so this
-            // never turns an otherwise name-only, force-rendered watch
-            // notification into a non-empty (and therefore skipped) one.
             ...(isBlurEvent ? { type: event.type } : {}),
             ...(watched ? {} : fieldState),
           })
