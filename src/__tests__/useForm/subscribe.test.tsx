@@ -431,7 +431,7 @@ describe('subscribe', () => {
     render(<App />);
 
     await waitFor(() =>
-      expect(seen).toEqual([{ isReady: true, type: 'ready' }]),
+      expect(seen).toEqual([{ isReady: true, type: 'mount' }]),
     );
   });
 
@@ -472,7 +472,7 @@ describe('subscribe', () => {
     render(<App />);
 
     await waitFor(() =>
-      expect(seen).toEqual([{ isReady: true, type: 'ready' }]),
+      expect(seen).toEqual([{ isReady: true, type: 'mount' }]),
     );
   });
 

@@ -124,7 +124,7 @@ export function useForm<
       isReady: true,
     }));
 
-    control._subjects.state.next({ isReady: true, type: EVENTS.READY });
+    control._subjects.state.next({ isReady: true, type: EVENTS.MOUNT });
 
     return () => {
       unsubscribe();

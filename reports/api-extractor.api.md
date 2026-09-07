@@ -179,7 +179,7 @@ export type ErrorOption = {
 };
 
 // @public (undocumented)
-export type EventType = 'focus' | 'blur' | 'change' | 'submit' | 'ready' | 'changeText' | 'valueChange' | 'contentSizeChange' | 'endEditing' | 'keyPress' | 'submitEditing' | 'layout' | 'selectionChange' | 'longPress' | 'press' | 'pressIn' | 'pressOut' | 'momentumScrollBegin' | 'momentumScrollEnd' | 'scroll' | 'scrollBeginDrag' | 'scrollEndDrag' | 'load' | 'error' | 'progress' | 'custom';
+export type EventType = 'focus' | 'blur' | 'change' | 'submit' | 'mount' | 'changeText' | 'valueChange' | 'contentSizeChange' | 'endEditing' | 'keyPress' | 'submitEditing' | 'layout' | 'selectionChange' | 'longPress' | 'press' | 'pressIn' | 'pressOut' | 'momentumScrollBegin' | 'momentumScrollEnd' | 'scroll' | 'scrollBeginDrag' | 'scrollEndDrag' | 'load' | 'error' | 'progress' | 'custom';
 
 // @public (undocumented)
 export type ExtractObjects<T> = T extends infer U ? U extends object ? U : never : never;

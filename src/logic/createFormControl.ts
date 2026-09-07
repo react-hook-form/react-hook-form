@@ -1542,7 +1542,7 @@ export function createFormControl<
       _formState.isReady &&
       (props.formState as Record<string, unknown> | undefined)?.isReady
     ) {
-      next({ isReady: true, type: EVENTS.READY });
+      next({ isReady: true, type: EVENTS.MOUNT });
     }
 
     if (!needsValues) {
