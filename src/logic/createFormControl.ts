@@ -1440,7 +1440,13 @@ export function createFormControl<
     const ref = (get(_fields, name, { _f: {} })._f || {}).ref;
     const currentError = get(_formState.errors, name) || {};
 
-    const { ref: currentRef, message, type, ...restOfErrorTree } = currentError;
+    const {
+      ref: currentRef,
+      message,
+      type,
+      types,
+      ...restOfErrorTree
+    } = currentError;
 
     set(_formState.errors, name, {
       ...restOfErrorTree,
