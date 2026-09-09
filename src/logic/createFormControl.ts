@@ -1601,6 +1601,9 @@ export function createFormControl<
     _subjects.state.next({
       ..._formState,
       ...(options.keepDirty ? {} : { isDirty: _getDirty() }),
+      ...(options.keepIsValidating
+        ? {}
+        : { isValidating: !isEmptyObject(_formState.validatingFields) }),
     });
 
     !options.keepIsValid && _setValid();
