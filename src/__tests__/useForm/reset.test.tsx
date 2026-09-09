@@ -2769,6 +2769,8 @@ describe('reset', () => {
   });
 
   it('should not delay a current error when a pre-reset trigger settles', async () => {
+    jest.useFakeTimers();
+
     type Result = {
       values: { test: string };
       errors: FieldErrors<{ test: string }>;
