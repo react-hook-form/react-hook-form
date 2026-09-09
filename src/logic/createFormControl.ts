@@ -223,6 +223,7 @@ export function createFormControl<
   };
 
   let _setValidCallId = 0;
+  let _resetCallId = 0;
 
   const shouldDisplayAllAssociatedErrors =
     _options.criteriaMode === VALIDATION_MODE.all;
@@ -634,7 +635,13 @@ export function createFormControl<
   };
 
   const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
+    const resetCallId = _resetCallId;
     const { errors } = await _runSchema(names);
+
+    if (resetCallId !== _resetCallId) {
+      return errors;
+    }
+
     _updateIsValidating(names);
 
     if (names) {
@@ -1292,14 +1299,18 @@ export function createFormControl<
     const fieldNames = convertToArrayPayload(name) as InternalFieldName[];
 
     if (_options.resolver) {
+      const resetCallId = _resetCallId;
       const errors = await executeSchemaAndUpdateState(
         isUndefined(name) ? name : fieldNames,
       );
-
       isValid = isEmptyObject(errors);
       validationResult = name
         ? !fieldNames.some((name) => get(errors, name))
         : isValid;
+
+      if (resetCallId !== _resetCallId) {
+        return validationResult;
+      }
     } else if (name) {
       validationResult = (
         await Promise.all(
@@ -1865,6 +1876,7 @@ export function createFormControl<
     formValues,
     keepStateOptions = {},
   ) => {
+    _resetCallId++;
     const updatedValues = formValues ? cloneObject(formValues) : _defaultValues;
     const cloneUpdatedValues = cloneObject(updatedValues);
     const isEmptyResetValues = isEmptyObject(formValues);
