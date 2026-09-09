@@ -223,6 +223,9 @@ export function createFormControl<
   };
 
   let _setValidCallId = 0;
+  let _resetCallId = 0;
+  let _schemaValidationCallId = 0;
+  const _schemaValidationCalls = new Map<string, number>();
 
   const shouldDisplayAllAssociatedErrors =
     _options.criteriaMode === VALIDATION_MODE.all;
@@ -266,6 +269,11 @@ export function createFormControl<
   };
 
   const _updateIsValidating = (names?: string[], isValidating?: boolean) => {
+    if (!isValidating) {
+      (names || _names.mount).forEach((name) =>
+        _schemaValidationCalls.delete(name),
+      );
+    }
     if (!_options.disabled && _isTracked('isValidating', 'validatingFields')) {
       (names || _names.mount).forEach((name) => {
         if (name) {
@@ -620,6 +628,10 @@ export function createFormControl<
   };
 
   const _runSchema = async (name?: InternalFieldName[]) => {
+    const callId = ++_schemaValidationCallId;
+    (name || _names.mount).forEach((name) =>
+      _schemaValidationCalls.set(name, callId),
+    );
     _updateIsValidating(name, true);
     return await _options.resolver!(
       _formValues as TFieldValues,
@@ -634,7 +646,24 @@ export function createFormControl<
   };
 
   const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
-    const { errors } = await _runSchema(names);
+    const resetCallId = _resetCallId;
+    const validationNames = [...(names || _names.mount)];
+    const validation = _runSchema(names);
+    const callId = _schemaValidationCallId;
+    const { errors } = await validation;
+
+    if (resetCallId !== _resetCallId) {
+      // Settle validation preserved by keepIsValidating without clearing
+      // fields whose validation has since been taken over by another call.
+      const completedNames = validationNames.filter(
+        (name) => _schemaValidationCalls.get(name) === callId,
+      );
+      if (completedNames.length) {
+        _updateIsValidating(completedNames);
+      }
+      return errors;
+    }
+
     _updateIsValidating(names);
 
     if (names) {
@@ -1292,14 +1321,20 @@ export function createFormControl<
     const fieldNames = convertToArrayPayload(name) as InternalFieldName[];
 
     if (_options.resolver) {
+      const resetCallId = _resetCallId;
       const errors = await executeSchemaAndUpdateState(
         isUndefined(name) ? name : fieldNames,
       );
-
       isValid = isEmptyObject(errors);
       validationResult = name
         ? !fieldNames.some((name) => get(errors, name))
         : isValid;
+
+      // Preserve this call's return value, but do not apply any of its
+      // effects to the form after a reset.
+      if (resetCallId !== _resetCallId) {
+        return validationResult;
+      }
     } else if (name) {
       validationResult = (
         await Promise.all(
@@ -1862,6 +1897,10 @@ export function createFormControl<
     formValues,
     keepStateOptions = {},
   ) => {
+    _resetCallId++;
+    if (!keepStateOptions.keepIsValidating) {
+      _schemaValidationCalls.clear();
+    }
     const updatedValues = formValues ? cloneObject(formValues) : _defaultValues;
     const cloneUpdatedValues = cloneObject(updatedValues);
     const isEmptyResetValues = isEmptyObject(formValues);
