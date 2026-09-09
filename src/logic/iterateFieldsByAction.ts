@@ -24,12 +24,12 @@ const iterateFieldsByAction = (
           return true;
         } else {
           if (iterateFieldsByAction(field, action)) {
-            break;
+            return true;
           }
         }
       } else if (isObject(field) || Array.isArray(field)) {
         if (iterateFieldsByAction(field as FieldRefs, action)) {
-          break;
+          return true;
         }
       }
     }

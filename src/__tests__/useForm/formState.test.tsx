@@ -14,6 +14,7 @@ import type { Control, FormState, UseFormGetFieldState } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import { useFormState } from '../../useFormState';
 import noop from '../../utils/noop';
 
 // Activity is a React 19.2+ API. Only run Activity-dependent tests when the
@@ -492,6 +493,262 @@ describe('formState', () => {
       render(<Component />);
 
       expect(await screen.findByText('nope')).toBeVisible();
+    });
+
+    // Mirrors e2e/useFormState.spec.ts › "should subscribed to the form
+    // state without re-render the root". reset() must not let a validity
+    // recompute triggered by the root's own re-render (queued when
+    // _state.mount is reset) clobber isValid with a value computed against
+    // the just-reset, now-empty fields.
+    it('should end with isValid: true after reset() (matches e2e test baseline expectation)', async () => {
+      let renderCounter = 0;
+
+      type FormInputs = {
+        firstName: string;
+        lastName: string;
+        min: string;
+        max: string;
+        minDate: string;
+        maxDate: string;
+        minLength: string;
+        minRequiredLength: string;
+        selectNumber: string;
+        pattern: string;
+        nestItem: {
+          nest1: string;
+        };
+        arrayItem: {
+          test1: string;
+        }[];
+      };
+
+      const SubForm = ({ control }: { control: Control<FormInputs> }) => {
+        const {
+          isDirty,
+          dirtyFields,
+          touchedFields,
+          isSubmitted,
+          isSubmitSuccessful,
+          submitCount,
+          isValid,
+        } = useFormState({
+          control,
+        });
+
+        return (
+          <p id="state">
+            {JSON.stringify({
+              isDirty,
+              touched: Object.keys(touchedFields),
+              dirty: Object.keys(dirtyFields),
+              isSubmitted,
+              isSubmitSuccessful,
+              submitCount,
+              isValid,
+            })}
+          </p>
+        );
+      };
+
+      const App: React.FC = () => {
+        const {
+          register,
+          handleSubmit,
+          control,
+          reset: resetForm,
+        } = useForm<FormInputs>({
+          mode: 'onChange',
+        });
+        const onValid = () => {};
+
+        renderCounter++;
+
+        return (
+          <form onSubmit={handleSubmit(onValid)}>
+            <input
+              placeholder="nest.nest1"
+              {...register('nestItem.nest1', { required: true })}
+            />
+            <input
+              placeholder="arrayItem.0.test1"
+              {...register('arrayItem.0.test1', { required: true })}
+            />
+            <input
+              {...register('firstName', { required: true })}
+              placeholder="firstName"
+            />
+            <input
+              {...register('lastName', { required: true, maxLength: 5 })}
+              placeholder="lastName"
+            />
+            <input
+              type="number"
+              {...register('min', { min: 10 })}
+              placeholder="min"
+            />
+            <input
+              type="number"
+              {...register('max', { max: 20 })}
+              placeholder="max"
+            />
+            <input
+              type="date"
+              {...register('minDate', { min: '2019-08-01' })}
+              placeholder="minDate"
+            />
+            <input
+              type="date"
+              {...register('maxDate', { max: '2019-08-01' })}
+              placeholder="maxDate"
+            />
+            <input
+              {...register('minLength', { minLength: 2 })}
+              placeholder="minLength"
+            />
+            <input
+              {...register('minRequiredLength', {
+                minLength: 2,
+                required: true,
+              })}
+              placeholder="minRequiredLength"
+            />
+            <select {...register('selectNumber', { required: true })}>
+              <option value="">Select</option>
+              <option value={1}>1</option>
+              <option value={2}>1</option>
+            </select>
+            <input
+              {...register('pattern', { pattern: /\d+/ })}
+              placeholder="pattern"
+            />
+            <button id="submit">Submit</button>
+            <button type="button" id="resetForm" onClick={() => resetForm()}>
+              Reset
+            </button>
+            <div id="renderCount">{renderCounter}</div>
+            <SubForm control={control} />
+          </form>
+        );
+      };
+
+      const type = async (el: HTMLElement, text: string) => {
+        for (const char of text) {
+          fireEvent.focus(el);
+          fireEvent.input(el, {
+            target: { value: (el as HTMLInputElement).value + char },
+          });
+
+          await act(async () => {});
+        }
+      };
+
+      const getState = () =>
+        JSON.parse(screen.getByText(/isValid/).textContent!);
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+      await act(async () => {});
+
+      await type(screen.getByPlaceholderText('firstName'), 'bill');
+      await type(screen.getByPlaceholderText('firstName'), 'a');
+      await type(screen.getByPlaceholderText('arrayItem.0.test1'), 'ab');
+      await type(screen.getByPlaceholderText('nest.nest1'), 'ab');
+      await type(screen.getByPlaceholderText('lastName'), 'luo123456');
+
+      fireEvent.focus(screen.getByRole('combobox'));
+      fireEvent.change(screen.getByRole('combobox'), {
+        target: { value: '1' },
+      });
+      fireEvent.blur(screen.getByRole('combobox'));
+      await act(async () => {});
+
+      await type(screen.getByPlaceholderText('pattern'), 'luo');
+      await type(screen.getByPlaceholderText('min'), '1');
+      await type(screen.getByPlaceholderText('max'), '21');
+      fireEvent.input(screen.getByPlaceholderText('minDate'), {
+        target: { value: '2019-07-30' },
+      });
+      await act(async () => {});
+      fireEvent.input(screen.getByPlaceholderText('maxDate'), {
+        target: { value: '2019-08-02' },
+      });
+      await act(async () => {});
+
+      fireEvent.input(screen.getByPlaceholderText('lastName'), {
+        target: { value: '' },
+      });
+      await act(async () => {});
+      await type(screen.getByPlaceholderText('lastName'), 'luo');
+      await type(screen.getByPlaceholderText('minLength'), 'b');
+      fireEvent.blur(screen.getByPlaceholderText('minLength'));
+      await act(async () => {});
+
+      await waitFor(() => {
+        expect(getState()).toEqual(
+          expect.objectContaining({
+            isSubmitted: true,
+            isSubmitSuccessful: false,
+            submitCount: 1,
+          }),
+        );
+      });
+
+      await type(screen.getByPlaceholderText('pattern'), '23');
+      await type(screen.getByPlaceholderText('minLength'), 'bi');
+      await type(screen.getByPlaceholderText('minRequiredLength'), 'bi');
+      fireEvent.input(screen.getByPlaceholderText('min'), {
+        target: { value: '' },
+      });
+      await act(async () => {});
+      await type(screen.getByPlaceholderText('min'), '11');
+      fireEvent.input(screen.getByPlaceholderText('max'), {
+        target: { value: '' },
+      });
+      await act(async () => {});
+      await type(screen.getByPlaceholderText('max'), '19');
+      fireEvent.input(screen.getByPlaceholderText('minDate'), {
+        target: { value: '2019-08-01' },
+      });
+      await act(async () => {});
+      fireEvent.input(screen.getByPlaceholderText('maxDate'), {
+        target: { value: '2019-08-01' },
+      });
+      await act(async () => {});
+
+      await waitFor(() => {
+        expect(getState()).toEqual(expect.objectContaining({ isValid: true }));
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+      await act(async () => {});
+
+      await waitFor(() => {
+        expect(getState()).toEqual(
+          expect.objectContaining({
+            isSubmitSuccessful: true,
+            submitCount: 2,
+            isValid: true,
+          }),
+        );
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+      await act(async () => {});
+
+      await waitFor(() => {
+        expect(getState()).toEqual(
+          expect.objectContaining({
+            isDirty: false,
+            touched: [],
+            dirty: [],
+            isSubmitted: false,
+            isSubmitSuccessful: false,
+            submitCount: 0,
+            isValid: true,
+          }),
+        );
+      });
     });
   });
 

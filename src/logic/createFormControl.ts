@@ -394,7 +394,7 @@ export function createFormControl<
     return false;
   };
 
-  const isStaleArrayIndex = (name: InternalFieldName): boolean => {
+  const isStaleArrayField = (name: InternalFieldName): boolean => {
     if (!_state.actionArrayLengths.size) {
       return false;
     }
@@ -427,6 +427,15 @@ export function createFormControl<
       }
 
       node = (node as Record<string, unknown>)[key];
+
+      if (
+        isUndefined(node) &&
+        ownerDepth !== -1 &&
+        i > ownerDepth &&
+        +segments[ownerDepth] < ownerPreActionLength
+      ) {
+        return true;
+      }
     }
 
     return false;
@@ -441,7 +450,7 @@ export function createFormControl<
     const field: Field = get(_fields, name);
 
     if (field) {
-      if (hasExplicitNullIntermediate(name) || isStaleArrayIndex(name)) {
+      if (hasExplicitNullIntermediate(name) || isStaleArrayField(name)) {
         return;
       }
 
@@ -1431,7 +1440,13 @@ export function createFormControl<
     const ref = (get(_fields, name, { _f: {} })._f || {}).ref;
     const currentError = get(_formState.errors, name) || {};
 
-    const { ref: currentRef, message, type, ...restOfErrorTree } = currentError;
+    const {
+      ref: currentRef,
+      message,
+      type,
+      types,
+      ...restOfErrorTree
+    } = currentError;
 
     set(_formState.errors, name, {
       ...restOfErrorTree,
@@ -2000,6 +2015,10 @@ export function createFormControl<
       touchedFields: keepStateOptions.keepTouched
         ? _formState.touchedFields
         : {},
+      ...(!keepStateOptions.keepIsValidating &&
+      (_formState.isValidating || !isEmptyObject(_formState.validatingFields))
+        ? { validatingFields: {}, isValidating: false }
+        : null),
       errors: keepStateOptions.keepErrors ? _formState.errors : {},
       isSubmitSuccessful: keepStateOptions.keepIsSubmitSuccessful
         ? _formState.isSubmitSuccessful
