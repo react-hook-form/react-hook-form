@@ -653,8 +653,6 @@ export function createFormControl<
     const { errors } = await validation;
 
     if (resetCallId !== _resetCallId) {
-      // Settle validation preserved by keepIsValidating without clearing
-      // fields whose validation has since been taken over by another call.
       const completedNames = validationNames.filter(
         (name) => _schemaValidationCalls.get(name) === callId,
       );
@@ -1330,8 +1328,6 @@ export function createFormControl<
         ? !fieldNames.some((name) => get(errors, name))
         : isValid;
 
-      // Preserve this call's return value, but do not apply any of its
-      // effects to the form after a reset.
       if (resetCallId !== _resetCallId) {
         return validationResult;
       }
