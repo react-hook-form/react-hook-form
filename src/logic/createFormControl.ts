@@ -1035,6 +1035,14 @@ export function createFormControl<
           });
         }
       }
+
+      options.shouldValidate &&
+        trigger(
+          name as Path<TFieldValues>,
+          {
+            delayError: options.delayError,
+          } as TriggerConfig & { delayError?: boolean },
+        );
     } else {
       const isEmpty =
         (Array.isArray(cloneValue) && !cloneValue.length) ||
