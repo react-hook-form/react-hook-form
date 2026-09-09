@@ -224,8 +224,6 @@ export function createFormControl<
 
   let _setValidCallId = 0;
   let _resetCallId = 0;
-  let _schemaValidationCallId = 0;
-  const _schemaValidationCalls = new Map<string, number>();
 
   const shouldDisplayAllAssociatedErrors =
     _options.criteriaMode === VALIDATION_MODE.all;
@@ -269,11 +267,6 @@ export function createFormControl<
   };
 
   const _updateIsValidating = (names?: string[], isValidating?: boolean) => {
-    if (!isValidating) {
-      (names || _names.mount).forEach((name) =>
-        _schemaValidationCalls.delete(name),
-      );
-    }
     if (!_options.disabled && _isTracked('isValidating', 'validatingFields')) {
       (names || _names.mount).forEach((name) => {
         if (name) {
@@ -628,10 +621,6 @@ export function createFormControl<
   };
 
   const _runSchema = async (name?: InternalFieldName[]) => {
-    const callId = ++_schemaValidationCallId;
-    (name || _names.mount).forEach((name) =>
-      _schemaValidationCalls.set(name, callId),
-    );
     _updateIsValidating(name, true);
     return await _options.resolver!(
       _formValues as TFieldValues,
@@ -647,18 +636,9 @@ export function createFormControl<
 
   const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
     const resetCallId = _resetCallId;
-    const validationNames = [...(names || _names.mount)];
-    const validation = _runSchema(names);
-    const callId = _schemaValidationCallId;
-    const { errors } = await validation;
+    const { errors } = await _runSchema(names);
 
     if (resetCallId !== _resetCallId) {
-      const completedNames = validationNames.filter(
-        (name) => _schemaValidationCalls.get(name) === callId,
-      );
-      if (completedNames.length) {
-        _updateIsValidating(completedNames);
-      }
       return errors;
     }
 
@@ -1894,9 +1874,6 @@ export function createFormControl<
     keepStateOptions = {},
   ) => {
     _resetCallId++;
-    if (!keepStateOptions.keepIsValidating) {
-      _schemaValidationCalls.clear();
-    }
     const updatedValues = formValues ? cloneObject(formValues) : _defaultValues;
     const cloneUpdatedValues = cloneObject(updatedValues);
     const isEmptyResetValues = isEmptyObject(formValues);

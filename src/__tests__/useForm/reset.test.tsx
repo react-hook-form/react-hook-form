@@ -2678,56 +2678,53 @@ describe('reset', () => {
     unsubscribe();
   });
 
-  it.each([false, true])(
-    'should settle preserved validation without affecting newer work (new validation: %s)',
-    async (startNewValidation) => {
-      type Result = {
-        values: { test: string };
-        errors: FieldErrors<{ test: string }>;
-      };
-      const completions: Array<(value: Result) => void> = [];
-      const { result } = renderHook(() => {
-        const form = useForm<{ test: string }>({
-          defaultValues: { test: 'old' },
-          resolver: () =>
-            new Promise<Result>((resolve) => completions.push(resolve)),
-        });
-        form.register('test');
-        form.formState.isValidating;
-        form.formState.validatingFields;
-        return form;
+  it('should keep isValidating true after keepIsValidating reset even once the stale resolver settles', async () => {
+    // keepIsValidating intentionally skips the reset-time clear; nothing
+    // re-derives isValidating from a resolver call discarded by reset(), so
+    // it stays true until a fresh trigger()/validation for the field runs.
+    type Result = {
+      values: { test: string };
+      errors: FieldErrors<{ test: string }>;
+    };
+    const completions: Array<(value: Result) => void> = [];
+    const { result } = renderHook(() => {
+      const form = useForm<{ test: string }>({
+        defaultValues: { test: 'old' },
+        resolver: () =>
+          new Promise<Result>((resolve) => completions.push(resolve)),
       });
-      let old!: Promise<boolean>;
-      let fresh: Promise<boolean> | undefined;
-      await act(async () => {
-        old = result.current.trigger('test');
-      });
-      await act(async () => {
-        result.current.reset({ test: 'new' }, { keepIsValidating: true });
-      });
-      expect(result.current.formState.isValidating).toBe(true);
-      if (startNewValidation) {
-        await act(async () => {
-          fresh = result.current.trigger('test');
-        });
-      }
-      await act(async () => {
-        completions[0]({ values: { test: 'old' }, errors: {} });
-        expect(await old).toBe(true);
-      });
-      expect(result.current.formState.isValidating).toBe(startNewValidation);
-      expect(result.current.formState.validatingFields).toEqual(
-        startNewValidation ? { test: true } : {},
-      );
-      if (fresh) {
-        await act(async () => {
-          completions[1]({ values: { test: 'new' }, errors: {} });
-          await fresh;
-        });
-        expect(result.current.formState.isValidating).toBe(false);
-      }
-    },
-  );
+      form.register('test');
+      form.formState.isValidating;
+      form.formState.validatingFields;
+      return form;
+    });
+    let old!: Promise<boolean>;
+    await act(async () => {
+      old = result.current.trigger('test');
+    });
+    await act(async () => {
+      result.current.reset({ test: 'new' }, { keepIsValidating: true });
+    });
+    expect(result.current.formState.isValidating).toBe(true);
+    await act(async () => {
+      completions[0]({ values: { test: 'old' }, errors: {} });
+      expect(await old).toBe(true);
+    });
+    expect(result.current.formState.isValidating).toBe(true);
+    expect(result.current.formState.validatingFields).toEqual({
+      test: true,
+    });
+
+    let fresh!: Promise<boolean>;
+    await act(async () => {
+      fresh = result.current.trigger('test');
+    });
+    await act(async () => {
+      completions[1]({ values: { test: 'new' }, errors: {} });
+      await fresh;
+    });
+    expect(result.current.formState.isValidating).toBe(false);
+  });
 
   it('should return the discarded validation result without touching or focusing reset fields', async () => {
     const invalid = {
