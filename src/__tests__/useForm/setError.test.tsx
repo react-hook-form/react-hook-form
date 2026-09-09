@@ -12,7 +12,9 @@ import type {
   DeepMap,
   ErrorOption,
   FieldError,
+  FieldErrors,
   GlobalError,
+  UseFormSetError,
 } from '../../types';
 import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
@@ -262,6 +264,55 @@ describe('setError', () => {
         },
       },
     });
+  });
+
+  it('should replace types from a previous validation when overwriting an error', async () => {
+    type FormValues = { password: string };
+
+    let currentErrors: FieldErrors<FormValues> = {};
+    let setError: UseFormSetError<FormValues>;
+
+    const App = () => {
+      const form = useForm<FormValues>({
+        criteriaMode: 'all',
+        mode: 'onChange',
+      });
+
+      currentErrors = form.formState.errors;
+      setError = form.setError;
+
+      return (
+        <input
+          {...form.register('password', {
+            minLength: { value: 8, message: 'too short' },
+            pattern: { value: /[0-9]/, message: 'needs a digit' },
+          })}
+        />
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'abc' },
+      });
+    });
+
+    expect(currentErrors.password?.types).toEqual({
+      minLength: 'too short',
+      pattern: 'needs a digit',
+    });
+
+    await act(async () => {
+      setError('password', { type: 'server', message: 'breached password' });
+    });
+
+    // criteriaMode: 'all' consumers render from `types`, so keeping the previous
+    // validation's entries there shows resolved rules and hides the new error.
+    expect(currentErrors.password?.types).toBeUndefined();
+    expect(currentErrors.password?.type).toBe('server');
+    expect(currentErrors.password?.message).toBe('breached password');
   });
 });
 
