@@ -648,17 +648,20 @@ export function createFormControl<
       for (const name of names) {
         const error = get(errors, name);
         cancelDelayedError(name);
-        error
-          ? _names.array.has(name) &&
-            isObject(error) &&
-            !Object.keys(error).some((key) => !Number.isNaN(Number(key)))
-            ? updateFieldArrayRootError(
-                _formState.errors,
-                { [name]: error } as Partial<Record<string, FieldError>>,
-                name,
-              )
-            : set(_formState.errors, name, error)
-          : unset(_formState.errors, name);
+        const isFieldArrayRootError =
+          _names.array.has(name) &&
+          isObject(error) &&
+          !Object.keys(error).some((key) => !Number.isNaN(Number(key)));
+
+        isFieldArrayRootError
+          ? updateFieldArrayRootError(
+              _formState.errors,
+              { [name]: error } as Partial<Record<string, FieldError>>,
+              name,
+            )
+          : error?.type || error?.message || Array.isArray(error)
+            ? set(_formState.errors, name, error)
+            : unset(_formState.errors, name);
       }
       _formState.errors = { ..._formState.errors };
     } else {
