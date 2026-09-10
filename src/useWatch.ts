@@ -131,7 +131,6 @@ export function useWatch<TFieldValues extends FieldValues>(
   } = props || {};
   const _defaultValue = React.useRef(defaultValue);
   const _compute = React.useRef(compute);
-  const _computeFormValues = React.useRef<undefined | unknown>(undefined);
 
   const _prevControl = React.useRef(control);
   const _prevName = React.useRef(name);
@@ -148,6 +147,7 @@ export function useWatch<TFieldValues extends FieldValues>(
   };
 
   const [value, updateValue] = React.useState(getInitialOutput);
+  const _computeFormValues = React.useRef<unknown>(value);
 
   const getCurrentOutput = React.useCallback(
     (values?: TFieldValues) => {
