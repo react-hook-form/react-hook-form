@@ -296,4 +296,106 @@ describe('unregister', () => {
       expect.any(Object),
     );
   });
+
+  it('should recompute isValidating after unregistering a field with a pending validation', async () => {
+    let resolveValidate: (value: boolean) => void;
+
+    const App = () => {
+      const {
+        register,
+        unregister,
+        formState: { isValidating, validatingFields },
+      } = useForm<{ test: string }>({ mode: 'onChange' });
+
+      return (
+        <div>
+          <input
+            {...register('test', {
+              validate: () =>
+                new Promise<boolean>((resolve) => {
+                  resolveValidate = resolve;
+                }),
+            })}
+          />
+          <p>status:{isValidating ? 'validating' : 'idle'}</p>
+          <p>validatingFields:{Object.keys(validatingFields).join(',')}</p>
+          <button type="button" onClick={() => unregister('test')}>
+            unregister
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'x' },
+    });
+
+    await waitFor(() => screen.getByText('status:validating'));
+    expect(screen.getByText('validatingFields:test')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'unregister' }));
+
+    expect(screen.getByText('status:idle')).toBeInTheDocument();
+    expect(screen.getByText('validatingFields:')).toBeInTheDocument();
+
+    // the stale in-flight validator from before unregister finally settles
+    await act(async () => {
+      resolveValidate(true);
+    });
+
+    expect(screen.getByText('status:idle')).toBeInTheDocument();
+    expect(screen.getByText('validatingFields:')).toBeInTheDocument();
+  });
+
+  it('should keep isValidating when unregister is called with keepIsValidating option', async () => {
+    let resolveValidate: (value: boolean) => void;
+
+    const App = () => {
+      const {
+        register,
+        unregister,
+        formState: { isValidating, validatingFields },
+      } = useForm<{ test: string }>({ mode: 'onChange' });
+
+      return (
+        <div>
+          <input
+            {...register('test', {
+              validate: () =>
+                new Promise<boolean>((resolve) => {
+                  resolveValidate = resolve;
+                }),
+            })}
+          />
+          <p>status:{isValidating ? 'validating' : 'idle'}</p>
+          <p>validatingFields:{Object.keys(validatingFields).join(',')}</p>
+          <button
+            type="button"
+            onClick={() => unregister('test', { keepIsValidating: true })}
+          >
+            unregister
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'x' },
+    });
+
+    await waitFor(() => screen.getByText('status:validating'));
+
+    fireEvent.click(screen.getByRole('button', { name: 'unregister' }));
+
+    expect(screen.getByText('status:validating')).toBeInTheDocument();
+    expect(screen.getByText('validatingFields:test')).toBeInTheDocument();
+
+    await act(async () => {
+      resolveValidate(true);
+    });
+  });
 });
