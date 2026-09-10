@@ -7,6 +7,13 @@ import { expect, type Locator } from '@playwright/test';
  * the end first makes repeated typing into the same field append correctly.
  */
 export async function type(locator: Locator, text: string) {
+  // Let pending render and error-focus effects finish before taking focus.
+  await locator.page().evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => resolve());
+      }),
+  );
   await locator.focus();
   await locator.press('End');
   await locator.pressSequentially(text);
