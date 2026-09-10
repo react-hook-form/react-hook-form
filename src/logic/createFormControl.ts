@@ -338,6 +338,7 @@ export function createFormControl<
       ) {
         const touchedFields = method(touchedFieldsArray, args.argA, args.argB);
         shouldSetValues && set(_formState.touchedFields, name, touchedFields);
+        unsetEmptyArray(_formState.touchedFields, name);
       }
 
       if (_isTracked('dirtyFields')) {

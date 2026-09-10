@@ -427,7 +427,51 @@ describe('remove', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'remove all' }));
 
-    expect(touched).toEqual({ test: [] });
+    expect(touched).toEqual({});
+  });
+
+  it('should drop the touched entry once its last touched row is removed', () => {
+    let touched: any;
+    let isTouched: boolean | undefined;
+
+    const Component = () => {
+      const { register, formState, control, getFieldState } = useForm({
+        defaultValues: {
+          test: [{ value: 'a' }, { value: 'b' }],
+        },
+      });
+      const { fields, remove } = useFieldArray({
+        control,
+        name: 'test',
+      });
+
+      touched = formState.touchedFields;
+      isTouched = getFieldState('test', formState).isTouched;
+
+      return (
+        <form>
+          {fields.map((field, i) => (
+            <input key={field.id} {...register(`test.${i}.value`)} />
+          ))}
+          <button type="button" onClick={() => remove(0)}>
+            remove
+          </button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.blur(screen.getAllByRole('textbox')[0]);
+
+    expect(touched).toEqual({
+      test: [{ value: true }],
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+
+    expect(touched).toEqual({});
+    expect(isTouched).toBe(false);
   });
 
   it('should remove specific field if isValid is true', async () => {
