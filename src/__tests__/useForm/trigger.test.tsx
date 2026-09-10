@@ -1313,4 +1313,47 @@ describe('trigger', () => {
       expect(triggerErrors?.items?.root).toBeUndefined();
     });
   });
+
+  it('should not set a parent error when only nested resolver errors exist', async () => {
+    type FormValues = {
+      test: string;
+    };
+
+    let triggerErrors: FieldErrors<FormValues> | undefined;
+
+    const resolver: Resolver<FormValues> = async () => ({
+      values: {},
+      errors: {
+        test: {
+          nested: {
+            type: 'nested',
+            message: 'nested bad',
+          },
+        },
+      } as never,
+    });
+
+    const App = () => {
+      const {
+        register,
+        formState: { errors },
+      } = useForm<FormValues>({ mode: VALIDATION_MODE.onChange, resolver });
+
+      triggerErrors = errors;
+
+      return <input {...register('test')} />;
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'hello' },
+      });
+    });
+
+    await waitFor(() => {
+      expect(triggerErrors?.test).toBeUndefined();
+    });
+  });
 });
