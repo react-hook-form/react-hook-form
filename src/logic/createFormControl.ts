@@ -1798,6 +1798,8 @@ export function createFormControl<
           fields: _fields,
           eventType: EVENTS.SUBMIT,
         });
+
+        unset(_formState.errors, ROOT_ERROR_TYPE);
       }
 
       if (_names.disabled.size) {
@@ -1805,8 +1807,6 @@ export function createFormControl<
           unset(fieldValues, name);
         }
       }
-
-      unset(_formState.errors, ROOT_ERROR_TYPE);
 
       if (isEmptyObject(_formState.errors)) {
         _subjects.state.next({

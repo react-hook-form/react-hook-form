@@ -659,4 +659,70 @@ describe('handleSubmit', () => {
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalled());
   });
+
+  it('should not invoke onValid when the resolver reports a root-level error', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ test: string }>({
+        resolver: async () => ({
+          values: {},
+          errors: {
+            root: {
+              type: 'cross-field',
+              message: 'passwords do not match',
+            },
+          },
+        }),
+      }),
+    );
+
+    result.current.register('test');
+
+    const onValid = jest.fn();
+    const onInvalid = jest.fn();
+
+    await act(async () => {
+      await result.current.handleSubmit(
+        onValid,
+        onInvalid,
+      )({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    expect(onValid).not.toHaveBeenCalled();
+    expect(onInvalid).toHaveBeenCalledTimes(1);
+    expect(onInvalid.mock.calls[0][0]).toEqual({
+      root: {
+        type: 'cross-field',
+        message: 'passwords do not match',
+      },
+    });
+  });
+
+  it('should still clear a manually set root error on submit without a resolver', async () => {
+    const { result } = renderHook(() => useForm<{ test: string }>());
+
+    result.current.register('test');
+    result.current.setValue('test', 'test');
+
+    await act(async () => {
+      result.current.setError('root.server', {
+        type: 'server',
+        message: 'stale server error',
+      });
+    });
+
+    const onValid = jest.fn();
+
+    await act(async () => {
+      await result.current.handleSubmit(onValid)({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    expect(onValid).toHaveBeenCalledTimes(1);
+    expect(result.current.getFieldState('test').error).toBeUndefined();
+  });
 });
