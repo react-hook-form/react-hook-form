@@ -1405,4 +1405,63 @@ describe('trigger', () => {
       expect(triggerErrors?.test).toBeUndefined();
     });
   });
+
+  it('should keep registered nested resolver errors when trigger targets their parent', async () => {
+    type FormValues = {
+      address: {
+        street: string;
+      };
+    };
+
+    let triggerErrors: FieldErrors<FormValues> | undefined;
+    let triggerResult: boolean | undefined;
+
+    const resolver: Resolver<FormValues> = async () => ({
+      values: {},
+      errors: {
+        address: {
+          street: {
+            type: 'required',
+            message: 'street_required',
+          },
+        },
+      },
+    });
+
+    const App = () => {
+      const {
+        register,
+        trigger,
+        formState: { errors },
+      } = useForm<FormValues>({ resolver });
+
+      triggerErrors = errors;
+
+      return (
+        <>
+          <input {...register('address.street')} />
+          <button
+            type="button"
+            onClick={async () => {
+              triggerResult = await trigger('address');
+            }}
+          >
+            trigger
+          </button>
+        </>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /trigger/i }));
+    });
+
+    await waitFor(() => {
+      expect(triggerResult).toBe(false);
+    });
+
+    expect(triggerErrors?.address?.street?.message).toBe('street_required');
+  });
 });
