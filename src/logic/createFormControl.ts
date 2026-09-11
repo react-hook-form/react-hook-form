@@ -225,7 +225,7 @@ export function createFormControl<
   let _setValidCallId = 0;
   let _resetCallId = 0;
 
-  const shouldDisplayAllAssociatedErrors =
+  let shouldDisplayAllAssociatedErrors =
     _options.criteriaMode === VALIDATION_MODE.all;
 
   const debounce =
@@ -239,6 +239,16 @@ export function createFormControl<
     clearTimeout(timers[name]);
     delete timers[name];
     delete delayErrorCallbacks[name];
+  };
+
+  const cancelDelayedErrorTree = (name: InternalFieldName) => {
+    cancelDelayedError(name);
+
+    const prefix = `${name}.`;
+
+    for (const key of Object.keys(delayErrorCallbacks)) {
+      key.startsWith(prefix) && cancelDelayedError(key);
+    }
   };
 
   const _setValid = async (shouldUpdateValid?: boolean) => {
@@ -1445,7 +1455,7 @@ export function createFormControl<
 
     if (names) {
       names.forEach((inputName) => {
-        cancelDelayedError(inputName);
+        cancelDelayedErrorTree(inputName);
         unset(_formState.errors, inputName);
         _subjects.state.next({
           name: inputName,
@@ -1608,7 +1618,7 @@ export function createFormControl<
       }
 
       if (!options.keepError) {
-        cancelDelayedError(fieldName);
+        cancelDelayedErrorTree(fieldName);
         unset(_formState.errors, fieldName);
       }
       !options.keepDirty && unset(_formState.dirtyFields, fieldName);
@@ -2216,6 +2226,8 @@ export function createFormControl<
         _validationModeAfterSubmit = getValidationModes(
           _options.reValidateMode,
         );
+        shouldDisplayAllAssociatedErrors =
+          _options.criteriaMode === VALIDATION_MODE.all;
       },
     },
     subscribe,
