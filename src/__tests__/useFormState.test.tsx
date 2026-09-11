@@ -1107,4 +1107,24 @@ describe('useFormState', () => {
       },
     );
   });
+
+  it('should report isReady becoming true once the form mounts, from a separate component', async () => {
+    const seen: boolean[] = [];
+
+    const Child = ({ control }: { control: Control<{ name: string }> }) => {
+      const { isReady } = useFormState({ control });
+      seen.push(isReady);
+      return null;
+    };
+
+    const App = () => {
+      const { control } = useForm({ defaultValues: { name: '' } });
+      return <Child control={control} />;
+    };
+
+    render(<App />);
+
+    await waitFor(() => expect(seen).toContain(true));
+    expect(seen.at(-1)).toBe(true);
+  });
 });

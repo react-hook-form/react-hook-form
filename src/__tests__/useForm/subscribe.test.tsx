@@ -164,6 +164,318 @@ describe('subscribe', () => {
     );
   });
 
+  it('should report a change event type on change and a blur event type on blur', async () => {
+    const events: (string | undefined)[] = [];
+
+    const App = () => {
+      const { register, subscribe } = useForm({
+        defaultValues: {
+          name: '',
+        },
+      });
+
+      React.useEffect(() => {
+        return subscribe({
+          formState: {
+            touchedFields: true,
+            values: true,
+          },
+          callback: ({ type }) => {
+            events.push(type);
+          },
+        });
+      }, [subscribe]);
+
+      return (
+        <form>
+          <input aria-label="name" {...register('name')} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    const input = screen.getByLabelText('name');
+
+    fireEvent.change(input, { target: { value: 'a' } });
+    fireEvent.blur(input);
+
+    await waitFor(() => expect(events).toEqual(['change', 'blur']));
+  });
+
+  it('should report a blur event type when validation runs on blur', async () => {
+    const events: (string | undefined)[] = [];
+
+    const App = () => {
+      const { register, subscribe } = useForm({
+        mode: 'onBlur',
+        defaultValues: {
+          name: '',
+        },
+      });
+
+      React.useEffect(() => {
+        return subscribe({
+          formState: {
+            errors: true,
+            isValid: true,
+          },
+          callback: ({ type }) => {
+            events.push(type);
+          },
+        });
+      }, [subscribe]);
+
+      return (
+        <form>
+          <input aria-label="name" {...register('name', { required: true })} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.blur(screen.getByLabelText('name'));
+
+    await waitFor(() => expect(events).toEqual(['blur']));
+  });
+
+  it('should preserve the blur event type on the delayed error callback when delayError is set', async () => {
+    jest.useFakeTimers({ doNotFake: ['nextTick'] });
+
+    const calls: { type?: string; hasError: boolean }[] = [];
+
+    const App = () => {
+      const { register, subscribe } = useForm({
+        mode: 'onBlur',
+        delayError: 500,
+        defaultValues: {
+          name: '',
+        },
+      });
+
+      React.useEffect(() => {
+        return subscribe({
+          formState: {
+            errors: true,
+          },
+          callback: ({ type, errors }) => {
+            calls.push({ type, hasError: !!errors?.name });
+          },
+        });
+      }, [subscribe]);
+
+      return (
+        <form>
+          <input aria-label="name" {...register('name', { required: true })} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    // the blur handler is async (it awaits field validation before the
+    // delayed-error path schedules its debounce), so the act() needs to be
+    // async too to let that microtask chain settle before we advance timers.
+    await act(async () => {
+      fireEvent.blur(screen.getByLabelText('name'));
+    });
+
+    await act(async () => {
+      jest.advanceTimersByTime(500);
+    });
+
+    const errorCall = calls.find((call) => call.hasError);
+    expect(errorCall).toBeDefined();
+    expect(errorCall!.type).toBe('blur');
+
+    jest.useRealTimers();
+  });
+
+  it('should report a submit event type when the form is submitted', async () => {
+    const events: (string | undefined)[] = [];
+
+    const App = () => {
+      const { handleSubmit, subscribe } = useForm();
+
+      React.useEffect(() => {
+        return subscribe({
+          formState: {
+            isSubmitted: true,
+          },
+          callback: ({ type }) => {
+            events.push(type);
+          },
+        });
+      }, [subscribe]);
+
+      return (
+        <form onSubmit={handleSubmit(() => undefined)}>
+          <button type="submit">Submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+    await waitFor(() => expect(events).toEqual(['submit']));
+  });
+
+  it('should report a submit event type even when submission fails validation', async () => {
+    const calls: { type?: string; isSubmitted?: boolean }[] = [];
+
+    const App = () => {
+      const { register, handleSubmit, subscribe } = useForm({
+        defaultValues: { name: '' },
+      });
+
+      React.useEffect(() => {
+        return subscribe({
+          formState: {
+            isSubmitted: true,
+            errors: true,
+          },
+          callback: ({ type, isSubmitted }) => {
+            calls.push({ type, isSubmitted });
+          },
+        });
+      }, [subscribe]);
+
+      return (
+        <form onSubmit={handleSubmit(() => undefined)}>
+          <input aria-label="name" {...register('name', { required: true })} />
+          <button type="submit">Submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+    await waitFor(() =>
+      expect(calls).toEqual([{ type: 'submit', isSubmitted: true }]),
+    );
+  });
+
+  it('should report the submit event type only after an async onValid resolves', async () => {
+    const calls: { type?: string; isSubmitted?: boolean }[] = [];
+    let resolveOnValid: () => void;
+    const onValidPromise = new Promise<void>((resolve) => {
+      resolveOnValid = resolve;
+    });
+
+    const App = () => {
+      const { handleSubmit, subscribe } = useForm();
+
+      React.useEffect(() => {
+        return subscribe({
+          formState: {
+            isSubmitted: true,
+          },
+          callback: ({ type, isSubmitted }) => {
+            calls.push({ type, isSubmitted });
+          },
+        });
+      }, [subscribe]);
+
+      return (
+        <form onSubmit={handleSubmit(() => onValidPromise)}>
+          <button type="submit">Submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+    // the async onValid hasn't resolved yet, so the submit-tagged
+    // notification (which fires after handleSubmit awaits onValid) must
+    // not have been sent yet.
+    expect(calls).toEqual([]);
+
+    resolveOnValid!();
+
+    await waitFor(() =>
+      expect(calls).toEqual([{ type: 'submit', isSubmitted: true }]),
+    );
+  });
+
+  it('should notify a subscriber tracking isReady once the form mounts', async () => {
+    const seen: { isReady?: boolean; type?: string }[] = [];
+
+    const Child = ({
+      subscribe,
+    }: {
+      subscribe: UseFormSubscribe<{ name: string }>;
+    }) => {
+      React.useLayoutEffect(() => {
+        return subscribe({
+          formState: { isReady: true },
+          callback: ({ isReady, type }) => {
+            seen.push({ isReady, type });
+          },
+        });
+      }, [subscribe]);
+      return null;
+    };
+
+    const App = () => {
+      const { subscribe } = useForm({ defaultValues: { name: '' } });
+      return <Child subscribe={subscribe} />;
+    };
+
+    render(<App />);
+
+    await waitFor(() =>
+      expect(seen).toEqual([{ isReady: true, type: 'mount' }]),
+    );
+  });
+
+  it('should still notify a late subscriber that mounts after the form is already ready', async () => {
+    const seen: { isReady?: boolean; type?: string }[] = [];
+
+    const LateChild = ({
+      subscribe,
+    }: {
+      subscribe: UseFormSubscribe<{ name: string }>;
+    }) => {
+      // Deliberately a plain (passive) useEffect, and this component
+      // mounts only after the form's own mount effect has already fired —
+      // the subject stream keeps no history, so this only works because
+      // subscribing while already-ready replays the mount notification.
+      React.useEffect(() => {
+        return subscribe({
+          formState: { isReady: true },
+          callback: ({ isReady, type }) => {
+            seen.push({ isReady, type });
+          },
+        });
+      }, [subscribe]);
+      return null;
+    };
+
+    const App = () => {
+      const { subscribe } = useForm({ defaultValues: { name: '' } });
+      const [showLate, setShowLate] = React.useState(false);
+
+      React.useEffect(() => {
+        setShowLate(true);
+      }, []);
+
+      return showLate ? <LateChild subscribe={subscribe} /> : null;
+    };
+
+    render(<App />);
+
+    await waitFor(() =>
+      expect(seen).toEqual([{ isReady: true, type: 'mount' }]),
+    );
+  });
+
   it('should not call subscribe callback when setValue is called with the same value and shouldDirty option', async () => {
     const callbackFn = jest.fn();
 
@@ -343,7 +655,7 @@ describe('subscribe', () => {
       React.useEffect(() => {
         return subscribe({
           formState: {
-            isSubmitting: true,
+            isSubmitted: true,
           },
           callback: ({ name }) => {
             names.push(name);

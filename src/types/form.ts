@@ -161,6 +161,7 @@ export type ReadFormState = { [K in keyof FormStateProxy]: boolean | 'all' } & {
   defaultValues?: boolean | 'all';
   isSubmitted?: boolean | 'all';
   submitCount?: boolean | 'all';
+  isReady?: boolean | 'all';
 };
 
 export type FormState<TFieldValues extends FieldValues> = {
