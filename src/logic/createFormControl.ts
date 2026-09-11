@@ -225,7 +225,7 @@ export function createFormControl<
   let _setValidCallId = 0;
   let _resetCallId = 0;
 
-  const shouldDisplayAllAssociatedErrors =
+  let shouldDisplayAllAssociatedErrors =
     _options.criteriaMode === VALIDATION_MODE.all;
 
   const debounce =
@@ -2209,6 +2209,8 @@ export function createFormControl<
         _validationModeAfterSubmit = getValidationModes(
           _options.reValidateMode,
         );
+        shouldDisplayAllAssociatedErrors =
+          _options.criteriaMode === VALIDATION_MODE.all;
       },
     },
     subscribe,
