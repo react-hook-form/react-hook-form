@@ -1797,7 +1797,13 @@ export function createFormControl<
       });
 
       if (_options.resolver) {
+        const resetCallId = _resetCallId;
         const { errors, values } = await _runSchema();
+
+        if (resetCallId !== _resetCallId) {
+          return;
+        }
+
         _updateIsValidating();
         Object.keys(delayErrorCallbacks).forEach(cancelDelayedError);
         _formState.errors = errors;
