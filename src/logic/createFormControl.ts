@@ -241,6 +241,16 @@ export function createFormControl<
     delete delayErrorCallbacks[name];
   };
 
+  const cancelDelayedErrorTree = (name: InternalFieldName) => {
+    cancelDelayedError(name);
+
+    const prefix = `${name}.`;
+
+    for (const key of Object.keys(delayErrorCallbacks)) {
+      key.startsWith(prefix) && cancelDelayedError(key);
+    }
+  };
+
   const _setValid = async (shouldUpdateValid?: boolean) => {
     if (_state.keepIsValid) {
       return;
@@ -1438,7 +1448,7 @@ export function createFormControl<
 
     if (names) {
       names.forEach((inputName) => {
-        cancelDelayedError(inputName);
+        cancelDelayedErrorTree(inputName);
         unset(_formState.errors, inputName);
         _subjects.state.next({
           name: inputName,
@@ -1601,7 +1611,7 @@ export function createFormControl<
       }
 
       if (!options.keepError) {
-        cancelDelayedError(fieldName);
+        cancelDelayedErrorTree(fieldName);
         unset(_formState.errors, fieldName);
       }
       !options.keepDirty && unset(_formState.dirtyFields, fieldName);
