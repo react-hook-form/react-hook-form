@@ -434,4 +434,96 @@ describe('clearErrors', () => {
 
     jest.useRealTimers();
   });
+
+  it('should cancel pending delayError timers for nested fields when their parent is cleared', async () => {
+    jest.useFakeTimers();
+
+    const message = 'too long.';
+
+    const App = () => {
+      const {
+        register,
+        clearErrors,
+        formState: { errors },
+      } = useForm<{ parent: { child: string } }>({
+        delayError: 500,
+        mode: 'onChange',
+      });
+
+      return (
+        <div>
+          <input {...register('parent.child', { maxLength: 4 })} />
+          <button type="button" onClick={() => clearErrors('parent')}>
+            clear
+          </button>
+          {errors.parent?.child && <p>{message}</p>}
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    // Schedule a delayed error, then clear the parent before the delay elapses.
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '123456' },
+      });
+    });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await act(async () => {
+      jest.advanceTimersByTime(500);
+    });
+
+    expect(screen.queryByText(message)).not.toBeInTheDocument();
+
+    jest.useRealTimers();
+  });
+
+  it('should not cancel a pending delayError timer for a field that only shares a name prefix', async () => {
+    jest.useFakeTimers();
+
+    const message = 'too long.';
+
+    const App = () => {
+      const {
+        register,
+        clearErrors,
+        formState: { errors },
+      } = useForm<{ test: string; test1: string }>({
+        delayError: 500,
+        mode: 'onChange',
+      });
+
+      return (
+        <div>
+          <input {...register('test', { maxLength: 4 })} />
+          <input {...register('test1', { maxLength: 4 })} />
+          <button type="button" onClick={() => clearErrors('test')}>
+            clear
+          </button>
+          {errors.test1 && <p>{message}</p>}
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.change(screen.getAllByRole('textbox')[1], {
+        target: { value: '123456' },
+      });
+    });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await act(async () => {
+      jest.advanceTimersByTime(500);
+    });
+
+    expect(screen.getByText(message)).toBeVisible();
+
+    jest.useRealTimers();
+  });
 });
