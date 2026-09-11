@@ -362,10 +362,11 @@ export function useFieldArray<
     control._setFieldArray(
       name,
       [...updatedFieldArrayValues],
-      <T>(data: T): T => data,
+      (data: unknown) =>
+        Array.isArray(data)
+          ? data.slice(0, updatedFieldArrayValues.length)
+          : data,
       {},
-      true,
-      false,
     );
   };
 
