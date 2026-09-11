@@ -943,7 +943,14 @@ export function createFormControl<
     (options.shouldDirty || options.shouldTouch) &&
       updateTouchAndDirty(
         name,
-        fieldValue,
+        field &&
+          field._f &&
+          !field._f.disabled &&
+          (field._f.valueAsNumber ||
+            field._f.valueAsDate ||
+            field._f.setValueAs)
+          ? getFieldValueAs(value, field._f)
+          : fieldValue,
         options.shouldTouch,
         options.shouldDirty,
         !skipRender,
