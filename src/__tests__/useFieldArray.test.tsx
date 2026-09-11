@@ -29,6 +29,15 @@ let i = 0;
 
 jest.mock('../logic/generateId', () => () => String(i++));
 
+// Activity is a React 19.2+ API. Only run Activity-dependent tests when the
+// installed React actually provides it.
+const Activity = (React as unknown as { Activity?: unknown })
+  .Activity as React.ComponentType<{
+  mode: 'hidden' | 'visible';
+  children?: React.ReactNode;
+}>;
+const itWithActivity = Activity ? it : it.skip;
+
 describe('useFieldArray', () => {
   beforeEach(() => {
     i = 0;
@@ -5503,4 +5512,104 @@ it('should propagate disabled to field objects when disabled is set', () => {
   expect(result.current.fieldArray.fields[1].disabled).toBe(true);
   expect(result.current.fieldArray.fields[0].value).toBe('a');
   expect(result.current.fieldArray.fields[1].value).toBe('b');
+});
+
+describe('useFieldArray with Activity', () => {
+  type FormValues = { test: { value: string }[] };
+
+  const ActivityContent = ({ control }: { control: Control<FormValues> }) => {
+    const { fields } = useFieldArray({ control, name: 'test' });
+
+    return (
+      <span data-testid="field-array">
+        {fields.map((field) => field.value).join(',')}
+      </span>
+    );
+  };
+
+  itWithActivity(
+    'should synchronize field array values when an Activity subtree becomes visible for the first time',
+    () => {
+      const Component = () => {
+        const { control, reset } = useForm<FormValues>({
+          defaultValues: { test: [{ value: 'a' }] },
+        });
+        const [mode, setMode] = useState<'hidden' | 'visible'>('hidden');
+
+        return (
+          <>
+            <button
+              type="button"
+              onClick={() => reset({ test: [{ value: 'b' }, { value: 'c' }] })}
+            >
+              Reset
+            </button>
+            <button type="button" onClick={() => setMode('visible')}>
+              Show
+            </button>
+            <Activity mode={mode}>
+              <ActivityContent control={control} />
+            </Activity>
+          </>
+        );
+      };
+
+      render(
+        <React.StrictMode>
+          <Component />
+        </React.StrictMode>,
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+      expect(screen.getByTestId('field-array')).toHaveTextContent('b,c');
+    },
+  );
+
+  itWithActivity(
+    'should synchronize field array values after Activity restoration',
+    () => {
+      const Component = () => {
+        const { control, setValue } = useForm<FormValues>({
+          defaultValues: { test: [{ value: 'a' }] },
+        });
+        const [mode, setMode] = useState<'hidden' | 'visible'>('visible');
+
+        return (
+          <>
+            <button
+              type="button"
+              onClick={() => setValue('test', [{ value: 'b' }, { value: 'c' }])}
+            >
+              Update
+            </button>
+            <button type="button" onClick={() => setMode('hidden')}>
+              Hide
+            </button>
+            <button type="button" onClick={() => setMode('visible')}>
+              Show
+            </button>
+            <Activity mode={mode}>
+              <ActivityContent control={control} />
+            </Activity>
+          </>
+        );
+      };
+
+      render(
+        <React.StrictMode>
+          <Component />
+        </React.StrictMode>,
+      );
+
+      expect(screen.getByTestId('field-array')).toHaveTextContent('a');
+
+      fireEvent.click(screen.getByRole('button', { name: 'Hide' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+      expect(screen.getByTestId('field-array')).toHaveTextContent('b,c');
+    },
+  );
 });

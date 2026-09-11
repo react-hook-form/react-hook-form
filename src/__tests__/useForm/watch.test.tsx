@@ -160,7 +160,7 @@ describe('watch', () => {
 
     expect(results).toEqual([
       ['default', 'test'],
-      [undefined, undefined],
+      ['default', 'test'],
     ]);
   });
 

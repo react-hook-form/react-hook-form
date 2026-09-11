@@ -551,6 +551,32 @@ describe('setValue', () => {
     });
   });
 
+  it('should apply every own property and skip only an inherited one', () => {
+    const { result } = renderHook(() =>
+      useForm<{
+        test: {
+          bill: string;
+          luo: string;
+        };
+      }>(),
+    );
+
+    result.current.register('test.bill');
+    result.current.register('test.luo');
+
+    const proto = { inherited: 'skip-me' };
+    const value = Object.create(proto);
+    value.bill = '1';
+    value.luo = '2';
+
+    act(() => result.current.setValue('test', value));
+
+    expect(result.current.getValues('test')).toEqual({
+      bill: '1',
+      luo: '2',
+    });
+  });
+
   it('should work for nested fields which are not registered', () => {
     const { result } = renderHook(() => useForm());
 
@@ -926,6 +952,68 @@ describe('setValue', () => {
         expect(result.current.formState.dirtyFields.test).toBeUndefined();
       },
     );
+  });
+
+  describe('with value transforms', () => {
+    it('should not mark field dirty when setValueAs output equals the default value', () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({
+          defaultValues: { test: 'default' },
+        }),
+      );
+      // NOTE: read dirtyFields only (not isDirty): the stale-dirty bug shows
+      // when isDirty is untracked, because then the per-field fallback branch
+      // compares the raw (untransformed) value.
+      result.current.formState.dirtyFields;
+
+      result.current.register('test', {
+        setValueAs: (value: string) => value.trim(),
+      });
+
+      act(() =>
+        result.current.setValue('test', 'default ', { shouldDirty: true }),
+      );
+
+      expect(result.current.formState.dirtyFields).toEqual({});
+    });
+
+    it('should mark field dirty when setValueAs output differs from the default value', () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({
+          defaultValues: { test: 'default' },
+        }),
+      );
+      result.current.formState.dirtyFields;
+
+      result.current.register('test', {
+        setValueAs: (value: string) => value.trim(),
+      });
+
+      act(() =>
+        result.current.setValue('test', 'changed ', { shouldDirty: true }),
+      );
+
+      expect(result.current.formState.dirtyFields.test).toBeTruthy();
+    });
+
+    it('should not mark field dirty when valueAsNumber output equals the default value', () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: number }>({
+          defaultValues: { test: 25 },
+        }),
+      );
+      result.current.formState.dirtyFields;
+
+      result.current.register('test', { valueAsNumber: true });
+
+      act(() =>
+        result.current.setValue('test', '25' as unknown as number, {
+          shouldDirty: true,
+        }),
+      );
+
+      expect(result.current.formState.dirtyFields).toEqual({});
+    });
   });
 
   describe('with touched', () => {

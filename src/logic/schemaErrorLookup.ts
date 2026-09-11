@@ -1,6 +1,5 @@
 import type { FieldError, FieldErrors, FieldValues } from '../types';
 import get from '../utils/get';
-import isKey from '../utils/isKey';
 
 export default function schemaErrorLookup<T extends FieldValues = FieldValues>(
   errors: FieldErrors<T>,
@@ -12,7 +11,7 @@ export default function schemaErrorLookup<T extends FieldValues = FieldValues>(
 } {
   const error = get(errors, name);
 
-  if (error || isKey(name)) {
+  if (error?.type || error?.message || Array.isArray(error)) {
     return {
       error,
       name,

@@ -202,4 +202,246 @@ describe('unregister', () => {
 
     await waitFor(() => expect(isDirty).toBe(false));
   });
+
+  it('should cancel a pending delayError timer when the field is unregistered', async () => {
+    jest.useFakeTimers();
+
+    const message = 'too long.';
+
+    const App = () => {
+      const [show, setShow] = React.useState(true);
+      const {
+        register,
+        formState: { errors },
+      } = useForm<{ test: string }>({
+        delayError: 500,
+        mode: 'onChange',
+        shouldUnregister: true,
+      });
+
+      return (
+        <div>
+          {show && <input {...register('test', { maxLength: 4 })} />}
+          <button type="button" onClick={() => setShow(false)}>
+            hide
+          </button>
+          {errors.test && <p>{message}</p>}
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    // Schedule a delayed error, then unmount the field before the delay elapses.
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '123456' },
+      });
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'hide' }));
+
+    await act(async () => {
+      jest.advanceTimersByTime(500);
+    });
+
+    // The field is gone, so this error would be impossible for a user to clear.
+    expect(screen.queryByText(message)).not.toBeInTheDocument();
+
+    jest.useRealTimers();
+  });
+
+  it('should cancel pending delayError timers for nested fields when their parent is unregistered', async () => {
+    jest.useFakeTimers();
+
+    const message = 'too long.';
+
+    const App = () => {
+      const {
+        register,
+        unregister,
+        formState: { errors },
+      } = useForm<{ parent: { child: string } }>({
+        delayError: 500,
+        mode: 'onChange',
+      });
+
+      return (
+        <div>
+          <input {...register('parent.child', { maxLength: 4 })} />
+          <button type="button" onClick={() => unregister('parent')}>
+            unregister
+          </button>
+          {errors.parent?.child && <p>{message}</p>}
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    // Schedule a delayed error, then unregister the parent before the delay elapses.
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '123456' },
+      });
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'unregister' }));
+
+    await act(async () => {
+      jest.advanceTimersByTime(500);
+    });
+
+    expect(screen.queryByText(message)).not.toBeInTheDocument();
+
+    jest.useRealTimers();
+  });
+
+  it('should keep submitting a value retained by keepValue after a disabled field is unregistered', async () => {
+    const onSubmit = jest.fn();
+
+    const App = () => {
+      const [show, setShow] = React.useState(true);
+      const { register, unregister, handleSubmit } = useForm<{
+        test: string;
+        firstName: string;
+      }>({
+        defaultValues: { test: 'kept', firstName: 'bill' },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {show && <input {...register('test', { disabled: true })} />}
+          <input {...register('firstName')} />
+          <button
+            type="button"
+            onClick={() => {
+              setShow(false);
+              unregister('test', { keepValue: true });
+            }}
+          >
+            hide
+          </button>
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'hide' }));
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    // The field is no longer registered, so it is no longer a disabled field
+    // and handleSubmit must stop stripping the value keepValue retained.
+    expect(onSubmit).toHaveBeenCalledWith(
+      { test: 'kept', firstName: 'bill' },
+      expect.any(Object),
+    );
+  });
+
+  it('should recompute isValidating after unregistering a field with a pending validation', async () => {
+    let resolveValidate: (value: boolean) => void;
+
+    const App = () => {
+      const {
+        register,
+        unregister,
+        formState: { isValidating, validatingFields },
+      } = useForm<{ test: string }>({ mode: 'onChange' });
+
+      return (
+        <div>
+          <input
+            {...register('test', {
+              validate: () =>
+                new Promise<boolean>((resolve) => {
+                  resolveValidate = resolve;
+                }),
+            })}
+          />
+          <p>status:{isValidating ? 'validating' : 'idle'}</p>
+          <p>validatingFields:{Object.keys(validatingFields).join(',')}</p>
+          <button type="button" onClick={() => unregister('test')}>
+            unregister
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'x' },
+    });
+
+    await waitFor(() => screen.getByText('status:validating'));
+    expect(screen.getByText('validatingFields:test')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'unregister' }));
+
+    expect(screen.getByText('status:idle')).toBeInTheDocument();
+    expect(screen.getByText('validatingFields:')).toBeInTheDocument();
+
+    // the stale in-flight validator from before unregister finally settles
+    await act(async () => {
+      resolveValidate(true);
+    });
+
+    expect(screen.getByText('status:idle')).toBeInTheDocument();
+    expect(screen.getByText('validatingFields:')).toBeInTheDocument();
+  });
+
+  it('should keep isValidating when unregister is called with keepIsValidating option', async () => {
+    let resolveValidate: (value: boolean) => void;
+
+    const App = () => {
+      const {
+        register,
+        unregister,
+        formState: { isValidating, validatingFields },
+      } = useForm<{ test: string }>({ mode: 'onChange' });
+
+      return (
+        <div>
+          <input
+            {...register('test', {
+              validate: () =>
+                new Promise<boolean>((resolve) => {
+                  resolveValidate = resolve;
+                }),
+            })}
+          />
+          <p>status:{isValidating ? 'validating' : 'idle'}</p>
+          <p>validatingFields:{Object.keys(validatingFields).join(',')}</p>
+          <button
+            type="button"
+            onClick={() => unregister('test', { keepIsValidating: true })}
+          >
+            unregister
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'x' },
+    });
+
+    await waitFor(() => screen.getByText('status:validating'));
+
+    fireEvent.click(screen.getByRole('button', { name: 'unregister' }));
+
+    expect(screen.getByText('status:validating')).toBeInTheDocument();
+    expect(screen.getByText('validatingFields:test')).toBeInTheDocument();
+
+    await act(async () => {
+      resolveValidate(true);
+    });
+  });
 });

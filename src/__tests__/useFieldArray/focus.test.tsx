@@ -217,4 +217,41 @@ describe('useFieldArray focus', () => {
 
     expect(document.activeElement).toEqual(screen.getAllByRole('textbox')[0]);
   });
+
+  it('should focus on a checkbox input of the appended field', () => {
+    const Component = () => {
+      const { register, control } = useForm<{
+        test: { checked: boolean }[];
+      }>({
+        defaultValues: {
+          test: [{ checked: false }],
+        },
+      });
+      const { fields, append } = useFieldArray({
+        name: 'test',
+        control,
+      });
+
+      return (
+        <form>
+          {fields.map((field, i) => (
+            <input
+              key={field.id}
+              type="checkbox"
+              {...register(`test.${i}.checked` as const)}
+            />
+          ))}
+          <button type="button" onClick={() => append({ checked: false })}>
+            append
+          </button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+    expect(document.activeElement).toEqual(screen.getAllByRole('checkbox')[1]);
+  });
 });

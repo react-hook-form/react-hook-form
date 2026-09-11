@@ -149,6 +149,34 @@ describe('useWatch', () => {
     expect(result.current).toEqual(['test', 'test1']);
   });
 
+  it('should keep its own default value for array of inputs after a value change', async () => {
+    const Form = () => {
+      const { control, setValue } = useForm<{ test: string; test1: string }>(
+        {},
+      );
+      const [test, test1] = useWatch({
+        control,
+        name: ['test', 'test1'],
+        defaultValue: {
+          test: 'test',
+          test1: 'test1',
+        },
+      });
+
+      React.useEffect(() => {
+        setValue('test', 'changed');
+      }, [setValue]);
+
+      return <>{`${test},${test1}`}</>;
+    };
+
+    render(<Form />);
+
+    await waitFor(() => {
+      screen.getByText('changed,test1');
+    });
+  });
+
   it('should return default value when name is undefined', () => {
     const { result } = renderHook(() => {
       const { control } = useForm<{ test: string; test1: string }>({
@@ -1444,6 +1472,70 @@ describe('useWatch', () => {
       },
     );
 
+    itWithActivity(
+      'should synchronize watched values when an Activity subtree becomes visible for the first time',
+      () => {
+        type FormValues = {
+          name: string;
+        };
+
+        let getName = (): string => {
+          throw new Error('Form methods are not initialized.');
+        };
+
+        const ActivityContent = ({
+          control,
+        }: {
+          control: Control<FormValues>;
+        }) => {
+          const name = useWatch({ control, name: 'name' });
+
+          return <span data-testid="watched-name">{name}</span>;
+        };
+
+        const Component = () => {
+          const { control, getValues, reset } = useForm<FormValues>({
+            defaultValues: {
+              name: 'initial',
+            },
+          });
+          const [mode, setMode] = React.useState<'hidden' | 'visible'>(
+            'hidden',
+          );
+
+          getName = () => getValues('name');
+
+          return (
+            <>
+              <button type="button" onClick={() => reset({ name: 'updated' })}>
+                Reset
+              </button>
+              <button type="button" onClick={() => setMode('visible')}>
+                Show
+              </button>
+              <Activity mode={mode}>
+                <ActivityContent control={control} />
+              </Activity>
+            </>
+          );
+        };
+
+        render(
+          <React.StrictMode>
+            <Component />
+          </React.StrictMode>,
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+
+        expect(getName()).toBe('updated');
+
+        fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+        expect(screen.getByTestId('watched-name')).toHaveTextContent('updated');
+      },
+    );
+
     it('should return updated default value with watched field after reset', async () => {
       type FormValues = {
         test: string;
@@ -2122,6 +2214,45 @@ describe('useWatch', () => {
   });
 
   describe('compute ', () => {
+    it('should update to undefined on the first computed value change', () => {
+      const Form = () => {
+        const { control, register } = useForm({
+          defaultValues: { test: 'initial' },
+        });
+        const value = useWatch({
+          control,
+          name: 'test',
+          compute: (text) => text || undefined,
+        });
+
+        return (
+          <>
+            <input {...register('test')} />
+            <p>{value === undefined ? 'empty' : value}</p>
+          </>
+        );
+      };
+
+      render(<Form />);
+      expect(screen.getByText('initial')).toBeVisible();
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '' },
+      });
+
+      expect(screen.getByText('empty')).toBeVisible();
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'updated' },
+      });
+      expect(screen.getByText('updated')).toBeVisible();
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '' },
+      });
+      expect(screen.getByText('empty')).toBeVisible();
+    });
+
     it('should only update when value changed within compute', () => {
       type FormValue = {
         test: string;
@@ -2166,7 +2297,7 @@ describe('useWatch', () => {
 
       screen.getByText('yes');
 
-      expect(renderCount).toEqual(4);
+      expect(renderCount).toEqual(3);
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: { value: '12' },
@@ -2174,7 +2305,7 @@ describe('useWatch', () => {
 
       screen.getByText('no');
 
-      expect(renderCount).toEqual(5);
+      expect(renderCount).toEqual(4);
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: { value: '1' },
@@ -2182,7 +2313,7 @@ describe('useWatch', () => {
 
       screen.getByText('no');
 
-      expect(renderCount).toEqual(5);
+      expect(renderCount).toEqual(4);
     });
   });
 });

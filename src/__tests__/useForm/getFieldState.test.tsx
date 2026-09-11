@@ -520,6 +520,42 @@ describe('getFieldState', () => {
 
         expect(screen.getByText('error undefined')).toBeVisible();
       });
+
+      it('should display isValidating state', async () => {
+        const App = () => {
+          const { register, getFieldState, formState } = useForm({
+            mode: 'onChange',
+            defaultValues: {
+              test: '',
+            },
+          });
+
+          const { isValidating } = getFieldState('test', formState);
+
+          return (
+            <form>
+              <input
+                {...register('test', {
+                  validate: () =>
+                    new Promise((resolve) =>
+                      setTimeout(() => resolve(true), 10),
+                    ),
+                })}
+              />
+              <p>{isValidating ? 'validating' : 'idle'}</p>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'test' },
+        });
+
+        expect(await screen.findByText('validating')).toBeVisible();
+        expect(await screen.findByText('idle')).toBeVisible();
+      });
     });
 
     describe('when input is nested data type', () => {

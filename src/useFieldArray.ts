@@ -10,6 +10,7 @@ import validateField from './logic/validateField';
 import appendAt from './utils/append';
 import cloneObject from './utils/cloneObject';
 import convertToArrayPayload from './utils/convertToArrayPayload';
+import deepEqual from './utils/deepEqual';
 import fillEmptyArray from './utils/fillEmptyArray';
 import get from './utils/get';
 import insertAt from './utils/insert';
@@ -43,42 +44,18 @@ import type {
 } from './types';
 import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
+import { useResyncOnReconnect } from './useResyncOnReconnect';
 
 /**
- * A custom hook that exposes convenient methods to perform operations with a list of dynamic inputs that need to be appended, updated, removed etc. • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn) • [Video](https://youtu.be/4MrbfGSFY2A)
+ * Hook for dynamic field arrays. Provides `fields` and mutation methods:
+ * `append`, `prepend`, `remove`, `insert`, `swap`, `move`, `update`, `replace`.
  *
- * @remarks
- * [API](https://react-hook-form.com/docs/usefieldarray) • [Demo](https://codesandbox.io/s/react-hook-form-usefieldarray-ssugn)
- *
- * @param props - useFieldArray props
- *
- * @returns methods - functions to manipulate with the Field Arrays (dynamic inputs) {@link UseFieldArrayReturn}
+ * @see [API](https://react-hook-form.com/docs/usefieldarray)
  *
  * @example
  * ```tsx
- * function App() {
- *   const { register, control, handleSubmit, reset, trigger, setError } = useForm({
- *     defaultValues: {
- *       test: []
- *     }
- *   });
- *   const { fields, append } = useFieldArray({
- *     control,
- *     name: "test"
- *   });
- *
- *   return (
- *     <form onSubmit={handleSubmit(data => console.log(data))}>
- *       {fields.map((item, index) => (
- *          <input key={item.id} {...register(`test.${index}.firstName`)}  />
- *       ))}
- *       <button type="button" onClick={() => append({ firstName: "bill" })}>
- *         append
- *       </button>
- *       <input type="submit" />
- *     </form>
- *   );
- * }
+ * const { fields, append } = useFieldArray({ control, name: "items" });
+ * return fields.map((f, i) => <input key={f.id} {...register(`items.${i}.name`)} />);
  * ```
  */
 export function useFieldArray<
@@ -108,12 +85,19 @@ export function useFieldArray<
     shouldUnregister,
     rules,
   } = props;
-  const [fields, setFields] = React.useState(control._getFieldArray(name));
+  const getCurrentFieldArray = () => control._getFieldArray(name);
+
+  const [fields, setFields] = React.useState(getCurrentFieldArray);
   const ids = React.useRef<string[]>(
     control._getFieldArray(name).map(generateId),
   );
 
   const _actioned = React.useRef(false);
+
+  const { resyncIfNeeded, snapshot } =
+    useResyncOnReconnect(getCurrentFieldArray);
+  const _prevControl = React.useRef(control);
+  const _prevName = React.useRef(name);
 
   if (!disabled) {
     control._names.array.add(name);
@@ -136,7 +120,24 @@ export function useFieldArray<
       return;
     }
 
-    return control._subjects.array.subscribe({
+    if (_prevControl.current === control && _prevName.current === name) {
+      resyncIfNeeded(true, getCurrentFieldArray, (fieldValues) => {
+        setFields(fieldValues);
+        ids.current = fieldValues.map(generateId);
+      });
+    } else {
+      _prevControl.current = control;
+      _prevName.current = name;
+
+      const fieldValues = getCurrentFieldArray();
+      if (!deepEqual(fields, fieldValues)) {
+        setFields(fieldValues);
+        ids.current = fieldValues.map(generateId);
+      }
+      snapshot(true, getCurrentFieldArray);
+    }
+
+    const unsubscribe = control._subjects.array.subscribe({
       next: ({
         values,
         name: fieldArrayName,
@@ -156,7 +157,12 @@ export function useFieldArray<
         }
       },
     }).unsubscribe;
-  }, [control, name, disabled]);
+
+    return () => {
+      unsubscribe();
+      snapshot(true, getCurrentFieldArray);
+    };
+  }, [control, name, disabled, resyncIfNeeded, snapshot]);
 
   const updateValues = React.useCallback(
     <
@@ -356,10 +362,11 @@ export function useFieldArray<
     control._setFieldArray(
       name,
       [...updatedFieldArrayValues],
-      <T>(data: T): T => data,
+      (data: unknown) =>
+        Array.isArray(data)
+          ? data.slice(0, updatedFieldArrayValues.length)
+          : data,
       {},
-      true,
-      false,
     );
   };
 

@@ -28,6 +28,57 @@ describe('remove', () => {
     i = 0;
   });
 
+  it('should not copy deleted fields onto a surviving row rendered from useWatch', () => {
+    type FormValues = {
+      items: {
+        id: string;
+        title?: string;
+        description?: { safeString: string };
+      }[];
+    };
+    const remaining = { id: 'b', description: { safeString: 'A description' } };
+    let getValues: () => FormValues;
+
+    const App = () => {
+      const methods = useForm<FormValues>({
+        defaultValues: {
+          items: [{ id: 'a', title: 'Test Position' }, remaining],
+        },
+      });
+      getValues = methods.getValues;
+      const { remove } = useFieldArray({
+        control: methods.control,
+        name: 'items',
+      });
+      const items = useWatch({ control: methods.control, name: 'items' });
+
+      return (
+        <>
+          {items.map((item, index) => (
+            <Controller
+              key={item.id}
+              control={methods.control}
+              name={
+                item.description
+                  ? `items.${index}.description.safeString`
+                  : `items.${index}.title`
+              }
+              render={({ field }) => <input {...field} />}
+            />
+          ))}
+          <button onClick={() => remove(0)}>remove</button>
+        </>
+      );
+    };
+
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+
+    expect(getValues!()).toEqual({ items: [remaining] });
+    expect(screen.getAllByRole('textbox')).toHaveLength(1);
+    expect(screen.getByRole('textbox')).toHaveValue('A description');
+  });
+
   it('should update isDirty formState when item removed', () => {
     let formState: any;
     const Component = () => {

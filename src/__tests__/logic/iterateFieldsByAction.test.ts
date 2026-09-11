@@ -203,4 +203,44 @@ describe('iterateFieldsByAction', () => {
     expect(notFocus).not.toHaveBeenCalledWith('phone'); // stopped
     expect(notFocus).not.toHaveBeenCalledWith('line1');
   });
+
+  it('should break out of all loops when the match is nested below a sibling top-level group', () => {
+    const focus = jest.fn();
+    const notFocus = jest.fn();
+    iterateFieldsByAction(
+      {
+        personal: {
+          name: {
+            last: {
+              _f: {
+                name: 'name.last',
+                ref: {
+                  name: 'last',
+                  focus,
+                },
+              },
+            },
+          },
+        },
+        work: {
+          email: {
+            _f: {
+              name: 'work.email',
+              ref: {
+                name: 'email',
+                focus: notFocus,
+              },
+            },
+          },
+        },
+      },
+      (ref, key) => {
+        // @ts-expect-error we want to test with what focus was called
+        ref.focus && ref.focus(ref.name);
+        return key === 'name.last' ? 1 : undefined;
+      },
+    );
+    expect(focus).toHaveBeenCalledWith('last');
+    expect(notFocus).not.toHaveBeenCalled();
+  });
 });

@@ -659,4 +659,152 @@ describe('handleSubmit', () => {
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalled());
   });
+
+  it('should not invoke onValid when the resolver reports a root-level error', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ test: string }>({
+        resolver: async () => ({
+          values: {},
+          errors: {
+            root: {
+              type: 'cross-field',
+              message: 'passwords do not match',
+            },
+          },
+        }),
+      }),
+    );
+
+    result.current.register('test');
+
+    const onValid = jest.fn();
+    const onInvalid = jest.fn();
+
+    await act(async () => {
+      await result.current.handleSubmit(
+        onValid,
+        onInvalid,
+      )({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    expect(onValid).not.toHaveBeenCalled();
+    expect(onInvalid).toHaveBeenCalledTimes(1);
+    expect(onInvalid.mock.calls[0][0]).toEqual({
+      root: {
+        type: 'cross-field',
+        message: 'passwords do not match',
+      },
+    });
+  });
+
+  it('should still clear a manually set root error on submit without a resolver', async () => {
+    const { result } = renderHook(() => useForm<{ test: string }>());
+
+    result.current.register('test');
+    result.current.setValue('test', 'test');
+
+    await act(async () => {
+      result.current.setError('root.server', {
+        type: 'server',
+        message: 'stale server error',
+      });
+    });
+
+    const onValid = jest.fn();
+
+    await act(async () => {
+      await result.current.handleSubmit(onValid)({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    expect(onValid).toHaveBeenCalledTimes(1);
+    expect(result.current.getFieldState('test').error).toBeUndefined();
+  });
+
+  it('should ignore a stale resolver result when reset() runs mid-submit', async () => {
+    let resolveResolver!: (v: { errors: any; values: any }) => void;
+    const resolver = jest.fn(
+      () =>
+        new Promise<{ errors: any; values: any }>((resolve) => {
+          resolveResolver = resolve;
+        }),
+    );
+    const { result } = renderHook(() =>
+      useForm({ defaultValues: { test: 'before' }, resolver }),
+    );
+
+    const onValid = jest.fn();
+    const onInvalid = jest.fn();
+
+    let submitPromise: Promise<unknown>;
+    act(() => {
+      submitPromise = result.current.handleSubmit(
+        onValid,
+        onInvalid,
+      )({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    act(() => {
+      result.current.reset({ test: 'after' });
+    });
+
+    await act(async () => {
+      resolveResolver({
+        errors: { test: { type: 'validate', message: 'stale' } },
+        values: { test: 'before' },
+      });
+      await submitPromise;
+    });
+
+    expect(onValid).not.toHaveBeenCalled();
+    expect(onInvalid).not.toHaveBeenCalled();
+    expect(result.current.formState.errors).toEqual({});
+    expect(result.current.formState.submitCount).toBe(0);
+    expect(result.current.formState.isSubmitted).toBe(false);
+    expect(result.current.getValues()).toEqual({ test: 'after' });
+  });
+
+  it('should not invoke onValid with stale values when reset() runs mid-submit', async () => {
+    let resolveResolver!: (v: { errors: any; values: any }) => void;
+    const resolver = jest.fn(
+      () =>
+        new Promise<{ errors: any; values: any }>((resolve) => {
+          resolveResolver = resolve;
+        }),
+    );
+    const { result } = renderHook(() =>
+      useForm({ defaultValues: { test: 'before' }, resolver }),
+    );
+
+    const onValid = jest.fn();
+
+    let submitPromise: Promise<unknown>;
+    act(() => {
+      submitPromise = result.current.handleSubmit(onValid)({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    act(() => {
+      result.current.reset({ test: 'after' });
+    });
+
+    await act(async () => {
+      resolveResolver({ errors: {}, values: { test: 'before' } });
+      await submitPromise;
+    });
+
+    expect(onValid).not.toHaveBeenCalled();
+    expect(result.current.formState.submitCount).toBe(0);
+    expect(result.current.formState.isSubmitSuccessful).toBe(false);
+  });
 });
