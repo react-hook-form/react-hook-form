@@ -652,6 +652,9 @@ export function createFormControl<
           _names.array.has(name) &&
           isObject(error) &&
           !Object.keys(error).some((key) => !Number.isNaN(Number(key)));
+        const field = get(_fields, name);
+        const hasNestedFields =
+          isObject(field) && Object.keys(field).some((key) => key !== '_f');
 
         isFieldArrayRootError
           ? updateFieldArrayRootError(
@@ -659,7 +662,10 @@ export function createFormControl<
               { [name]: error } as Partial<Record<string, FieldError>>,
               name,
             )
-          : error?.type || error?.message || Array.isArray(error)
+          : error?.type ||
+              error?.message ||
+              Array.isArray(error) ||
+              (isObject(error) && hasNestedFields)
             ? set(_formState.errors, name, error)
             : unset(_formState.errors, name);
       }
