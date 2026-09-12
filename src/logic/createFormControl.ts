@@ -350,6 +350,14 @@ export function createFormControl<
         shouldSetValues && set(_formState.touchedFields, name, touchedFields);
       }
 
+      const dirtyFieldsArray = get(_formState.dirtyFields, name);
+      if (shouldUpdateFieldsAndState && Array.isArray(dirtyFieldsArray)) {
+        const dirtyFields =
+          method(dirtyFieldsArray, args.argA, args.argB) || dirtyFieldsArray;
+
+        shouldSetValues && set(_formState.dirtyFields, name, dirtyFields);
+      }
+
       if (_isTracked('dirtyFields')) {
         _updateDirtyFields();
       }
