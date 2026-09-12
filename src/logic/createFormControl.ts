@@ -483,7 +483,14 @@ export function createFormControl<
         : setFieldValue(name, defaultValue);
 
       if (_state.mount && !_state.action) {
-        _setValid();
+        if (
+          _options.resolver &&
+          _isTracked('isValidating', 'validatingFields')
+        ) {
+          Promise.resolve().then(() => _setValid());
+        } else {
+          _setValid();
+        }
 
         if (
           wasUnsetInFormValues &&
