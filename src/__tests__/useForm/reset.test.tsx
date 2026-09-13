@@ -2810,4 +2810,256 @@ describe('reset', () => {
     });
     expect(result.current.formState.errors.test?.message).toBe('current error');
   });
+
+  // #13722 and #13733 added a _resetCallId guard to executeSchemaAndUpdateState
+  // and handleSubmit, but the resolver call started by a keystroke was left
+  // unguarded, so it still writes its discarded result into a form that
+  // reset() has already cleaned. _updateIsFieldValueUpdated normally masks
+  // this by bailing when the in-flight value no longer matches the current
+  // one, which is why a reset that keeps or restores the same value is needed
+  // to see it.
+  it('should not resurrect an onChange resolver error that settles after reset({ keepValues: true })', async () => {
+    let resolveResolver:
+      | ((result: { values: unknown; errors: unknown }) => void)
+      | undefined;
+
+    const App = () => {
+      const {
+        register,
+        reset,
+        formState: { errors },
+      } = useForm<{ test: string }>({
+        mode: 'onChange',
+        defaultValues: { test: '' },
+        resolver: () =>
+          new Promise((resolve) => {
+            resolveResolver = resolve;
+          }),
+      });
+
+      return (
+        <div>
+          <input {...register('test')} />
+          <p>{`error:${errors.test ? errors.test.message : 'none'}`}</p>
+          <button
+            type="button"
+            onClick={() => reset(undefined, { keepValues: true })}
+          >
+            reset
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'invalid' },
+      });
+    });
+
+    // Sanity check: the keystroke really did start a resolver call that is
+    // still pending.
+    expect(resolveResolver).toBeDefined();
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    });
+
+    expect(screen.getByText(/^error:/).textContent).toEqual('error:none');
+
+    await act(async () => {
+      resolveResolver!({
+        values: {},
+        errors: { test: { type: 'manual', message: 'stale error' } },
+      });
+    });
+
+    expect(screen.getByText(/^error:/).textContent).toEqual('error:none');
+  });
+
+  it('should not resurrect an onChange resolver error when reset() restores the same value', async () => {
+    let resolveResolver:
+      | ((result: { values: unknown; errors: unknown }) => void)
+      | undefined;
+
+    const App = () => {
+      const {
+        register,
+        reset,
+        formState: { errors },
+      } = useForm<{ test: string }>({
+        mode: 'onChange',
+        defaultValues: { test: '' },
+        resolver: () =>
+          new Promise((resolve) => {
+            resolveResolver = resolve;
+          }),
+      });
+
+      return (
+        <div>
+          <input {...register('test')} />
+          <p>{`error:${errors.test ? errors.test.message : 'none'}`}</p>
+          <button type="button" onClick={() => reset({ test: 'invalid' })}>
+            reset
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'invalid' },
+      });
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    });
+
+    await act(async () => {
+      resolveResolver!({
+        values: {},
+        errors: { test: { type: 'manual', message: 'stale error' } },
+      });
+    });
+
+    expect(screen.getByText(/^error:/).textContent).toEqual('error:none');
+  });
+
+  // The discarded call must not clear validatingFields either, or a newer
+  // keystroke that is still waiting on the resolver reports itself as done.
+  it('should keep a newer onChange validation marked as validating when a stale resolver from before reset settles', async () => {
+    const resolveCalls: Array<
+      (result: { values: unknown; errors: unknown }) => void
+    > = [];
+
+    const App = () => {
+      const {
+        register,
+        reset,
+        formState: { errors, isValidating, validatingFields },
+      } = useForm<{ test: string }>({
+        mode: 'onChange',
+        defaultValues: { test: '' },
+        resolver: () =>
+          new Promise((resolve) => {
+            resolveCalls.push(resolve);
+          }),
+      });
+
+      return (
+        <div>
+          <input {...register('test')} />
+          <p>{`error:${errors.test ? errors.test.message : 'none'}`}</p>
+          <p>{`validating:${isValidating}`}</p>
+          <p>{`validatingFields:${JSON.stringify(validatingFields)}`}</p>
+          <button
+            type="button"
+            onClick={() => reset(undefined, { keepValues: true })}
+          >
+            reset
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'stale' },
+      });
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    });
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'fresh' },
+      });
+    });
+
+    expect(resolveCalls).toHaveLength(2);
+    expect(screen.getByText(/^validating:/).textContent).toEqual(
+      'validating:true',
+    );
+
+    await act(async () => {
+      resolveCalls[0]({
+        values: {},
+        errors: { test: { type: 'manual', message: 'stale error' } },
+      });
+    });
+
+    expect(screen.getByText(/^error:/).textContent).toEqual('error:none');
+    expect(screen.getByText(/^validating:/).textContent).toEqual(
+      'validating:true',
+    );
+    expect(screen.getByText(/^validatingFields:/).textContent).toEqual(
+      'validatingFields:{"test":true}',
+    );
+
+    await act(async () => {
+      resolveCalls[1]({ values: { test: 'fresh' }, errors: {} });
+    });
+
+    expect(screen.getByText(/^validating:/).textContent).toEqual(
+      'validating:false',
+    );
+  });
+
+  // Control: with no intervening reset(), a slow onChange resolver result is
+  // still applied as usual.
+  it('should apply a delayed onChange resolver error when reset() is not called', async () => {
+    let resolveResolver:
+      | ((result: { values: unknown; errors: unknown }) => void)
+      | undefined;
+
+    const App = () => {
+      const {
+        register,
+        formState: { errors },
+      } = useForm<{ test: string }>({
+        mode: 'onChange',
+        defaultValues: { test: '' },
+        resolver: () =>
+          new Promise((resolve) => {
+            resolveResolver = resolve;
+          }),
+      });
+
+      return (
+        <div>
+          <input {...register('test')} />
+          <p>{`error:${errors.test ? errors.test.message : 'none'}`}</p>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'invalid' },
+      });
+    });
+
+    await act(async () => {
+      resolveResolver!({
+        values: {},
+        errors: { test: { type: 'manual', message: 'stale error' } },
+      });
+    });
+
+    expect(screen.getByText(/^error:/).textContent).toEqual(
+      'error:stale error',
+    );
+  });
 });
