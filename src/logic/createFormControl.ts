@@ -1264,7 +1264,13 @@ export function createFormControl<
       !isBlurEvent && watched && _subjects.state.next({ ..._formState });
 
       if (_options.resolver) {
+        const resetCallId = _resetCallId;
         const { errors } = await _runSchema([name]);
+
+        if (resetCallId !== _resetCallId) {
+          return;
+        }
+
         _updateIsValidating([name]);
 
         _updateIsFieldValueUpdated(fieldValue);
