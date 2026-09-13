@@ -2214,6 +2214,45 @@ describe('useWatch', () => {
   });
 
   describe('compute ', () => {
+    it('should update to undefined on the first computed value change', () => {
+      const Form = () => {
+        const { control, register } = useForm({
+          defaultValues: { test: 'initial' },
+        });
+        const value = useWatch({
+          control,
+          name: 'test',
+          compute: (text) => text || undefined,
+        });
+
+        return (
+          <>
+            <input {...register('test')} />
+            <p>{value === undefined ? 'empty' : value}</p>
+          </>
+        );
+      };
+
+      render(<Form />);
+      expect(screen.getByText('initial')).toBeVisible();
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '' },
+      });
+
+      expect(screen.getByText('empty')).toBeVisible();
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'updated' },
+      });
+      expect(screen.getByText('updated')).toBeVisible();
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '' },
+      });
+      expect(screen.getByText('empty')).toBeVisible();
+    });
+
     it('should only update when value changed within compute', () => {
       type FormValue = {
         test: string;
@@ -2258,7 +2297,7 @@ describe('useWatch', () => {
 
       screen.getByText('yes');
 
-      expect(renderCount).toEqual(4);
+      expect(renderCount).toEqual(3);
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: { value: '12' },
@@ -2266,7 +2305,7 @@ describe('useWatch', () => {
 
       screen.getByText('no');
 
-      expect(renderCount).toEqual(5);
+      expect(renderCount).toEqual(4);
 
       fireEvent.change(screen.getByRole('textbox'), {
         target: { value: '1' },
@@ -2274,7 +2313,7 @@ describe('useWatch', () => {
 
       screen.getByText('no');
 
-      expect(renderCount).toEqual(5);
+      expect(renderCount).toEqual(4);
     });
   });
 });

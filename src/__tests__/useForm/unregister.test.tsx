@@ -251,6 +251,52 @@ describe('unregister', () => {
     jest.useRealTimers();
   });
 
+  it('should cancel pending delayError timers for nested fields when their parent is unregistered', async () => {
+    jest.useFakeTimers();
+
+    const message = 'too long.';
+
+    const App = () => {
+      const {
+        register,
+        unregister,
+        formState: { errors },
+      } = useForm<{ parent: { child: string } }>({
+        delayError: 500,
+        mode: 'onChange',
+      });
+
+      return (
+        <div>
+          <input {...register('parent.child', { maxLength: 4 })} />
+          <button type="button" onClick={() => unregister('parent')}>
+            unregister
+          </button>
+          {errors.parent?.child && <p>{message}</p>}
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    // Schedule a delayed error, then unregister the parent before the delay elapses.
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '123456' },
+      });
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'unregister' }));
+
+    await act(async () => {
+      jest.advanceTimersByTime(500);
+    });
+
+    expect(screen.queryByText(message)).not.toBeInTheDocument();
+
+    jest.useRealTimers();
+  });
+
   it('should keep submitting a value retained by keepValue after a disabled field is unregistered', async () => {
     const onSubmit = jest.fn();
 

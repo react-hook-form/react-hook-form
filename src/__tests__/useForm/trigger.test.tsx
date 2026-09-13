@@ -1313,4 +1313,155 @@ describe('trigger', () => {
       expect(triggerErrors?.items?.root).toBeUndefined();
     });
   });
+
+  it('should not set a parent error when only nested resolver errors exist', async () => {
+    type FormValues = {
+      test: string;
+    };
+
+    let triggerErrors: FieldErrors<FormValues> | undefined;
+
+    const resolver: Resolver<FormValues> = async () => ({
+      values: {},
+      errors: {
+        test: {
+          nested: {
+            type: 'nested',
+            message: 'nested bad',
+          },
+        },
+      } as never,
+    });
+
+    const App = () => {
+      const {
+        register,
+        formState: { errors },
+      } = useForm<FormValues>({ mode: VALIDATION_MODE.onChange, resolver });
+
+      triggerErrors = errors;
+
+      return <input {...register('test')} />;
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'hello' },
+      });
+    });
+
+    await waitFor(() => {
+      expect(triggerErrors?.test).toBeUndefined();
+    });
+  });
+
+  it('should not set a parent error when trigger targets a field with only nested resolver errors', async () => {
+    type FormValues = {
+      test: string;
+    };
+
+    let triggerErrors: FieldErrors<FormValues> | undefined;
+
+    const resolver: Resolver<FormValues> = async () => ({
+      values: {},
+      errors: {
+        test: {
+          nested: {
+            type: 'nested',
+            message: 'nested bad',
+          },
+        },
+      } as never,
+    });
+
+    const App = () => {
+      const {
+        register,
+        trigger,
+        formState: { errors },
+      } = useForm<FormValues>({ resolver });
+
+      triggerErrors = errors;
+
+      return (
+        <>
+          <input {...register('test')} />
+          <button type="button" onClick={() => trigger('test')}>
+            trigger
+          </button>
+        </>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /trigger/i }));
+    });
+
+    await waitFor(() => {
+      expect(triggerErrors?.test).toBeUndefined();
+    });
+  });
+
+  it('should keep registered nested resolver errors when trigger targets their parent', async () => {
+    type FormValues = {
+      address: {
+        street: string;
+      };
+    };
+
+    let triggerErrors: FieldErrors<FormValues> | undefined;
+    let triggerResult: boolean | undefined;
+
+    const resolver: Resolver<FormValues> = async () => ({
+      values: {},
+      errors: {
+        address: {
+          street: {
+            type: 'required',
+            message: 'street_required',
+          },
+        },
+      },
+    });
+
+    const App = () => {
+      const {
+        register,
+        trigger,
+        formState: { errors },
+      } = useForm<FormValues>({ resolver });
+
+      triggerErrors = errors;
+
+      return (
+        <>
+          <input {...register('address.street')} />
+          <button
+            type="button"
+            onClick={async () => {
+              triggerResult = await trigger('address');
+            }}
+          >
+            trigger
+          </button>
+        </>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /trigger/i }));
+    });
+
+    await waitFor(() => {
+      expect(triggerResult).toBe(false);
+    });
+
+    expect(triggerErrors?.address?.street?.message).toBe('street_required');
+  });
 });

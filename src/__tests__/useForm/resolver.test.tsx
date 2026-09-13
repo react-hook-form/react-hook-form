@@ -13,11 +13,71 @@ import type { Resolver } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import { FormProvider, useFormContext } from '../../useFormContext';
 import { useFormState } from '../../useFormState';
 import noop from '../../utils/noop';
 import sleep from '../../utils/sleep';
 
 describe('resolver', () => {
+  it('should not update useFormState subscribers while Controller is rendering after reset', async () => {
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(noop);
+
+    const FieldLabel = ({ name }: { name: string }) => {
+      const { getFieldState } = useFormContext();
+      const formState = useFormState({ name });
+      const { error } = getFieldState(name, formState);
+
+      return <label data-error={!!error}>Username</label>;
+    };
+
+    const App = ({ username }: { username?: string }) => {
+      const form = useForm<{ username: string }>({
+        defaultValues: { username: '' },
+        resolver: async (values) => ({ values, errors: {} }),
+      });
+
+      React.useEffect(() => {
+        if (username) {
+          form.reset({ username });
+        }
+      }, [form, username]);
+
+      const isValid = form.formState.isValid;
+
+      return (
+        <FormProvider {...form}>
+          <Controller
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <div>
+                <FieldLabel name="username" />
+                <input {...field} />
+                <span>{String(isValid)}</span>
+              </div>
+            )}
+          />
+        </FormProvider>
+      );
+    };
+
+    const { rerender } = render(<App />);
+
+    rerender(<App username="jane" />);
+
+    await waitFor(() =>
+      expect(screen.getByRole('textbox')).toHaveValue('jane'),
+    );
+
+    expect(
+      consoleError.mock.calls.some((call) =>
+        call[0]?.toString().includes('Cannot update a component'),
+      ),
+    ).toBe(false);
+
+    consoleError.mockRestore();
+  });
+
   it('should update context within the resolver', async () => {
     type FormValues = {
       test: string;

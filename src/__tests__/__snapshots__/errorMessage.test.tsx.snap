@@ -1,0 +1,161 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`ErrorMessage snapshot: prop matrix should render correctly with flat errors 1`] = `
+<DocumentFragment>
+  flat
+</DocumentFragment>
+`;
+
+exports[`ErrorMessage snapshot: prop matrix should render correctly with flat errors and as with component 1`] = `
+<DocumentFragment>
+  <div>
+    flat
+  </div>
+</DocumentFragment>
+`;
+
+exports[`ErrorMessage snapshot: prop matrix should render correctly with flat errors and as with component and render 1`] = `
+<DocumentFragment>
+  flat
+</DocumentFragment>
+`;
+
+exports[`ErrorMessage snapshot: prop matrix should render correctly with flat errors and as with element and render 1`] = `
+<DocumentFragment>
+  flat
+</DocumentFragment>
+`;
+
+exports[`ErrorMessage snapshot: prop matrix should render correctly with flat errors and as with string 1`] = `
+<DocumentFragment>
+  <span>
+    flat
+  </span>
+</DocumentFragment>
+`;
+
+exports[`ErrorMessage snapshot: prop matrix should render correctly with flat multiple errors and as with element and render 1`] = `
+<DocumentFragment>
+  <span>
+    flat1
+  </span>
+  <span>
+    flat2
+  </span>
+  <span>
+    flat3
+  </span>
+</DocumentFragment>
+`;
+
+exports[`ErrorMessage snapshot: prop matrix should render correctly with flat multiple errors and render 1`] = `
+<DocumentFragment>
+  <span>
+    flat1
+  </span>
+  <span>
+    flat2
+  </span>
+  <span>
+    flat3
+  </span>
+</DocumentFragment>
+`;
+
+exports[`ErrorMessage snapshot: prop matrix should render correctly with nested errors and as with element and render 1`] = `
+<DocumentFragment>
+  object
+</DocumentFragment>
+`;
+
+exports[`ErrorMessage snapshot: prop matrix should render correctly with nested errors array 1`] = `
+<DocumentFragment>
+  array
+</DocumentFragment>
+`;
+
+exports[`ErrorMessage snapshot: prop matrix should render correctly with nested errors array and as with element and render 1`] = `
+<DocumentFragment>
+  array
+</DocumentFragment>
+`;
+
+exports[`ErrorMessage snapshot: prop matrix should render correctly with nested errors array and as with string 1`] = `
+<DocumentFragment>
+  <span>
+    array
+  </span>
+</DocumentFragment>
+`;
+
+exports[`ErrorMessage snapshot: prop matrix should render correctly with nested errors object 1`] = `
+<DocumentFragment>
+  object
+</DocumentFragment>
+`;
+
+exports[`ErrorMessage snapshot: prop matrix should render correctly with nested errors object and as with string 1`] = `
+<DocumentFragment>
+  <span>
+    object
+  </span>
+</DocumentFragment>
+`;
+
+exports[`ErrorMessage snapshot: prop matrix should render correctly with nested multiple errors and as with element and render 1`] = `
+<DocumentFragment>
+  <span>
+    object1
+  </span>
+  <span>
+    object2
+  </span>
+  <span>
+    object3
+  </span>
+</DocumentFragment>
+`;
+
+exports[`ErrorMessage snapshot: prop matrix should render correctly with nested multiple errors and render 1`] = `
+<DocumentFragment>
+  <span>
+    object1
+  </span>
+  <span>
+    object2
+  </span>
+  <span>
+    object3
+  </span>
+</DocumentFragment>
+`;
+
+exports[`ErrorMessage snapshot: prop matrix should render correctly with nested multiple errors array and as with element and render 1`] = `
+<DocumentFragment>
+  <span>
+    array1
+  </span>
+  <span>
+    array2
+  </span>
+  <span>
+    array3
+  </span>
+</DocumentFragment>
+`;
+
+exports[`ErrorMessage snapshot: prop matrix should render correctly with nested multiple errors array and render 1`] = `
+<DocumentFragment>
+  <span>
+    array1
+  </span>
+  <span>
+    array2
+  </span>
+  <span>
+    array3
+  </span>
+</DocumentFragment>
+`;
+
+exports[`ErrorMessage snapshot: prop matrix should render correctly with no errors 1`] = `<DocumentFragment />`;

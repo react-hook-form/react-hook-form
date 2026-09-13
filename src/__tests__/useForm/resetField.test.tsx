@@ -579,4 +579,66 @@ describe('resetField', () => {
 
     expect(await screen.findByText('valid')).toBeVisible();
   });
+
+  it('should clear stale validating state when reset does not revalidate', async () => {
+    let resolveValidate: (value: boolean) => void;
+
+    const App = () => {
+      const {
+        register,
+        trigger,
+        resetField,
+        getFieldState,
+        formState: { isValidating, validatingFields },
+      } = useForm<{ test: string }>();
+
+      return (
+        <div>
+          <input
+            {...register('test', {
+              validate: async () =>
+                new Promise<boolean>((resolve) => {
+                  resolveValidate = resolve;
+                }),
+            })}
+          />
+          <p>status:{isValidating ? 'validating' : 'idle'}</p>
+          <p>validatingFields:{Object.keys(validatingFields).join(',')}</p>
+          <p>
+            fieldValidating:
+            {getFieldState('test').isValidating ? 'yes' : 'no'}
+          </p>
+          <button type="button" onClick={() => resetField('test')}>
+            resetField
+          </button>
+          <button type="button" onClick={() => trigger('test')}>
+            trigger
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    // default mode: resetField's internal setValue does not start a new
+    // validation pass, so the trigger-started entry would leak without a fix
+    fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+
+    expect(await screen.findByText('status:validating')).toBeVisible();
+    expect(screen.getByText('validatingFields:test')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'resetField' }));
+
+    expect(await screen.findByText('status:idle')).toBeVisible();
+    expect(screen.getByText('validatingFields:')).toBeInTheDocument();
+    expect(screen.getByText('fieldValidating:no')).toBeInTheDocument();
+
+    // the stale in-flight validator from before resetField finally settles
+    await act(async () => {
+      resolveValidate(true);
+    });
+
+    expect(screen.getByText('status:idle')).toBeInTheDocument();
+    expect(screen.getByText('validatingFields:')).toBeInTheDocument();
+  });
 });

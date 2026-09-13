@@ -1,5 +1,6 @@
 [
   "Controller",
+  "ErrorMessage",
   "FieldArray",
   "Form",
   "FormProvider",

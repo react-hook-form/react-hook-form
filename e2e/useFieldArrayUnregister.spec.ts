@@ -128,6 +128,14 @@ test.describe('useFieldArrayUnregister', () => {
 
     await page.locator('#move').click();
 
+    // Let the field-array reorder settle before clearing the moved input.
+    await page.evaluate(
+      () =>
+        new Promise<void>((resolve) => {
+          requestAnimationFrame(() => resolve());
+        }),
+    );
+
     await page.locator('input[name="data.2.name"]').clear();
     await type(page.locator('input[name="data.2.name"]'), 'bill');
 
