@@ -1308,8 +1308,6 @@ export function createFormControl<
           )
         )[name];
 
-        // A reset() that lands while this validation is pending has already
-        // cleared the state this result describes.
         if (resetCallId !== _resetCallId) {
           return;
         }
