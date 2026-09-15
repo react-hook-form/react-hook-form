@@ -18,7 +18,7 @@ export default <T>(
     return names.map(
       (fieldName) => (
         isGlobal && _names.watch.add(fieldName),
-        get(formValues, fieldName)
+        get(formValues, fieldName, get(defaultValue, fieldName))
       ),
     );
   }

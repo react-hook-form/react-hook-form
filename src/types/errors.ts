@@ -1,6 +1,12 @@
 import type { FieldValues, InternalFieldName, Ref } from './fields';
 import type { FieldPath, FieldPathValue } from './path';
-import type { BrowserNativeObject, IsAny, LiteralUnion, Merge } from './utils';
+import type {
+  BrowserNativeObject,
+  IsAny,
+  LiteralUnion,
+  Merge,
+  OpaqueType,
+} from './utils';
 import type { RegisterOptions, ValidateResult } from './validator';
 
 export type Message = string;
@@ -25,14 +31,14 @@ export type ErrorOption = {
   types?: MultipleFieldErrors;
 };
 
-export type DeepRequired<T> = T extends BrowserNativeObject | Blob
+export type DeepRequired<T> = T extends BrowserNativeObject | Blob | OpaqueType
   ? T
   : {
       [K in keyof T]-?: NonNullable<DeepRequired<T[K]>>;
     };
 
 export type FieldErrorsImpl<T extends FieldValues = FieldValues> = {
-  [K in keyof T]?: T[K] extends BrowserNativeObject | Blob
+  [K in keyof T]?: T[K] extends BrowserNativeObject | Blob | OpaqueType
     ? FieldError
     : K extends 'root' | `root.${string}`
       ? GlobalError

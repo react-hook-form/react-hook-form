@@ -14,6 +14,7 @@ import type { Control, DeepMap, FieldError } from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import { useFormState } from '../../useFormState';
 import { useWatch } from '../../useWatch';
 import noop from '../../utils/noop';
 
@@ -26,6 +27,57 @@ jest.mock('../../logic/generateId', () => () => String(mockId++));
 describe('remove', () => {
   beforeEach(() => {
     mockId = 0;
+  });
+
+  it('should not copy deleted fields onto a surviving row rendered from useWatch', () => {
+    type FormValues = {
+      items: {
+        id: string;
+        title?: string;
+        description?: { safeString: string };
+      }[];
+    };
+    const remaining = { id: 'b', description: { safeString: 'A description' } };
+    let getValues: () => FormValues;
+
+    const App = () => {
+      const methods = useForm<FormValues>({
+        defaultValues: {
+          items: [{ id: 'a', title: 'Test Position' }, remaining],
+        },
+      });
+      getValues = methods.getValues;
+      const { remove } = useFieldArray({
+        control: methods.control,
+        name: 'items',
+      });
+      const items = useWatch({ control: methods.control, name: 'items' });
+
+      return (
+        <>
+          {items.map((item, index) => (
+            <Controller
+              key={item.id}
+              control={methods.control}
+              name={
+                item.description
+                  ? `items.${index}.description.safeString`
+                  : `items.${index}.title`
+              }
+              render={({ field }) => <input {...field} />}
+            />
+          ))}
+          <button onClick={() => remove(0)}>remove</button>
+        </>
+      );
+    };
+
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+
+    expect(getValues!()).toEqual({ items: [remaining] });
+    expect(screen.getAllByRole('textbox')).toHaveLength(1);
+    expect(screen.getByRole('textbox')).toHaveValue('A description');
   });
 
   it('should update isDirty formState when item removed', () => {
@@ -922,6 +974,63 @@ describe('remove', () => {
     expect(
       (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
     ).toEqual('111');
+  });
+
+  it('should drop dirty state for removed rows so a re-added row matching defaults is pristine', async () => {
+    type FormValues = {
+      items: { value: string }[];
+    };
+
+    const App = () => {
+      const methods = useForm<FormValues>({
+        defaultValues: { items: [{ value: 'x' }] },
+      });
+      const { fields, append, remove } = useFieldArray({
+        control: methods.control,
+        name: 'items',
+      });
+      // Track only the form-level flag (e.g. a Save button), the way most
+      // apps do — per-field state below is read via getFieldState.
+      const { isDirty } = useFormState({ control: methods.control });
+      const fieldDirty = fields.length
+        ? methods.getFieldState('items.0.value').isDirty
+        : false;
+
+      return (
+        <form>
+          {fields.map((field, index) => (
+            <Controller
+              key={field.id}
+              control={methods.control}
+              name={`items.${index}.value` as const}
+              render={({ field: { ...rest } }) => <input {...rest} />}
+            />
+          ))}
+          <p>{`form-dirty:${isDirty}`}</p>
+          <p>{`field-dirty:${fieldDirty}`}</p>
+          <button type="button" onClick={() => remove(0)}>
+            remove
+          </button>
+          <button type="button" onClick={() => append({ value: 'x' })}>
+            append
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'changed' },
+    });
+
+    expect(screen.getByText('field-dirty:true')).toBeVisible();
+
+    fireEvent.click(screen.getByText('remove'));
+    fireEvent.click(screen.getByText('append'));
+
+    expect(screen.getByText('form-dirty:false')).toBeVisible();
+    expect(screen.getByText('field-dirty:false')).toBeVisible();
   });
 
   describe('with resolver', () => {

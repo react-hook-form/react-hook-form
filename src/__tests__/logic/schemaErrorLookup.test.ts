@@ -279,4 +279,43 @@ describe('errorsLookup', () => {
       name: 'test.0.nested.0.deepNested',
     });
   });
+
+  it('should not report a nested error container as the exact-name field error', () => {
+    expect(
+      schemaErrorLookup<{ test: { nested: string } }>(
+        {
+          test: {
+            nested: {
+              type: 'nested',
+              message: 'error',
+            },
+          },
+        } as never,
+        {},
+        'test',
+      ),
+    ).toEqual({
+      name: 'test',
+    });
+  });
+
+  it('should resolve an exact-name root error to the .root path', () => {
+    expect(
+      schemaErrorLookup<{ test: string[] }>(
+        {
+          test: {
+            root: {
+              type: 'minLength',
+              message: 'too few',
+            },
+          },
+        } as never,
+        {},
+        'test',
+      ),
+    ).toEqual({
+      error: { type: 'minLength', message: 'too few' },
+      name: 'test.root',
+    });
+  });
 });

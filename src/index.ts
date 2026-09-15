@@ -1,4 +1,5 @@
 export * from './controller';
+export * from './errorMessage';
 export { FieldArray } from './fieldArray';
 export * from './form';
 export type { FormStateProps, FormStateSubscribeProps } from './formState';

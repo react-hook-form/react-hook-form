@@ -271,7 +271,9 @@ export default async <T extends FieldValues>(
             ...appendErrorsCurry(key, validateError.message),
           };
 
-          setCustomValidity(validateError.message);
+          if (!validateAllFieldCriteria) {
+            setCustomValidity(validateError.message);
+          }
 
           if (validateAllFieldCriteria) {
             error[name] = validationResult;

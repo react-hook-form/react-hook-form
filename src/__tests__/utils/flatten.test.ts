@@ -66,4 +66,17 @@ describe('flatten', () => {
       'attachments.0': second,
     });
   });
+
+  it('should preserve FileList values as leaf nodes and not split them', () => {
+    const fileList = Object.create(FileList.prototype) as FileList;
+    const file = new File(['1'], 'first.pdf');
+
+    Object.defineProperty(fileList, 0, { value: file, enumerable: true });
+    Object.defineProperty(fileList, 'length', { value: 1 });
+
+    expect(flatten({ name: 'Alice', attachments: fileList })).toEqual({
+      name: 'Alice',
+      attachments: fileList,
+    });
+  });
 });

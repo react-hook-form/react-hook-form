@@ -1,5 +1,22 @@
 # Changelog
 
+## [7.87.0] - 2026-08-30
+
+### Added
+
+- `shouldTouch` option for `trigger()`
+- `OpaqueTypes` registry for opaque leaf types
+
+### Fixed
+
+- Inconsistent behavior among `useController().field.onChange()`-like APIs
+- `Controller` under a null parent submitting `undefined` instead of a value
+- `ERR_MODULE_NOT_FOUND` resolving `react-hook-form` due to a `react-server` declaration (Next.js builds)
+- `useWatch` never reconciling when an `Activity` subtree is hidden on its first render
+- `resetField` not recomputing `isValid` for subscribe-only consumers
+- `generateWatchOutput` ignoring `defaultValue` for an array of names
+- `useFormState` never reconciling when an `Activity` subtree is hidden on its first render
+
 ## [7.86.0] - 2026-08-22
 
 ### Added
