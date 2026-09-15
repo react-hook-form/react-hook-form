@@ -5,6 +5,7 @@ import getProxyFormState from './logic/getProxyFormState';
 import cloneObject from './utils/cloneObject';
 import deepEqual from './utils/deepEqual';
 import isFunction from './utils/isFunction';
+import { EVENTS } from './constants';
 import { createFormControl } from './logic';
 import type {
   FieldValues,
@@ -108,7 +109,7 @@ export function useForm<
       isReady: true,
     }));
 
-    control._formState.isReady = true;
+    control._subjects.state.next({ isReady: true, type: EVENTS.MOUNT });
 
     return () => {
       unsubscribe();

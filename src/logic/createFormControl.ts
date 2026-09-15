@@ -374,11 +374,17 @@ export function createFormControl<
     }
   };
 
-  const updateErrors = (name: InternalFieldName, error: FieldError) => {
+  const updateErrors = (
+    name: InternalFieldName,
+    error: FieldError,
+    type?: EventType,
+  ) => {
     set(_formState.errors, name, error);
     _formState.errors = { ..._formState.errors };
     _subjects.state.next({
+      name,
       errors: _formState.errors,
+      ...(type ? { type } : {}),
     });
   };
 
@@ -609,6 +615,7 @@ export function createFormControl<
       isDirty?: boolean;
       touched?: FieldNamesMarkedBoolean<TFieldValues>;
     },
+    type?: EventType,
   ) => {
     const previousFieldError = get(_formState.errors, name);
     const shouldUpdateValid =
@@ -618,7 +625,7 @@ export function createFormControl<
 
     if (_options.delayError && error) {
       delayErrorCallbacks[name] = debounce(name, () =>
-        updateErrors(name, error),
+        updateErrors(name, error, type),
       );
       delayErrorCallbacks[name](_options.delayError);
     } else {
@@ -639,6 +646,7 @@ export function createFormControl<
         ...(shouldUpdateValid && isBoolean(isValid) ? { isValid } : {}),
         errors: _formState.errors,
         name,
+        ...(type ? { type } : {}),
       };
 
       _subjects.state.next(updatedFormState);
@@ -1250,7 +1258,11 @@ export function createFormControl<
 
         return (
           shouldRender &&
-          _subjects.state.next({ name, ...(watched ? {} : fieldState) })
+          _subjects.state.next({
+            name,
+            ...(isBlurEvent ? { type: event.type } : {}),
+            ...(watched ? {} : fieldState),
+          })
         );
       }
 
@@ -1342,7 +1354,7 @@ export function createFormControl<
               | FieldPath<TFieldValues>
               | FieldPath<TFieldValues>[],
           );
-        shouldRenderByError(name, isValid, error, fieldState);
+        shouldRenderByError(name, isValid, error, fieldState, event.type);
       }
     }
   };
@@ -1586,35 +1598,44 @@ export function createFormControl<
     if (needsValues) {
       _valuesSubscriberCount++;
     }
-    const { unsubscribe } = _subjects.state.subscribe({
-      next: (
-        formState: Partial<FormState<TFieldValues>> & {
-          name?: InternalFieldName;
-          values?: TFieldValues | undefined;
-          type?: EventType;
-        },
-      ) => {
-        if (
-          shouldSubscribeByName(props.name, formState.name, props.exact) &&
-          shouldRenderFormState(
-            formState,
-            (props.formState as ReadFormState) || _proxyFormState,
-            _setFormState,
-            props.reRenderRoot,
-          )
-        ) {
-          const snapshot = { ..._formValues } as TFieldValues;
 
-          props.callback({
-            values: snapshot,
-            ..._formState,
-            ...formState,
-            defaultValues:
-              _defaultValues as FormState<TFieldValues>['defaultValues'],
-          });
-        }
+    const next = (
+      formState: Partial<FormState<TFieldValues>> & {
+        name?: InternalFieldName;
+        values?: TFieldValues | undefined;
+        type?: EventType;
       },
-    });
+    ) => {
+      if (
+        shouldSubscribeByName(props.name, formState.name, props.exact) &&
+        shouldRenderFormState(
+          formState,
+          (props.formState as ReadFormState) || _proxyFormState,
+          _setFormState,
+          props.reRenderRoot,
+        )
+      ) {
+        const snapshot = { ..._formValues } as TFieldValues;
+
+        props.callback({
+          values: snapshot,
+          ..._formState,
+          ...formState,
+          defaultValues:
+            _defaultValues as FormState<TFieldValues>['defaultValues'],
+        });
+      }
+    };
+
+    const { unsubscribe } = _subjects.state.subscribe({ next });
+
+    if (
+      _formState.isReady &&
+      (props.formState as Record<string, unknown> | undefined)?.isReady
+    ) {
+      next({ isReady: true, type: EVENTS.MOUNT });
+    }
+
     if (!needsValues) {
       return unsubscribe;
     }
@@ -1898,6 +1919,7 @@ export function createFormControl<
       }
 
       _subjects.state.next({
+        type: EVENTS.SUBMIT,
         isSubmitted: true,
         isSubmitting: false,
         isSubmitSuccessful: isEmptyObject(_formState.errors) && !onValidError,

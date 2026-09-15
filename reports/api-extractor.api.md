@@ -193,7 +193,7 @@ export type ErrorOption = {
 };
 
 // @public (undocumented)
-export type EventType = 'focus' | 'blur' | 'change' | 'changeText' | 'valueChange' | 'contentSizeChange' | 'endEditing' | 'keyPress' | 'submitEditing' | 'layout' | 'selectionChange' | 'longPress' | 'press' | 'pressIn' | 'pressOut' | 'momentumScrollBegin' | 'momentumScrollEnd' | 'scroll' | 'scrollBeginDrag' | 'scrollEndDrag' | 'load' | 'error' | 'progress' | 'custom';
+export type EventType = 'focus' | 'blur' | 'change' | 'submit' | 'mount' | 'changeText' | 'valueChange' | 'contentSizeChange' | 'endEditing' | 'keyPress' | 'submitEditing' | 'layout' | 'selectionChange' | 'longPress' | 'press' | 'pressIn' | 'pressOut' | 'momentumScrollBegin' | 'momentumScrollEnd' | 'scroll' | 'scrollBeginDrag' | 'scrollEndDrag' | 'load' | 'error' | 'progress' | 'custom';
 
 // @public (undocumented)
 export type ExtractObjects<T> = T extends infer U ? U extends object ? U : never : never;
@@ -551,6 +551,7 @@ export type ReadFormState = {
     defaultValues?: boolean | 'all';
     isSubmitted?: boolean | 'all';
     submitCount?: boolean | 'all';
+    isReady?: boolean | 'all';
 };
 
 // @public (undocumented)
@@ -1066,8 +1067,8 @@ export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValue
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:584:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:959:3 - (ae-forgotten-export) The symbol "FormState_2" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:585:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:960:3 - (ae-forgotten-export) The symbol "FormState_2" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
