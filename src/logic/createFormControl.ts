@@ -1296,6 +1296,7 @@ export function createFormControl<
 
         isValid = isEmptyObject(errors);
       } else {
+        const resetCallId = _resetCallId;
         _updateIsValidating([name], true);
         error = (
           await validateField(
@@ -1306,6 +1307,11 @@ export function createFormControl<
             _options.shouldUseNativeValidation,
           )
         )[name];
+
+        if (resetCallId !== _resetCallId) {
+          return;
+        }
+
         _updateIsValidating([name]);
 
         _updateIsFieldValueUpdated(fieldValue);
@@ -1320,6 +1326,10 @@ export function createFormControl<
               name: name as FieldPath<TFieldValues>,
               eventType: event.type,
             });
+
+            if (resetCallId !== _resetCallId) {
+              return;
+            }
           }
         }
       }

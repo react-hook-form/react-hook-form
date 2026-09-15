@@ -3062,4 +3062,182 @@ describe('reset', () => {
       'error:stale error',
     );
   });
+  // #13744 guarded the resolver branch of onChange, but the built-in
+  // validation branch runs the same shape of async work and was left
+  // unguarded, so a `validate` promise that settles after reset() still
+  // writes its result into the cleaned form state.
+  it('should not resurrect an onChange validate error that settles after reset', async () => {
+    let resolveValidate: ((result: string | boolean) => void) | undefined;
+
+    const App = () => {
+      const {
+        register,
+        reset,
+        formState: { errors },
+      } = useForm<{ test: string }>({
+        mode: 'onChange',
+        defaultValues: { test: '' },
+      });
+
+      return (
+        <div>
+          <input
+            {...register('test', {
+              validate: () =>
+                new Promise<string | boolean>((resolve) => {
+                  resolveValidate = resolve;
+                }),
+            })}
+          />
+          <p>{`error:${errors.test ? errors.test.message : 'none'}`}</p>
+          <button
+            type="button"
+            onClick={() => reset(undefined, { keepValues: true })}
+          >
+            reset
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'invalid' },
+      });
+    });
+
+    // Sanity check: the keystroke really did start a validate call that is
+    // still pending.
+    expect(resolveValidate).toBeDefined();
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    });
+
+    expect(screen.getByText(/^error:/).textContent).toEqual('error:none');
+
+    await act(async () => {
+      resolveValidate!('stale error');
+    });
+
+    expect(screen.getByText(/^error:/).textContent).toEqual('error:none');
+  });
+
+  // The isValid pass that follows an error-free field validation is a second
+  // suspension point, so a reset() landing there must discard its result too.
+  it('should not apply a stale isValid computed by an onChange validation that spans reset', async () => {
+    const resolvers: Array<(result: string | boolean) => void> = [];
+
+    const App = () => {
+      const {
+        register,
+        reset,
+        formState: { isValid },
+      } = useForm<{ test: string }>({
+        mode: 'onChange',
+        defaultValues: { test: 'ok' },
+      });
+
+      return (
+        <div>
+          <input
+            {...register('test', {
+              validate: () =>
+                new Promise<string | boolean>((resolve) => {
+                  resolvers.push(resolve);
+                }),
+            })}
+          />
+          <p>{`valid:${isValid}`}</p>
+          <button
+            type="button"
+            onClick={() => reset(undefined, { keepValues: true })}
+          >
+            reset
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      resolvers.splice(0).forEach((resolve) => resolve(true));
+    });
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'changed' },
+      });
+    });
+
+    // The keystroke's own field validation passes, which is what starts the
+    // separate isValid pass this test is about.
+    expect(resolvers).toHaveLength(1);
+
+    await act(async () => {
+      resolvers.splice(0, 1)[0](true);
+    });
+
+    expect(resolvers).toHaveLength(1);
+    expect(screen.getByText(/^valid:/).textContent).toEqual('valid:true');
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    });
+
+    await act(async () => {
+      resolvers.splice(0, 1)[0]('stale error');
+    });
+
+    expect(screen.getByText(/^valid:/).textContent).toEqual('valid:true');
+  });
+
+  // Control: with no intervening reset(), a slow built-in validate result is
+  // still applied as usual.
+  it('should apply a delayed onChange validate error when reset() is not called', async () => {
+    let resolveValidate: ((result: string | boolean) => void) | undefined;
+
+    const App = () => {
+      const {
+        register,
+        formState: { errors },
+      } = useForm<{ test: string }>({
+        mode: 'onChange',
+        defaultValues: { test: '' },
+      });
+
+      return (
+        <div>
+          <input
+            {...register('test', {
+              validate: () =>
+                new Promise<string | boolean>((resolve) => {
+                  resolveValidate = resolve;
+                }),
+            })}
+          />
+          <p>{`error:${errors.test ? errors.test.message : 'none'}`}</p>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'invalid' },
+      });
+    });
+
+    await act(async () => {
+      resolveValidate!('stale error');
+    });
+
+    expect(screen.getByText(/^error:/).textContent).toEqual(
+      'error:stale error',
+    );
+  });
 });
