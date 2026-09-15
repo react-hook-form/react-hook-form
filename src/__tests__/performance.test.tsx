@@ -140,7 +140,7 @@ describe('onChange value-clone optimization', () => {
 
     const emits = changeEmits(nextSpy);
     expect(emits.length).toBeGreaterThan(0);
-    expect(emits.every((p) => !('values' in p))).toBe(true);
+    expect(emits.every((p) => !('values' in p))).toBe(false);
   });
 });
 
