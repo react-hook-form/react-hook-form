@@ -3131,6 +3131,53 @@ describe('useForm', () => {
   });
 
   describe('form level validation', () => {
+    it('should run form level validation once per nested field traversal', async () => {
+      const validateForm = jest.fn(() => true);
+      const validateField = jest.fn(() => true);
+      const onValid = jest.fn();
+      const { result } = renderHook(() =>
+        useForm<{ rows: { value: string }[] }>({
+          validate: validateForm,
+        }),
+      );
+
+      // Register nested paths so each operation traverses multiple field levels.
+      for (let index = 0; index < 100; index++) {
+        result.current.register(`rows.${index}.value`, {
+          validate: validateField,
+        });
+      }
+
+      await act(async () => {
+        await result.current.trigger();
+      });
+
+      expect(validateForm).toHaveBeenCalledTimes(1);
+      expect(validateField).toHaveBeenCalledTimes(100);
+
+      await act(async () => {
+        await result.current.trigger('rows');
+      });
+
+      expect(validateForm).toHaveBeenCalledTimes(2);
+      expect(validateField).toHaveBeenCalledTimes(200);
+
+      await act(async () => {
+        await result.current.handleSubmit(onValid)();
+      });
+
+      expect(validateForm).toHaveBeenCalledTimes(3);
+      expect(validateField).toHaveBeenCalledTimes(300);
+      expect(onValid).toHaveBeenCalledTimes(1);
+
+      await act(async () => {
+        await result.current.trigger();
+      });
+
+      expect(validateForm).toHaveBeenCalledTimes(4);
+      expect(validateField).toHaveBeenCalledTimes(400);
+    });
+
     it('should return form level error', async () => {
       const App = () => {
         const {
