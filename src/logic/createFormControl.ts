@@ -763,7 +763,8 @@ export function createFormControl<
       runRootValidation?: boolean;
     };
   }) => {
-    if (props.validate) {
+    // The shared context prevents recursive field traversal from repeating form validation.
+    if (props.validate && !context.runRootValidation) {
       context.runRootValidation = true;
       const result = await validateForm({
         name,
