@@ -763,7 +763,7 @@ export function createFormControl<
       runRootValidation?: boolean;
     };
   }) => {
-    if (props.validate) {
+    if (props.validate && !context.runRootValidation) {
       context.runRootValidation = true;
       const result = await validateForm({
         name,
