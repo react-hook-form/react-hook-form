@@ -384,11 +384,13 @@ export function createFormControl<
 
   const _setErrors = (errors: FieldErrors<TFieldValues>) => {
     Object.keys(delayErrorCallbacks).forEach(cancelDelayedError);
+    const hasErrors = !isEmptyObject(errors);
     _formState.errors = errors;
     _subjects.state.next({
       errors: _formState.errors,
-      isValid: false,
+      ...(hasErrors ? { isValid: false } : {}),
     });
+    !hasErrors && _state.mount && _setValid();
   };
 
   const hasExplicitNullIntermediate = (name: InternalFieldName) => {
