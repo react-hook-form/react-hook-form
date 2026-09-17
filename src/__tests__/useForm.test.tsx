@@ -658,6 +658,103 @@ describe('useForm', () => {
       expect(alert1.textContent).toBe('test1 error');
       expect(renderRes.baseElement).toHaveFocus();
     });
+
+    it('should recompute isValid when the errors prop is emptied', async () => {
+      type FormValues = { test1: string };
+
+      const Form = ({ errors }: { errors: FieldErrors<FormValues> }) => {
+        const {
+          register,
+          formState: { isValid },
+        } = useForm<FormValues>({
+          mode: 'onChange',
+          defaultValues: { test1: 'value' },
+          errors,
+          shouldFocusError: false,
+        });
+
+        return (
+          <div>
+            <input {...register('test1', { required: true })} type="text" />
+            <p>{isValid ? 'valid' : 'invalid'}</p>
+          </div>
+        );
+      };
+
+      const { rerender } = render(<Form errors={{}} />);
+
+      await waitFor(() => expect(screen.getByText('valid')).toBeVisible());
+
+      rerender(
+        <Form errors={{ test1: { type: 'server', message: 'taken' } }} />,
+      );
+
+      await waitFor(() => expect(screen.getByText('invalid')).toBeVisible());
+
+      rerender(<Form errors={{}} />);
+
+      await waitFor(() => expect(screen.getByText('valid')).toBeVisible());
+    });
+
+    it('should keep isValid false while the errors prop holds an error', async () => {
+      type FormValues = { test1: string };
+
+      const Form = ({ errors }: { errors: FieldErrors<FormValues> }) => {
+        const {
+          register,
+          formState: { isValid },
+        } = useForm<FormValues>({
+          mode: 'onChange',
+          defaultValues: { test1: 'value' },
+          errors,
+          shouldFocusError: false,
+        });
+
+        return (
+          <div>
+            <input {...register('test1', { required: true })} type="text" />
+            <p>{isValid ? 'valid' : 'invalid'}</p>
+          </div>
+        );
+      };
+
+      render(<Form errors={{ test1: { type: 'server', message: 'taken' } }} />);
+
+      await waitFor(() => expect(screen.getByText('invalid')).toBeVisible());
+    });
+
+    it('should keep isValid false when the errors prop is emptied but the rules still fail', async () => {
+      type FormValues = { test1: string };
+
+      const Form = ({ errors }: { errors: FieldErrors<FormValues> }) => {
+        const {
+          register,
+          formState: { isValid },
+        } = useForm<FormValues>({
+          mode: 'onChange',
+          defaultValues: { test1: '' },
+          errors,
+          shouldFocusError: false,
+        });
+
+        return (
+          <div>
+            <input {...register('test1', { required: true })} type="text" />
+            <p>{isValid ? 'valid' : 'invalid'}</p>
+          </div>
+        );
+      };
+
+      const { rerender } = render(
+        <Form errors={{ test1: { type: 'server', message: 'taken' } }} />,
+      );
+
+      await waitFor(() => expect(screen.getByText('invalid')).toBeVisible());
+
+      rerender(<Form errors={{}} />);
+
+      await waitFor(() => expect(screen.getByText('invalid')).toBeVisible());
+    });
   });
 
   describe('handleChangeRef', () => {
