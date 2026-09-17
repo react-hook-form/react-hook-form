@@ -699,4 +699,90 @@ describe('setValues', () => {
     // isValid might still be false because validation wasn't re-run
     expect(result.current.formState.isValid).toBe(false);
   });
+
+  it('should keep nested siblings when setValues is given a partial nested object', async () => {
+    const Component = () => {
+      const { register, setValues, getValues, handleSubmit } = useForm({
+        defaultValues: {
+          user: {
+            profile: { firstName: 'Jane', lastName: 'Doe' },
+            address: { city: 'Boston' },
+          },
+        },
+      });
+
+      const [submitted, setSubmitted] = React.useState<unknown>(null);
+
+      return (
+        <>
+          <input {...register('user.profile.firstName')} aria-label="fn" />
+          <input {...register('user.profile.lastName')} aria-label="ln" />
+          <input {...register('user.address.city')} aria-label="city" />
+          <button
+            type="button"
+            onClick={() =>
+              setValues({
+                user: { profile: { firstName: 'John' } },
+              } as never)
+            }
+          >
+            set
+          </button>
+          <button type="button" onClick={() => setSubmitted(getValues())}>
+            read
+          </button>
+          <form
+            onSubmit={handleSubmit((data) => setSubmitted(data as unknown))}
+          >
+            <button>submit</button>
+          </form>
+          <p>{submitted ? JSON.stringify(submitted) : 'none'}</p>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'set' }));
+    });
+
+    // updated leaf reaches the DOM, untouched siblings stay visible
+    expect(screen.getByLabelText('fn')).toHaveValue('John');
+    expect(screen.getByLabelText('ln')).toHaveValue('Doe');
+    expect(screen.getByLabelText('city')).toHaveValue('Boston');
+
+    // ... and stay in form state instead of being wiped (Relates #13549)
+    fireEvent.click(screen.getByRole('button', { name: 'read' }));
+    expect(screen.getByText(/"lastName":"Doe"/)).toBeInTheDocument();
+    expect(screen.getByText(/"city":"Boston"/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    await screen.findByText(/"firstName":"John"/);
+    expect(screen.getByText(/"lastName":"Doe"/)).toBeInTheDocument();
+  });
+
+  it('should replace Date and array values by reference on partial nested setValues', async () => {
+    const birthday = new Date('2000-01-01');
+    const { result } = renderHook(() =>
+      useForm<{
+        meta: { birthday: Date; tags: string[]; label: string };
+      }>({
+        defaultValues: {
+          meta: { birthday: new Date('1990-01-01'), tags: ['a'], label: 'x' },
+        },
+      }),
+    );
+
+    await act(async () => {
+      result.current.setValues({
+        meta: { birthday, tags: ['b', 'c'] },
+      } as never);
+    });
+
+    const values = result.current.getValues();
+    expect(values.meta.birthday).toBe(birthday);
+    expect(values.meta.tags).toEqual(['b', 'c']);
+    expect(values.meta.label).toBe('x');
+  });
 });

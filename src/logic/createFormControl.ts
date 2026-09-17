@@ -75,6 +75,7 @@ import isKey from '../utils/isKey';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isObject from '../utils/isObject';
+import isPlainObject from '../utils/isPlainObject';
 import isRadioOrCheckbox from '../utils/isRadioOrCheckbox';
 import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
@@ -1134,6 +1135,35 @@ export function createFormControl<
   const setValue: UseFormSetValue<TFieldValues> = (name, value, options = {}) =>
     _setValue(name, value, options, false);
 
+  const mergeSetValuesState = (
+    currentValues: unknown,
+    incomingValues: unknown,
+  ): unknown => {
+    if (
+      !isObject(currentValues) ||
+      !isObject(incomingValues) ||
+      !isPlainObject(currentValues) ||
+      !isPlainObject(incomingValues)
+    ) {
+      return incomingValues;
+    }
+
+    const mergedValues: Record<string, unknown> = {
+      ...(currentValues as Record<string, unknown>),
+    };
+
+    for (const key of Object.keys(incomingValues)) {
+      mergedValues[key] = mergeSetValuesState(
+        (currentValues as Record<string, unknown>)[key],
+        (incomingValues as Record<string, unknown>)[key],
+      );
+    }
+
+    return deepEqual(mergedValues, incomingValues)
+      ? incomingValues
+      : mergedValues;
+  };
+
   const setValues: UseFormSetValues<TFieldValues> = (
     formValues,
     options = {},
@@ -1143,10 +1173,10 @@ export function createFormControl<
       : formValues;
 
     if (!deepEqual(_formValues, updatedFormValues)) {
-      _formValues = {
-        ..._formValues,
-        ...updatedFormValues,
-      };
+      _formValues = mergeSetValuesState(
+        _formValues,
+        updatedFormValues,
+      ) as TFieldValues;
 
       for (const fieldName of _names.mount) {
         if (has(updatedFormValues, fieldName)) {
