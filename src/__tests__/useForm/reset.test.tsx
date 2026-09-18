@@ -3240,4 +3240,233 @@ describe('reset', () => {
       'error:stale error',
     );
   });
+
+  // #13744 and #13745 guarded the resolver and per-field validation branches,
+  // but the form level `validate` option runs its own await inside
+  // validateForm() and still writes errors.form after reset() has cleaned up.
+  it('should not resurrect a form level validate error that settles after reset', async () => {
+    let resolveValidate: ((result: string | boolean) => void) | undefined;
+
+    const App = () => {
+      const {
+        register,
+        reset,
+        formState: { errors },
+      } = useForm<{ test: string }>({
+        mode: 'onChange',
+        defaultValues: { test: '' },
+        validate: () =>
+          new Promise<string | boolean>((resolve) => {
+            resolveValidate = resolve;
+          }),
+      });
+
+      return (
+        <div>
+          <input {...register('test')} />
+          <p>{`error:${errors.form ? errors.form.message : 'none'}`}</p>
+          <button
+            type="button"
+            onClick={() => reset(undefined, { keepValues: true })}
+          >
+            reset
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'invalid' },
+      });
+    });
+
+    // Sanity check: the keystroke really did start a form level validate call
+    // that is still pending.
+    expect(resolveValidate).toBeDefined();
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    });
+
+    expect(screen.getByText(/^error:/).textContent).toEqual('error:none');
+
+    await act(async () => {
+      resolveValidate!('stale error');
+    });
+
+    expect(screen.getByText(/^error:/).textContent).toEqual('error:none');
+  });
+
+  it('should not resurrect a form level validate error from trigger() that settles after reset', async () => {
+    const resolvers: Array<(result: string | boolean) => void> = [];
+
+    const App = () => {
+      const {
+        register,
+        reset,
+        trigger,
+        formState: { errors, isValid },
+      } = useForm<{ test: string }>({
+        defaultValues: { test: '' },
+        validate: () =>
+          new Promise<string | boolean>((resolve) => {
+            resolvers.push(resolve);
+          }),
+      });
+
+      return (
+        <div>
+          <input {...register('test')} />
+          <p>{`error:${errors.form ? errors.form.message : 'none'}`}</p>
+          <p>{`valid:${isValid}`}</p>
+          <button type="button" onClick={() => trigger()}>
+            trigger
+          </button>
+          <button
+            type="button"
+            onClick={() => reset(undefined, { keepValues: true })}
+          >
+            reset
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    // Drain the isValid pass the mount kicks off so the only pending validate
+    // left is the one trigger() starts below.
+    await act(async () => {
+      resolvers.splice(0).forEach((resolve) => resolve(true));
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+    });
+
+    expect(resolvers).toHaveLength(1);
+    expect(screen.getByText(/^valid:/).textContent).toEqual('valid:true');
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    });
+
+    await act(async () => {
+      resolvers.splice(0, 1)[0]('stale error');
+    });
+
+    expect(screen.getByText(/^error:/).textContent).toEqual('error:none');
+    expect(screen.getByText(/^valid:/).textContent).toEqual('valid:true');
+  });
+
+  // A stale form level validate that passes must not wipe an error the form
+  // picked up after reset() either.
+  it('should not clear a current form level error when a stale validate settles after reset', async () => {
+    const resolvers: Array<(result: string | boolean) => void> = [];
+
+    const App = () => {
+      const {
+        register,
+        reset,
+        setError,
+        trigger,
+        formState: { errors },
+      } = useForm<{ test: string }>({
+        defaultValues: { test: '' },
+        validate: () =>
+          new Promise<string | boolean>((resolve) => {
+            resolvers.push(resolve);
+          }),
+      });
+
+      return (
+        <div>
+          <input {...register('test')} />
+          <p>{`error:${errors.form ? errors.form.message : 'none'}`}</p>
+          <button type="button" onClick={() => trigger()}>
+            trigger
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              reset(undefined, { keepValues: true });
+              setError('form', { message: 'current error' });
+            }}
+          >
+            reset
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+    });
+
+    expect(resolvers).toHaveLength(1);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    });
+
+    expect(screen.getByText(/^error:/).textContent).toEqual(
+      'error:current error',
+    );
+
+    await act(async () => {
+      resolvers.splice(0, 1)[0](true);
+    });
+
+    expect(screen.getByText(/^error:/).textContent).toEqual(
+      'error:current error',
+    );
+  });
+
+  // Control: with no intervening reset(), a slow form level validate result is
+  // still applied as usual.
+  it('should apply a delayed form level validate error when reset() is not called', async () => {
+    let resolveValidate: ((result: string | boolean) => void) | undefined;
+
+    const App = () => {
+      const {
+        register,
+        formState: { errors },
+      } = useForm<{ test: string }>({
+        mode: 'onChange',
+        defaultValues: { test: '' },
+        validate: () =>
+          new Promise<string | boolean>((resolve) => {
+            resolveValidate = resolve;
+          }),
+      });
+
+      return (
+        <div>
+          <input {...register('test')} />
+          <p>{`error:${errors.form ? errors.form.message : 'none'}`}</p>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'invalid' },
+      });
+    });
+
+    await act(async () => {
+      resolveValidate!('stale error');
+    });
+
+    expect(screen.getByText(/^error:/).textContent).toEqual(
+      'error:stale error',
+    );
+  });
 });
