@@ -713,12 +713,17 @@ export function createFormControl<
     eventType: ValidateFormEventType;
   }) => {
     if (props.validate) {
+      const resetCallId = _resetCallId;
       const result = await props.validate({
         formValues: _formValues,
         formState: _formState,
         name,
         eventType,
       });
+
+      if (resetCallId !== _resetCallId) {
+        return true;
+      }
 
       if (isObject(result)) {
         let isValid = true;
