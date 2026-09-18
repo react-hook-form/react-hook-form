@@ -3266,7 +3266,6 @@ describe('useForm', () => {
             validate: () => (shouldReturnError ? invalidResult : true),
           });
 
-          // Subscribe during render so trigger() updates the validity snapshot.
           form.formState.isValid;
           form.formState.errors;
 
@@ -3303,6 +3302,43 @@ describe('useForm', () => {
       });
     });
 
+    it('should replace previous form-level errors with the latest result', async () => {
+      let validateLastName = true;
+      const { result } = renderHook(() =>
+        useForm<{ firstName: string; lastName: string }>({
+          validate: () => ({
+            firstName: {
+              message: 'First name is invalid',
+              type: 'validate',
+            },
+            ...(validateLastName
+              ? {
+                  lastName: {
+                    message: 'Last name is invalid',
+                    type: 'validate',
+                  },
+                }
+              : {}),
+          }),
+        }),
+      );
+
+      await act(async () => {
+        expect(await result.current.trigger()).toBe(false);
+      });
+
+      expect(result.current.getErrors('form.lastName')).toBeDefined();
+
+      validateLastName = false;
+
+      await act(async () => {
+        expect(await result.current.trigger()).toBe(false);
+      });
+
+      expect(result.current.getErrors('form.firstName')).toBeDefined();
+      expect(result.current.getErrors('form.lastName')).toBeUndefined();
+    });
+
     it.each([
       { description: 'an empty object', validResult: {} },
       {
@@ -3324,7 +3360,6 @@ describe('useForm', () => {
                 : validResult,
           });
 
-          // Subscribe to both snapshots to verify validity and error recovery.
           form.formState.isValid;
           form.formState.errors;
 
