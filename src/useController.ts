@@ -177,6 +177,7 @@ export function useController<
 
       if (field && field._f && elm) {
         field._f.ref = _proxyRef.current;
+        field._f._c = true;
       }
     },
     [control._fields, name],
@@ -212,6 +213,7 @@ export function useController<
 
       if (field && field._f) {
         field._f.mount = value;
+        field._f._c = value;
       }
     };
 
