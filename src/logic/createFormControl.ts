@@ -1,6 +1,8 @@
 import {
   EVENTS,
+  FORM_ERROR_TYPE,
   INPUT_VALIDATION_RULES,
+  REGISTER_VALIDATION_RULES,
   ROOT_ERROR_TYPE,
   VALIDATION_MODE,
 } from '../constants';
@@ -112,18 +114,6 @@ const defaultOptions = {
   reValidateMode: VALIDATION_MODE.onChange,
   shouldFocusError: true,
 } as const;
-
-const FORM_ERROR_TYPE = 'form';
-
-const REGISTER_VALIDATION_RULES = [
-  'required',
-  'min',
-  'max',
-  'minLength',
-  'maxLength',
-  'pattern',
-  'validate',
-] as const;
 
 const updateDirtyFields = (
   dirtyFields: Record<string, unknown>,

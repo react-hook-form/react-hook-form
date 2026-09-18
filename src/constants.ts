@@ -25,6 +25,18 @@ export const INPUT_VALIDATION_RULES = {
   validate: 'validate',
 } as const;
 
+export const REGISTER_VALIDATION_RULES = [
+  INPUT_VALIDATION_RULES.required,
+  INPUT_VALIDATION_RULES.min,
+  INPUT_VALIDATION_RULES.max,
+  INPUT_VALIDATION_RULES.minLength,
+  INPUT_VALIDATION_RULES.maxLength,
+  INPUT_VALIDATION_RULES.pattern,
+  INPUT_VALIDATION_RULES.validate,
+] as const;
+
+export const FORM_ERROR_TYPE = 'form';
+
 export const ROOT_ERROR_TYPE = 'root';
 
 export const PROTOTYPE_KEYWORDS = ['__proto__', 'constructor', 'prototype'];
