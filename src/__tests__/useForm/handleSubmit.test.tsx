@@ -854,6 +854,49 @@ describe('handleSubmit', () => {
     expect(result.current.getValues()).toEqual({ test: 'after' });
   });
 
+  it('should ignore a stale form-level validate result when reset() runs mid-submit', async () => {
+    let resolveValidate!: (v: string | boolean) => void;
+    const { result } = renderHook(() =>
+      useForm({
+        defaultValues: { test: 'before' },
+        validate: () =>
+          new Promise<string | boolean>((resolve) => {
+            resolveValidate = resolve;
+          }),
+      }),
+    );
+
+    const onValid = jest.fn();
+    const onInvalid = jest.fn();
+
+    let submitPromise: Promise<unknown>;
+    act(() => {
+      submitPromise = result.current.handleSubmit(
+        onValid,
+        onInvalid,
+      )({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    act(() => {
+      result.current.reset({ test: 'after' });
+    });
+
+    await act(async () => {
+      resolveValidate('stale');
+      await submitPromise;
+    });
+
+    expect(onValid).not.toHaveBeenCalled();
+    expect(onInvalid).not.toHaveBeenCalled();
+    expect(result.current.formState.errors).toEqual({});
+    expect(result.current.formState.submitCount).toBe(0);
+    expect(result.current.formState.isSubmitted).toBe(false);
+    expect(result.current.getValues()).toEqual({ test: 'after' });
+  });
+
   it('should not invoke onValid with stale values when reset() runs mid-submit', async () => {
     let resolveValidate!: (v: true | string) => void;
     const { result } = renderHook(() =>

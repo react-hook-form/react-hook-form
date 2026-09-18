@@ -760,7 +760,6 @@ export function createFormControl<
     onlyCheckValid,
     name,
     eventType,
-    shouldAbort,
     context = {
       valid: true,
       runRootValidation: false,
@@ -770,12 +769,12 @@ export function createFormControl<
     onlyCheckValid?: boolean;
     name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[];
     eventType: ValidateFormEventType;
-    shouldAbort?: () => boolean;
     context?: {
       valid: boolean;
       runRootValidation?: boolean;
     };
   }) => {
+    const resetCallId = _resetCallId;
     if (props.validate && !context.runRootValidation) {
       context.runRootValidation = true;
       const result = await validateForm({
@@ -820,7 +819,7 @@ export function createFormControl<
             isFieldArrayRoot,
           );
 
-          if (shouldAbort?.()) {
+          if (resetCallId !== _resetCallId) {
             return context.valid;
           }
 
@@ -861,7 +860,6 @@ export function createFormControl<
             fields: fieldValue,
             name: name as FieldPath<TFieldValues>,
             eventType,
-            shouldAbort,
           }));
       }
     }
@@ -1894,11 +1892,9 @@ export function createFormControl<
         fieldValues = cloneObject(values);
       } else {
         const resetCallId = _resetCallId;
-
         await executeBuiltInValidation({
           fields: _fields,
           eventType: EVENTS.SUBMIT,
-          shouldAbort: () => resetCallId !== _resetCallId,
         });
 
         if (resetCallId !== _resetCallId) {
