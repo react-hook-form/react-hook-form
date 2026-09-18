@@ -721,26 +721,40 @@ export function createFormControl<
       });
 
       if (isObject(result)) {
+        let isValid = true;
+
         for (const key in result) {
           const error = result[key];
 
           if (error) {
+            // A populated form-level error object must fail validation even
+            // though the object itself is truthy.
+            isValid = false;
             setError(`${FORM_ERROR_TYPE}.${key}`, {
               message: isString(error.message) ? error.message : '',
               type: error.type || INPUT_VALIDATION_RULES.validate,
             });
           }
         }
+
+        // Error-free objects must clear prior form-level failures, like true.
+        if (isValid) {
+          clearErrors(FORM_ERROR_TYPE);
+        }
+
+        return isValid;
       } else if (isString(result) || !result) {
         setError(FORM_ERROR_TYPE, {
           message: result || '',
           type: INPUT_VALIDATION_RULES.validate,
         });
+
+        return false;
       } else {
         clearErrors(FORM_ERROR_TYPE);
-      }
 
-      return result;
+        return true;
+      }
     }
 
     return true;

@@ -3228,6 +3228,138 @@ describe('useForm', () => {
   });
 
   describe('form level validation', () => {
+    it.each([
+      {
+        description: 'an error message',
+        invalidResult: 'Name is required',
+        expectedErrors: {
+          form: {
+            message: 'Name is required',
+            type: 'validate',
+          },
+        },
+      },
+      {
+        description: 'an error object',
+        invalidResult: {
+          name: {
+            message: 'Name is required',
+            type: 'required',
+          },
+        },
+        expectedErrors: {
+          form: {
+            name: {
+              message: 'Name is required',
+              type: 'required',
+            },
+          },
+        },
+      },
+    ])(
+      'should report form-level validation failure for $description',
+      async ({ invalidResult, expectedErrors }) => {
+        let shouldReturnError = true;
+        const { result } = renderHook(() => {
+          const form = useForm<{ name: string }>({
+            defaultValues: { name: '' },
+            validate: () => (shouldReturnError ? invalidResult : true),
+          });
+
+          // Subscribe during render so trigger() updates the validity snapshot.
+          form.formState.isValid;
+          form.formState.errors;
+
+          return form;
+        });
+
+        await act(async () => {
+          expect(await result.current.trigger()).toBe(false);
+        });
+
+        expect(result.current.formState.isValid).toBe(false);
+        expect(result.current.formState.errors).toMatchObject(expectedErrors);
+
+        shouldReturnError = false;
+
+        await act(async () => {
+          expect(await result.current.trigger()).toBe(true);
+        });
+
+        expect(result.current.formState.isValid).toBe(true);
+        expect(result.current.formState.errors.form).toBeUndefined();
+      },
+    );
+
+    it('should treat an empty form-level error object as valid', async () => {
+      const { result } = renderHook(() =>
+        useForm<{ name: string }>({
+          validate: () => ({}),
+        }),
+      );
+
+      await act(async () => {
+        expect(await result.current.trigger()).toBe(true);
+      });
+    });
+
+    it.each([
+      { description: 'an empty object', validResult: {} },
+      {
+        description: 'an undefined error entry',
+        validResult: { name: undefined },
+      },
+    ])(
+      'should clear previous form-level errors and allow submission for $description',
+      async ({ validResult }) => {
+        let shouldReturnError = true;
+        const onValid = jest.fn();
+        const onInvalid = jest.fn();
+        const { result } = renderHook(() => {
+          const form = useForm<{ name: string }>({
+            defaultValues: { name: 'test' },
+            validate: () =>
+              shouldReturnError
+                ? { name: { message: 'Name is invalid', type: 'validate' } }
+                : validResult,
+          });
+
+          // Subscribe to both snapshots to verify validity and error recovery.
+          form.formState.isValid;
+          form.formState.errors;
+
+          return form;
+        });
+
+        await act(async () => {
+          expect(await result.current.trigger()).toBe(false);
+          await result.current.handleSubmit(onValid, onInvalid)();
+        });
+
+        expect(result.current.formState.isValid).toBe(false);
+        expect(result.current.formState.errors.form).toBeDefined();
+        expect(onValid).not.toHaveBeenCalled();
+        expect(onInvalid).toHaveBeenCalledTimes(1);
+
+        shouldReturnError = false;
+
+        await act(async () => {
+          expect(await result.current.trigger()).toBe(true);
+        });
+
+        expect(result.current.formState.isValid).toBe(true);
+        expect(result.current.formState.errors.form).toBeUndefined();
+
+        await act(async () => {
+          await result.current.handleSubmit(onValid, onInvalid)();
+        });
+
+        expect(onValid).toHaveBeenCalledTimes(1);
+        expect(onValid).toHaveBeenCalledWith({ name: 'test' }, undefined);
+        expect(onInvalid).toHaveBeenCalledTimes(1);
+      },
+    );
+
     it('should run form level validation once per nested field traversal', async () => {
       const validateForm = jest.fn(() => true);
       const validateField = jest.fn(() => true);
