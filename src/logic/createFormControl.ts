@@ -1,5 +1,6 @@
 import {
   EVENTS,
+  FORM_ERROR_TYPE,
   INPUT_VALIDATION_RULES,
   REGISTER_VALIDATION_RULES,
   ROOT_ERROR_TYPE,
@@ -113,8 +114,6 @@ const defaultOptions = {
   reValidateMode: VALIDATION_MODE.onChange,
   shouldFocusError: true,
 } as const;
-
-const FORM_ERROR_TYPE = 'form';
 
 const updateDirtyFields = (
   dirtyFields: Record<string, unknown>,
