@@ -383,11 +383,13 @@ export function createFormControl<
 
   const _setErrors = (errors: FieldErrors<TFieldValues>) => {
     Object.keys(delayErrorCallbacks).forEach(cancelDelayedError);
+    const hasErrors = !isEmptyObject(errors);
     _formState.errors = errors;
     _subjects.state.next({
       errors: _formState.errors,
-      isValid: false,
+      ...(hasErrors ? { isValid: false } : {}),
     });
+    !hasErrors && _state.mount && _setValid();
   };
 
   const hasExplicitNullIntermediate = (name: InternalFieldName) => {
@@ -718,26 +720,35 @@ export function createFormControl<
       });
 
       if (isObject(result)) {
+        let isValid = true;
+
+        clearErrors(FORM_ERROR_TYPE);
+
         for (const key in result) {
           const error = result[key];
 
           if (error) {
+            isValid = false;
             setError(`${FORM_ERROR_TYPE}.${key}`, {
               message: isString(error.message) ? error.message : '',
               type: error.type || INPUT_VALIDATION_RULES.validate,
             });
           }
         }
+
+        return isValid;
       } else if (isString(result) || !result) {
         setError(FORM_ERROR_TYPE, {
           message: result || '',
           type: INPUT_VALIDATION_RULES.validate,
         });
+
+        return false;
       } else {
         clearErrors(FORM_ERROR_TYPE);
-      }
 
-      return result;
+        return true;
+      }
     }
 
     return true;

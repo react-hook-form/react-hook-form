@@ -17,6 +17,7 @@ import insertAt from './utils/insert';
 import isBoolean from './utils/isBoolean';
 import isEmptyObject from './utils/isEmptyObject';
 import isObject from './utils/isObject';
+import isUndefined from './utils/isUndefined';
 import moveArrayAt from './utils/move';
 import prependAt from './utils/prepend';
 import removeArrayAt from './utils/remove';
@@ -472,7 +473,8 @@ export function useFieldArray<
 
   React.useEffect(() => {
     if (!disabled) {
-      !get(control._formValues, name) && control._setFieldArray(name);
+      isUndefined(get(control._formValues, name)) &&
+        control._setFieldArray(name);
     }
 
     return () => {
