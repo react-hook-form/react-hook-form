@@ -765,6 +765,7 @@ export function createFormControl<
     onlyCheckValid,
     name,
     eventType,
+    shouldAbort,
     context = {
       valid: true,
       runRootValidation: false,
@@ -774,6 +775,7 @@ export function createFormControl<
     onlyCheckValid?: boolean;
     name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[];
     eventType: ValidateFormEventType;
+    shouldAbort?: () => boolean;
     context?: {
       valid: boolean;
       runRootValidation?: boolean;
@@ -823,6 +825,10 @@ export function createFormControl<
             isFieldArrayRoot,
           );
 
+          if (shouldAbort?.()) {
+            return context.valid;
+          }
+
           if (isPromiseFunction && shouldTrackIsValidatingState) {
             _updateIsValidating([_f.name]);
           }
@@ -860,6 +866,7 @@ export function createFormControl<
             fields: fieldValue,
             name: name as FieldPath<TFieldValues>,
             eventType,
+            shouldAbort,
           }));
       }
     }
@@ -1891,10 +1898,17 @@ export function createFormControl<
         _formState.errors = errors;
         fieldValues = cloneObject(values);
       } else {
+        const resetCallId = _resetCallId;
+
         await executeBuiltInValidation({
           fields: _fields,
           eventType: EVENTS.SUBMIT,
+          shouldAbort: () => resetCallId !== _resetCallId,
         });
+
+        if (resetCallId !== _resetCallId) {
+          return;
+        }
 
         unset(_formState.errors, ROOT_ERROR_TYPE);
       }
