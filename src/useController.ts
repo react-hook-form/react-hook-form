@@ -237,7 +237,13 @@ export function useController<
       }
     }
 
-    !isArrayField && control.register(name);
+    !isArrayField &&
+      control.register(name, {
+        ..._props.current.rules,
+        ...(isBoolean(_props.current.disabled)
+          ? { disabled: _props.current.disabled }
+          : {}),
+      });
 
     if (_proxyRef.current) {
       const field: Field = get(control._fields, name);

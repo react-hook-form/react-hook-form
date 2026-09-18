@@ -115,6 +115,16 @@ const defaultOptions = {
 
 const FORM_ERROR_TYPE = 'form';
 
+const REGISTER_VALIDATION_RULES = [
+  'required',
+  'min',
+  'max',
+  'minLength',
+  'maxLength',
+  'pattern',
+  'validate',
+] as const;
+
 const updateDirtyFields = (
   dirtyFields: Record<string, unknown>,
   nextDirtyFields: Record<string, unknown>,
@@ -1664,6 +1674,16 @@ export function createFormControl<
       },
     });
     _names.mount.add(name);
+
+    if (field && field._f) {
+      const nextField = get(_fields, name) as Field;
+
+      for (const rule of REGISTER_VALIDATION_RULES) {
+        if (!(rule in options)) {
+          delete nextField._f[rule];
+        }
+      }
+    }
 
     if (field && !shouldRevalidateRemount) {
       _setDisabledField({
