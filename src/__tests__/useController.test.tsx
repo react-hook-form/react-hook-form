@@ -1029,6 +1029,51 @@ describe('useController', () => {
     expect(typeof capturedError.ref.setCustomValidity).toBe('function');
   });
 
+  it('should validate a controlled value independently of the attached input value', async () => {
+    type FormValues = {
+      tags: string[];
+    };
+
+    const onValid = jest.fn();
+    const onInvalid = jest.fn();
+
+    function Input({ control }: { control: Control<FormValues> }) {
+      const { field } = useController({
+        control,
+        name: 'tags',
+        rules: { required: true },
+      });
+
+      return (
+        <>
+          <input ref={field.ref} value="" readOnly />
+          <button type="button" onClick={() => field.onChange(['a', 'b'])}>
+            add
+          </button>
+        </>
+      );
+    }
+
+    function App() {
+      const { control, handleSubmit } = useForm<FormValues>();
+
+      return (
+        <form onSubmit={handleSubmit(onValid, onInvalid)}>
+          <Input control={control} />
+          <button type="submit">submit</button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'add' }));
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() => expect(onValid).toHaveBeenCalled());
+    expect(onInvalid).not.toHaveBeenCalled();
+  });
+
   it('should disable the controller input', async () => {
     function Form() {
       const { field } = useController({
