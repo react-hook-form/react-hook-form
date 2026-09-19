@@ -4504,6 +4504,178 @@ describe('useFieldArray', () => {
 
       screen.getByText('Min length should be 5');
     });
+
+    it('should clear the root error after append satisfies the array rule', async () => {
+      const App = () => {
+        const {
+          control,
+          trigger,
+          formState: { errors, isValid },
+        } = useForm({
+          mode: 'onChange',
+          defaultValues: {
+            test: [{ test: 'a' }],
+          },
+        });
+
+        const { append } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            validate: (values) =>
+              (Array.isArray(values) && values.length >= 2) ||
+              'Min length should be 2',
+          },
+        });
+
+        return (
+          <div>
+            <p>{errors.test?.root?.message}</p>
+            <p>{isValid ? 'valid' : 'invalid'}</p>
+            <button type={'button'} onClick={() => trigger('test')}>
+              trigger
+            </button>
+            <button type={'button'} onClick={() => append({ test: 'b' })}>
+              append
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+      });
+
+      screen.getByText('Min length should be 2');
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      await waitFor(() =>
+        expect(screen.queryByText('Min length should be 2')).toBeNull(),
+      );
+      screen.getByText('valid');
+    });
+
+    it('should clear the required root error after append to an empty array', async () => {
+      const App = () => {
+        const {
+          control,
+          trigger,
+          formState: { errors },
+        } = useForm({
+          mode: 'onChange',
+          defaultValues: {
+            test: [] as { test: string }[],
+          },
+        });
+
+        const { append } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            required: 'At least one item is required',
+          },
+        });
+
+        return (
+          <div>
+            <p>{errors.test?.root?.message}</p>
+            <button type={'button'} onClick={() => trigger('test')}>
+              trigger
+            </button>
+            <button type={'button'} onClick={() => append({ test: 'a' })}>
+              append
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+      });
+
+      screen.getByText('At least one item is required');
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      await waitFor(() =>
+        expect(screen.queryByText('At least one item is required')).toBeNull(),
+      );
+    });
+
+    it('should keep row errors when append clears the array root error', async () => {
+      const App = () => {
+        const {
+          control,
+          register,
+          trigger,
+          formState: { errors },
+        } = useForm({
+          mode: 'onChange',
+          defaultValues: {
+            test: [{ test: '' }],
+          },
+        });
+
+        const { fields, append } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            validate: (values) =>
+              (Array.isArray(values) && values.length >= 2) ||
+              'Min length should be 2',
+          },
+        });
+
+        return (
+          <div>
+            {fields.map((field, index) => (
+              <div key={field.id}>
+                <input
+                  {...register(`test.${index}.test` as const, {
+                    required: 'Row value is required',
+                  })}
+                />
+                <p>{errors.test?.[index]?.test?.message}</p>
+              </div>
+            ))}
+            <p>{errors.test?.root?.message}</p>
+            <button type={'button'} onClick={() => trigger()}>
+              trigger
+            </button>
+            <button type={'button'} onClick={() => append({ test: 'b' })}>
+              append
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+      });
+
+      screen.getByText('Min length should be 2');
+      screen.getByText('Row value is required');
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      await waitFor(() =>
+        expect(screen.queryByText('Min length should be 2')).toBeNull(),
+      );
+      screen.getByText('Row value is required');
+    });
   });
 
   describe('with nested field array ', () => {
