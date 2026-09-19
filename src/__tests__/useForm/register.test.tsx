@@ -1927,6 +1927,133 @@ describe('register', () => {
     );
   });
 
+  it('should revalidate deps on setValue with shouldValidate', async () => {
+    const App = () => {
+      const { register, setValue, getValues, formState } = useForm<{
+        password: string;
+        confirmPassword: string;
+      }>({
+        mode: 'onChange',
+      });
+
+      return (
+        <div>
+          <input
+            {...register('password', {
+              deps: ['confirmPassword'],
+              required: true,
+            })}
+          />
+          <input
+            {...register('confirmPassword', {
+              validate: (value, formValues) =>
+                value === formValues.password || 'passwords do not match',
+            })}
+          />
+          {formState.errors.confirmPassword && <p>passwords do not match</p>}
+          <button
+            type={'button'}
+            onClick={() =>
+              setValue('password', getValues('confirmPassword'), {
+                shouldValidate: true,
+              })
+            }
+          >
+            match password
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getAllByRole('textbox')[1], {
+      target: { value: 'secret' },
+    });
+
+    fireEvent.change(screen.getAllByRole('textbox')[0], {
+      target: { value: 'other' },
+    });
+
+    expect(await screen.findByText('passwords do not match')).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button', { name: 'match password' }));
+
+    await waitFor(() =>
+      expect(
+        screen.queryByText('passwords do not match'),
+      ).not.toBeInTheDocument(),
+    );
+  });
+
+  it('should revalidate deps on setValue with shouldValidate and resolver', async () => {
+    type Form = {
+      password: string;
+      confirmPassword: string;
+    };
+
+    const resolver: Resolver<Form> = async (values) => {
+      const errors: FieldErrors<Form> = {};
+
+      if (values.confirmPassword !== values.password) {
+        errors.confirmPassword = {
+          type: 'validate',
+          message: 'passwords do not match',
+        };
+      }
+
+      return {
+        values,
+        errors,
+      };
+    };
+
+    const App = () => {
+      const { register, setValue, getValues, formState } = useForm<Form>({
+        mode: 'onChange',
+        resolver,
+      });
+
+      return (
+        <div>
+          <input {...register('password', { deps: ['confirmPassword'] })} />
+          <input {...register('confirmPassword')} />
+          {formState.errors.confirmPassword && <p>passwords do not match</p>}
+          <button
+            type={'button'}
+            onClick={() =>
+              setValue('password', getValues('confirmPassword'), {
+                shouldValidate: true,
+              })
+            }
+          >
+            match password
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getAllByRole('textbox')[1], {
+      target: { value: 'secret' },
+    });
+
+    fireEvent.change(screen.getAllByRole('textbox')[0], {
+      target: { value: 'other' },
+    });
+
+    expect(await screen.findByText('passwords do not match')).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button', { name: 'match password' }));
+
+    await waitFor(() =>
+      expect(
+        screen.queryByText('passwords do not match'),
+      ).not.toBeInTheDocument(),
+    );
+  });
+
   it('should trigger custom onChange event', async () => {
     const onChange = jest.fn();
 
