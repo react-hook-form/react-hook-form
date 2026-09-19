@@ -1,6 +1,8 @@
 import {
   EVENTS,
+  FORM_ERROR_TYPE,
   INPUT_VALIDATION_RULES,
+  REGISTER_VALIDATION_RULES,
   ROOT_ERROR_TYPE,
   VALIDATION_MODE,
   VALIDATION_SCOPE,
@@ -113,8 +115,6 @@ const defaultOptions = {
   reValidateMode: VALIDATION_MODE.onChange,
   shouldFocusError: true,
 } as const;
-
-const FORM_ERROR_TYPE = 'form';
 
 const updateDirtyFields = (
   dirtyFields: Record<string, unknown>,
@@ -351,6 +351,14 @@ export function createFormControl<
         shouldSetValues && set(_formState.touchedFields, name, touchedFields);
       }
 
+      const dirtyFieldsArray = get(_formState.dirtyFields, name);
+      if (shouldUpdateFieldsAndState && Array.isArray(dirtyFieldsArray)) {
+        const dirtyFields =
+          method(dirtyFieldsArray, args.argA, args.argB) || dirtyFieldsArray;
+
+        shouldSetValues && set(_formState.dirtyFields, name, dirtyFields);
+      }
+
       if (_isTracked('dirtyFields')) {
         _updateDirtyFields();
       }
@@ -377,11 +385,13 @@ export function createFormControl<
 
   const _setErrors = (errors: FieldErrors<TFieldValues>) => {
     Object.keys(delayErrorCallbacks).forEach(cancelDelayedError);
+    const hasErrors = !isEmptyObject(errors);
     _formState.errors = errors;
     _subjects.state.next({
       errors: _formState.errors,
-      isValid: false,
+      ...(hasErrors ? { isValid: false } : {}),
     });
+    !hasErrors && _state.mount && _setValid();
   };
 
   const hasExplicitNullIntermediate = (name: InternalFieldName) => {
@@ -484,7 +494,14 @@ export function createFormControl<
         : setFieldValue(name, defaultValue);
 
       if (_state.mount && !_state.action) {
-        _setValid();
+        if (
+          _options.resolver &&
+          _isTracked('isValidating', 'validatingFields')
+        ) {
+          Promise.resolve().then(() => _setValid());
+        } else {
+          _setValid();
+        }
 
         if (
           wasUnsetInFormValues &&
@@ -733,6 +750,7 @@ export function createFormControl<
     eventType: ValidateFormEventType;
   }) => {
     if (props.validate) {
+      const resetCallId = _resetCallId;
       const result = await props.validate({
         formValues: _formValues,
         formState: _formState,
@@ -740,27 +758,40 @@ export function createFormControl<
         eventType,
       });
 
+      if (resetCallId !== _resetCallId) {
+        return true;
+      }
+
       if (isObject(result)) {
+        let isValid = true;
+
+        clearErrors(FORM_ERROR_TYPE);
+
         for (const key in result) {
           const error = result[key];
 
           if (error) {
+            isValid = false;
             setError(`${FORM_ERROR_TYPE}.${key}`, {
               message: isString(error.message) ? error.message : '',
               type: error.type || INPUT_VALIDATION_RULES.validate,
             });
           }
         }
+
+        return isValid;
       } else if (isString(result) || !result) {
         setError(FORM_ERROR_TYPE, {
           message: result || '',
           type: INPUT_VALIDATION_RULES.validate,
         });
+
+        return false;
       } else {
         clearErrors(FORM_ERROR_TYPE);
-      }
 
-      return result;
+        return true;
+      }
     }
 
     return true;
@@ -785,7 +816,8 @@ export function createFormControl<
       runRootValidation?: boolean;
     };
   }) => {
-    if (props.validate) {
+    const resetCallId = _resetCallId;
+    if (props.validate && !context.runRootValidation) {
       context.runRootValidation = true;
       const result = await validateForm({
         name,
@@ -828,6 +860,10 @@ export function createFormControl<
             _options.shouldUseNativeValidation && !onlyCheckValid,
             isFieldArrayRoot,
           );
+
+          if (resetCallId !== _resetCallId) {
+            return context.valid;
+          }
 
           if (isPromiseFunction && shouldTrackIsValidatingState) {
             _updateIsValidating([_f.name]);
@@ -1098,6 +1134,14 @@ export function createFormControl<
           });
         }
       }
+
+      options.shouldValidate &&
+        trigger(
+          name as Path<TFieldValues>,
+          {
+            delayError: options.delayError,
+          } as TriggerConfig & { delayError?: boolean },
+        );
     } else {
       const isEmpty =
         (Array.isArray(cloneValue) && !cloneValue.length) ||
@@ -1308,7 +1352,13 @@ export function createFormControl<
       }
 
       if (_options.resolver) {
+        const resetCallId = _resetCallId;
         const { errors } = await _runSchema([name]);
+
+        if (resetCallId !== _resetCallId) {
+          return;
+        }
+
         _updateIsValidating([name]);
 
         _updateIsFieldValueUpdated(fieldValue);
@@ -1334,6 +1384,7 @@ export function createFormControl<
 
         isValid = isEmptyObject(errors);
       } else {
+        const resetCallId = _resetCallId;
         _updateIsValidating([name], true);
         error = (
           await validateField(
@@ -1344,6 +1395,11 @@ export function createFormControl<
             _options.shouldUseNativeValidation,
           )
         )[name];
+
+        if (resetCallId !== _resetCallId) {
+          return;
+        }
+
         _updateIsValidating([name]);
 
         _updateIsFieldValueUpdated(fieldValue);
@@ -1358,6 +1414,10 @@ export function createFormControl<
               name: name as FieldPath<TFieldValues>,
               eventType: event.type,
             });
+
+            if (resetCallId !== _resetCallId) {
+              return;
+            }
           }
         }
       }
@@ -1749,6 +1809,16 @@ export function createFormControl<
     });
     _names.mount.add(name);
 
+    if (field && field._f) {
+      const nextField = get(_fields, name) as Field;
+
+      for (const rule of REGISTER_VALIDATION_RULES) {
+        if (!(rule in options)) {
+          delete nextField._f[rule];
+        }
+      }
+    }
+
     if (field && !shouldRevalidateRemount) {
       _setDisabledField({
         disabled: isBoolean(options.disabled)
@@ -1893,10 +1963,15 @@ export function createFormControl<
         _formState.errors = errors;
         fieldValues = cloneObject(values);
       } else {
+        const resetCallId = _resetCallId;
         await executeBuiltInValidation({
           fields: _fields,
           eventType: EVENTS.SUBMIT,
         });
+
+        if (resetCallId !== _resetCallId) {
+          return;
+        }
 
         unset(_formState.errors, ROOT_ERROR_TYPE);
       }

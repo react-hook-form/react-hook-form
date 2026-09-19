@@ -1806,4 +1806,42 @@ describe('Controller', () => {
 
     await waitFor(() => expect(screen.getByRole('textbox')).toHaveValue('a'));
   });
+
+  it('should stop enforcing Controller rules removed at runtime', async () => {
+    const onValid = jest.fn();
+    const onInvalid = jest.fn();
+
+    const App = ({ required }: { required: boolean }) => {
+      const { control, handleSubmit } = useForm<{ test: string }>({
+        defaultValues: { test: '' },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onValid, onInvalid)}>
+          <Controller
+            name="test"
+            control={control}
+            rules={required ? { required: 'required' } : {}}
+            render={({ field }) => <input {...field} />}
+          />
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    const { rerender } = render(<App required={true} />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => expect(onInvalid).toHaveBeenCalledTimes(1));
+    expect(onValid).not.toHaveBeenCalled();
+
+    rerender(<App required={false} />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() =>
+      expect(onValid).toHaveBeenCalledWith({ test: '' }, expect.anything()),
+    );
+  });
 });

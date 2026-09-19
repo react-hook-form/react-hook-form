@@ -177,6 +177,7 @@ export function useController<
 
       if (field && field._f && elm) {
         field._f.ref = _proxyRef.current;
+        field._f._c = true;
       }
     },
     [control._fields, name],
@@ -212,6 +213,7 @@ export function useController<
 
       if (field && field._f) {
         field._f.mount = value;
+        field._f._c = value;
       }
     };
 
@@ -237,7 +239,13 @@ export function useController<
       }
     }
 
-    !isArrayField && control.register(name);
+    !isArrayField &&
+      control.register(name, {
+        ..._props.current.rules,
+        ...(isBoolean(_props.current.disabled)
+          ? { disabled: _props.current.disabled }
+          : {}),
+      });
 
     if (_proxyRef.current) {
       const field: Field = get(control._fields, name);

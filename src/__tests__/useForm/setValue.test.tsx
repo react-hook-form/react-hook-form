@@ -1729,4 +1729,29 @@ describe('setValue', () => {
       data: [{ id: true, name: true }],
     });
   });
+
+  it('should trigger field array root rules when shouldValidate is true', async () => {
+    const { result } = renderHook(() => {
+      const { control, formState, setValue } = useForm<{
+        test: { value: string }[];
+      }>({
+        defaultValues: { test: [{ value: 'default' }] },
+      });
+      formState.errors;
+      useFieldArray({
+        control,
+        name: 'test',
+        rules: { validate: (value) => value.length > 0 || 'required' },
+      });
+      return { formState, setValue };
+    });
+
+    await act(async () => {
+      result.current.setValue('test', [], { shouldValidate: true });
+    });
+
+    expect(result.current.formState.errors.test?.root?.message).toBe(
+      'required',
+    );
+  });
 });
