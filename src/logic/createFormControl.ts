@@ -779,6 +779,7 @@ export function createFormControl<
       runRootValidation?: boolean;
     };
   }) => {
+    const resetCallId = _resetCallId;
     if (props.validate && !context.runRootValidation) {
       context.runRootValidation = true;
       const result = await validateForm({
@@ -822,6 +823,10 @@ export function createFormControl<
             _options.shouldUseNativeValidation && !onlyCheckValid,
             isFieldArrayRoot,
           );
+
+          if (resetCallId !== _resetCallId) {
+            return context.valid;
+          }
 
           if (isPromiseFunction && shouldTrackIsValidatingState) {
             _updateIsValidating([_f.name]);
@@ -1891,10 +1896,15 @@ export function createFormControl<
         _formState.errors = errors;
         fieldValues = cloneObject(values);
       } else {
+        const resetCallId = _resetCallId;
         await executeBuiltInValidation({
           fields: _fields,
           eventType: EVENTS.SUBMIT,
         });
+
+        if (resetCallId !== _resetCallId) {
+          return;
+        }
 
         unset(_formState.errors, ROOT_ERROR_TYPE);
       }
