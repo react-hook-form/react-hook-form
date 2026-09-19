@@ -2070,4 +2070,72 @@ describe('register', () => {
       test: 'test',
     });
   });
+
+  it('should stop enforcing a validation rule removed at runtime', async () => {
+    const onValid = jest.fn();
+    const onInvalid = jest.fn();
+
+    const App = ({ required }: { required: boolean }) => {
+      const { register, handleSubmit } = useForm<{ test: string }>({
+        defaultValues: { test: '' },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onValid, onInvalid)}>
+          <input
+            {...register('test', required ? { required: 'required' } : {})}
+          />
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    const { rerender } = render(<App required={true} />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => expect(onInvalid).toHaveBeenCalledTimes(1));
+    expect(onValid).not.toHaveBeenCalled();
+
+    rerender(<App required={false} />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() =>
+      expect(onValid).toHaveBeenCalledWith({ test: '' }, expect.anything()),
+    );
+  });
+
+  it('should stop enforcing a validate function removed at runtime', async () => {
+    let trigger: (() => Promise<boolean>) | undefined;
+
+    const App = ({ withValidate }: { withValidate: boolean }) => {
+      const { register, trigger: formTrigger } = useForm<{ test: string }>({
+        defaultValues: { test: '' },
+      });
+
+      trigger = () => formTrigger('test');
+
+      return (
+        <input
+          {...register(
+            'test',
+            withValidate ? { validate: () => 'invalid' } : {},
+          )}
+        />
+      );
+    };
+
+    const { rerender } = render(<App withValidate={true} />);
+
+    await act(async () => {
+      await expect(trigger!()).resolves.toBe(false);
+    });
+
+    rerender(<App withValidate={false} />);
+
+    await act(async () => {
+      await expect(trigger!()).resolves.toBe(true);
+    });
+  });
 });

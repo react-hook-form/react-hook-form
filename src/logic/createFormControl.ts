@@ -1,6 +1,8 @@
 import {
   EVENTS,
+  FORM_ERROR_TYPE,
   INPUT_VALIDATION_RULES,
+  REGISTER_VALIDATION_RULES,
   ROOT_ERROR_TYPE,
   VALIDATION_MODE,
 } from '../constants';
@@ -111,8 +113,6 @@ const defaultOptions = {
   reValidateMode: VALIDATION_MODE.onChange,
   shouldFocusError: true,
 } as const;
-
-const FORM_ERROR_TYPE = 'form';
 
 const updateDirtyFields = (
   dirtyFields: Record<string, unknown>,
@@ -712,12 +712,17 @@ export function createFormControl<
     eventType: ValidateFormEventType;
   }) => {
     if (props.validate) {
+      const resetCallId = _resetCallId;
       const result = await props.validate({
         formValues: _formValues,
         formState: _formState,
         name,
         eventType,
       });
+
+      if (resetCallId !== _resetCallId) {
+        return true;
+      }
 
       if (isObject(result)) {
         let isValid = true;
@@ -773,6 +778,7 @@ export function createFormControl<
       runRootValidation?: boolean;
     };
   }) => {
+    const resetCallId = _resetCallId;
     if (props.validate && !context.runRootValidation) {
       context.runRootValidation = true;
       const result = await validateForm({
@@ -816,6 +822,10 @@ export function createFormControl<
             _options.shouldUseNativeValidation && !onlyCheckValid,
             isFieldArrayRoot,
           );
+
+          if (resetCallId !== _resetCallId) {
+            return context.valid;
+          }
 
           if (isPromiseFunction && shouldTrackIsValidatingState) {
             _updateIsValidating([_f.name]);
@@ -1738,6 +1748,16 @@ export function createFormControl<
     });
     _names.mount.add(name);
 
+    if (field && field._f) {
+      const nextField = get(_fields, name) as Field;
+
+      for (const rule of REGISTER_VALIDATION_RULES) {
+        if (!(rule in options)) {
+          delete nextField._f[rule];
+        }
+      }
+    }
+
     if (field && !shouldRevalidateRemount) {
       _setDisabledField({
         disabled: isBoolean(options.disabled)
@@ -1882,10 +1902,15 @@ export function createFormControl<
         _formState.errors = errors;
         fieldValues = cloneObject(values);
       } else {
+        const resetCallId = _resetCallId;
         await executeBuiltInValidation({
           fields: _fields,
           eventType: EVENTS.SUBMIT,
         });
+
+        if (resetCallId !== _resetCallId) {
+          return;
+        }
 
         unset(_formState.errors, ROOT_ERROR_TYPE);
       }
