@@ -1009,6 +1009,18 @@ export function createFormControl<
           delayError: options.delayError,
         } as TriggerConfig & { delayError?: boolean },
       );
+
+    if (
+      options.shouldValidate &&
+      field &&
+      field._f &&
+      field._f.deps &&
+      (!Array.isArray(field._f.deps) || field._f.deps.length > 0)
+    ) {
+      trigger(
+        field._f.deps as FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
+      );
+    }
   };
 
   const setFieldValues = <
