@@ -1984,7 +1984,7 @@ export function createFormControl<
       }
 
       if (!options.keepError) {
-        cancelDelayedError(name);
+        cancelDelayedErrorTree(name);
         unset(_formState.errors, name);
         _setValid();
       }
