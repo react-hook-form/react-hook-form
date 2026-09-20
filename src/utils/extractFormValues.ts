@@ -4,7 +4,6 @@ export default function extractFormValues<
   T extends object,
   K extends Record<string, unknown>,
 >(fieldsState: T, formValues: K) {
-  // keep array indexes so the caller can tell which row a value came from
   const values = (Array.isArray(fieldsState) ? [] : {}) as Record<
     string,
     unknown
