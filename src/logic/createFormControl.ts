@@ -341,11 +341,7 @@ export function createFormControl<
       }
 
       const touchedFieldsArray = get(_formState.touchedFields, name);
-      if (
-        _isTracked('touchedFields') &&
-        shouldUpdateFieldsAndState &&
-        Array.isArray(touchedFieldsArray)
-      ) {
+      if (shouldUpdateFieldsAndState && Array.isArray(touchedFieldsArray)) {
         const touchedFields = method(touchedFieldsArray, args.argA, args.argB);
         shouldSetValues && set(_formState.touchedFields, name, touchedFields);
       }
@@ -674,7 +670,7 @@ export function createFormControl<
     if (names) {
       for (const name of names) {
         const error = get(errors, name);
-        cancelDelayedError(name);
+        cancelDelayedErrorTree(name);
         const isFieldArrayRootError =
           _names.array.has(name) &&
           isObject(error) &&
