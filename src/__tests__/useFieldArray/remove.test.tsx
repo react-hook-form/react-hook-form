@@ -1811,4 +1811,74 @@ describe('remove', () => {
       test: [{ value: 't0' }, { value: 't1' }],
     });
   });
+
+  // `errors` and `dirtyFields` are re-indexed by _setFieldArray whether or not
+  // anything is subscribed to them, but `touchedFields` was gated behind
+  // _isTracked('touchedFields'). Touched flags are recorded on blur regardless
+  // of subscription, and getFieldState() reads them, so an unsubscribed form
+  // ended up reporting the touched flag against the wrong row after remove().
+  describe('touched fields re-indexing', () => {
+    const Component = ({ subscribe }: { subscribe: boolean }) => {
+      const { register, control, getFieldState, formState } = useForm<{
+        test: { value: string }[];
+      }>({
+        defaultValues: { test: [{ value: 'a' }, { value: 'b' }] },
+      });
+      const { fields, remove } = useFieldArray({ control, name: 'test' });
+
+      if (subscribe) {
+        void formState.touchedFields;
+      }
+
+      return (
+        <div>
+          {fields.map((field, i) => (
+            <input
+              key={field.id}
+              {...register(`test.${i}.value` as const)}
+              placeholder={`test-${i}`}
+            />
+          ))}
+          <button type="button" onClick={() => remove(0)}>
+            remove
+          </button>
+          <p>{`touched0:${
+            getFieldState('test.0.value').isTouched ? 'yes' : 'no'
+          }`}</p>
+        </div>
+      );
+    };
+
+    const touchSecondRowThenRemoveFirst = async () => {
+      await act(async () => {
+        fireEvent.blur(screen.getByPlaceholderText('test-1'), {
+          target: { value: 'b' },
+        });
+      });
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+      });
+    };
+
+    it('should move the touched flag onto the remaining row when subscribed', async () => {
+      render(<Component subscribe={true} />);
+
+      await touchSecondRowThenRemoveFirst();
+
+      expect(screen.getByText(/^touched0:/).textContent).toEqual(
+        'touched0:yes',
+      );
+    });
+
+    it('should move the touched flag onto the remaining row when not subscribed', async () => {
+      render(<Component subscribe={false} />);
+
+      await touchSecondRowThenRemoveFirst();
+
+      expect(screen.getByText(/^touched0:/).textContent).toEqual(
+        'touched0:yes',
+      );
+    });
+  });
 });
