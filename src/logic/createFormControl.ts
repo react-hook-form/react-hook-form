@@ -670,7 +670,7 @@ export function createFormControl<
     if (names) {
       for (const name of names) {
         const error = get(errors, name);
-        cancelDelayedError(name);
+        cancelDelayedErrorTree(name);
         const isFieldArrayRootError =
           _names.array.has(name) &&
           isObject(error) &&
