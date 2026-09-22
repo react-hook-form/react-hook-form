@@ -3619,5 +3619,176 @@ describe('useForm', () => {
         expect(screen.getByTestId('msg').textContent).toBe(''),
       );
     });
+
+    it('should keep running a stable validate function on every change', async () => {
+      const validate = jest.fn(
+        ({ formValues }: { formValues: { firstName: string } }) =>
+          formValues.firstName ? true : 'required',
+      );
+
+      const App = () => {
+        const {
+          register,
+          formState: { errors },
+          handleSubmit,
+        } = useForm({
+          mode: 'onChange',
+          defaultValues: {
+            firstName: 'foo',
+          },
+          validate,
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <input {...register('firstName')} />
+            <p data-testid="msg">{errors.form?.message}</p>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '' },
+      });
+
+      await waitFor(() =>
+        expect(screen.getByTestId('msg').textContent).toBe('required'),
+      );
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'test' },
+      });
+
+      await waitFor(() =>
+        expect(screen.getByTestId('msg').textContent).toBe(''),
+      );
+
+      expect(validate).toHaveBeenCalled();
+    });
+
+    it('should run the latest validate function after a re-render', async () => {
+      const App = () => {
+        const [banned, setBanned] = React.useState('nothing');
+        const {
+          register,
+          formState: { errors },
+          handleSubmit,
+        } = useForm({
+          defaultValues: {
+            firstName: 'foo',
+          },
+          validate: ({ formValues }) =>
+            formValues.firstName === banned ? `${banned} is banned` : true,
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <input {...register('firstName')} />
+            <p data-testid="msg">{errors.form?.message}</p>
+            <button type="button" onClick={() => setBanned('foo')}>
+              ban
+            </button>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'ban' }));
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(screen.getByTestId('msg').textContent).toBe('foo is banned'),
+      );
+    });
+
+    it('should run a validate function supplied only after the first render', async () => {
+      const validate = jest.fn(() => 'form is invalid');
+
+      const App = () => {
+        const [enabled, setEnabled] = React.useState(false);
+        const {
+          register,
+          formState: { errors },
+          handleSubmit,
+        } = useForm({
+          defaultValues: {
+            firstName: 'foo',
+          },
+          ...(enabled ? { validate } : {}),
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <input {...register('firstName')} />
+            <p data-testid="msg">{errors.form?.message}</p>
+            <button type="button" onClick={() => setEnabled(true)}>
+              enable
+            </button>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'enable' }));
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(screen.getByTestId('msg').textContent).toBe('form is invalid'),
+      );
+      expect(validate).toHaveBeenCalled();
+    });
+
+    it('should stop running a validate function removed after the first render', async () => {
+      const validate = jest.fn(() => 'form is invalid');
+      const onSubmit = jest.fn();
+
+      const App = () => {
+        const [enabled, setEnabled] = React.useState(true);
+        const {
+          register,
+          formState: { errors },
+          handleSubmit,
+        } = useForm({
+          defaultValues: {
+            firstName: 'foo',
+          },
+          ...(enabled ? { validate } : {}),
+        });
+
+        return (
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <input {...register('firstName')} />
+            <p data-testid="msg">{errors.form?.message}</p>
+            <button type="button" onClick={() => setEnabled(false)}>
+              disable
+            </button>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(screen.getByTestId('msg').textContent).toBe('form is invalid'),
+      );
+
+      validate.mockClear();
+
+      fireEvent.click(screen.getByRole('button', { name: 'disable' }));
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+      expect(screen.getByTestId('msg').textContent).toBe('');
+      expect(validate).not.toHaveBeenCalled();
+    });
   });
 });
