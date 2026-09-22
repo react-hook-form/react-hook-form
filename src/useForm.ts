@@ -80,7 +80,6 @@ export function useForm<
   }
 
   const control = _formControl.current.control;
-  // the setter merges, so an omitted `validate` would keep the previous one running
   control._options = { ...props, validate: props.validate };
 
   const getCurrentFormState = () => ({
