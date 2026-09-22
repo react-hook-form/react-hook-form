@@ -341,7 +341,9 @@ export function createFormControl<
       }
 
       const touchedFieldsArray = get(_formState.touchedFields, name);
-      if (shouldUpdateFieldsAndState && Array.isArray(touchedFieldsArray)) {
+      const shouldUpdateTouchedFields =
+        shouldUpdateFieldsAndState && Array.isArray(touchedFieldsArray);
+      if (shouldUpdateTouchedFields) {
         const touchedFields = method(touchedFieldsArray, args.argA, args.argB);
         shouldSetValues && set(_formState.touchedFields, name, touchedFields);
       }
@@ -362,6 +364,9 @@ export function createFormControl<
         name,
         isDirty: _getDirty(name, values),
         dirtyFields: _formState.dirtyFields,
+        ...(shouldUpdateTouchedFields && {
+          touchedFields: _formState.touchedFields,
+        }),
         errors: _formState.errors,
         isValid: _formState.isValid,
       });
