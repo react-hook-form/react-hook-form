@@ -3743,5 +3743,52 @@ describe('useForm', () => {
       );
       expect(validate).toHaveBeenCalled();
     });
+
+    it('should stop running a validate function removed after the first render', async () => {
+      const validate = jest.fn(() => 'form is invalid');
+      const onSubmit = jest.fn();
+
+      const App = () => {
+        const [enabled, setEnabled] = React.useState(true);
+        const {
+          register,
+          formState: { errors },
+          handleSubmit,
+        } = useForm({
+          defaultValues: {
+            firstName: 'foo',
+          },
+          ...(enabled ? { validate } : {}),
+        });
+
+        return (
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <input {...register('firstName')} />
+            <p data-testid="msg">{errors.form?.message}</p>
+            <button type="button" onClick={() => setEnabled(false)}>
+              disable
+            </button>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(screen.getByTestId('msg').textContent).toBe('form is invalid'),
+      );
+
+      validate.mockClear();
+
+      fireEvent.click(screen.getByRole('button', { name: 'disable' }));
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+      expect(screen.getByTestId('msg').textContent).toBe('');
+      expect(validate).not.toHaveBeenCalled();
+    });
   });
 });
