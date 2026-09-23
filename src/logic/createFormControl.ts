@@ -1143,6 +1143,35 @@ export function createFormControl<
           skipValueRender,
         );
       }
+
+      if (
+        field &&
+        !field._f &&
+        (isObject(cloneValue) ||
+          Array.isArray(cloneValue) ||
+          isNullOrUndefined(cloneValue))
+      ) {
+        // A subtree replacement drops descendants absent from the new value
+        // from form state but left their inputs untouched. Sync those inputs
+        // the same way as an explicit leaf setValue(name, undefined).
+        const prefix = name + '.';
+
+        for (const mountedName of _names.mount) {
+          if (
+            mountedName.startsWith(prefix) &&
+            !has(cloneValue, mountedName.slice(prefix.length))
+          ) {
+            setFieldValue(
+              mountedName,
+              undefined as SetFieldValue<TFieldValues>,
+              options,
+              true,
+              skipStateEmit,
+              skipValueRender,
+            );
+          }
+        }
+      }
     }
 
     if (!isValueUnchanged && !skipStateEmit) {

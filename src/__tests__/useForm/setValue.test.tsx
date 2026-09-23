@@ -1754,4 +1754,76 @@ describe('setValue', () => {
       'required',
     );
   });
+
+  describe('parent-path setValue over a registered group', () => {
+    type GroupApi = {
+      setValue: (name: 'a', value: { b?: string; c?: string }) => void;
+      getValues: () => { a: { b?: string; c?: string } };
+      handleSubmit: (
+        onValid: (values: { a: { b?: string; c?: string } }) => void,
+      ) => (event?: unknown) => void;
+    };
+
+    function GroupApp({ onInit }: { onInit: (api: GroupApi) => void }) {
+      const { register, setValue, getValues, handleSubmit } = useForm<{
+        a: { b: string; c: string };
+      }>({
+        defaultValues: { a: { b: 'one', c: 'two' } },
+      });
+
+      onInit({ setValue, getValues, handleSubmit });
+
+      return (
+        <form>
+          <input {...register('a.b')} />
+          <input {...register('a.c')} />
+        </form>
+      );
+    }
+
+    it('should clear inputs dropped by setValue with an empty object', async () => {
+      let api!: GroupApi;
+      render(<GroupApp onInit={(form) => (api = form)} />);
+
+      const inputs = screen.getAllByRole('textbox') as HTMLInputElement[];
+      expect(inputs.map((input) => input.value)).toEqual(['one', 'two']);
+
+      await act(async () => {
+        api.setValue('a', {});
+      });
+
+      expect(inputs.map((input) => input.value)).toEqual(['', '']);
+      expect(api.getValues()).toEqual({ a: { b: undefined, c: undefined } });
+    });
+
+    it('should clear inputs for siblings absent from a partial value', async () => {
+      let api!: GroupApi;
+      render(<GroupApp onInit={(form) => (api = form)} />);
+
+      const inputs = screen.getAllByRole('textbox') as HTMLInputElement[];
+
+      await act(async () => {
+        api.setValue('a', { b: 'CHANGED' });
+      });
+
+      expect(inputs.map((input) => input.value)).toEqual(['CHANGED', '']);
+      expect(api.getValues()).toEqual({ a: { b: 'CHANGED', c: undefined } });
+    });
+
+    it('should submit cleared values after a parent-path setValue', async () => {
+      let api!: GroupApi;
+      let submitted: unknown = 'NOT_CALLED';
+      render(<GroupApp onInit={(form) => (api = form)} />);
+
+      await act(async () => {
+        api.setValue('a', {});
+      });
+
+      await act(async () => {
+        await api.handleSubmit((values) => (submitted = values))();
+      });
+
+      expect(submitted).toStrictEqual({ a: { b: undefined, c: undefined } });
+    });
+  });
 });
