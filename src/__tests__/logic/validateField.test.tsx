@@ -2445,6 +2445,61 @@ describe('validateField', () => {
       expect(reportValidity).toHaveBeenCalledTimes(1);
     });
 
+    it('should skip refs without setCustomValidity in a checkbox group', async () => {
+      (getCheckboxValue as jest.Mock).mockReturnValue({
+        isValid: false,
+        value: [],
+      });
+
+      const setCustomValidity1 = jest.fn();
+      const setCustomValidity2 = jest.fn();
+      const reportValidity = jest.fn();
+
+      const ref1 = {
+        setCustomValidity: setCustomValidity1,
+        reportValidity,
+        name: 'foo',
+        value: 'a',
+        type: 'checkbox',
+        checked: false,
+      };
+      const ref2 = {
+        setCustomValidity: setCustomValidity2,
+        name: 'foo',
+        value: 'b',
+        type: 'checkbox',
+        checked: false,
+      };
+
+      expect(
+        await validateField(
+          {
+            _f: {
+              name: 'foo',
+              ref: { type: 'checkbox', name: 'foo' },
+              refs: [ref1, ref2, {}] as any,
+              required: 'You missed that',
+              mount: true,
+            },
+          },
+          new Set(),
+          { foo: [] },
+          false,
+          true,
+        ),
+      ).toEqual({
+        foo: {
+          ref: ref1,
+          message: 'You missed that',
+          type: 'required',
+        },
+      });
+
+      expect(setCustomValidity1).toHaveBeenCalledWith('You missed that');
+      expect(setCustomValidity2).toHaveBeenCalledWith('You missed that');
+      expect(reportValidity).toHaveBeenCalledTimes(1);
+    });
+
     it('should abort validation early when input is disabled', async () => {
       expect(
         await validateField(
