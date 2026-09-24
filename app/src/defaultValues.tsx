@@ -34,7 +34,6 @@ function DefaultValues() {
           <input {...register('test')} />
           <input {...register('test1.firstName')} />
           <input {...register('test1.deep.nest')} />
-          <input {...register('test1.deep.nest')} />
           <input {...register('test1.lastName.0')} />
           <input {...register('test1.lastName.1')} />
           <input type="checkbox" value={'1'} {...register('checkbox')} />
