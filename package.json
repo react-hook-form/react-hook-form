@@ -116,7 +116,13 @@
     ]
   },
   "peerDependencies": {
+    "@types/react": "*",
     "react": "^16.8.0 || ^17 || ^18 || ^19"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [
