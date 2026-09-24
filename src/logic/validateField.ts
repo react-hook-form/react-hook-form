@@ -63,7 +63,11 @@ export default async <T extends FieldValues>(
     if (shouldUseNativeValidation && inputRef.reportValidity) {
       const validityMessage = isBoolean(message) ? '' : message || '';
       if (refs) {
-        refs.forEach((ref) => ref.setCustomValidity(validityMessage));
+        refs.forEach(
+          (ref) =>
+            isFunction(ref.setCustomValidity) &&
+            ref.setCustomValidity(validityMessage),
+        );
       } else {
         inputRef.setCustomValidity(validityMessage);
       }
