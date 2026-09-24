@@ -85,7 +85,11 @@ const UseFieldArray: React.FC = () => {
             {errors.data?.[index]?.name && (
               <p id={`error${index}`}>{errors.data[index]!.name!.message}</p>
             )}
-            <button id={`delete${index}`} onClick={() => remove(index)}>
+            <button
+              id={`delete${index}`}
+              type="button"
+              onClick={() => remove(index)}
+            >
               Delete
             </button>
           </li>
