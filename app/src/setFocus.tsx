@@ -52,7 +52,7 @@ const SetFocus = () => {
       </fieldset>
       <fieldset>
         <legend>Select textarea content on focus</legend>
-        <label htmlFor="selectTextareaContent">Focus Textarea</label>
+        <label htmlFor="selectTextareaContent">Select Textarea Content</label>
         <textarea
           id="selectTextareaContent"
           {...register('selectTextareaContent')}
