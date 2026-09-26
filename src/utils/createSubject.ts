@@ -15,30 +15,44 @@ export type Subject<T> = {
 } & Observer<T>;
 
 export default <T>(): Subject<T> => {
-  let _observers: Observer<T>[] = [];
+  let _observers = new Set<Observer<T>>();
+  let _iterationCount = 0;
 
   const next = (value: T) => {
-    for (const observer of _observers) {
+    const observers = _observers;
+
+    _iterationCount++;
+
+    for (const observer of observers) {
       observer.next && observer.next(value);
     }
+
+    observers === _observers && _iterationCount--;
   };
 
   const subscribe = (observer: Observer<T>): Subscription => {
-    _observers.push(observer);
+    _observers.add(observer);
+
     return {
       unsubscribe: () => {
-        _observers = _observers.filter((o) => o !== observer);
+        if (_iterationCount) {
+          _observers = new Set(_observers);
+          _iterationCount = 0;
+        }
+
+        _observers.delete(observer);
       },
     };
   };
 
   const unsubscribe = () => {
-    _observers = [];
+    _observers = new Set();
+    _iterationCount = 0;
   };
 
   return {
     get observers() {
-      return _observers;
+      return Array.from(_observers);
     },
     next,
     subscribe,
