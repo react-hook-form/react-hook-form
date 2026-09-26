@@ -16,13 +16,13 @@ import { useForm } from '../../useForm';
 import { useWatch } from '../../useWatch';
 import noop from '../../utils/noop';
 
-let i = 0;
+let mockId = 0;
 
-jest.mock('../../logic/generateId', () => () => String(i++));
+jest.mock('../../logic/generateId', () => () => String(mockId++));
 
 describe('move', () => {
   beforeEach(() => {
-    i = 0;
+    mockId = 0;
   });
 
   it.each(['isDirty', 'dirtyFields'])(
@@ -80,7 +80,7 @@ describe('move', () => {
         <form onSubmit={handleSubmit(noop)}>
           {fields.map((field, i) => (
             <input
-              key={field.id}
+              key={field.key}
               {...register(`test.${i}.value` as const, { required: true })}
             />
           ))}
@@ -126,7 +126,7 @@ describe('move', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`test.${i}.value` as const)} />
+            <input key={field.key} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => append({ value: '' })}>
             append
@@ -169,7 +169,7 @@ describe('move', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`test.${i}.value` as const)} />
+            <input key={field.key} {...register(`test.${i}.value` as const)} />
           ))}
           <button type="button" onClick={() => move(0, 1)}>
             move
@@ -211,7 +211,7 @@ describe('move', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <input key={field.id} {...register(`test.${i}.value` as const)} />
+            <input key={field.key} {...register(`test.${i}.value` as const)} />
           ))}
         </form>
       );
@@ -243,7 +243,7 @@ describe('move', () => {
       return (
         <div>
           {fields.map((field, i) => (
-            <div key={`${field.id}`}>
+            <div key={field.key}>
               <input {...register(`test.${i}.value` as const)} />
             </div>
           ))}
@@ -369,7 +369,9 @@ describe('move', () => {
       return (
         <form onSubmit={handleSubmit(setData)}>
           {fields.map((field, index) => {
-            return <input key={field.id} {...register(`test.${index}.test`)} />;
+            return (
+              <input key={field.key} {...register(`test.${index}.test`)} />
+            );
           })}
           <button
             type={'button'}
@@ -419,7 +421,9 @@ describe('move', () => {
       return (
         <form onSubmit={handleSubmit(setData)}>
           {fields.map((field, index) => {
-            return <input key={field.id} {...register(`test.${index}.test`)} />;
+            return (
+              <input key={field.key} {...register(`test.${index}.test`)} />
+            );
           })}
           <button
             type={'button'}

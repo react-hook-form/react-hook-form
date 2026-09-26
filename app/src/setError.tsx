@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { FieldPath } from '../../src/types';
 
@@ -20,7 +20,14 @@ const SetError: React.FC = () => {
     formState: { errors },
   } = useForm<FormInputs>();
 
+  const hasSetErrors = useRef(false);
+
   useEffect(() => {
+    if (hasSetErrors.current) {
+      return;
+    }
+    hasSetErrors.current = true;
+
     register('firstName');
     register('lastName');
     register('age');
