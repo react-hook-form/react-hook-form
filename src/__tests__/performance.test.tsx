@@ -979,6 +979,55 @@ describe('name-scoped values subscribers', () => {
   });
 });
 
+describe('form state persistence during fan-out', () => {
+  it('does not rebuild _formState for event-only payloads', () => {
+    const { control } = createFormControl<{ a: string }>();
+    const formState = control._formState;
+
+    control._subjects.state.next({
+      name: 'a',
+      type: 'change',
+      values: { a: 'x' },
+    });
+
+    expect(control._formState).toBe(formState);
+  });
+
+  it('persists state before name-scoped subscribers read it', () => {
+    const { control } = createFormControl<{ a: string; b: string }>();
+    const seen: unknown[] = [];
+
+    control._subscribe({
+      name: 'a',
+      exact: true,
+      formState: { isDirty: true, errors: true },
+      callback: (formState) => {
+        seen.push([formState.isDirty, control._formState.isDirty]);
+
+        if (formState.isDirty && !formState.errors?.b) {
+          control._subjects.state.next({
+            name: 'a',
+            errors: { b: { type: 'required' } },
+          });
+        }
+      },
+    });
+
+    control._subjects.state.next({ name: 'a', isDirty: true });
+
+    expect(seen).toEqual([
+      [true, true],
+      [true, true],
+    ]);
+    expect(control._formState).toEqual(
+      expect.objectContaining({
+        isDirty: true,
+        errors: { b: { type: 'required' } },
+      }),
+    );
+  });
+});
+
 describe('subscribe form state tracking lifetime', () => {
   const setup = () => {
     const validate = jest.fn(() => true);
