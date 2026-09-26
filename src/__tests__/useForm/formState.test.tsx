@@ -1843,6 +1843,77 @@ describe('formState', () => {
     expect(refAfterCleared).not.toBe(refAfterSecondError);
   });
 
+  it('should produce a new errors reference on setError and clearErrors so memoized child components re-render', async () => {
+    type FormValues = { test: string };
+    const errorRefs: object[] = [];
+
+    function ErrorDisplay({
+      errors,
+    }: {
+      errors: FormState<FormValues>['errors'];
+    }) {
+      errorRefs.push(errors);
+      return <p data-testid="error">{errors.test?.message ?? ''}</p>;
+    }
+
+    function App() {
+      const {
+        setError,
+        clearErrors,
+        formState: { errors },
+      } = useForm<FormValues>({
+        defaultValues: { test: '' },
+      });
+      return (
+        <>
+          <ErrorDisplay errors={errors} />
+          <button
+            type="button"
+            onClick={() =>
+              setError('test', { type: 'server', message: 'first' })
+            }
+          >
+            setFirst
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              setError('test', { type: 'server', message: 'second' })
+            }
+          >
+            setSecond
+          </button>
+          <button type="button" onClick={() => clearErrors('test')}>
+            clear
+          </button>
+        </>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'setFirst' }));
+    await waitFor(() =>
+      expect(screen.getByTestId('error')).toHaveTextContent('first'),
+    );
+    const refAfterFirstError = errorRefs.at(-1);
+
+    fireEvent.click(screen.getByRole('button', { name: 'setSecond' }));
+    await waitFor(() =>
+      expect(screen.getByTestId('error')).toHaveTextContent('second'),
+    );
+    const refAfterSecondError = errorRefs.at(-1);
+
+    fireEvent.click(screen.getByRole('button', { name: 'clear' }));
+    await waitFor(() =>
+      expect(screen.getByTestId('error')).toHaveTextContent(''),
+    );
+    const refAfterCleared = errorRefs.at(-1);
+
+    expect(refAfterFirstError).not.toBe(refAfterSecondError);
+    expect(refAfterSecondError).not.toBe(refAfterCleared);
+  });
+
   describe('with Activity', () => {
     itWithActivity(
       'should resync isSubmitting after Activity restoration when a submit resolves while hidden',
