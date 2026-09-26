@@ -62,4 +62,35 @@ describe('createFormControl', () => {
 
     expect(isEmptyObject).toHaveBeenCalledTimes(3);
   });
+
+  it('should only copy form values for whole-form watch reads', () => {
+    const { control } = createFormControl<{
+      field: string;
+      probe?: string;
+    }>({
+      defaultValues: {
+        field: 'value',
+      },
+    });
+    let probeReads = 0;
+
+    Object.defineProperty(control._defaultValues, 'probe', {
+      configurable: true,
+      enumerable: true,
+      get: () => {
+        probeReads++;
+        return 'probe';
+      },
+    });
+
+    expect(control._getWatch('field')).toBe('value');
+    expect(control._getWatch(['field'])).toEqual(['value']);
+    expect(probeReads).toBe(0);
+
+    expect(control._getWatch()).toEqual({
+      field: 'value',
+      probe: 'probe',
+    });
+    expect(probeReads).toBe(1);
+  });
 });
