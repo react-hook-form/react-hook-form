@@ -340,11 +340,9 @@ export function createFormControl<
       }
 
       const touchedFieldsArray = get(_formState.touchedFields, name);
-      if (
-        _isTracked('touchedFields') &&
-        shouldUpdateFieldsAndState &&
-        Array.isArray(touchedFieldsArray)
-      ) {
+      const shouldUpdateTouchedFields =
+        shouldUpdateFieldsAndState && Array.isArray(touchedFieldsArray);
+      if (shouldUpdateTouchedFields) {
         const touchedFields = method(touchedFieldsArray, args.argA, args.argB);
         shouldSetValues && set(_formState.touchedFields, name, touchedFields);
       }
@@ -365,6 +363,9 @@ export function createFormControl<
         name,
         isDirty: _getDirty(name, values),
         dirtyFields: _formState.dirtyFields,
+        ...(shouldUpdateTouchedFields && {
+          touchedFields: _formState.touchedFields,
+        }),
         errors: _formState.errors,
         isValid: _formState.isValid,
       });
@@ -673,7 +674,7 @@ export function createFormControl<
     if (names) {
       for (const name of names) {
         const error = get(errors, name);
-        cancelDelayedError(name);
+        cancelDelayedErrorTree(name);
         const isFieldArrayRootError =
           _names.array.has(name) &&
           isObject(error) &&
@@ -711,9 +712,9 @@ export function createFormControl<
     name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | undefined;
     eventType: ValidateFormEventType;
   }) => {
-    if (props.validate) {
+    if (_options.validate) {
       const resetCallId = _resetCallId;
-      const result = await props.validate({
+      const result = await _options.validate({
         formValues: _formValues,
         formState: _formState,
         name,
@@ -779,7 +780,7 @@ export function createFormControl<
     };
   }) => {
     const resetCallId = _resetCallId;
-    if (props.validate && !context.runRootValidation) {
+    if (_options.validate && !context.runRootValidation) {
       context.runRootValidation = true;
       const result = await validateForm({
         name,
@@ -1008,6 +1009,18 @@ export function createFormControl<
           delayError: options.delayError,
         } as TriggerConfig & { delayError?: boolean },
       );
+
+    if (
+      options.shouldValidate &&
+      field &&
+      field._f &&
+      field._f.deps &&
+      (!Array.isArray(field._f.deps) || field._f.deps.length > 0)
+    ) {
+      trigger(
+        field._f.deps as FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
+      );
+    }
   };
 
   const setFieldValues = <
@@ -1214,7 +1227,7 @@ export function createFormControl<
         event.type === EVENTS.BLUR || event.type === EVENTS.FOCUS_OUT;
       const hasNoValidationEffect =
         !hasValidation(field._f) &&
-        !props.validate &&
+        !_options.validate &&
         !_options.resolver &&
         !get(_formState.errors, name) &&
         !field._f.deps;
@@ -1274,7 +1287,7 @@ export function createFormControl<
         );
       }
 
-      if (!_options.resolver && props.validate) {
+      if (!_options.resolver && _options.validate) {
         await validateForm({
           name: name as FieldPath<TFieldValues>,
           eventType: event.type,
@@ -1531,7 +1544,7 @@ export function createFormControl<
   };
 
   const setError: UseFormSetError<TFieldValues> = (name, error, options) => {
-    cancelDelayedError(name);
+    cancelDelayedErrorTree(name);
 
     const ref = (get(_fields, name, { _f: {} })._f || {}).ref;
     const currentError = get(_formState.errors, name) || {};
@@ -1978,7 +1991,7 @@ export function createFormControl<
       }
 
       if (!options.keepError) {
-        cancelDelayedError(name);
+        cancelDelayedErrorTree(name);
         unset(_formState.errors, name);
         _setValid();
       }

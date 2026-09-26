@@ -25,7 +25,7 @@ import set from './utils/set';
 import swapArrayAt from './utils/swap';
 import unset from './utils/unset';
 import updateAt from './utils/update';
-import { VALIDATION_MODE } from './constants';
+import { ROOT_ERROR_TYPE, VALIDATION_MODE } from './constants';
 import type {
   Control,
   Field,
@@ -428,17 +428,27 @@ export function useFieldArray<
             control._options.criteriaMode === VALIDATION_MODE.all,
             control._options.shouldUseNativeValidation,
             true,
-          ).then(
-            (error) =>
-              !isEmptyObject(error) &&
+          ).then((error) => {
+            if (!isEmptyObject(error)) {
               control._subjects.state.next({
                 errors: updateFieldArrayRootError(
                   control._formState.errors as FieldErrors<TFieldValues>,
                   error,
                   name,
                 ) as FieldErrors<TFieldValues>,
-              }),
-          );
+              });
+            } else {
+              const existingError = get(control._formState.errors, name);
+
+              if (existingError && existingError[ROOT_ERROR_TYPE]) {
+                unset(control._formState.errors, `${name}.${ROOT_ERROR_TYPE}`);
+                control._subjects.state.next({
+                  errors: control._formState
+                    .errors as FieldErrors<TFieldValues>,
+                });
+              }
+            }
+          });
         }
       }
     }

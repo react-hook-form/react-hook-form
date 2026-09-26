@@ -147,6 +147,129 @@ describe('useFieldArray', () => {
     });
   });
 
+  describe('touchedFields subscriptions', () => {
+    type FormValues = { test: { value: string }[] };
+
+    it('should update an isolated useFormState subscriber when a touched row is removed', () => {
+      const TouchedStatus = ({
+        control,
+      }: {
+        control: Control<FormValues>;
+      }): React.ReactElement => {
+        const { touchedFields } = useFormState({ control });
+
+        return (
+          <p>{touchedFields.test?.[0]?.value ? 'touched' : 'untouched'}</p>
+        );
+      };
+
+      const Fields = ({
+        methods,
+      }: {
+        methods: UseFormReturn<FormValues>;
+      }): React.ReactElement => {
+        const { fields, remove } = useFieldArray({
+          control: methods.control,
+          name: 'test',
+        });
+
+        return (
+          <>
+            {fields.map((field, index) => (
+              <input
+                key={field.id}
+                {...methods.register(`test.${index}.value`)}
+              />
+            ))}
+            <button type="button" onClick={() => remove(0)}>
+              remove
+            </button>
+          </>
+        );
+      };
+
+      const App = (): React.ReactElement => {
+        const methods = useForm<FormValues>({
+          defaultValues: { test: [{ value: 'a' }, { value: 'b' }] },
+        });
+
+        // Keep the subscriber outside the component rerendered by array actions.
+        return (
+          <>
+            <Fields methods={methods} />
+            <TouchedStatus control={methods.control} />
+          </>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.blur(screen.getAllByRole('textbox')[0]);
+      expect(screen.getByText('touched')).toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+
+      expect(screen.getByRole('textbox')).toHaveValue('b');
+      expect(screen.getByText('untouched')).toBeInTheDocument();
+    });
+
+    it('should notify touchedFields-only subscribers after swap and removal', () => {
+      const { result } = renderHook(() => {
+        const methods = useForm<FormValues>({
+          defaultValues: { test: [{ value: 'a' }, { value: 'b' }] },
+        });
+
+        return {
+          methods,
+          fieldArray: useFieldArray({
+            control: methods.control,
+            name: 'test',
+          }),
+        };
+      });
+      const touchedRows: [boolean, boolean][] = [];
+      const unsubscribe = result.current.methods.subscribe({
+        name: 'test',
+        formState: { touchedFields: true },
+        callback: ({ touchedFields }) => {
+          // Capture flags immediately because subsequent actions mutate form state.
+          touchedRows.push([
+            !!touchedFields.test?.[0]?.value,
+            !!touchedFields.test?.[1]?.value,
+          ]);
+        },
+      });
+
+      act(() => result.current.fieldArray.append({ value: 'c' }));
+      expect(touchedRows).toEqual([]);
+
+      act(() =>
+        result.current.methods.setValue('test.1.value', 'b', {
+          shouldTouch: true,
+        }),
+      );
+      expect(touchedRows).toEqual([[false, true]]);
+
+      act(() => result.current.fieldArray.swap(0, 1));
+      expect(touchedRows).toEqual([
+        [false, true],
+        [true, false],
+      ]);
+
+      act(() => result.current.fieldArray.remove(0));
+      expect(touchedRows).toEqual([
+        [false, true],
+        [true, false],
+        [false, false],
+      ]);
+      expect(
+        result.current.methods.getFieldState('test.0.value').isTouched,
+      ).toBeFalsy();
+
+      unsubscribe();
+    });
+  });
+
   describe('with should unregister false', () => {
     it('should still remain input value with toggle', () => {
       const Component = () => {
@@ -4512,6 +4635,178 @@ describe('useFieldArray', () => {
       });
 
       screen.getByText('Min length should be 5');
+    });
+
+    it('should clear the root error after append satisfies the array rule', async () => {
+      const App = () => {
+        const {
+          control,
+          trigger,
+          formState: { errors, isValid },
+        } = useForm({
+          mode: 'onChange',
+          defaultValues: {
+            test: [{ test: 'a' }],
+          },
+        });
+
+        const { append } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            validate: (values) =>
+              (Array.isArray(values) && values.length >= 2) ||
+              'Min length should be 2',
+          },
+        });
+
+        return (
+          <div>
+            <p>{errors.test?.root?.message}</p>
+            <p>{isValid ? 'valid' : 'invalid'}</p>
+            <button type={'button'} onClick={() => trigger('test')}>
+              trigger
+            </button>
+            <button type={'button'} onClick={() => append({ test: 'b' })}>
+              append
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+      });
+
+      screen.getByText('Min length should be 2');
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      await waitFor(() =>
+        expect(screen.queryByText('Min length should be 2')).toBeNull(),
+      );
+      screen.getByText('valid');
+    });
+
+    it('should clear the required root error after append to an empty array', async () => {
+      const App = () => {
+        const {
+          control,
+          trigger,
+          formState: { errors },
+        } = useForm({
+          mode: 'onChange',
+          defaultValues: {
+            test: [] as { test: string }[],
+          },
+        });
+
+        const { append } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            required: 'At least one item is required',
+          },
+        });
+
+        return (
+          <div>
+            <p>{errors.test?.root?.message}</p>
+            <button type={'button'} onClick={() => trigger('test')}>
+              trigger
+            </button>
+            <button type={'button'} onClick={() => append({ test: 'a' })}>
+              append
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+      });
+
+      screen.getByText('At least one item is required');
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      await waitFor(() =>
+        expect(screen.queryByText('At least one item is required')).toBeNull(),
+      );
+    });
+
+    it('should keep row errors when append clears the array root error', async () => {
+      const App = () => {
+        const {
+          control,
+          register,
+          trigger,
+          formState: { errors },
+        } = useForm({
+          mode: 'onChange',
+          defaultValues: {
+            test: [{ test: '' }],
+          },
+        });
+
+        const { fields, append } = useFieldArray({
+          control,
+          name: 'test',
+          rules: {
+            validate: (values) =>
+              (Array.isArray(values) && values.length >= 2) ||
+              'Min length should be 2',
+          },
+        });
+
+        return (
+          <div>
+            {fields.map((field, index) => (
+              <div key={field.id}>
+                <input
+                  {...register(`test.${index}.test` as const, {
+                    required: 'Row value is required',
+                  })}
+                />
+                <p>{errors.test?.[index]?.test?.message}</p>
+              </div>
+            ))}
+            <p>{errors.test?.root?.message}</p>
+            <button type={'button'} onClick={() => trigger()}>
+              trigger
+            </button>
+            <button type={'button'} onClick={() => append({ test: 'b' })}>
+              append
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+      });
+
+      screen.getByText('Min length should be 2');
+      screen.getByText('Row value is required');
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      await waitFor(() =>
+        expect(screen.queryByText('Min length should be 2')).toBeNull(),
+      );
+      screen.getByText('Row value is required');
     });
   });
 

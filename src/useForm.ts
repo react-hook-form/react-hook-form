@@ -6,6 +6,7 @@ import cloneObject from './utils/cloneObject';
 import deepEqual from './utils/deepEqual';
 import isFunction from './utils/isFunction';
 import { updateMethodsReference } from './utils/updateMethodsReference';
+import { FORM_ERROR_TYPE } from './constants';
 import { createFormControl } from './logic';
 import type {
   FieldValues,
@@ -42,6 +43,7 @@ export function useForm<
   >(undefined);
   const _values = React.useRef<typeof props.values>(undefined);
   const _formControlProp = React.useRef(props.formControl);
+  const _hadValidate = React.useRef(!!props.validate);
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>(
     () => ({
       ...cloneObject(DEFAULT_FORM_STATE),
@@ -79,7 +81,7 @@ export function useForm<
   }
 
   const control = _formControl.current.control;
-  control._options = props;
+  control._options = { ...props, validate: props.validate };
 
   const getCurrentFormState = () => ({
     ...control._formState,
@@ -137,6 +139,13 @@ export function useForm<
       control._focusError();
     }
   }, [control, props.errors]);
+
+  React.useEffect(() => {
+    if (_hadValidate.current && !props.validate) {
+      _formControl.current?.clearErrors(FORM_ERROR_TYPE);
+    }
+    _hadValidate.current = !!props.validate;
+  }, [props.validate]);
 
   React.useEffect(() => {
     props.shouldUnregister &&

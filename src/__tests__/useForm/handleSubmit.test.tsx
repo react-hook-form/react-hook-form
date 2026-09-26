@@ -247,6 +247,31 @@ describe('handleSubmit', () => {
     );
   });
 
+  it('should submit a checkbox group with array default values and native validation', async () => {
+    const onSubmit = jest.fn();
+
+    const App = () => {
+      const { register, handleSubmit } = useForm<{ tags: string[] }>({
+        shouldUseNativeValidation: true,
+        defaultValues: { tags: ['a'] },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <input type="checkbox" value="a" {...register('tags')} />
+          <input type="checkbox" value="b" {...register('tags')} />
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+  });
+
   it('should avoid re-focusing with native validation on submit', async () => {
     jest.useFakeTimers();
 
