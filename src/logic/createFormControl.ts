@@ -496,6 +496,9 @@ export function createFormControl<
           name,
           shouldSkipSetValueAs ? defaultValue : getFieldValue(field._f),
         );
+        if (_isTracked('dirtyFields')) {
+          _state.dirtyFieldsStale = true;
+        }
       } else {
         setFieldValue(name, defaultValue);
       }
@@ -586,13 +589,16 @@ export function createFormControl<
           unset(_formState.dirtyFields, name);
         } else {
           const defaultFieldValue = get(_defaultValues, name);
-          const field = get(_fields, name);
           set(
             _formState.dirtyFields,
             name,
-            (isObject(defaultFieldValue) || Array.isArray(defaultFieldValue)) &&
-              !(field && field._f)
-              ? getDirtyFields(defaultFieldValue, fieldValue, undefined, field)
+            isObject(defaultFieldValue) || Array.isArray(defaultFieldValue)
+              ? getDirtyFields(
+                  defaultFieldValue,
+                  fieldValue,
+                  undefined,
+                  get(_fields, name),
+                )
               : true,
           );
         }
@@ -1023,6 +1029,8 @@ export function createFormControl<
         options.shouldDirty,
         !skipRender,
       );
+    } else {
+      _state.dirtyFieldsStale = true;
     }
 
     options.shouldValidate &&
@@ -1113,10 +1121,6 @@ export function createFormControl<
 
     if (!isValueUnchanged) {
       set(_formValues, name, cloneValue);
-
-      if (!options.shouldDirty) {
-        _state.dirtyFieldsStale = true;
-      }
     }
 
     if (isFieldArray) {
@@ -1205,10 +1209,6 @@ export function createFormControl<
         ..._formValues,
         ...updatedFormValues,
       };
-
-      if (!options.shouldDirty) {
-        _state.dirtyFieldsStale = true;
-      }
 
       for (const fieldName of _names.mount) {
         if (has(updatedFormValues, fieldName)) {
