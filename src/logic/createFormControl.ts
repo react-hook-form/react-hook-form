@@ -120,9 +120,7 @@ const updateDirtyFields = (
   nextDirtyFields: Record<string, unknown>,
 ) => {
   for (const key in dirtyFields) {
-    if (!(key in nextDirtyFields)) {
-      delete dirtyFields[key];
-    }
+    delete dirtyFields[key];
   }
 
   Object.assign(dirtyFields, nextDirtyFields);
@@ -491,14 +489,18 @@ export function createFormControl<
         (ref && (ref as HTMLInputElement).defaultChecked) ||
         shouldSkipSetValueAs
       ) {
-        set(
-          _formValues,
-          name,
-          shouldSkipSetValueAs ? defaultValue : getFieldValue(field._f),
-        );
-        if (_isTracked('dirtyFields')) {
+        const fieldValue = shouldSkipSetValueAs
+          ? defaultValue
+          : getFieldValue(field._f);
+
+        if (
+          _isTracked('dirtyFields') &&
+          !deepEqual(get(_formValues, name), fieldValue)
+        ) {
           _state.dirtyFieldsStale = true;
         }
+
+        set(_formValues, name, fieldValue);
       } else {
         setFieldValue(name, defaultValue);
       }
@@ -573,26 +575,15 @@ export function createFormControl<
 
         let didResyncDirtyFields = false;
 
-        if (_state.dirtyFieldsStale) {
-          _state.dirtyFieldsStale = false;
-          didResyncDirtyFields = true;
-          updateDirtyFields(
-            _formState.dirtyFields as Record<string, unknown>,
-            getDirtyFields(
-              _defaultValues,
-              _formValues,
-              undefined,
-              _fields,
-            ) as Record<string, unknown>,
-          );
-        } else if (isCurrentFieldPristine) {
+        if (isCurrentFieldPristine) {
           unset(_formState.dirtyFields, name);
         } else {
           const defaultFieldValue = get(_defaultValues, name);
           set(
             _formState.dirtyFields,
             name,
-            isObject(defaultFieldValue) || Array.isArray(defaultFieldValue)
+            !get(_fields, name)?._f &&
+              (isObject(defaultFieldValue) || Array.isArray(defaultFieldValue))
               ? getDirtyFields(
                   defaultFieldValue,
                   fieldValue,
@@ -601,6 +592,32 @@ export function createFormControl<
                 )
               : true,
           );
+        }
+
+        // a field returning to pristine while the form stays dirty means
+        // dirtyFields may be missing fields changed without dirty tracking
+        // (e.g. setValue without shouldDirty), so resync against values
+        if (
+          _state.dirtyFieldsStale ||
+          (isCurrentFieldPristine &&
+            (_isTracked('isDirty') ? _formState.isDirty : _getDirty()))
+        ) {
+          _state.dirtyFieldsStale = false;
+
+          const nextDirtyFields = getDirtyFields(
+            _defaultValues,
+            _formValues,
+            undefined,
+            _fields,
+          ) as Record<string, unknown>;
+
+          if (!deepEqual(_formState.dirtyFields, nextDirtyFields)) {
+            didResyncDirtyFields = true;
+            updateDirtyFields(
+              _formState.dirtyFields as Record<string, unknown>,
+              nextDirtyFields,
+            );
+          }
         }
 
         output.dirtyFields = _formState.dirtyFields;
@@ -1014,7 +1031,7 @@ export function createFormControl<
       }
     }
 
-    if (options.shouldDirty || options.shouldTouch) {
+    (options.shouldDirty || options.shouldTouch) &&
       updateTouchAndDirty(
         name,
         field &&
@@ -1029,9 +1046,6 @@ export function createFormControl<
         options.shouldDirty,
         !skipRender,
       );
-    } else {
-      _state.dirtyFieldsStale = true;
-    }
 
     options.shouldValidate &&
       trigger(

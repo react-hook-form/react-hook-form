@@ -184,4 +184,39 @@ describe('createFormControl', () => {
 
     expect(getDirtyFields).not.toHaveBeenCalled();
   });
+
+  it.each([
+    { dirtyFields: true },
+    { dirtyFields: true, isDirty: true },
+    { isDirty: true },
+  ])(
+    'should not retroactively mark setValue without shouldDirty as dirty (%o)',
+    async (formState) => {
+      const { control, register, setValue, subscribe } = createFormControl<{
+        firstName: string;
+        lastName: string;
+      }>({
+        defaultValues: {
+          firstName: '',
+          lastName: '',
+        },
+      });
+
+      subscribe({ formState, callback: jest.fn() });
+
+      register('firstName');
+      const lastName = register('lastName');
+
+      setValue('firstName', 'Bill');
+
+      expect(control._formState.dirtyFields).toEqual({});
+
+      await lastName.onChange({
+        type: 'change',
+        target: { name: 'lastName', value: 'Smith' },
+      });
+
+      expect(control._formState.dirtyFields).toEqual({ lastName: true });
+    },
+  );
 });
