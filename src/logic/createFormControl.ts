@@ -115,7 +115,7 @@ const defaultOptions = {
   shouldFocusError: true,
 } as const;
 
-const updateDirtyFields = (
+const replaceDirtyFieldsInPlace = (
   dirtyFields: Record<string, unknown>,
   nextDirtyFields: Record<string, unknown>,
 ) => {
@@ -299,6 +299,28 @@ export function createFormControl<
       undefined,
       _fields,
     );
+  };
+
+  const _resyncDirtyFields = () => {
+    _state.dirtyFieldsStale = false;
+
+    const nextDirtyFields = getDirtyFields(
+      _defaultValues,
+      _formValues,
+      undefined,
+      _fields,
+    ) as Record<string, unknown>;
+
+    if (deepEqual(_formState.dirtyFields, nextDirtyFields)) {
+      return false;
+    }
+
+    replaceDirtyFieldsInPlace(
+      _formState.dirtyFields as Record<string, unknown>,
+      nextDirtyFields,
+    );
+
+    return true;
   };
 
   const _setFieldArray: BatchFieldArrayUpdate = (
@@ -573,49 +595,26 @@ export function createFormControl<
 
         isPreviousDirty = !!get(_formState.dirtyFields, name);
 
-        let didResyncDirtyFields = false;
-
         if (isCurrentFieldPristine) {
           unset(_formState.dirtyFields, name);
         } else {
           const defaultFieldValue = get(_defaultValues, name);
-          set(
-            _formState.dirtyFields,
-            name,
-            !get(_fields, name)?._f &&
-              (isObject(defaultFieldValue) || Array.isArray(defaultFieldValue))
-              ? getDirtyFields(
-                  defaultFieldValue,
-                  fieldValue,
-                  undefined,
-                  get(_fields, name),
-                )
-              : true,
-          );
+          const field = get(_fields, name);
+          const dirtyValue =
+            !field?._f &&
+            (isObject(defaultFieldValue) || Array.isArray(defaultFieldValue))
+              ? getDirtyFields(defaultFieldValue, fieldValue, undefined, field)
+              : true;
+
+          set(_formState.dirtyFields, name, dirtyValue);
         }
 
-        if (
+        const shouldResyncDirtyFields =
           _state.dirtyFieldsStale ||
           (isCurrentFieldPristine &&
-            (_isTracked('isDirty') ? _formState.isDirty : _getDirty()))
-        ) {
-          _state.dirtyFieldsStale = false;
-
-          const nextDirtyFields = getDirtyFields(
-            _defaultValues,
-            _formValues,
-            undefined,
-            _fields,
-          ) as Record<string, unknown>;
-
-          if (!deepEqual(_formState.dirtyFields, nextDirtyFields)) {
-            didResyncDirtyFields = true;
-            updateDirtyFields(
-              _formState.dirtyFields as Record<string, unknown>,
-              nextDirtyFields,
-            );
-          }
-        }
+            (_isTracked('isDirty') ? _formState.isDirty : _getDirty()));
+        const didResyncDirtyFields =
+          shouldResyncDirtyFields && _resyncDirtyFields();
 
         output.dirtyFields = _formState.dirtyFields;
         shouldUpdateField =
