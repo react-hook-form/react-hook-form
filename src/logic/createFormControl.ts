@@ -1700,7 +1700,6 @@ export function createFormControl<
           shouldRenderFormState(
             formState,
             (props.formState as ReadFormState) || _proxyFormState,
-            _setFormState,
             props.reRenderRoot,
           )
         ) {
@@ -2307,10 +2306,12 @@ export function createFormControl<
     // its own.
     const { name, type, values, ...formState } = updatedFormState;
 
-    _formState = {
-      ..._formState,
-      ...formState,
-    };
+    if (Object.keys(formState).length) {
+      _formState = {
+        ..._formState,
+        ...formState,
+      };
+    }
   };
 
   _subjects.state.subscribe({ next: _setFormState });

@@ -12,10 +12,8 @@ export default <T extends FieldValues, K extends ReadFormState>(
     values?: T;
   },
   _proxyFormState: K,
-  updateFormState: (formState: Partial<FormState<T>>) => void,
   isRoot?: boolean,
 ) => {
-  updateFormState(formStateData);
   const keys = Object.keys(formStateData).filter((key) => key !== 'name');
 
   return (
