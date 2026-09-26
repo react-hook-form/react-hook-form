@@ -8,6 +8,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 
+import { createFormControl } from '../logic/createFormControl';
 import type { Control } from '../types';
 import { useForm } from '../useForm';
 import { useWatch } from '../useWatch';
@@ -975,6 +976,85 @@ describe('name-scoped values subscribers', () => {
     await changeA(result);
 
     expect(emitsFor('a').every((payload) => !('values' in payload))).toBe(true);
+  });
+});
+
+describe('subscribe form state tracking lifetime', () => {
+  const setup = () => {
+    const validate = jest.fn(() => true);
+    const form = createFormControl<Record<string, string>>({
+      defaultValues: Object.fromEntries(
+        Array.from({ length: 1000 }, (_, index) => [`f${index}`, '']),
+      ),
+    });
+    const onChanges = Array.from(
+      { length: 1000 },
+      (_, index) => form.register(`f${index}`, { validate }).onChange,
+    );
+    const change = async () => {
+      validate.mockClear();
+      await onChanges[1]({
+        type: 'change',
+        target: { name: 'f1', value: `${Math.random()}` },
+      });
+      await act(async () => {});
+
+      return validate.mock.calls.length;
+    };
+
+    return { form, change };
+  };
+
+  it('stops tracking isValid once the only subscriber unsubscribes', async () => {
+    const { form, change } = setup();
+
+    const unsubscribe = form.subscribe({
+      formState: { isValid: true },
+      callback: jest.fn(),
+    });
+
+    expect(await change()).toBeGreaterThan(0);
+
+    unsubscribe();
+
+    expect(await change()).toBe(0);
+  });
+
+  it('keeps tracking isValid until the last subscriber unsubscribes', async () => {
+    const { form, change } = setup();
+
+    const first = form.subscribe({
+      formState: { isValid: true },
+      callback: jest.fn(),
+    });
+    const second = form.subscribe({
+      formState: { isValid: true },
+      callback: jest.fn(),
+    });
+
+    first();
+    first();
+
+    expect(await change()).toBeGreaterThan(0);
+
+    second();
+
+    expect(await change()).toBe(0);
+  });
+
+  it('does not stop tracking isValid when another subscriber opts out of it', async () => {
+    const { form, change } = setup();
+
+    form.subscribe({
+      formState: { isValid: true },
+      callback: jest.fn(),
+    });
+    form.subscribe({
+      formState: { isValid: false, isDirty: true },
+      callback: jest.fn(),
+    });
+
+    expect(await change()).toBeGreaterThan(0);
   });
 });
 

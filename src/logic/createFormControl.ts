@@ -214,9 +214,12 @@ export function createFormControl<
   const _proxyFormState: ReadFormState = {
     ...defaultProxyFormState,
   };
-  let _proxySubscribeFormState = {
+  const _proxySubscribeFormState = {
     ..._proxyFormState,
   };
+  const _proxySubscribeFormStateCount: Partial<
+    Record<keyof ReadFormState, number>
+  > = {};
   const _isTracked = (...keys: (keyof FormStateProxy)[]) =>
     keys.some((key) => _proxyFormState[key] || _proxySubscribeFormState[key]);
   const _hasValuesSubscriber = (name?: InternalFieldName) => {
@@ -1731,17 +1734,45 @@ export function createFormControl<
 
   const subscribe: UseFormSubscribe<TFieldValues> = (props) => {
     _state.mount = true;
-    _proxySubscribeFormState = {
-      ..._proxySubscribeFormState,
-      ...props.formState,
-    };
-    return _subscribe({
+
+    const trackedKeys = (
+      Object.keys(props.formState || {}) as (keyof ReadFormState)[]
+    ).filter((key) => props.formState && props.formState[key]);
+
+    for (const key of trackedKeys) {
+      _proxySubscribeFormStateCount[key] =
+        (_proxySubscribeFormStateCount[key] || 0) + 1;
+      _proxySubscribeFormState[key] = true;
+    }
+
+    const unsubscribe = _subscribe({
       ...props,
       formState: {
         ...defaultProxyFormState,
         ...props.formState,
       },
     });
+    let called = false;
+
+    return () => {
+      if (called) {
+        return;
+      }
+
+      called = true;
+
+      for (const key of trackedKeys) {
+        const count = (_proxySubscribeFormStateCount[key] || 0) - 1;
+
+        _proxySubscribeFormStateCount[key] = count;
+
+        if (!count) {
+          _proxySubscribeFormState[key] = false;
+        }
+      }
+
+      unsubscribe();
+    };
   };
 
   const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) => {
