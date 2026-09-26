@@ -1637,12 +1637,13 @@ export function createFormControl<
             props.reRenderRoot,
           )
         ) {
-          const snapshot = { ..._formValues } as TFieldValues;
+          const values =
+            formState.values ?? ({ ..._formValues } as TFieldValues);
 
           props.callback({
-            values: snapshot,
             ..._formState,
             ...formState,
+            values,
             defaultValues:
               _defaultValues as FormState<TFieldValues>['defaultValues'],
           });
