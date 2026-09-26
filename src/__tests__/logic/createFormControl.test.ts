@@ -114,4 +114,38 @@ describe('createFormControl', () => {
     expect(getFieldState('bar').invalid).toBe(false);
     expect(control._formState.errors).toEqual({});
   });
+
+  it('should reuse an emitted values snapshot across values subscribers', () => {
+    const { control, subscribe } = createFormControl<{
+      field: string;
+      probe?: string;
+    }>({
+      defaultValues: {
+        field: '',
+      },
+    });
+    let probeReads = 0;
+    const firstCallback = jest.fn();
+    const secondCallback = jest.fn();
+
+    Object.defineProperty(control._formValues, 'probe', {
+      configurable: true,
+      enumerable: true,
+      get: () => {
+        probeReads++;
+        return 'value';
+      },
+    });
+
+    subscribe({ formState: { values: true }, callback: firstCallback });
+    subscribe({ formState: { values: true }, callback: secondCallback });
+
+    control._subjects.state.next({
+      values: control._formValues,
+    });
+
+    expect(firstCallback).toHaveBeenCalledTimes(1);
+    expect(secondCallback).toHaveBeenCalledTimes(1);
+    expect(probeReads).toBe(0);
+  });
 });
