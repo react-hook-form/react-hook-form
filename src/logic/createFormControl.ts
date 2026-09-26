@@ -1566,6 +1566,7 @@ export function createFormControl<
       names.forEach((inputName) => {
         cancelDelayedErrorTree(inputName);
         unset(_formState.errors, inputName);
+        _formState.errors = { ..._formState.errors };
         _subjects.state.next({
           name: inputName,
           errors: _formState.errors,
@@ -1599,6 +1600,7 @@ export function createFormControl<
       ...error,
       ref,
     });
+    _formState.errors = { ..._formState.errors };
 
     _subjects.state.next({
       name,
