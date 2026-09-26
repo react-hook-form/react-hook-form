@@ -164,6 +164,30 @@ describe('createSubject', () => {
     });
   });
 
+  it('should deliver once to an observer object subscribed twice', () => {
+    const subject = createSubject<number>();
+    const next = jest.fn();
+    const observer = { next };
+
+    const first = subject.subscribe(observer);
+    const second = subject.subscribe(observer);
+
+    expect(subject.observers).toEqual([observer]);
+
+    subject.next(1);
+
+    expect(next).toHaveBeenCalledTimes(1);
+
+    first.unsubscribe();
+
+    expect(subject.observers.length).toBe(0);
+
+    second.unsubscribe();
+    subject.next(2);
+
+    expect(next).toHaveBeenCalledTimes(1);
+  });
+
   it('should keep other observers after many unsubscribes', () => {
     const subject = createSubject<number>();
     const kept = jest.fn();
