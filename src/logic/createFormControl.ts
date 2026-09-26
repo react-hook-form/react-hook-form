@@ -932,20 +932,21 @@ export function createFormControl<
     names,
     defaultValue,
     isGlobal,
-  ) =>
-    generateWatchOutput(
+  ) => {
+    const values = _state.mount
+      ? _formValues
+      : isUndefined(defaultValue) || isString(names)
+        ? _defaultValues
+        : defaultValue;
+
+    return generateWatchOutput(
       names,
       _names,
-      {
-        ...(_state.mount
-          ? _formValues
-          : isUndefined(defaultValue) || isString(names)
-            ? _defaultValues
-            : defaultValue),
-      },
+      isUndefined(names) ? { ...values } : values,
       isGlobal,
       defaultValue,
     );
+  };
 
   const _getFieldArray = <TFieldArrayValues>(
     name: InternalFieldName,
