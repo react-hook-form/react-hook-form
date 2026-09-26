@@ -196,7 +196,10 @@ export function createFormControl<
   const delayErrorCallbacks: Partial<Record<InternalFieldName, DelayCallback>> =
     {};
   const timers: Partial<Record<InternalFieldName, number>> = {};
-  let _valuesSubscriberCount = 0;
+  const _valuesSubscribers = new Set<{
+    name?: InternalFieldName | readonly InternalFieldName[];
+    exact?: boolean;
+  }>();
   let _validationModeBeforeSubmit = getValidationModes(_options.mode);
   let _validationModeAfterSubmit = getValidationModes(_options.reValidateMode);
   const defaultProxyFormState: ReadFormState = {
@@ -216,6 +219,15 @@ export function createFormControl<
   };
   const _isTracked = (...keys: (keyof FormStateProxy)[]) =>
     keys.some((key) => _proxyFormState[key] || _proxySubscribeFormState[key]);
+  const _hasValuesSubscriber = (name?: InternalFieldName) => {
+    for (const subscriber of _valuesSubscribers) {
+      if (shouldSubscribeByName(subscriber.name, name, subscriber.exact)) {
+        return true;
+      }
+    }
+
+    return false;
+  };
   const _subjects: Subjects<TFieldValues> = {
     array: createSubject(),
     state: createSubject(),
@@ -1017,7 +1029,11 @@ export function createFormControl<
           if (!fieldReference.ref.type && !skipRender && !skipValueRender) {
             _subjects.state.next({
               name,
-              values: skipClone ? _formValues : cloneObject(_formValues),
+              values: skipClone
+                ? _formValues
+                : _hasValuesSubscriber(name)
+                  ? cloneObject(_formValues)
+                  : undefined,
             });
           }
         }
@@ -1184,18 +1200,25 @@ export function createFormControl<
 
     if (!isValueUnchanged && !skipStateEmit) {
       const watched = isWatched(name, _names);
-      const values = skipClone ? _formValues : cloneObject(_formValues);
+      const emittedName = _state.mount || watched ? name : undefined;
+      const fieldArrayItemNames = isFieldArray
+        ? []
+        : getFieldArrayItemNames(_names.array, name);
+      const values = skipClone
+        ? _formValues
+        : _hasValuesSubscriber(emittedName) ||
+            fieldArrayItemNames.some(_hasValuesSubscriber)
+          ? cloneObject(_formValues)
+          : undefined;
 
       _subjects.state.next({
         ...(watched && _formState),
-        name: _state.mount || watched ? name : undefined,
+        name: emittedName,
         values,
       });
 
-      if (!isFieldArray) {
-        for (const itemName of getFieldArrayItemNames(_names.array, name)) {
-          _subjects.state.next({ name: itemName, values });
-        }
+      for (const itemName of fieldArrayItemNames) {
+        _subjects.state.next({ name: itemName, values });
       }
     }
   };
@@ -1233,7 +1256,7 @@ export function createFormControl<
         ..._formState,
         name: undefined,
         type: undefined,
-        ...(_valuesSubscriberCount ? { values: _formValues } : {}),
+        ...(_valuesSubscribers.size ? { values: _formValues } : {}),
       });
 
       if (options.shouldValidate) {
@@ -1300,7 +1323,7 @@ export function createFormControl<
         _subjects.state.next({
           name,
           type: event.type,
-          ...(_valuesSubscriberCount
+          ...(_hasValuesSubscriber(name)
             ? { values: cloneObject(_formValues) }
             : {}),
         });
@@ -1620,7 +1643,8 @@ export function createFormControl<
     defaultValue?: DeepPartial<TFieldValues>,
   ) => {
     if (isFunction(name)) {
-      _valuesSubscriberCount++;
+      const valuesSubscriber = {};
+      _valuesSubscribers.add(valuesSubscriber);
       const { unsubscribe } = _subjects.state.subscribe({
         next: (payload) =>
           'values' in payload &&
@@ -1642,7 +1666,7 @@ export function createFormControl<
           }
 
           called = true;
-          _valuesSubscriberCount--;
+          _valuesSubscribers.delete(valuesSubscriber);
           unsubscribe();
         },
       };
@@ -1656,8 +1680,9 @@ export function createFormControl<
 
   const _subscribe: FromSubscribe<TFieldValues> = (props) => {
     const needsValues = !!(props.formState as Record<string, unknown>)?.values;
+    const valuesSubscriber = { name: props.name, exact: props.exact };
     if (needsValues) {
-      _valuesSubscriberCount++;
+      _valuesSubscribers.add(valuesSubscriber);
     }
     const { unsubscribe } = _subjects.state.subscribe({
       next: (
@@ -1699,7 +1724,7 @@ export function createFormControl<
       }
 
       called = true;
-      _valuesSubscriberCount--;
+      _valuesSubscribers.delete(valuesSubscriber);
       unsubscribe();
     };
   };
@@ -1743,7 +1768,7 @@ export function createFormControl<
         unset(_defaultValues, fieldName);
     }
 
-    _valuesSubscriberCount &&
+    _valuesSubscribers.size &&
       _subjects.state.next({
         values: cloneObject(_formValues),
       });
