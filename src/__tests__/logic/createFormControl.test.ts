@@ -1,8 +1,17 @@
 import { createFormControl } from '../../logic/createFormControl';
+import getDirtyFields from '../../logic/getDirtyFields';
 import isEmptyObject from '../../utils/isEmptyObject';
 
 jest.mock('../../utils/isEmptyObject', () => {
   const original = jest.requireActual('../../utils/isEmptyObject');
+  return {
+    __esModule: true,
+    default: jest.fn(original.default),
+  };
+});
+
+jest.mock('../../logic/getDirtyFields', () => {
+  const original = jest.requireActual('../../logic/getDirtyFields');
   return {
     __esModule: true,
     default: jest.fn(original.default),
@@ -147,5 +156,32 @@ describe('createFormControl', () => {
     expect(firstCallback).toHaveBeenCalledTimes(1);
     expect(secondCallback).toHaveBeenCalledTimes(1);
     expect(probeReads).toBe(0);
+  });
+
+  it('should not recompute dirty fields on every change once the form is dirty', async () => {
+    const fields = Array.from({ length: 20 }, (_, index) => `field${index}`);
+    const { register, subscribe } = createFormControl<Record<string, string>>({
+      defaultValues: Object.fromEntries(fields.map((name) => [name, ''])),
+    });
+
+    subscribe({ formState: { isDirty: true }, callback: jest.fn() });
+
+    const onChanges = fields.map((name) => register(name).onChange);
+
+    await onChanges[0]({
+      type: 'change',
+      target: { name: fields[0], value: 'value0' },
+    });
+
+    (getDirtyFields as jest.Mock).mockClear();
+
+    for (let index = 1; index < fields.length; index++) {
+      await onChanges[index]({
+        type: 'change',
+        target: { name: fields[index], value: `value${index}` },
+      });
+    }
+
+    expect(getDirtyFields).not.toHaveBeenCalled();
   });
 });
