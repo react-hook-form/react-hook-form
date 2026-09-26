@@ -594,9 +594,6 @@ export function createFormControl<
           );
         }
 
-        // a field returning to pristine while the form stays dirty means
-        // dirtyFields may be missing fields changed without dirty tracking
-        // (e.g. setValue without shouldDirty), so resync against values
         if (
           _state.dirtyFieldsStale ||
           (isCurrentFieldPristine &&
