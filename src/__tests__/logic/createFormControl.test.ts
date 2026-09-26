@@ -184,4 +184,35 @@ describe('createFormControl', () => {
 
     expect(getDirtyFields).not.toHaveBeenCalled();
   });
+
+  it('should preserve dirty state for an unregistered conditional field', async () => {
+    const { register, subscribe, unregister, control } = createFormControl<{
+      data: { name: string; conditional?: string }[];
+    }>({
+      defaultValues: {
+        data: [{ name: 'default' }],
+      },
+    });
+
+    subscribe({
+      formState: { isDirty: true, dirtyFields: true },
+      callback: jest.fn(),
+    });
+
+    await register('data.0.conditional').onChange({
+      type: 'change',
+      target: { name: 'data.0.conditional', value: 'dirty' },
+    });
+
+    unregister('data.0.conditional', { keepDirty: true });
+
+    await register('data.0.name').onChange({
+      type: 'change',
+      target: { name: 'data.0.name', value: 'updated' },
+    });
+
+    expect(control._formState.dirtyFields).toEqual({
+      data: [{ name: true, conditional: true }],
+    });
+  });
 });
