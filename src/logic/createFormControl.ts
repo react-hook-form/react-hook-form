@@ -590,7 +590,7 @@ export function createFormControl<
           const defaultFieldValue = get(_defaultValues, name);
           const field = get(_fields, name);
           const dirtyValue =
-            !field?._f &&
+            !(field && field._f) &&
             (isObject(defaultFieldValue) || Array.isArray(defaultFieldValue))
               ? getDirtyFields(defaultFieldValue, fieldValue, undefined, field)
               : true;
@@ -737,8 +737,7 @@ export function createFormControl<
               { [name]: error } as Partial<Record<string, FieldError>>,
               name,
             )
-          : error?.type ||
-              error?.message ||
+          : (error && (error.type || error.message)) ||
               Array.isArray(error) ||
               (isObject(error) && hasNestedFields)
             ? set(_formState.errors, name, error)
@@ -1673,7 +1672,8 @@ export function createFormControl<
 
   const _subscribe: FromSubscribe<TFieldValues> = (props) => {
     const valuesSubscriber = { name: props.name, exact: props.exact };
-    (props.formState as Record<string, unknown>)?.values &&
+    props.formState &&
+      props.formState.values &&
       _valuesSubscribers.add(valuesSubscriber);
     const { unsubscribe } = _subjects.state.subscribe({
       next: (
@@ -1692,7 +1692,7 @@ export function createFormControl<
           )
         ) {
           const values =
-            formState.values ?? ({ ..._formValues } as TFieldValues);
+            formState.values || ({ ..._formValues } as TFieldValues);
 
           props.callback({
             ..._formState,

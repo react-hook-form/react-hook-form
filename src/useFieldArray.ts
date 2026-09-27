@@ -399,10 +399,13 @@ export function useFieldArray<
           const error = get(result.errors, name);
           const existingError = get(control._formState.errors, name);
           const existingErrorType =
-            existingError && (existingError.type || existingError.root?.type);
+            existingError &&
+            (existingError.type ||
+              (existingError.root && existingError.root.type));
           const existingErrorMessage =
             existingError &&
-            (existingError.message || existingError.root?.message);
+            (existingError.message ||
+              (existingError.root && existingError.root.message));
 
           if (
             existingError
