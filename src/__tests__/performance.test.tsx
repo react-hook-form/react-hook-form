@@ -1105,6 +1105,37 @@ describe('subscribe form state tracking lifetime', () => {
 
     expect(await change()).toBeGreaterThan(0);
   });
+
+  it('resumes tracking isValid when subscribing again after every subscriber left', async () => {
+    const { form, change } = setup();
+
+    form.subscribe({ formState: { isValid: true }, callback: jest.fn() })();
+
+    expect(await change()).toBe(0);
+
+    const unsubscribe = form.subscribe({
+      formState: { isValid: true },
+      callback: jest.fn(),
+    });
+
+    expect(await change()).toBeGreaterThan(0);
+
+    unsubscribe();
+
+    expect(await change()).toBe(0);
+  });
+
+  it('releases tracking when a subscriber unsubscribes inside its own callback', async () => {
+    const { form, change } = setup();
+    const unsubscribe = form.subscribe({
+      formState: { isValid: true },
+      callback: () => unsubscribe(),
+    });
+
+    await change();
+
+    expect(await change()).toBe(0);
+  });
 });
 
 describe('_valuesSubscriberCount idempotency', () => {
