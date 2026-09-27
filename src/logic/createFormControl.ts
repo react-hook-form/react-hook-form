@@ -348,6 +348,7 @@ export function createFormControl<
 
         shouldSetValues && set(_formState.errors, name, errors);
         unsetEmptyArray(_formState.errors, name);
+        _formState.errors = { ..._formState.errors };
       }
 
       const touchedFieldsArray = get(_formState.touchedFields, name);
@@ -1509,6 +1510,8 @@ export function createFormControl<
       }
     }
 
+    _formState.errors = { ..._formState.errors };
+
     _subjects.state.next({
       ...(!isString(name) ||
       (_isTracked('isValid') && isValid !== _formState.isValid)
@@ -1763,6 +1766,10 @@ export function createFormControl<
         unset(_defaultValues, fieldName);
     }
 
+    if (!options.keepError) {
+      _formState.errors = { ..._formState.errors };
+    }
+
     _valuesSubscribers.size &&
       _subjects.state.next({
         values: cloneObject(_formValues),
@@ -1980,6 +1987,7 @@ export function createFormControl<
         }
 
         unset(_formState.errors, ROOT_ERROR_TYPE);
+        _formState.errors = { ..._formState.errors };
       }
 
       if (_names.disabled.size) {
@@ -2047,6 +2055,7 @@ export function createFormControl<
       if (!options.keepError) {
         cancelDelayedErrorTree(name);
         unset(_formState.errors, name);
+        _formState.errors = { ..._formState.errors };
         _setValid();
       }
 

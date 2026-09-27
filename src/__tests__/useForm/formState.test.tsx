@@ -10,7 +10,12 @@ import {
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
-import type { Control, FormState, UseFormGetFieldState } from '../../types';
+import type {
+  Control,
+  FormState,
+  UseFormGetFieldState,
+  UseFormReturn,
+} from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
@@ -1913,6 +1918,65 @@ describe('formState', () => {
     expect(refAfterFirstError).not.toBe(refAfterSecondError);
     expect(refAfterSecondError).not.toBe(refAfterCleared);
   });
+
+  type FormValues = { test: string; other: string; rows: { value: string }[] };
+  type Form = UseFormReturn<FormValues> & { remove: (index: number) => void };
+
+  it.each([
+    [
+      'handleSubmit',
+      'test',
+      (form: Form) => form.handleSubmit(noop)(),
+      'other',
+    ],
+    ['trigger', 'test', (form: Form) => form.trigger('test'), ''],
+    ['resetField', 'test', (form: Form) => form.resetField('test'), ''],
+    ['unregister', 'test', (form: Form) => form.unregister('test'), ''],
+    ['remove', 'rows.0.value', (form: Form) => form.remove(0), ''],
+  ] as const)(
+    'should produce a new errors reference after %s so memoized child components re-render',
+    async (_, errorName, action, expected) => {
+      const ErrorNames = React.memo(function ErrorNames({
+        errors,
+      }: {
+        errors: FormState<FormValues>['errors'];
+      }) {
+        return <p data-testid="error">{Object.keys(errors).join(',')}</p>;
+      });
+      let form = {} as Form;
+
+      function App() {
+        const methods = useForm<FormValues>({
+          defaultValues: { test: 'value', other: '', rows: [{ value: '' }] },
+        });
+        const { remove } = useFieldArray({
+          control: methods.control,
+          name: 'rows',
+        });
+        form = { ...methods, remove };
+
+        return (
+          <>
+            <input {...methods.register('test', { required: true })} />
+            <input {...methods.register('other', { required: true })} />
+            <ErrorNames errors={methods.formState.errors} />
+          </>
+        );
+      }
+
+      render(<App />);
+
+      act(() => form.setError(errorName, { type: 'server' }));
+      expect(screen.getByTestId('error').textContent).toBe(
+        errorName.split('.')[0],
+      );
+
+      await act(async () => {
+        await action(form);
+      });
+      expect(screen.getByTestId('error').textContent).toBe(expected);
+    },
+  );
 
   describe('with Activity', () => {
     itWithActivity(
