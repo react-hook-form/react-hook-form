@@ -77,6 +77,7 @@ import isKey from '../utils/isKey';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isObject from '../utils/isObject';
+import isPrimitive from '../utils/isPrimitive';
 import isRadioOrCheckbox from '../utils/isRadioOrCheckbox';
 import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
@@ -196,6 +197,18 @@ export function createFormControl<
   const delayErrorCallbacks: Partial<Record<InternalFieldName, DelayCallback>> =
     {};
   const timers: Partial<Record<InternalFieldName, number>> = {};
+  const _builtInValidityCache = new WeakMap<
+    Field['_f'],
+    {
+      value: unknown;
+      ref: Field['_f']['ref'];
+      refs: Field['_f']['refs'];
+      mount: Field['_f']['mount'];
+      disabled?: boolean;
+      error: Awaited<ReturnType<typeof validateField>>;
+      hasError: boolean;
+    }
+  >();
   const _valuesSubscribers = new Set<{
     name?: InternalFieldName | readonly InternalFieldName[];
     exact?: boolean;
@@ -847,39 +860,65 @@ export function createFormControl<
       const field = fields[name];
 
       if (field) {
-        const { _f, ...fieldValue } = field as Field;
+        const { _f } = field as Field;
 
         if (_f) {
           const isFieldArrayRoot = _names.array.has(_f.name);
-          const isPromiseFunction =
-            field._f && hasPromiseValidation((field as Field)._f);
-          const shouldTrackIsValidatingState = _isTracked(
-            'isValidating',
-            'validatingFields',
-          );
+          const isBuiltInOnly =
+            onlyCheckValid && !_f.validate && !isFieldArrayRoot;
+          const value = isBuiltInOnly && get(_formValues, _f.name);
+          const isCacheable = isBuiltInOnly && isPrimitive(value);
+          const disabled = isCacheable && _names.disabled.has(_f.name);
+          const isPromiseFunction = !isBuiltInOnly && hasPromiseValidation(_f);
+          const shouldTrackIsValidatingState =
+            isPromiseFunction && _isTracked('isValidating', 'validatingFields');
 
-          if (isPromiseFunction && shouldTrackIsValidatingState) {
+          if (shouldTrackIsValidatingState) {
             _updateIsValidating([_f.name], true);
           }
 
-          const fieldError = await validateField(
-            field as Field,
-            _names.disabled,
-            _formValues,
-            shouldDisplayAllAssociatedErrors,
-            _options.shouldUseNativeValidation && !onlyCheckValid,
-            isFieldArrayRoot,
-          );
+          const cached = isCacheable && _builtInValidityCache.get(_f);
+          const isCached =
+            cached &&
+            cached.value === value &&
+            cached.ref === _f.ref &&
+            cached.refs === _f.refs &&
+            cached.mount === _f.mount &&
+            cached.disabled === disabled;
+          const fieldError = isCached
+            ? cached.error
+            : await validateField(
+                field as Field,
+                _names.disabled,
+                _formValues,
+                shouldDisplayAllAssociatedErrors,
+                _options.shouldUseNativeValidation && !onlyCheckValid,
+                isFieldArrayRoot,
+              );
 
           if (resetCallId !== _resetCallId) {
             return context.valid;
           }
 
-          if (isPromiseFunction && shouldTrackIsValidatingState) {
+          const hasError = isCached ? cached.hasError : !!fieldError[_f.name];
+
+          isCacheable &&
+            !isCached &&
+            _builtInValidityCache.set(_f, {
+              value,
+              ref: _f.ref,
+              refs: _f.refs,
+              mount: _f.mount,
+              disabled,
+              error: fieldError,
+              hasError,
+            });
+
+          if (shouldTrackIsValidatingState) {
             _updateIsValidating([_f.name]);
           }
 
-          if (fieldError[_f.name]) {
+          if (hasError) {
             context.valid = false;
 
             if (onlyCheckValid) {
@@ -900,19 +939,25 @@ export function createFormControl<
               : unset(_formState.errors, _f.name);
           }
 
-          if (props.shouldUseNativeValidation && fieldError[_f.name]) {
+          if (props.shouldUseNativeValidation && hasError) {
             break;
           }
         }
 
-        !isEmptyObject(fieldValue) &&
-          (await executeBuiltInValidation({
-            context,
-            onlyCheckValid,
-            fields: fieldValue,
-            name: name as FieldPath<TFieldValues>,
-            eventType,
-          }));
+        for (const key in field) {
+          if (key !== '_f') {
+            const { _f, ...fieldValue } = field as Field;
+
+            await executeBuiltInValidation({
+              context,
+              onlyCheckValid,
+              fields: fieldValue,
+              name: name as FieldPath<TFieldValues>,
+              eventType,
+            });
+            break;
+          }
+        }
       }
     }
 

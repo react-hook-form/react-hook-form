@@ -1,14 +1,5 @@
 import { createFormControl } from '../../logic/createFormControl';
 import getDirtyFields from '../../logic/getDirtyFields';
-import isEmptyObject from '../../utils/isEmptyObject';
-
-jest.mock('../../utils/isEmptyObject', () => {
-  const original = jest.requireActual('../../utils/isEmptyObject');
-  return {
-    __esModule: true,
-    default: jest.fn(original.default),
-  };
-});
 
 jest.mock('../../logic/getDirtyFields', () => {
   const original = jest.requireActual('../../logic/getDirtyFields');
@@ -51,58 +42,67 @@ describe('createFormControl', () => {
     expect(dirtyFieldsRefs[3]).toBe(dirtyFieldsRefs[0]);
   });
 
-  it('should call `executeBuiltInValidation` once for a single field', async () => {
-    const { register, control } = createFormControl({
-      defaultValues: {
-        foo: 'foo',
-      },
-    });
-
-    register('foo', {});
-
-    await control._setValid(true);
-
-    expect(isEmptyObject).toHaveBeenCalledTimes(1);
-  });
-
-  it('should call `executeBuiltInValidation` twice for a field as an object with a single sub-field', async () => {
-    const { register, control } = createFormControl({
-      defaultValues: {
-        foo: {
-          bar: 'bar',
+  it.each(['foo', ''])(
+    'should validate a single field (value: %p)',
+    async (value) => {
+      const { register, control } = createFormControl({
+        defaultValues: {
+          foo: value,
         },
-      },
-    });
+      });
 
-    register('foo.bar', {});
+      register('foo', { required: true });
 
-    await control._setValid(true);
+      await control._setValid(true);
 
-    expect(isEmptyObject).toHaveBeenCalledTimes(2);
-  });
+      expect(control._formState.isValid).toBe(!!value);
+    },
+  );
 
-  it('should call executeBuiltInValidation the correct number of times in case the field is an array', async () => {
-    const { register, control } = createFormControl({
-      defaultValues: {
-        foo: [
-          {
-            bar: 'bar',
-            baz: 'baz',
+  it.each(['bar', ''])(
+    'should validate a sub-field of an object field (value: %p)',
+    async (value) => {
+      const { register, control } = createFormControl({
+        defaultValues: {
+          foo: {
+            bar: value,
           },
-          {
-            bar: 'bar',
-            baz: 'baz',
-          },
-        ],
-      },
-    });
+        },
+      });
 
-    register('foo.1.bar', {});
+      register('foo.bar', { required: true });
 
-    await control._setValid(true);
+      await control._setValid(true);
 
-    expect(isEmptyObject).toHaveBeenCalledTimes(3);
-  });
+      expect(control._formState.isValid).toBe(!!value);
+    },
+  );
+
+  it.each(['bar', ''])(
+    'should validate a sub-field of an array item (value: %p)',
+    async (value) => {
+      const { register, control } = createFormControl({
+        defaultValues: {
+          foo: [
+            {
+              bar: 'bar',
+              baz: 'baz',
+            },
+            {
+              bar: value,
+              baz: 'baz',
+            },
+          ],
+        },
+      });
+
+      register('foo.1.bar', { required: true });
+
+      await control._setValid(true);
+
+      expect(control._formState.isValid).toBe(!!value);
+    },
+  );
 
   it('should clear the entire internal errors state when `clearErrors()` is called without arguments', () => {
     const { setError, clearErrors, getFieldState, control } =
