@@ -183,8 +183,8 @@ export function createFormControl<
     mount: false,
     watch: false,
     keepIsValid: false,
-    dirtyFieldsStale: false,
   };
+  let _dirtyFieldsStale = false;
   let _names: Names = {
     mount: new Set(),
     disabled: new Set(),
@@ -214,12 +214,8 @@ export function createFormControl<
   const _proxyFormState: ReadFormState = {
     ...defaultProxyFormState,
   };
-  const _proxySubscribeFormState = {
-    ..._proxyFormState,
-  };
-  const _proxySubscribeFormStateCount: Partial<
-    Record<keyof ReadFormState, number>
-  > = {};
+  const _proxySubscribeFormState: Partial<Record<keyof ReadFormState, number>> =
+    {};
   const _isTracked = (...keys: (keyof FormStateProxy)[]) =>
     keys.some((key) => _proxyFormState[key] || _proxySubscribeFormState[key]);
   const _hasValuesSubscriber = (name?: InternalFieldName) => {
@@ -373,7 +369,7 @@ export function createFormControl<
       if (_isTracked('dirtyFields')) {
         _updateDirtyFields();
       } else {
-        _state.dirtyFieldsStale = true;
+        _dirtyFieldsStale = true;
       }
 
       _subjects.state.next({
@@ -512,7 +508,7 @@ export function createFormControl<
           _isTracked('dirtyFields') &&
           !deepEqual(get(_formValues, name), fieldValue)
         ) {
-          _state.dirtyFieldsStale = true;
+          _dirtyFieldsStale = true;
         }
 
         set(_formValues, name, fieldValue);
@@ -605,11 +601,11 @@ export function createFormControl<
         let didResyncDirtyFields = false;
 
         if (
-          _state.dirtyFieldsStale ||
+          _dirtyFieldsStale ||
           (isCurrentFieldPristine &&
             (_isTracked('isDirty') ? _formState.isDirty : _getDirty()))
         ) {
-          _state.dirtyFieldsStale = false;
+          _dirtyFieldsStale = false;
 
           const nextDirtyFields = getDirtyFields(
             _defaultValues,
@@ -1660,15 +1656,9 @@ export function createFormControl<
             },
           ),
       });
-      let called = false;
 
       return {
         unsubscribe: () => {
-          if (called) {
-            return;
-          }
-
-          called = true;
           _valuesSubscribers.delete(valuesSubscriber);
           unsubscribe();
         },
@@ -1682,11 +1672,9 @@ export function createFormControl<
   };
 
   const _subscribe: FromSubscribe<TFieldValues> = (props) => {
-    const needsValues = !!(props.formState as Record<string, unknown>)?.values;
     const valuesSubscriber = { name: props.name, exact: props.exact };
-    if (needsValues) {
+    (props.formState as Record<string, unknown>)?.values &&
       _valuesSubscribers.add(valuesSubscriber);
-    }
     const { unsubscribe } = _subjects.state.subscribe({
       next: (
         formState: Partial<FormState<TFieldValues>> & {
@@ -1716,16 +1704,7 @@ export function createFormControl<
         }
       },
     });
-    if (!needsValues) {
-      return unsubscribe;
-    }
-    let called = false;
     return () => {
-      if (called) {
-        return;
-      }
-
-      called = true;
       _valuesSubscribers.delete(valuesSubscriber);
       unsubscribe();
     };
@@ -1739,9 +1718,7 @@ export function createFormControl<
     ).filter((key) => props.formState && props.formState[key]);
 
     for (const key of trackedKeys) {
-      _proxySubscribeFormStateCount[key] =
-        (_proxySubscribeFormStateCount[key] || 0) + 1;
-      _proxySubscribeFormState[key] = true;
+      _proxySubscribeFormState[key] = (_proxySubscribeFormState[key] || 0) + 1;
     }
 
     const unsubscribe = _subscribe({
@@ -1751,23 +1728,11 @@ export function createFormControl<
         ...props.formState,
       },
     });
-    let called = false;
 
     return () => {
-      if (called) {
-        return;
-      }
-
-      called = true;
-
-      for (const key of trackedKeys) {
-        const count = (_proxySubscribeFormStateCount[key] || 0) - 1;
-
-        _proxySubscribeFormStateCount[key] = count;
-
-        if (!count) {
-          _proxySubscribeFormState[key] = false;
-        }
+      // splice(0) empties the list, so a repeated unsubscribe releases nothing
+      for (const key of trackedKeys.splice(0)) {
+        (_proxySubscribeFormState[key] as number)--;
       }
 
       unsubscribe();
@@ -2207,7 +2172,7 @@ export function createFormControl<
     _state.keepIsValid = !!keepStateOptions.keepIsValid;
     _state.action = false;
     _state.actionArrayLengths.clear();
-    _state.dirtyFieldsStale = false;
+    _dirtyFieldsStale = false;
 
     if (!keepStateOptions.keepErrors) {
       _formState.errors = {};
