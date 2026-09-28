@@ -901,7 +901,7 @@ export function createFormControl<
               : unset(_formState.errors, _f.name);
           }
 
-          if (props.shouldUseNativeValidation && fieldError[_f.name]) {
+          if (_options.shouldUseNativeValidation && fieldError[_f.name]) {
             break;
           }
         }
