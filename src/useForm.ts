@@ -51,7 +51,8 @@ export function useForm<
       disabled: props.disabled || false,
       defaultValues: isFunction(props.defaultValues)
         ? undefined
-        : props.defaultValues,
+        : ((props.defaultValues ||
+            props.values) as FormState<TFieldValues>['defaultValues']),
     }),
   );
 
@@ -76,6 +77,10 @@ export function useForm<
         ...rest,
         formState,
       };
+
+      if (!props.defaultValues) {
+        _values.current = props.values;
+      }
     }
   }
 

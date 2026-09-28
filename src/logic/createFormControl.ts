@@ -69,6 +69,7 @@ import has from '../utils/has';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDateObject from '../utils/isDateObject';
+import isEdited from '../utils/isEdited';
 import isEmptyObject from '../utils/isEmptyObject';
 import isFileInput from '../utils/isFileInput';
 import isFunction from '../utils/isFunction';
@@ -196,6 +197,7 @@ export function createFormControl<
   const delayErrorCallbacks: Partial<Record<InternalFieldName, DelayCallback>> =
     {};
   const timers: Partial<Record<InternalFieldName, number>> = {};
+  const _registeredRefs = new WeakSet<Ref>();
   const _valuesSubscribers = new Set<{
     name?: InternalFieldName | readonly InternalFieldName[];
     exact?: boolean;
@@ -481,6 +483,7 @@ export function createFormControl<
     shouldSkipSetValueAs: boolean,
     value?: unknown,
     ref?: Ref,
+    isRefEdited?: boolean,
   ) => {
     const field: Field = get(_fields, name);
 
@@ -499,6 +502,7 @@ export function createFormControl<
       if (
         isUndefined(defaultValue) ||
         (ref && (ref as HTMLInputElement).defaultChecked) ||
+        isRefEdited ||
         shouldSkipSetValueAs
       ) {
         const fieldValue = shouldSkipSetValueAs
@@ -1902,7 +1906,11 @@ export function createFormControl<
             _f: newField,
           });
 
-          updateValidAndValue(name, false, undefined, fieldRef);
+          const isRefEdited =
+            !_registeredRefs.has(fieldRef) && isEdited(fieldRef);
+          _registeredRefs.add(fieldRef);
+
+          updateValidAndValue(name, false, undefined, fieldRef, isRefEdited);
         } else {
           field = get(_fields, name, {});
 

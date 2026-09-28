@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { hydrateRoot } from 'react-dom/client';
+import { renderToString } from 'react-dom/server';
 import {
   act,
   fireEvent,
@@ -2613,6 +2615,28 @@ describe('useForm', () => {
     rerender({ values: { home: shared, work: shared } });
 
     expect(result.current.getValues('work.street')).toBe('a');
+  });
+
+  it('should keep a value typed before hydration into a form created from values', async () => {
+    let methods: UseFormReturn<{ test: string }>;
+
+    function App() {
+      methods = useForm({ values: { test: 'server' } });
+      return <input {...methods.register('test')} />;
+    }
+
+    const container = document.createElement('div');
+    container.innerHTML = renderToString(<App />);
+    const input = container.querySelector('input') as HTMLInputElement;
+    input.value = 'typed';
+
+    await act(async () => {
+      hydrateRoot(container, <App />);
+    });
+
+    expect(input.value).toBe('typed');
+    expect(methods!.getValues('test')).toBe('typed');
+    expect(methods!.formState.defaultValues).toEqual({ test: 'server' });
   });
 
   it('should keep defaultValues if set keep default values is true on reset option', async () => {
