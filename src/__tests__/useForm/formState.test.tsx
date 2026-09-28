@@ -13,6 +13,7 @@ import { Controller } from '../../controller';
 import type {
   Control,
   FormState,
+  UseFieldArrayReturn,
   UseFormGetFieldState,
   UseFormReturn,
 } from '../../types';
@@ -1975,6 +1976,82 @@ describe('formState', () => {
         await action(form);
       });
       expect(screen.getByTestId('error').textContent).toBe(expected);
+    },
+  );
+
+  type RowsValues = { rows: { value: string }[] };
+  const minRows = { value: 2, message: 'min' };
+
+  it.each([
+    [
+      'resolver validation',
+      {
+        resolver: async ({ rows }: RowsValues) =>
+          rows.length < minRows.value
+            ? { values: {}, errors: { rows: { type: 'min', message: 'min' } } }
+            : { values: { rows }, errors: {} },
+      },
+      false,
+      'min',
+    ],
+    ['built-in validation', { rules: { minLength: minRows } }, false, 'min'],
+    [
+      'built-in validation clearing the root error',
+      { rules: { minLength: minRows } },
+      true,
+      'none',
+    ],
+  ] as const)(
+    'should produce a new errors reference after useFieldArray %s so memoized child components re-render',
+    async (_, options, hasRootError, expected) => {
+      const RootError = React.memo(function RootError({
+        errors,
+      }: {
+        errors: FormState<RowsValues>['errors'];
+      }) {
+        return (
+          <p data-testid="error">
+            {(errors.rows && errors.rows.root && errors.rows.root.message) ||
+              'none'}
+          </p>
+        );
+      });
+      let form = {} as UseFormReturn<RowsValues> & {
+        fieldArray: UseFieldArrayReturn<RowsValues>;
+      };
+
+      function App() {
+        const methods = useForm<RowsValues>({
+          mode: 'onChange',
+          defaultValues: { rows: [{ value: 'a' }, { value: 'b' }] },
+          resolver: 'resolver' in options ? options.resolver : undefined,
+        });
+        const fieldArray = useFieldArray({
+          control: methods.control,
+          name: 'rows',
+          rules: 'rules' in options ? options.rules : undefined,
+        });
+        form = { ...methods, fieldArray };
+
+        return <RootError errors={methods.formState.errors} />;
+      }
+
+      render(<App />);
+
+      if (hasRootError) {
+        act(() => form.setError('rows.root', { type: 'min', message: 'min' }));
+        expect(screen.getByTestId('error').textContent).toBe('min');
+      }
+
+      act(() =>
+        hasRootError
+          ? form.fieldArray.append({ value: 'c' })
+          : form.fieldArray.remove(0),
+      );
+
+      await waitFor(() =>
+        expect(screen.getByTestId('error').textContent).toBe(expected),
+      );
     },
   );
 
