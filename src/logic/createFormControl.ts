@@ -946,7 +946,7 @@ export function createFormControl<
   ) => {
     const values = _state.mount
       ? _formValues
-      : isUndefined(defaultValue) || isString(names)
+      : isUndefined(defaultValue) || !isUndefined(names)
         ? _defaultValues
         : defaultValue;
 
