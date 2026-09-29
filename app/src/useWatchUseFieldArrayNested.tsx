@@ -39,7 +39,7 @@ function NestedArray({
       <div>
         {fields.map((item, i) => (
           <Controller
-            key={item.id}
+            key={item.key}
             render={({ field }) => <input {...field} aria-label={'name'} />}
             name={`test.${index}.keyValue.${i}.name`}
             control={control}
@@ -143,7 +143,7 @@ export default () => {
     <form onSubmit={handleSubmit((e) => console.log(e))}>
       {fields.map((item, index) => {
         return (
-          <div key={item.id}>
+          <div key={item.key}>
             <input
               aria-label={`test.${index}.firstName`}
               {...register(`test.${index}.firstName` as const)}

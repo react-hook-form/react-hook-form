@@ -31,14 +31,6 @@ exports[`useWatch fieldArray with shouldUnregister true should watch correct inp
       "prop": "test",
     },
     {
-      "prop": "test1",
-    },
-  ],
-  [
-    {
-      "prop": "test",
-    },
-    {
       "prop": "ShouldBeTHere",
     },
     {
