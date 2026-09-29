@@ -20,7 +20,6 @@ export default function cloneObject<T>(data: T): T {
   const isArray = Array.isArray(data);
   const prototype = Object.getPrototypeOf(data);
 
-  // objects created with Object.create(null) have no constructor but are still plain
   if (!isArray && prototype && (data as object).constructor !== Object) {
     return data;
   }
