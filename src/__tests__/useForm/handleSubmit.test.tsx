@@ -9,6 +9,7 @@ import {
 } from '@testing-library/react';
 
 import { VALIDATION_MODE } from '../../constants';
+import { createFormControl } from '../../logic/createFormControl';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import isFunction from '../../utils/isFunction';
@@ -330,6 +331,87 @@ describe('handleSubmit', () => {
     expect(lastFocus).not.toHaveBeenCalled();
 
     jest.useRealTimers();
+  });
+
+  it('should stop at the first invalid field with native validation', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ firstName: string; lastName: string }>({
+        shouldUseNativeValidation: true,
+      }),
+    );
+
+    result.current.register('firstName', { required: true });
+    result.current.register('lastName', { required: true });
+
+    await act(async () => {
+      await result.current.handleSubmit(noop)({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    expect(result.current.control._formState.errors.firstName?.type).toBe(
+      'required',
+    );
+    expect(result.current.control._formState.errors.lastName).toBeUndefined();
+  });
+
+  it('should stop at the first invalid field when native validation is set on useForm with a formControl', async () => {
+    const { formControl } = createFormControl<{
+      firstName: string;
+      lastName: string;
+    }>();
+
+    const { result } = renderHook(() =>
+      useForm<{ firstName: string; lastName: string }>({
+        formControl,
+        shouldUseNativeValidation: true,
+      }),
+    );
+
+    result.current.register('firstName', { required: true });
+    result.current.register('lastName', { required: true });
+
+    await act(async () => {
+      await result.current.handleSubmit(noop)({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    expect(result.current.control._formState.errors.firstName?.type).toBe(
+      'required',
+    );
+    expect(result.current.control._formState.errors.lastName).toBeUndefined();
+  });
+
+  it('should report every invalid field once native validation is turned off', async () => {
+    const { result, rerender } = renderHook(
+      ({ shouldUseNativeValidation }) =>
+        useForm<{ firstName: string; lastName: string }>({
+          shouldUseNativeValidation,
+        }),
+      { initialProps: { shouldUseNativeValidation: true } },
+    );
+
+    rerender({ shouldUseNativeValidation: false });
+
+    result.current.register('firstName', { required: true });
+    result.current.register('lastName', { required: true });
+
+    await act(async () => {
+      await result.current.handleSubmit(noop)({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    expect(result.current.control._formState.errors.firstName?.type).toBe(
+      'required',
+    );
+    expect(result.current.control._formState.errors.lastName?.type).toBe(
+      'required',
+    );
   });
 
   it('should submit form data when inputs are removed', async () => {
