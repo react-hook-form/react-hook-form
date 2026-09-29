@@ -215,4 +215,23 @@ describe('createFormControl', () => {
     });
     expect(probeReads).toBe(1);
   });
+
+  it('should not share a null prototype defaultValues object with form values', () => {
+    const defaultValues = Object.assign(Object.create(null), {
+      name: '',
+    }) as { name: string };
+    const { control, register, setValue, getValues } = createFormControl({
+      defaultValues,
+    });
+
+    register('name');
+    control._state.mount = true;
+
+    setValue('name', 'changed');
+
+    expect(getValues('name')).toBe('changed');
+    expect(control._defaultValues.name).toBe('');
+    expect(defaultValues.name).toBe('');
+    expect(control._getDirty()).toBe(true);
+  });
 });
