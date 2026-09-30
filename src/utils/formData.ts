@@ -1,5 +1,5 @@
 import { flatten } from './flatten';
-import isUndefined from './isUndefined';
+import isNullOrUndefined from './isNullOrUndefined';
 
 function jsonToFormData(json: any) {
   const result = new FormData();
@@ -9,7 +9,7 @@ function jsonToFormData(json: any) {
   for (const key in flattenFormValues) {
     const value = flattenFormValues[key];
 
-    if (isUndefined(value)) {
+    if (isNullOrUndefined(value)) {
       continue;
     }
 

@@ -343,6 +343,43 @@ describe('Form', () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
+  it('should not submit the string "null" for an empty nullable field', async () => {
+    const actionFn = jest.fn<(formData: FormData) => Promise<void>>(
+      async () => {},
+    );
+
+    const App = () => {
+      const { register, control } = useForm<{
+        name: string;
+        nickname: string | null;
+      }>({
+        defaultValues: { name: 'bill', nickname: null },
+      });
+
+      return (
+        <Form control={control} action={actionFn}>
+          <input {...register('name')} />
+          <input {...register('nickname')} placeholder="nickname" />
+          <button>Submit</button>
+        </Form>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByPlaceholderText('nickname')).toHaveValue('');
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(actionFn).toHaveBeenCalledTimes(1);
+    });
+
+    const formData = actionFn.mock.calls[0][0];
+    expect(formData.get('name')).toBe('bill');
+    expect(formData.get('nickname')).not.toBe('null');
+  });
+
   it('should include file values in the submitted FormData', async () => {
     const actionFn = jest.fn<(formData: FormData) => Promise<void>>(
       async () => {},

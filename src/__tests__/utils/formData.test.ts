@@ -19,6 +19,19 @@ describe('jsonToFormData', () => {
     expect(formData.has('nick')).toBe(false);
   });
 
+  it('should skip null values instead of stringifying them', () => {
+    const formData = jsonToFormData({
+      name: 'bill',
+      nick: null,
+      address: { line1: '1 Main St', line2: null },
+    });
+
+    expect(formData.get('name')).toBe('bill');
+    expect(formData.has('nick')).toBe(false);
+    expect(formData.get('address.line1')).toBe('1 Main St');
+    expect(formData.has('address.line2')).toBe(false);
+  });
+
   it('should submit FileList values under their field name', () => {
     const resume = createFileList([
       new File(['a'], 'a.txt'),
