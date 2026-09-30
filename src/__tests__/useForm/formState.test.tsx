@@ -1136,6 +1136,30 @@ describe('formState', () => {
     expect(screen.getByText(JSON.stringify({ fruits: true }))).toBeVisible();
   });
 
+  it('should mark the form dirty when a field named `ref` changes', async () => {
+    const App = () => {
+      const {
+        register,
+        formState: { isDirty },
+      } = useForm({ defaultValues: { ref: '', note: '' } });
+
+      return (
+        <form>
+          <input {...register('ref')} placeholder="ref" />
+          <p>{isDirty ? 'dirty' : 'pristine'}</p>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.input(screen.getByPlaceholderText('ref'), {
+      target: { value: 'A-100' },
+    });
+
+    expect(await screen.findByText('dirty')).toBeVisible();
+  });
+
   it('should update isDirty with getFieldState at child component', () => {
     type FormValues = {
       test?: string;
