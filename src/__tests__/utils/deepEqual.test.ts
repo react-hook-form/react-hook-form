@@ -230,4 +230,32 @@ describe('deepEqual', () => {
     expect(deepEqual({ items: [] }, { items: {} })).toBeFalsy();
     expect(deepEqual({ items: {} }, { items: [] })).toBeFalsy();
   });
+
+  it('should compare values stored under a `ref` key', () => {
+    expect(deepEqual({ ref: 'A-100' }, { ref: 'B-200' })).toBeFalsy();
+    expect(
+      deepEqual({ order: { ref: 'A-100' } }, { order: { ref: 'B-200' } }),
+    ).toBeFalsy();
+    expect(deepEqual([{ ref: 'A-100' }], [{ ref: 'A-100' }])).toBeTruthy();
+  });
+
+  it('should ignore the `ref` key when comparing field errors', () => {
+    const input1 = document.createElement('input');
+    const input2 = document.createElement('input');
+
+    expect(
+      deepEqual(
+        { type: 'required', message: 'required', ref: input1 },
+        { type: 'required', message: 'required', ref: input2 },
+        true,
+      ),
+    ).toBeTruthy();
+    expect(
+      deepEqual(
+        { type: 'required', message: 'required', ref: input1 },
+        { type: 'pattern', message: 'required', ref: input1 },
+        true,
+      ),
+    ).toBeFalsy();
+  });
 });

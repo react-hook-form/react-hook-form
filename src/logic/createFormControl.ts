@@ -681,7 +681,9 @@ export function createFormControl<
     }
 
     if (
-      (error ? !deepEqual(previousFieldError, error) : previousFieldError) ||
+      (error
+        ? !deepEqual(previousFieldError, error, true)
+        : previousFieldError) ||
       !isEmptyObject(fieldState) ||
       shouldUpdateValid
     ) {
