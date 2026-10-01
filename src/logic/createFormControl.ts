@@ -540,7 +540,7 @@ export function createFormControl<
         }
 
         if (
-          props.shouldUnregister &&
+          _options.shouldUnregister &&
           wasUnsetInFormValues &&
           !isUndefined(get(_formValues, name)) &&
           isWatched(name, _names)
