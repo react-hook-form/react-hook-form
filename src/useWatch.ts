@@ -1,6 +1,7 @@
 import React from 'react';
 
 import generateWatchOutput from './logic/generateWatchOutput';
+import cloneObject from './utils/cloneObject';
 import deepEqual from './utils/deepEqual';
 import type {
   Control,
@@ -211,8 +212,11 @@ export function useWatch<TFieldValues extends FieldValues>(
         !disabled,
         () => _getCurrentOutput.current(),
         (currentValue) => {
-          updateValue(currentValue);
-          _computeFormValues.current = currentValue;
+          // The output can reference form values that are mutated in place,
+          // so store a copy to make sure the state update is not bailed out.
+          const nextValue = cloneObject(currentValue);
+          updateValue(nextValue);
+          _computeFormValues.current = nextValue;
         },
       );
     }
