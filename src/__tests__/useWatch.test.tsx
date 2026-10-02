@@ -1112,6 +1112,84 @@ describe('useWatch', () => {
       rerender({ control: form1Result.current.control });
       expect(result.current).toBe('form1-value');
     });
+
+    itWithActivity(
+      'should update a watched parent object after a nested change while its Activity subtree was hidden',
+      () => {
+        type FormValues = {
+          steps: { image: { uri: string } }[];
+        };
+
+        const ActivityContent = React.memo(function ActivityContent({
+          control,
+        }: {
+          control: Control<FormValues>;
+        }) {
+          const steps = useWatch({ control, name: 'steps' });
+
+          return <span data-testid="watched-steps">{steps[0].image.uri}</span>;
+        });
+
+        const Component = () => {
+          const { control } = useForm<FormValues>({
+            defaultValues: {
+              steps: [{ image: { uri: 'initial' } }],
+            },
+          });
+          const [isMounted, setIsMounted] = React.useState(false);
+          const [mode, setMode] = React.useState<'hidden' | 'visible'>(
+            'visible',
+          );
+
+          return (
+            <>
+              <button type="button" onClick={() => setIsMounted(true)}>
+                Mount
+              </button>
+              <button type="button" onClick={() => setMode('hidden')}>
+                Hide
+              </button>
+              <Controller
+                control={control}
+                name="steps.0.image.uri"
+                render={({ field }) => (
+                  <button
+                    type="button"
+                    onClick={() => field.onChange('updated')}
+                  >
+                    Update
+                  </button>
+                )}
+              />
+              <button type="button" onClick={() => setMode('visible')}>
+                Show
+              </button>
+              {isMounted && (
+                <Activity mode={mode}>
+                  <ActivityContent control={control} />
+                </Activity>
+              )}
+            </>
+          );
+        };
+
+        render(<Component />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Mount' }));
+
+        expect(screen.getByTestId('watched-steps')).toHaveTextContent(
+          'initial',
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: 'Hide' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+        expect(screen.getByTestId('watched-steps')).toHaveTextContent(
+          'updated',
+        );
+      },
+    );
   });
 
   describe('fieldArray', () => {
