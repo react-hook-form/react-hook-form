@@ -2201,6 +2201,7 @@ export function createFormControl<
             ? _getDirty()
             : !!(
                 keepStateOptions.keepDefaultValues &&
+                formValues &&
                 !deepEqual(formValues, _defaultValues)
               ),
       isSubmitted: keepStateOptions.keepIsSubmitted
