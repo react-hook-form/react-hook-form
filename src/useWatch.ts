@@ -212,8 +212,6 @@ export function useWatch<TFieldValues extends FieldValues>(
         !disabled,
         () => _getCurrentOutput.current(),
         (currentValue) => {
-          // The output can reference form values that are mutated in place,
-          // so store a copy to make sure the state update is not bailed out.
           const nextValue = cloneObject(currentValue);
           updateValue(nextValue);
           _computeFormValues.current = nextValue;
