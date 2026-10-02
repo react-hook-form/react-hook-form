@@ -148,17 +148,25 @@ export function useController<
     [name, control],
   );
 
-  const onBlur = React.useCallback(
-    () =>
-      _registerProps.current.onBlur({
-        target: {
-          value: get(control._formValues, name),
-          name: name as InternalFieldName,
-        },
-        type: EVENTS.BLUR,
-      }),
-    [name, control._formValues],
-  );
+  const onBlur = React.useCallback(() => {
+    if (!get(control._fields, name)) {
+      _registerProps.current = control.register(name, {
+        ..._props.current.rules,
+        value: get(control._formValues, name),
+        ...(isBoolean(_props.current.disabled)
+          ? { disabled: _props.current.disabled }
+          : {}),
+      });
+    }
+
+    return _registerProps.current.onBlur({
+      target: {
+        value: get(control._formValues, name),
+        name: name as InternalFieldName,
+      },
+      type: EVENTS.BLUR,
+    });
+  }, [name, control]);
 
   const ref = React.useCallback(
     (elm: any) => {
