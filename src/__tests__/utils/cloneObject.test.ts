@@ -221,4 +221,22 @@ describe('clone', () => {
     const copy = cloneObject(dateTime);
     expect(copy._tag).toBe('Utc');
   });
+
+  it('should clone object with null prototype', () => {
+    const data = Object.assign(Object.create(null), {
+      name: 'test',
+      nested: Object.assign(Object.create(null), { value: 1 }),
+    });
+    const copy = cloneObject(data);
+
+    expect(copy).not.toBe(data);
+    expect(copy.nested).not.toBe(data.nested);
+    expect(Object.getPrototypeOf(copy)).toBeNull();
+
+    copy.name = 'changed';
+    copy.nested.value = 2;
+
+    expect(data.name).toBe('test');
+    expect(data.nested.value).toBe(1);
+  });
 });

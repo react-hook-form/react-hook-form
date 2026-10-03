@@ -65,7 +65,11 @@ export default function getDirtyFields<T>(
   fieldRefs?: FieldRefs,
 ) {
   if (!dirtyFieldsFromValues) {
-    dirtyFieldsFromValues = markFieldsDirty(formValues, {}, fieldRefs);
+    dirtyFieldsFromValues = markFieldsDirty(
+      formValues,
+      Array.isArray(formValues) ? [] : {},
+      fieldRefs,
+    );
   }
 
   for (const key in data) {

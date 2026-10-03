@@ -61,7 +61,7 @@ const FormStateWithSchema: React.FC = () => {
       <select {...register('select')}>
         <option value="">Select</option>
         <option value={1}>1</option>
-        <option value={2}>1</option>
+        <option value={2}>2</option>
       </select>
       Radio1
       <input type="radio" {...register('radio')} value="1" />

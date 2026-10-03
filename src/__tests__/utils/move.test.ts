@@ -39,6 +39,18 @@ describe('move', () => {
     ]);
   });
 
+  it('should be able to move element backward in the array', () => {
+    const data = ['a', 'b', 'c'];
+    move(data, 2, 0);
+    expect(data).toEqual(['c', 'a', 'b']);
+  });
+
+  it('should be a no-op when moving an index to itself', () => {
+    const data = ['a', 'b', 'c'];
+    move(data, 1, 1);
+    expect(data).toEqual(['a', 'b', 'c']);
+  });
+
   it('should return empty array when data passed was not an array', () => {
     // @ts-expect-error we want to test function on non-array input
     expect(move({}, 0, 3)).toEqual([]);
