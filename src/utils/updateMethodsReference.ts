@@ -1,20 +1,16 @@
-import type { FieldValues, FormState, UseFormReturn } from '../types';
+import type { FieldValues, UseFormReturn } from '../types';
 
 export function updateMethodsReference<
   TFieldValues extends FieldValues,
   TContext,
   TTransformedValues,
 >(
-  methods: UseFormReturn<TFieldValues, TContext, TTransformedValues>,
-  formState: FormState<TFieldValues>,
-): UseFormReturn<TFieldValues, TContext, TTransformedValues> {
-  return {
-    ...methods,
-    formState,
-    watch: methods.watch.bind(null),
-    getValues: methods.getValues.bind(null),
-    getErrors: methods.getErrors.bind(null),
-    getFieldState: methods.getFieldState.bind(null),
-    register: methods.register.bind(null),
-  };
+  target: UseFormReturn<TFieldValues, TContext, TTransformedValues>,
+  source: UseFormReturn<TFieldValues, TContext, TTransformedValues>,
+) {
+  target.watch = source.watch.bind(null);
+  target.getValues = source.getValues.bind(null);
+  target.getErrors = source.getErrors.bind(null);
+  target.getFieldState = source.getFieldState.bind(null);
+  target.register = source.register.bind(null);
 }

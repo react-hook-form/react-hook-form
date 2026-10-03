@@ -13,12 +13,16 @@ import { FormProvider, useFormContext } from '../useFormContext';
 
 type FormValues = { test: string };
 
-function ChildWithMethods({ form }: { form: UseFormReturn<FormValues> }) {
+function ChildWithMethods({
+  watch,
+  getErrors,
+  formState,
+}: Pick<UseFormReturn<FormValues>, 'watch' | 'getErrors' | 'formState'>) {
   return (
     <>
-      <p>watch: {form.watch('test')}</p>
-      <p>errors: {form.formState.errors.test?.message}</p>
-      <p>getErrors: {form.getErrors('test')?.message}</p>
+      <p>watch: {watch('test')}</p>
+      <p>errors: {formState.errors.test?.message}</p>
+      <p>getErrors: {getErrors('test')?.message}</p>
     </>
   );
 }
@@ -43,7 +47,11 @@ function App() {
           {...methods.register('test', { required: 'required' })}
           placeholder="test"
         />
-        <ChildWithMethods form={methods} />
+        <ChildWithMethods
+          watch={methods.watch}
+          getErrors={methods.getErrors}
+          formState={methods.formState}
+        />
         <ContextChild />
         <button>submit</button>
       </form>
@@ -72,19 +80,20 @@ describe('React Compiler compatibility', () => {
     expect(screen.getByText('context invalid: true')).toBeVisible();
   });
 
-  it('should return a new methods object when form state updates', () => {
+  it('should keep the methods object stable and refresh read methods', () => {
     const { result } = renderHook(() => {
       const methods = useForm<FormValues>();
       methods.formState.errors;
       return methods;
     });
-    const first = result.current;
+    const methods = result.current;
+    const first = { ...methods };
 
     act(() => {
       result.current.setError('test', { message: 'error' });
     });
 
-    expect(result.current).not.toBe(first);
+    expect(result.current).toBe(methods);
     expect(result.current.watch).not.toBe(first.watch);
     expect(result.current.getValues).not.toBe(first.getValues);
     expect(result.current.getErrors).not.toBe(first.getErrors);
@@ -110,5 +119,25 @@ describe('React Compiler compatibility', () => {
 
     expect(result.current.watch.name).toBe('bound watch');
     expect(result.current.getValues.name).toBe('bound getValues');
+  });
+
+  it('should not loop when the methods object is an effect dependency', async () => {
+    const onReset = jest.fn();
+
+    const Form = () => {
+      const form = useForm<FormValues>({ defaultValues: { test: '' } });
+
+      React.useEffect(() => {
+        onReset();
+        form.reset({ test: 'reset' });
+      }, [form]);
+
+      return <p>{form.formState.isDirty ? 'dirty' : 'clean'}</p>;
+    };
+
+    render(<Form />);
+
+    expect(await screen.findByText('clean')).toBeVisible();
+    expect(onReset).toHaveBeenCalledTimes(1);
   });
 });
