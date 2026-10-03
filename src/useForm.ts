@@ -41,6 +41,9 @@ export function useForm<
   const _formControl = React.useRef<
     UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
   >(undefined);
+  const _methods = React.useRef<
+    UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
+  >(undefined);
   const _values = React.useRef<typeof props.values>(undefined);
   const _formControlProp = React.useRef(props.formControl);
   const _hadValidate = React.useRef(!!props.validate);
@@ -78,6 +81,8 @@ export function useForm<
         formState,
       };
     }
+
+    _methods.current = { ..._formControl.current };
   }
 
   const control = _formControl.current.control;
@@ -167,7 +172,6 @@ export function useForm<
 
   React.useEffect(() => {
     if (props.values && !deepEqual(props.values, _values.current)) {
-      updateMethodsReference(_formControl);
       control._reset(props.values, {
         keepFieldsRef: true,
         ...control._options.resetOptions,
@@ -196,24 +200,23 @@ export function useForm<
     control._removeUnmounted();
   });
 
-  React.useEffect(() => {
-    props.shouldUnregister &&
-      control._subjects.state.next({
-        values: control._getWatch(),
-      });
-  }, [props.shouldUnregister, control]);
-
   return React.useMemo(() => {
-    updateMethodsReference(_formControl);
-
-    if (_formControl.current) {
-      _formControl.current.formState = getProxyFormState(formState, control);
-    }
-
-    return _formControl.current as UseFormReturn<
+    const methods = _formControl.current as UseFormReturn<
       TFieldValues,
       TContext,
       TTransformedValues
     >;
+
+    updateMethodsReference(
+      methods,
+      _methods.current as UseFormReturn<
+        TFieldValues,
+        TContext,
+        TTransformedValues
+      >,
+    );
+    methods.formState = getProxyFormState(formState, control);
+
+    return methods;
   }, [formState, control]);
 }
