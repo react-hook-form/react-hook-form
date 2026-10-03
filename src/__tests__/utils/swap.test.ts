@@ -52,4 +52,10 @@ describe('swap', () => {
     swap(test2, 2, 6);
     expect(test2).toEqual([1, 2, undefined, 4, undefined, undefined, 3]);
   });
+
+  it('should be a no-op when swapping an index with itself', () => {
+    const data = [1, 2, 3];
+    swap(data, 1, 1);
+    expect(data).toEqual([1, 2, 3]);
+  });
 });
