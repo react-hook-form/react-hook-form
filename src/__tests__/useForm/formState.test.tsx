@@ -10,7 +10,13 @@ import {
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
-import type { Control, FormState, UseFormGetFieldState } from '../../types';
+import type {
+  Control,
+  FormState,
+  UseFieldArrayReturn,
+  UseFormGetFieldState,
+  UseFormReturn,
+} from '../../types';
 import { useController } from '../../useController';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
@@ -1130,6 +1136,30 @@ describe('formState', () => {
     expect(screen.getByText(JSON.stringify({ fruits: true }))).toBeVisible();
   });
 
+  it('should mark the form dirty when a field named `ref` changes', async () => {
+    const App = () => {
+      const {
+        register,
+        formState: { isDirty },
+      } = useForm({ defaultValues: { ref: '', note: '' } });
+
+      return (
+        <form>
+          <input {...register('ref')} placeholder="ref" />
+          <p>{isDirty ? 'dirty' : 'pristine'}</p>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.input(screen.getByPlaceholderText('ref'), {
+      target: { value: 'A-100' },
+    });
+
+    expect(await screen.findByText('dirty')).toBeVisible();
+  });
+
   it('should update isDirty with getFieldState at child component', () => {
     type FormValues = {
       test?: string;
@@ -1842,6 +1872,212 @@ describe('formState', () => {
     expect(refAfterFirstError).not.toBe(refAfterCleared);
     expect(refAfterCleared).not.toBe(refAfterSecondError);
   });
+
+  it('should produce a new errors reference on setError and clearErrors so memoized child components re-render', async () => {
+    type FormValues = { test: string };
+    const errorRefs: object[] = [];
+
+    function ErrorDisplay({
+      errors,
+    }: {
+      errors: FormState<FormValues>['errors'];
+    }) {
+      errorRefs.push(errors);
+      return <p data-testid="error">{errors.test?.message ?? ''}</p>;
+    }
+
+    function App() {
+      const {
+        setError,
+        clearErrors,
+        formState: { errors },
+      } = useForm<FormValues>({
+        defaultValues: { test: '' },
+      });
+      return (
+        <>
+          <ErrorDisplay errors={errors} />
+          <button
+            type="button"
+            onClick={() =>
+              setError('test', { type: 'server', message: 'first' })
+            }
+          >
+            setFirst
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              setError('test', { type: 'server', message: 'second' })
+            }
+          >
+            setSecond
+          </button>
+          <button type="button" onClick={() => clearErrors('test')}>
+            clear
+          </button>
+        </>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'setFirst' }));
+    await waitFor(() =>
+      expect(screen.getByTestId('error')).toHaveTextContent('first'),
+    );
+    const refAfterFirstError = errorRefs.at(-1);
+
+    fireEvent.click(screen.getByRole('button', { name: 'setSecond' }));
+    await waitFor(() =>
+      expect(screen.getByTestId('error')).toHaveTextContent('second'),
+    );
+    const refAfterSecondError = errorRefs.at(-1);
+
+    fireEvent.click(screen.getByRole('button', { name: 'clear' }));
+    await waitFor(() =>
+      expect(screen.getByTestId('error')).toHaveTextContent(''),
+    );
+    const refAfterCleared = errorRefs.at(-1);
+
+    expect(refAfterFirstError).not.toBe(refAfterSecondError);
+    expect(refAfterSecondError).not.toBe(refAfterCleared);
+  });
+
+  type FormValues = { test: string; other: string; rows: { value: string }[] };
+  type Form = UseFormReturn<FormValues> & { remove: (index: number) => void };
+
+  it.each([
+    [
+      'handleSubmit',
+      'test',
+      (form: Form) => form.handleSubmit(noop)(),
+      'other',
+    ],
+    ['trigger', 'test', (form: Form) => form.trigger('test'), ''],
+    ['resetField', 'test', (form: Form) => form.resetField('test'), ''],
+    ['unregister', 'test', (form: Form) => form.unregister('test'), ''],
+    ['remove', 'rows.0.value', (form: Form) => form.remove(0), ''],
+  ] as const)(
+    'should produce a new errors reference after %s so memoized child components re-render',
+    async (_, errorName, action, expected) => {
+      const ErrorNames = React.memo(function ErrorNames({
+        errors,
+      }: {
+        errors: FormState<FormValues>['errors'];
+      }) {
+        return <p data-testid="error">{Object.keys(errors).join(',')}</p>;
+      });
+      let form = {} as Form;
+
+      function App() {
+        const methods = useForm<FormValues>({
+          defaultValues: { test: 'value', other: '', rows: [{ value: '' }] },
+        });
+        const { remove } = useFieldArray({
+          control: methods.control,
+          name: 'rows',
+        });
+        form = { ...methods, remove };
+
+        return (
+          <>
+            <input {...methods.register('test', { required: true })} />
+            <input {...methods.register('other', { required: true })} />
+            <ErrorNames errors={methods.formState.errors} />
+          </>
+        );
+      }
+
+      render(<App />);
+
+      act(() => form.setError(errorName, { type: 'server' }));
+      expect(screen.getByTestId('error').textContent).toBe(
+        errorName.split('.')[0],
+      );
+
+      await act(async () => {
+        await action(form);
+      });
+      expect(screen.getByTestId('error').textContent).toBe(expected);
+    },
+  );
+
+  type RowsValues = { rows: { value: string }[] };
+  const minRows = { value: 2, message: 'min' };
+
+  it.each([
+    [
+      'resolver validation',
+      {
+        resolver: async ({ rows }: RowsValues) =>
+          rows.length < minRows.value
+            ? { values: {}, errors: { rows: { type: 'min', message: 'min' } } }
+            : { values: { rows }, errors: {} },
+      },
+      false,
+      'min',
+    ],
+    ['built-in validation', { rules: { minLength: minRows } }, false, 'min'],
+    [
+      'built-in validation clearing the root error',
+      { rules: { minLength: minRows } },
+      true,
+      'none',
+    ],
+  ] as const)(
+    'should produce a new errors reference after useFieldArray %s so memoized child components re-render',
+    async (_, options, hasRootError, expected) => {
+      const RootError = React.memo(function RootError({
+        errors,
+      }: {
+        errors: FormState<RowsValues>['errors'];
+      }) {
+        return (
+          <p data-testid="error">
+            {(errors.rows && errors.rows.root && errors.rows.root.message) ||
+              'none'}
+          </p>
+        );
+      });
+      let form = {} as UseFormReturn<RowsValues> & {
+        fieldArray: UseFieldArrayReturn<RowsValues>;
+      };
+
+      function App() {
+        const methods = useForm<RowsValues>({
+          mode: 'onChange',
+          defaultValues: { rows: [{ value: 'a' }, { value: 'b' }] },
+          resolver: 'resolver' in options ? options.resolver : undefined,
+        });
+        const fieldArray = useFieldArray({
+          control: methods.control,
+          name: 'rows',
+          rules: 'rules' in options ? options.rules : undefined,
+        });
+        form = { ...methods, fieldArray };
+
+        return <RootError errors={methods.formState.errors} />;
+      }
+
+      render(<App />);
+
+      if (hasRootError) {
+        act(() => form.setError('rows.root', { type: 'min', message: 'min' }));
+        expect(screen.getByTestId('error').textContent).toBe('min');
+      }
+
+      act(() =>
+        hasRootError
+          ? form.fieldArray.append({ value: 'c' })
+          : form.fieldArray.remove(0),
+      );
+
+      await waitFor(() =>
+        expect(screen.getByTestId('error').textContent).toBe(expected),
+      );
+    },
+  );
 
   describe('with Activity', () => {
     itWithActivity(

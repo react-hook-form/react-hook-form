@@ -1,6 +1,10 @@
 import getDirtyFields from '../../logic/getDirtyFields';
 
 describe('getDirtyFields', () => {
+  it('should preserve the top-level array shape', () => {
+    expect(getDirtyFields(['default'], ['updated'])).toEqual([true]);
+  });
+
   it('should return all the dirty fields', () => {
     expect(
       getDirtyFields(
