@@ -158,7 +158,6 @@ export function useForm<
 
   React.useEffect(() => {
     if (props.values && !deepEqual(props.values, _values.current)) {
-      updateMethodsReference(_formControl);
       control._reset(props.values, {
         keepFieldsRef: true,
         ...control._options.resetOptions,
@@ -187,24 +186,16 @@ export function useForm<
     control._removeUnmounted();
   });
 
-  React.useEffect(() => {
-    props.shouldUnregister &&
-      control._subjects.state.next({
-        values: control._getWatch(),
-      });
-  }, [props.shouldUnregister, control]);
-
-  return React.useMemo(() => {
-    updateMethodsReference(_formControl);
-
-    if (_formControl.current) {
-      _formControl.current.formState = getProxyFormState(formState, control);
-    }
-
-    return _formControl.current as UseFormReturn<
-      TFieldValues,
-      TContext,
-      TTransformedValues
-    >;
-  }, [formState, control]);
+  return React.useMemo(
+    () =>
+      updateMethodsReference(
+        _formControl.current as UseFormReturn<
+          TFieldValues,
+          TContext,
+          TTransformedValues
+        >,
+        getProxyFormState(formState, control),
+      ),
+    [formState, control],
+  );
 }

@@ -1,21 +1,20 @@
-import type React from 'react';
-
-import type { FieldValues, UseFormReturn } from '../types';
+import type { FieldValues, FormState, UseFormReturn } from '../types';
 
 export function updateMethodsReference<
-  TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
-  TTransformedValues = TFieldValues,
+  TFieldValues extends FieldValues,
+  TContext,
+  TTransformedValues,
 >(
-  _formControl: React.RefObject<
-    UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
-  >,
-) {
-  if (_formControl.current) {
-    _formControl.current.getFieldState =
-      _formControl.current.getFieldState.bind({});
-    _formControl.current.watch = _formControl.current.watch.bind({});
-    _formControl.current.getValues = _formControl.current.getValues.bind({});
-    _formControl.current.register = _formControl.current.register.bind({});
-  }
+  methods: UseFormReturn<TFieldValues, TContext, TTransformedValues>,
+  formState: FormState<TFieldValues>,
+): UseFormReturn<TFieldValues, TContext, TTransformedValues> {
+  return {
+    ...methods,
+    formState,
+    watch: methods.watch.bind(null),
+    getValues: methods.getValues.bind(null),
+    getErrors: methods.getErrors.bind(null),
+    getFieldState: methods.getFieldState.bind(null),
+    register: methods.register.bind(null),
+  };
 }
