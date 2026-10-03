@@ -1,6 +1,8 @@
 import {
   EVENTS,
+  FORM_ERROR_TYPE,
   INPUT_VALIDATION_RULES,
+  REGISTER_VALIDATION_RULES,
   ROOT_ERROR_TYPE,
   VALIDATION_MODE,
 } from '../constants';
@@ -111,8 +113,6 @@ const defaultOptions = {
   reValidateMode: VALIDATION_MODE.onChange,
   shouldFocusError: true,
 } as const;
-
-const FORM_ERROR_TYPE = 'form';
 
 const updateDirtyFields = (
   dirtyFields: Record<string, unknown>,
@@ -340,11 +340,9 @@ export function createFormControl<
       }
 
       const touchedFieldsArray = get(_formState.touchedFields, name);
-      if (
-        _isTracked('touchedFields') &&
-        shouldUpdateFieldsAndState &&
-        Array.isArray(touchedFieldsArray)
-      ) {
+      const shouldUpdateTouchedFields =
+        shouldUpdateFieldsAndState && Array.isArray(touchedFieldsArray);
+      if (shouldUpdateTouchedFields) {
         const touchedFields = method(touchedFieldsArray, args.argA, args.argB);
         shouldSetValues && set(_formState.touchedFields, name, touchedFields);
       }
@@ -365,6 +363,9 @@ export function createFormControl<
         name,
         isDirty: _getDirty(name, values),
         dirtyFields: _formState.dirtyFields,
+        ...(shouldUpdateTouchedFields && {
+          touchedFields: _formState.touchedFields,
+        }),
         errors: _formState.errors,
         isValid: _formState.isValid,
       });
@@ -383,11 +384,13 @@ export function createFormControl<
 
   const _setErrors = (errors: FieldErrors<TFieldValues>) => {
     Object.keys(delayErrorCallbacks).forEach(cancelDelayedError);
+    const hasErrors = !isEmptyObject(errors);
     _formState.errors = errors;
     _subjects.state.next({
       errors: _formState.errors,
-      isValid: false,
+      ...(hasErrors ? { isValid: false } : {}),
     });
+    !hasErrors && _state.mount && _setValid();
   };
 
   const hasExplicitNullIntermediate = (name: InternalFieldName) => {
@@ -671,7 +674,7 @@ export function createFormControl<
     if (names) {
       for (const name of names) {
         const error = get(errors, name);
-        cancelDelayedError(name);
+        cancelDelayedErrorTree(name);
         const isFieldArrayRootError =
           _names.array.has(name) &&
           isObject(error) &&
@@ -709,35 +712,49 @@ export function createFormControl<
     name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | undefined;
     eventType: ValidateFormEventType;
   }) => {
-    if (props.validate) {
-      const result = await props.validate({
+    if (_options.validate) {
+      const resetCallId = _resetCallId;
+      const result = await _options.validate({
         formValues: _formValues,
         formState: _formState,
         name,
         eventType,
       });
 
+      if (resetCallId !== _resetCallId) {
+        return true;
+      }
+
       if (isObject(result)) {
+        let isValid = true;
+
+        clearErrors(FORM_ERROR_TYPE);
+
         for (const key in result) {
           const error = result[key];
 
           if (error) {
+            isValid = false;
             setError(`${FORM_ERROR_TYPE}.${key}`, {
               message: isString(error.message) ? error.message : '',
               type: error.type || INPUT_VALIDATION_RULES.validate,
             });
           }
         }
+
+        return isValid;
       } else if (isString(result) || !result) {
         setError(FORM_ERROR_TYPE, {
           message: result || '',
           type: INPUT_VALIDATION_RULES.validate,
         });
+
+        return false;
       } else {
         clearErrors(FORM_ERROR_TYPE);
-      }
 
-      return result;
+        return true;
+      }
     }
 
     return true;
@@ -762,7 +779,8 @@ export function createFormControl<
       runRootValidation?: boolean;
     };
   }) => {
-    if (props.validate && !context.runRootValidation) {
+    const resetCallId = _resetCallId;
+    if (_options.validate && !context.runRootValidation) {
       context.runRootValidation = true;
       const result = await validateForm({
         name,
@@ -805,6 +823,10 @@ export function createFormControl<
             _options.shouldUseNativeValidation && !onlyCheckValid,
             isFieldArrayRoot,
           );
+
+          if (resetCallId !== _resetCallId) {
+            return context.valid;
+          }
 
           if (isPromiseFunction && shouldTrackIsValidatingState) {
             _updateIsValidating([_f.name]);
@@ -987,6 +1009,18 @@ export function createFormControl<
           delayError: options.delayError,
         } as TriggerConfig & { delayError?: boolean },
       );
+
+    if (
+      options.shouldValidate &&
+      field &&
+      field._f &&
+      field._f.deps &&
+      (!Array.isArray(field._f.deps) || field._f.deps.length > 0)
+    ) {
+      trigger(
+        field._f.deps as FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
+      );
+    }
   };
 
   const setFieldValues = <
@@ -1193,7 +1227,7 @@ export function createFormControl<
         event.type === EVENTS.BLUR || event.type === EVENTS.FOCUS_OUT;
       const hasNoValidationEffect =
         !hasValidation(field._f) &&
-        !props.validate &&
+        !_options.validate &&
         !_options.resolver &&
         !get(_formState.errors, name) &&
         !field._f.deps;
@@ -1253,7 +1287,7 @@ export function createFormControl<
         );
       }
 
-      if (!_options.resolver && props.validate) {
+      if (!_options.resolver && _options.validate) {
         await validateForm({
           name: name as FieldPath<TFieldValues>,
           eventType: event.type,
@@ -1510,7 +1544,7 @@ export function createFormControl<
   };
 
   const setError: UseFormSetError<TFieldValues> = (name, error, options) => {
-    cancelDelayedError(name);
+    cancelDelayedErrorTree(name);
 
     const ref = (get(_fields, name, { _f: {} })._f || {}).ref;
     const currentError = get(_formState.errors, name) || {};
@@ -1727,6 +1761,16 @@ export function createFormControl<
     });
     _names.mount.add(name);
 
+    if (field && field._f) {
+      const nextField = get(_fields, name) as Field;
+
+      for (const rule of REGISTER_VALIDATION_RULES) {
+        if (!(rule in options)) {
+          delete nextField._f[rule];
+        }
+      }
+    }
+
     if (field && !shouldRevalidateRemount) {
       _setDisabledField({
         disabled: isBoolean(options.disabled)
@@ -1871,10 +1915,15 @@ export function createFormControl<
         _formState.errors = errors;
         fieldValues = cloneObject(values);
       } else {
+        const resetCallId = _resetCallId;
         await executeBuiltInValidation({
           fields: _fields,
           eventType: EVENTS.SUBMIT,
         });
+
+        if (resetCallId !== _resetCallId) {
+          return;
+        }
 
         unset(_formState.errors, ROOT_ERROR_TYPE);
       }
@@ -1942,7 +1991,7 @@ export function createFormControl<
       }
 
       if (!options.keepError) {
-        cancelDelayedError(name);
+        cancelDelayedErrorTree(name);
         unset(_formState.errors, name);
         _setValid();
       }

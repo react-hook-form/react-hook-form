@@ -71,7 +71,7 @@ const FormState = () => {
         <option value="">Select</option>
         <option value="test">test</option>
         <option value="test1">test1</option>
-        <option value="test2">test3</option>
+        <option value="test2">test2</option>
       </select>
 
       <input type="radio" {...register('radio')} />

@@ -35,4 +35,21 @@ describe('extractFormValues', () => {
       },
     });
   });
+
+  it('should only extract the marked entries of a field array', () => {
+    const formData = {
+      records: [
+        { name: 'test', note: 'note' },
+        { name: 'test1', note: 'note1' },
+      ],
+    };
+
+    const dirtyFields = {
+      records: [undefined, { name: true }],
+    };
+
+    expect(extractFormValues(dirtyFields, formData)).toEqual({
+      records: [undefined, { name: 'test1' }],
+    });
+  });
 });

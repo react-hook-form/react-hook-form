@@ -1613,6 +1613,7 @@ describe('register', () => {
     expect(inputs).toEqual({
       test: {
         _f: {
+          _c: true,
           mount: true,
           name: 'test',
           ref: {
@@ -1926,6 +1927,133 @@ describe('register', () => {
     );
   });
 
+  it('should revalidate deps on setValue with shouldValidate', async () => {
+    const App = () => {
+      const { register, setValue, getValues, formState } = useForm<{
+        password: string;
+        confirmPassword: string;
+      }>({
+        mode: 'onChange',
+      });
+
+      return (
+        <div>
+          <input
+            {...register('password', {
+              deps: ['confirmPassword'],
+              required: true,
+            })}
+          />
+          <input
+            {...register('confirmPassword', {
+              validate: (value, formValues) =>
+                value === formValues.password || 'passwords do not match',
+            })}
+          />
+          {formState.errors.confirmPassword && <p>passwords do not match</p>}
+          <button
+            type={'button'}
+            onClick={() =>
+              setValue('password', getValues('confirmPassword'), {
+                shouldValidate: true,
+              })
+            }
+          >
+            match password
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getAllByRole('textbox')[1], {
+      target: { value: 'secret' },
+    });
+
+    fireEvent.change(screen.getAllByRole('textbox')[0], {
+      target: { value: 'other' },
+    });
+
+    expect(await screen.findByText('passwords do not match')).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button', { name: 'match password' }));
+
+    await waitFor(() =>
+      expect(
+        screen.queryByText('passwords do not match'),
+      ).not.toBeInTheDocument(),
+    );
+  });
+
+  it('should revalidate deps on setValue with shouldValidate and resolver', async () => {
+    type Form = {
+      password: string;
+      confirmPassword: string;
+    };
+
+    const resolver: Resolver<Form> = async (values) => {
+      const errors: FieldErrors<Form> = {};
+
+      if (values.confirmPassword !== values.password) {
+        errors.confirmPassword = {
+          type: 'validate',
+          message: 'passwords do not match',
+        };
+      }
+
+      return {
+        values,
+        errors,
+      };
+    };
+
+    const App = () => {
+      const { register, setValue, getValues, formState } = useForm<Form>({
+        mode: 'onChange',
+        resolver,
+      });
+
+      return (
+        <div>
+          <input {...register('password', { deps: ['confirmPassword'] })} />
+          <input {...register('confirmPassword')} />
+          {formState.errors.confirmPassword && <p>passwords do not match</p>}
+          <button
+            type={'button'}
+            onClick={() =>
+              setValue('password', getValues('confirmPassword'), {
+                shouldValidate: true,
+              })
+            }
+          >
+            match password
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getAllByRole('textbox')[1], {
+      target: { value: 'secret' },
+    });
+
+    fireEvent.change(screen.getAllByRole('textbox')[0], {
+      target: { value: 'other' },
+    });
+
+    expect(await screen.findByText('passwords do not match')).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button', { name: 'match password' }));
+
+    await waitFor(() =>
+      expect(
+        screen.queryByText('passwords do not match'),
+      ).not.toBeInTheDocument(),
+    );
+  });
+
   it('should trigger custom onChange event', async () => {
     const onChange = jest.fn();
 
@@ -2067,6 +2195,74 @@ describe('register', () => {
 
     expect(test).toHaveBeenCalledWith({
       test: 'test',
+    });
+  });
+
+  it('should stop enforcing a validation rule removed at runtime', async () => {
+    const onValid = jest.fn();
+    const onInvalid = jest.fn();
+
+    const App = ({ required }: { required: boolean }) => {
+      const { register, handleSubmit } = useForm<{ test: string }>({
+        defaultValues: { test: '' },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onValid, onInvalid)}>
+          <input
+            {...register('test', required ? { required: 'required' } : {})}
+          />
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    const { rerender } = render(<App required={true} />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => expect(onInvalid).toHaveBeenCalledTimes(1));
+    expect(onValid).not.toHaveBeenCalled();
+
+    rerender(<App required={false} />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() =>
+      expect(onValid).toHaveBeenCalledWith({ test: '' }, expect.anything()),
+    );
+  });
+
+  it('should stop enforcing a validate function removed at runtime', async () => {
+    let trigger: (() => Promise<boolean>) | undefined;
+
+    const App = ({ withValidate }: { withValidate: boolean }) => {
+      const { register, trigger: formTrigger } = useForm<{ test: string }>({
+        defaultValues: { test: '' },
+      });
+
+      trigger = () => formTrigger('test');
+
+      return (
+        <input
+          {...register(
+            'test',
+            withValidate ? { validate: () => 'invalid' } : {},
+          )}
+        />
+      );
+    };
+
+    const { rerender } = render(<App withValidate={true} />);
+
+    await act(async () => {
+      await expect(trigger!()).resolves.toBe(false);
+    });
+
+    rerender(<App withValidate={false} />);
+
+    await act(async () => {
+      await expect(trigger!()).resolves.toBe(true);
     });
   });
 });

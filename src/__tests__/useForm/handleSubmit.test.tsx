@@ -247,6 +247,31 @@ describe('handleSubmit', () => {
     );
   });
 
+  it('should submit a checkbox group with array default values and native validation', async () => {
+    const onSubmit = jest.fn();
+
+    const App = () => {
+      const { register, handleSubmit } = useForm<{ tags: string[] }>({
+        shouldUseNativeValidation: true,
+        defaultValues: { tags: ['a'] },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <input type="checkbox" value="a" {...register('tags')} />
+          <input type="checkbox" value="b" {...register('tags')} />
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+  });
+
   it('should avoid re-focusing with native validation on submit', async () => {
     jest.useFakeTimers();
 
@@ -808,6 +833,134 @@ describe('handleSubmit', () => {
 
     await act(async () => {
       resolveResolver({ errors: {}, values: { test: 'before' } });
+      await submitPromise;
+    });
+
+    expect(onValid).not.toHaveBeenCalled();
+    expect(result.current.formState.submitCount).toBe(0);
+    expect(result.current.formState.isSubmitSuccessful).toBe(false);
+  });
+
+  it('should ignore a stale built-in validation result when reset() runs mid-submit', async () => {
+    let resolveValidate!: (v: true | string) => void;
+    const { result } = renderHook(() =>
+      useForm({
+        defaultValues: { test: 'before' },
+      }),
+    );
+
+    result.current.register('test', {
+      validate: () =>
+        new Promise<true | string>((resolve) => {
+          resolveValidate = resolve;
+        }),
+    });
+
+    const onValid = jest.fn();
+    const onInvalid = jest.fn();
+
+    let submitPromise: Promise<unknown>;
+    act(() => {
+      submitPromise = result.current.handleSubmit(
+        onValid,
+        onInvalid,
+      )({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    act(() => {
+      result.current.reset({ test: 'after' });
+    });
+
+    await act(async () => {
+      resolveValidate('stale');
+      await submitPromise;
+    });
+
+    expect(onValid).not.toHaveBeenCalled();
+    expect(onInvalid).not.toHaveBeenCalled();
+    expect(result.current.formState.errors).toEqual({});
+    expect(result.current.formState.submitCount).toBe(0);
+    expect(result.current.formState.isSubmitted).toBe(false);
+    expect(result.current.getValues()).toEqual({ test: 'after' });
+  });
+
+  it('should ignore a stale form-level validate result when reset() runs mid-submit', async () => {
+    let resolveValidate!: (v: string | boolean) => void;
+    const { result } = renderHook(() =>
+      useForm({
+        defaultValues: { test: 'before' },
+        validate: () =>
+          new Promise<string | boolean>((resolve) => {
+            resolveValidate = resolve;
+          }),
+      }),
+    );
+
+    const onValid = jest.fn();
+    const onInvalid = jest.fn();
+
+    let submitPromise: Promise<unknown>;
+    act(() => {
+      submitPromise = result.current.handleSubmit(
+        onValid,
+        onInvalid,
+      )({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    act(() => {
+      result.current.reset({ test: 'after' });
+    });
+
+    await act(async () => {
+      resolveValidate('stale');
+      await submitPromise;
+    });
+
+    expect(onValid).not.toHaveBeenCalled();
+    expect(onInvalid).not.toHaveBeenCalled();
+    expect(result.current.formState.errors).toEqual({});
+    expect(result.current.formState.submitCount).toBe(0);
+    expect(result.current.formState.isSubmitted).toBe(false);
+    expect(result.current.getValues()).toEqual({ test: 'after' });
+  });
+
+  it('should not invoke onValid with stale values when reset() runs mid-submit', async () => {
+    let resolveValidate!: (v: true | string) => void;
+    const { result } = renderHook(() =>
+      useForm({
+        defaultValues: { test: 'before' },
+      }),
+    );
+
+    result.current.register('test', {
+      validate: () =>
+        new Promise<true | string>((resolve) => {
+          resolveValidate = resolve;
+        }),
+    });
+
+    const onValid = jest.fn();
+
+    let submitPromise: Promise<unknown>;
+    act(() => {
+      submitPromise = result.current.handleSubmit(onValid)({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    act(() => {
+      result.current.reset({ test: 'after' });
+    });
+
+    await act(async () => {
+      resolveValidate(true);
       await submitPromise;
     });
 

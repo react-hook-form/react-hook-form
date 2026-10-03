@@ -8,6 +8,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../../controller';
+import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
 import { useFormState } from '../../useFormState';
@@ -341,5 +342,55 @@ describe('getValues', () => {
     });
 
     expect(screen.getByRole('button', { name: 'submit' })).not.toBeDisabled();
+  });
+
+  it('should only return the dirty entries of a field array', () => {
+    let dirtyValues: unknown;
+
+    const App = () => {
+      const {
+        register,
+        control,
+        getValues,
+        formState: { dirtyFields },
+      } = useForm({
+        defaultValues: {
+          records: [
+            { name: 'test', note: 'note' },
+            { name: 'test1', note: 'note1' },
+          ],
+        },
+      });
+      const { fields } = useFieldArray({ control, name: 'records' });
+
+      return (
+        <form>
+          {fields.map((field, index) => (
+            <input key={field.id} {...register(`records.${index}.name`)} />
+          ))}
+          <p>{JSON.stringify(dirtyFields)}</p>
+          <button
+            type={'button'}
+            onClick={() => {
+              dirtyValues = getValues(undefined, { dirtyFields: true });
+            }}
+          >
+            getValues
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getAllByRole('textbox')[1], {
+      target: { value: 'changed' },
+    });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(dirtyValues).toEqual({
+      records: [undefined, { name: 'changed' }],
+    });
   });
 });

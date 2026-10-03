@@ -1464,4 +1464,66 @@ describe('trigger', () => {
 
     expect(triggerErrors?.address?.street?.message).toBe('street_required');
   });
+
+  it('should not resurrect a nested delayed error after trigger() validates the parent clean', async () => {
+    jest.useFakeTimers();
+
+    let resolverErrors: Record<string, unknown> = {};
+
+    const App = () => {
+      const {
+        register,
+        trigger,
+        formState: { errors },
+      } = useForm<{ parent: { child: string } }>({
+        defaultValues: { parent: { child: '' } },
+        mode: 'onChange',
+        delayError: 500,
+        resolver: async () => ({ values: {}, errors: resolverErrors as never }),
+      });
+
+      return (
+        <div>
+          <input {...register('parent.child')} />
+          <p>{`error:${
+            errors?.parent?.child ? errors.parent.child.message : 'none'
+          }`}</p>
+          <button type="button" onClick={() => void trigger('parent')}>
+            trigger-parent
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    // the child becomes invalid, so its error is scheduled behind delayError
+    // instead of being written to form state straight away
+    resolverErrors = {
+      parent: { child: { type: 'manual', message: 'bad child' } },
+    };
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'x' },
+      });
+    });
+    expect(screen.getByText(/^error:/).textContent).toEqual('error:none');
+
+    // the resolver now reports the form clean, and trigger() validates the
+    // parent, unsetting the whole parent subtree from errors
+    resolverErrors = {};
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'trigger-parent' }));
+    });
+    expect(screen.getByText(/^error:/).textContent).toEqual('error:none');
+
+    // the nested timer scheduled before that validation is still pending
+    await act(async () => {
+      jest.advanceTimersByTime(600);
+    });
+
+    expect(screen.getByText(/^error:/).textContent).toEqual('error:none');
+
+    jest.useRealTimers();
+  });
 });

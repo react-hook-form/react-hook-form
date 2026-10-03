@@ -52,6 +52,7 @@ export default async <T extends FieldValues>(
     name,
     valueAsNumber,
     mount,
+    _c,
   } = field._f;
   const inputValue: NativeFieldValue = get(formValues, name);
   if (!mount || disabledFieldNames.has(name)) {
@@ -62,7 +63,11 @@ export default async <T extends FieldValues>(
     if (shouldUseNativeValidation && inputRef.reportValidity) {
       const validityMessage = isBoolean(message) ? '' : message || '';
       if (refs) {
-        refs.forEach((ref) => ref.setCustomValidity(validityMessage));
+        refs.forEach(
+          (ref) =>
+            isFunction(ref.setCustomValidity) &&
+            ref.setCustomValidity(validityMessage),
+        );
       } else {
         inputRef.setCustomValidity(validityMessage);
       }
@@ -77,7 +82,7 @@ export default async <T extends FieldValues>(
     ((valueAsNumber || isFileInput(ref)) &&
       isUndefined(ref.value) &&
       isUndefined(inputValue)) ||
-    (isHTMLElement(ref) && ref.value === '') ||
+    (isHTMLElement(ref) && ref.value === '' && !_c) ||
     inputValue === '' ||
     (Array.isArray(inputValue) && !inputValue.length);
   const appendErrorsCurry = appendErrors.bind(

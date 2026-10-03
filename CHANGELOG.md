@@ -1,5 +1,70 @@
 # Changelog
 
+## [7.89.0] - 2026-09-26
+
+### Changed
+
+- Add optional `@types/react` peer dependency
+
+### Fixed
+
+- `validateField` calling `setCustomValidity` on refs that don't implement it under native validation
+- Form-level `validate` running a stale function instead of the latest one
+- Form-level validation leaving stale errors after a successful re-validation
+- Form-level validation running more than once per traversal
+- Stale validation results (resolver, built-in, form-level `validate`) being applied after `reset` in `onChange` and `handleSubmit`
+- Pending `delayError` timers for nested paths not being cancelled when a parent validates clean or is reset via `resetField`
+- `getValues(names, { dirtyFields })` returning every row of a field array instead of only the marked entries
+- Field array touched state not being re-indexed when `touchedFields` is not subscribed
+- `useFieldArray` emitting `touchedFields` in form state updates when unnecessary
+- Stale field array root error not clearing once an array operation satisfies the rule
+- `useFieldArray` marking the form dirty when the array default is `null`
+- Dirty state lingering for rows removed from a field array
+- `setValue` with `shouldValidate` not revalidating `deps`
+- `setValue` with `shouldValidate` not triggering validation for a field array root
+- Validation rules removed from `register` options at runtime still being applied
+- `useController` validating `required` against the input value instead of the controlled value
+- `isValid` not recomputing when the `errors` prop is emptied
+- `getFieldState(name, formState)` with a resolver after `reset()`
+
+## [7.88.0] - 2026-09-12
+
+### Added
+
+- `<ErrorMessage />` component for rendering a field's validation error
+
+### Fixed
+
+- `setValue` dirty state comparison ignoring `valueAs*` / `setValueAs` transforms
+- Nested `delayError` timers not being cancelled when a parent is cleared or unregistered
+- Cleared `delayError` errors coming back once the pending timer fires
+- `criteriaMode` not refreshing when form options are updated at runtime
+- `resetField` leaving stale validating state for the field
+- `reset` not clearing `isValidating` and `validatingFields`, and ignoring `keepIsValidating`
+- `replace()` leaving errors and touched state for removed rows
+- `remove()` leaking deleted values onto surviving items
+- `handleSubmit` applying a stale resolver result after `reset`
+- `handleSubmit` dropping resolver-reported root errors on submit
+- Stale resolver state updates being applied after `reset`
+- `trigger` dropping registered nested errors when targeting their parent
+- `trigger` setting a parent error when the target has only nested resolver errors
+- `useWatch` compute cache not being initialized with the initial output
+- `flatten` / `jsonToFormData` not preserving `FileList` and not skipping `undefined`
+- `schemaErrorLookup` reporting nested containers as exact-name errors
+- `unregister` not recomputing `isValidating` after clearing `validatingFields`
+- `unregister` stripping a kept value from the submit payload
+- `iterateFieldsByAction` only breaking out of one loop level
+- `setError` types from a previous validation surviving an overwrite
+- `react-server` build not being published
+- `validateField` calling `setCustomValidity` per key in validate-object mode
+- `useFieldArray` not focusing a checkbox or radio in the appended row
+- `useFieldArray` not reconciling stale fields after an `Activity` subtree reconnects
+- `useForm` never reconciling when an `Activity` subtree is hidden on its first render
+- `getFieldState` not reading `isValidating` from the supplied form state
+- `useFormState` not re-subscribing when `control` changes
+- `reset` with `keepValues` leaving `dirtyFields` out of sync with `isDirty`
+- `cloneObject` not guarding `Blob` before `instanceof`
+
 ## [7.87.0] - 2026-08-30
 
 ### Added

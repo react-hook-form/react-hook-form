@@ -266,6 +266,62 @@ describe('setError', () => {
     });
   });
 
+  it('should cancel pending delayError timers for nested fields when setError is called on the parent', async () => {
+    jest.useFakeTimers();
+
+    const App = () => {
+      const {
+        register,
+        setError,
+        formState: { errors },
+      } = useForm<{ parent: { child: string } }>({
+        delayError: 500,
+        mode: 'onChange',
+      });
+
+      return (
+        <div>
+          <input
+            {...register('parent.child', {
+              maxLength: { value: 3, message: 'too long' },
+            })}
+          />
+          <button
+            type="button"
+            onClick={() =>
+              setError('parent', { type: 'server', message: 'server error' })
+            }
+          >
+            setError
+          </button>
+          {errors.parent?.child && <p>child error</p>}
+          {errors.parent?.message && <p>{errors.parent.message}</p>}
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    // Schedule a delayed child error, then call setError on the parent
+    // before the delay elapses.
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'toolong' },
+      });
+    });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await act(async () => {
+      jest.advanceTimersByTime(500);
+    });
+
+    expect(screen.queryByText('child error')).not.toBeInTheDocument();
+    expect(screen.getByText('server error')).toBeVisible();
+
+    jest.useRealTimers();
+  });
+
   it('should replace types from a previous validation when overwriting an error', async () => {
     type FormValues = { password: string };
 
