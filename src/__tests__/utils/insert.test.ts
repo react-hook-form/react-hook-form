@@ -75,4 +75,16 @@ describe('insert', () => {
     expect(insert([1, 2], 2, [3, 4])).toEqual([1, 2, 3, 4]);
     expect(insert([1, 2], 2, [3, [4]])).toEqual([1, 2, 3, [4]]);
   });
+
+  it('should insert value at the beginning of the array when index is 0', () => {
+    expect(insert([1, 2, 3], 0, 0)).toEqual([0, 1, 2, 3]);
+  });
+
+  it('should insert value before the last item when index is negative', () => {
+    expect(insert([1, 2, 3], -1, 'x')).toEqual([1, 2, 'x', 3]);
+  });
+
+  it('should append value at the end when index is beyond the array length', () => {
+    expect(insert([1, 2, 3], 10, 'x')).toEqual([1, 2, 3, 'x']);
+  });
 });
