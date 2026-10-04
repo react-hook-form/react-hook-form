@@ -1,4 +1,6 @@
 import React from 'react';
+import { hydrateRoot } from 'react-dom/client';
+import { renderToString } from 'react-dom/server';
 import {
   act,
   fireEvent,
@@ -16,6 +18,7 @@ import type {
   Resolver,
   ResolverResult,
   UseFormRegister,
+  UseFormReturn,
 } from '../../types';
 import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
@@ -2263,6 +2266,93 @@ describe('register', () => {
 
     await act(async () => {
       await expect(trigger!()).resolves.toBe(true);
+    });
+  });
+
+  describe('when a server-rendered input is edited before hydration', () => {
+    it('should keep the typed text as the field value', async () => {
+      let methods: UseFormReturn<{ test: string }>;
+
+      function App() {
+        methods = useForm({ defaultValues: { test: 'default' } });
+        return <input {...methods.register('test')} />;
+      }
+
+      const container = document.createElement('div');
+      container.innerHTML = renderToString(<App />);
+      const input = container.querySelector('input') as HTMLInputElement;
+      input.value = 'typed';
+
+      await act(async () => {
+        hydrateRoot(container, <App />);
+      });
+
+      expect(input.value).toBe('typed');
+      expect(methods!.getValues('test')).toBe('typed');
+      expect(methods!.getFieldState('test').isDirty).toBe(true);
+    });
+
+    it('should keep the typed text through the values reset with keepDirtyValues', async () => {
+      let methods: UseFormReturn<{ test: string }>;
+
+      function App() {
+        methods = useForm({
+          values: { test: 'server' },
+          resetOptions: { keepDirtyValues: true },
+        });
+        return <input {...methods.register('test')} />;
+      }
+
+      const container = document.createElement('div');
+      container.innerHTML = renderToString(<App />);
+      const input = container.querySelector('input') as HTMLInputElement;
+      input.value = 'typed';
+
+      await act(async () => {
+        hydrateRoot(container, <App />);
+      });
+
+      expect(input.value).toBe('typed');
+      expect(methods!.getValues('test')).toBe('typed');
+    });
+
+    it('should keep the checkbox state as the field value', async () => {
+      let methods: UseFormReturn<{ test: boolean }>;
+
+      function App() {
+        methods = useForm({ defaultValues: { test: false } });
+        return <input type="checkbox" {...methods.register('test')} />;
+      }
+
+      const container = document.createElement('div');
+      container.innerHTML = renderToString(<App />);
+      const checkbox = container.querySelector('input') as HTMLInputElement;
+      checkbox.checked = true;
+
+      await act(async () => {
+        hydrateRoot(container, <App />);
+      });
+
+      expect(checkbox.checked).toBe(true);
+      expect(methods!.getValues('test')).toBe(true);
+    });
+
+    it('should still set a reset value into an input edited after the form is ready', async () => {
+      let methods: UseFormReturn<{ test: string }>;
+
+      function App() {
+        methods = useForm({ defaultValues: { test: 'default' } });
+        return <input {...methods.register('test')} />;
+      }
+
+      render(<App />);
+      const input = screen.getByRole('textbox') as HTMLInputElement;
+      fireEvent.input(input, { target: { value: 'typed' } });
+
+      act(() => methods!.reset({ test: 'reset' }));
+
+      expect(input.value).toBe('reset');
+      expect(methods!.getValues('test')).toBe('reset');
     });
   });
 });

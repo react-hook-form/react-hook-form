@@ -1355,6 +1355,96 @@ describe('useFieldArray', () => {
 
       expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
     });
+
+    it('should keep the shifted nested field array when a previous row is removed with shouldUnregister', () => {
+      type FormValues = {
+        items: {
+          name: string;
+          nested: { value: string }[];
+        }[];
+      };
+
+      let getValues: UseFormReturn<FormValues>['getValues'];
+
+      const Nested = ({
+        control,
+        index,
+      }: {
+        control: Control<FormValues>;
+        index: number;
+      }) => {
+        const { fields } = useFieldArray({
+          control,
+          name: `items.${index}.nested` as 'items.0.nested',
+        });
+
+        return (
+          <>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                aria-label={`nested-${index}-${i}`}
+                {...control.register(
+                  `items.${index}.nested.${i}.value` as const,
+                )}
+              />
+            ))}
+          </>
+        );
+      };
+
+      const Component = () => {
+        const {
+          control,
+          register,
+          getValues: tempGetValues,
+        } = useForm<FormValues>({
+          shouldUnregister: true,
+          defaultValues: {
+            items: [
+              { name: 'a', nested: [{ value: 'a0' }] },
+              { name: 'b', nested: [{ value: 'b0' }] },
+            ],
+          },
+        });
+        const { fields, remove } = useFieldArray({ control, name: 'items' });
+
+        getValues = tempGetValues;
+
+        return (
+          <form>
+            {fields.map((field, index) => (
+              <div key={field.id}>
+                <input
+                  aria-label={`name-${index}`}
+                  {...register(`items.${index}.name` as const)}
+                />
+                <Nested control={control} index={index} />
+              </div>
+            ))}
+            <button type="button" onClick={() => remove(0)}>
+              remove first
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      expect(screen.getByLabelText('name-0')).toHaveValue('a');
+      expect(screen.getByLabelText('nested-0-0')).toHaveValue('a0');
+      expect(screen.getByLabelText('name-1')).toHaveValue('b');
+      expect(screen.getByLabelText('nested-1-0')).toHaveValue('b0');
+
+      fireEvent.click(screen.getByRole('button', { name: 'remove first' }));
+
+      expect(screen.getByLabelText('name-0')).toHaveValue('b');
+      expect(screen.getByLabelText('nested-0-0')).toHaveValue('b0');
+      expect(screen.queryByLabelText('name-1')).not.toBeInTheDocument();
+      expect(getValues()).toEqual({
+        items: [{ name: 'b', nested: [{ value: 'b0' }] }],
+      });
+    });
   });
 
   describe('setError', () => {
