@@ -37,7 +37,7 @@
     "lint:fix": "pnpm lint --fix",
     "type": "tsc --noEmit",
     "test": "jest --config ./scripts/jest/jest.config.js",
-    "test:react-compiler": "jest --config ./scripts/jest/jest-react-compiler.config.js --onlyChanged --watch",
+    "test:react-compiler": "TEST_ENV=web jest --config ./scripts/jest/jest-react-compiler.config.js reactCompiler",
     "test:coverage": "pnpm test --coverage",
     "test:watch": "pnpm test --onlyChanged --watch",
     "test:web": "TEST_ENV=web pnpm test",
