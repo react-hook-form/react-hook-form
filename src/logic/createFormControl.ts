@@ -69,6 +69,7 @@ import has from '../utils/has';
 import isBoolean from '../utils/isBoolean';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDateObject from '../utils/isDateObject';
+import isEdited from '../utils/isEdited';
 import isEmptyObject from '../utils/isEmptyObject';
 import isFileInput from '../utils/isFileInput';
 import isFunction from '../utils/isFunction';
@@ -496,9 +497,12 @@ export function createFormControl<
         isUndefined(value) ? get(_defaultValues, name) : value,
       );
 
+      const isEditedBeforeReady = !!ref && !_formState.isReady && isEdited(ref);
+
       if (
         isUndefined(defaultValue) ||
         (ref && (ref as HTMLInputElement).defaultChecked) ||
+        isEditedBeforeReady ||
         shouldSkipSetValueAs
       ) {
         const fieldValue = shouldSkipSetValueAs
@@ -513,6 +517,10 @@ export function createFormControl<
         }
 
         set(_formValues, name, fieldValue);
+
+        if (isEditedBeforeReady) {
+          updateTouchAndDirty(name, fieldValue);
+        }
       } else {
         setFieldValue(name, defaultValue);
       }

@@ -529,6 +529,10 @@ export function useFieldArray<
         });
       }
 
+      if (!shouldKeepFieldArrayValues && control._state.action) {
+        return;
+      }
+
       shouldKeepFieldArrayValues
         ? updateMounted(name, false)
         : control.unregister(name as FieldPath<TFieldValues>);
