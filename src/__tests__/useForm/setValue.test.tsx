@@ -605,6 +605,23 @@ describe('setValue', () => {
     });
   });
 
+  it('should update an object value that contains a `ref` key', () => {
+    const { result } = renderHook(() =>
+      useForm({
+        defaultValues: { order: { ref: 'A-100', quantity: 1 } },
+      }),
+    );
+
+    act(() => {
+      result.current.setValue('order', { ref: 'B-200', quantity: 1 });
+    });
+
+    expect(result.current.getValues('order')).toEqual({
+      ref: 'B-200',
+      quantity: 1,
+    });
+  });
+
   describe('with watch', () => {
     it('should get watched value', () => {
       const { result } = renderHook(() => {

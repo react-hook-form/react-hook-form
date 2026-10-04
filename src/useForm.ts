@@ -147,7 +147,7 @@ export function useForm<
 
   React.useEffect(() => {
     if (_hadValidate.current && !props.validate) {
-      _formControl.current?.clearErrors(FORM_ERROR_TYPE);
+      _formControl.current && _formControl.current.clearErrors(FORM_ERROR_TYPE);
     }
     _hadValidate.current = !!props.validate;
   }, [props.validate]);
@@ -176,7 +176,12 @@ export function useForm<
         keepFieldsRef: true,
         ...control._options.resetOptions,
       });
-      if (!control._options.resetOptions?.keepIsValid) {
+      if (
+        !(
+          control._options.resetOptions &&
+          control._options.resetOptions.keepIsValid
+        )
+      ) {
         control._setValid();
       }
       _values.current = props.values;

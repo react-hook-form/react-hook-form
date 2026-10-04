@@ -8,6 +8,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 
+import { createFormControl } from '../logic/createFormControl';
 import type { Control } from '../types';
 import { useForm } from '../useForm';
 import { useWatch } from '../useWatch';
@@ -802,6 +803,338 @@ describe('unregister _valuesSubscriberCount guard', () => {
     fireEvent.click(screen.getByRole('button', { name: 'watcher on' }));
 
     expect(screen.getByTestId('watched')).toHaveTextContent('{"b":"b"}');
+  });
+});
+
+describe('name-scoped values subscribers', () => {
+  const setup = () => {
+    const { result } = renderHook(() =>
+      useForm({
+        defaultValues: { a: '', b: '', items: [{ name: '' }] },
+      }),
+    );
+
+    result.current.register('a');
+    result.current.register('b');
+
+    const control = result.current.control as any;
+    const nextSpy = jest.spyOn(control._subjects.state, 'next');
+    const emitsFor = (name: string) =>
+      nextSpy.mock.calls
+        .map(([payload]) => payload as any)
+        .filter((payload) => payload.name === name);
+
+    return { result, control, emitsFor };
+  };
+
+  const changeA = (result: ReturnType<typeof setup>['result']) =>
+    act(async () => {
+      await result.current
+        .register('a')
+        .onChange({ type: 'change', target: { name: 'a', value: 'x' } });
+    });
+
+  it('omits values from onChange when only an unrelated field is subscribed', async () => {
+    const { result, control, emitsFor } = setup();
+    const callback = jest.fn();
+
+    control._subscribe({
+      name: 'b',
+      exact: true,
+      formState: { values: true },
+      callback,
+    });
+
+    await changeA(result);
+
+    expect(emitsFor('a').length).toBeGreaterThan(0);
+    expect(emitsFor('a').every((payload) => !('values' in payload))).toBe(true);
+    expect(callback).not.toHaveBeenCalled();
+  });
+
+  it('sends a values snapshot from onChange to a matching subscriber', async () => {
+    const { result, control, emitsFor } = setup();
+    const callback = jest.fn();
+
+    control._subscribe({
+      name: 'a',
+      exact: true,
+      formState: { values: true },
+      callback,
+    });
+
+    await changeA(result);
+
+    const [payload] = emitsFor('a').filter((payload) => 'values' in payload);
+
+    expect(payload.values).toEqual(expect.objectContaining({ a: 'x' }));
+    expect(payload.values).not.toBe(control._formValues);
+    expect(callback).toHaveBeenCalledWith(
+      expect.objectContaining({
+        values: expect.objectContaining({ a: 'x' }),
+      }),
+    );
+  });
+
+  it('sends values from onChange to whole-form subscribers', async () => {
+    const { result, control, emitsFor } = setup();
+    const subscribeCallback = jest.fn();
+    const watchCallback = jest.fn();
+
+    control._subscribe({
+      formState: { values: true },
+      callback: subscribeCallback,
+    });
+    result.current.watch(watchCallback);
+
+    await changeA(result);
+
+    expect(emitsFor('a').some((payload) => 'values' in payload)).toBe(true);
+    expect(subscribeCallback).toHaveBeenCalledWith(
+      expect.objectContaining({
+        values: expect.objectContaining({ a: 'x' }),
+      }),
+    );
+    expect(watchCallback).toHaveBeenCalledWith(
+      expect.objectContaining({ a: 'x' }),
+      expect.objectContaining({ name: 'a' }),
+    );
+  });
+
+  it('skips cloning values in setValue when only an unrelated field is subscribed', () => {
+    const { result, control, emitsFor } = setup();
+
+    control._subscribe({
+      name: 'b',
+      exact: true,
+      formState: { values: true },
+      callback: jest.fn(),
+    });
+
+    act(() => {
+      result.current.setValue('a', 'x');
+    });
+
+    expect(emitsFor('a').length).toBeGreaterThan(0);
+    expect(emitsFor('a').every((payload) => payload.values === undefined)).toBe(
+      true,
+    );
+  });
+
+  it('sends latest values from setValue to watch(fn) without a clone subscriber', () => {
+    const { result } = setup();
+    const watchCallback = jest.fn();
+
+    result.current.watch(watchCallback);
+
+    act(() => {
+      result.current.setValue('a', 'x');
+    });
+
+    expect(watchCallback).toHaveBeenCalledWith(
+      expect.objectContaining({ a: 'x' }),
+      expect.objectContaining({ name: 'a' }),
+    );
+  });
+
+  it('clones values in setValue for a subscriber on a field array item', () => {
+    const { result, control } = setup();
+    const callback = jest.fn();
+
+    control._names.array.add('items');
+    control._subscribe({
+      name: 'items.0',
+      exact: true,
+      formState: { values: true },
+      callback,
+    });
+
+    act(() => {
+      result.current.setValue('items.0.name', 'x');
+    });
+
+    expect(callback).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'items.0',
+        values: expect.objectContaining({ items: [{ name: 'x' }] }),
+      }),
+    );
+    expect(callback.mock.calls[0][0].values).not.toBe(control._formValues);
+  });
+
+  it('stops cloning values once the matching subscriber unsubscribes', async () => {
+    const { result, control, emitsFor } = setup();
+    const unsubscribe = control._subscribe({
+      name: 'a',
+      exact: true,
+      formState: { values: true },
+      callback: jest.fn(),
+    });
+
+    unsubscribe();
+
+    await changeA(result);
+
+    expect(emitsFor('a').every((payload) => !('values' in payload))).toBe(true);
+  });
+});
+
+describe('form state persistence during fan-out', () => {
+  it('does not rebuild _formState for event-only payloads', () => {
+    const { control } = createFormControl<{ a: string }>();
+    const formState = control._formState;
+
+    control._subjects.state.next({
+      name: 'a',
+      type: 'change',
+      values: { a: 'x' },
+    });
+
+    expect(control._formState).toBe(formState);
+  });
+
+  it('persists state before name-scoped subscribers read it', () => {
+    const { control } = createFormControl<{ a: string; b: string }>();
+    const seen: unknown[] = [];
+
+    control._subscribe({
+      name: 'a',
+      exact: true,
+      formState: { isDirty: true, errors: true },
+      callback: (formState) => {
+        seen.push([formState.isDirty, control._formState.isDirty]);
+
+        if (formState.isDirty && !formState.errors?.b) {
+          control._subjects.state.next({
+            name: 'a',
+            errors: { b: { type: 'required' } },
+          });
+        }
+      },
+    });
+
+    control._subjects.state.next({ name: 'a', isDirty: true });
+
+    expect(seen).toEqual([
+      [true, true],
+      [true, true],
+    ]);
+    expect(control._formState).toEqual(
+      expect.objectContaining({
+        isDirty: true,
+        errors: { b: { type: 'required' } },
+      }),
+    );
+  });
+});
+
+describe('subscribe form state tracking lifetime', () => {
+  const setup = () => {
+    const validate = jest.fn(() => true);
+    const form = createFormControl<Record<string, string>>({
+      defaultValues: Object.fromEntries(
+        Array.from({ length: 1000 }, (_, index) => [`f${index}`, '']),
+      ),
+    });
+    const onChanges = Array.from(
+      { length: 1000 },
+      (_, index) => form.register(`f${index}`, { validate }).onChange,
+    );
+    const change = async () => {
+      validate.mockClear();
+      await onChanges[1]({
+        type: 'change',
+        target: { name: 'f1', value: `${Math.random()}` },
+      });
+      await act(async () => {});
+
+      return validate.mock.calls.length;
+    };
+
+    return { form, change };
+  };
+
+  it('stops tracking isValid once the only subscriber unsubscribes', async () => {
+    const { form, change } = setup();
+
+    const unsubscribe = form.subscribe({
+      formState: { isValid: true },
+      callback: jest.fn(),
+    });
+
+    expect(await change()).toBeGreaterThan(0);
+
+    unsubscribe();
+
+    expect(await change()).toBe(0);
+  });
+
+  it('keeps tracking isValid until the last subscriber unsubscribes', async () => {
+    const { form, change } = setup();
+
+    const first = form.subscribe({
+      formState: { isValid: true },
+      callback: jest.fn(),
+    });
+    const second = form.subscribe({
+      formState: { isValid: true },
+      callback: jest.fn(),
+    });
+
+    first();
+    first();
+
+    expect(await change()).toBeGreaterThan(0);
+
+    second();
+
+    expect(await change()).toBe(0);
+  });
+
+  it('does not stop tracking isValid when another subscriber opts out of it', async () => {
+    const { form, change } = setup();
+
+    form.subscribe({
+      formState: { isValid: true },
+      callback: jest.fn(),
+    });
+    form.subscribe({
+      formState: { isValid: false, isDirty: true },
+      callback: jest.fn(),
+    });
+
+    expect(await change()).toBeGreaterThan(0);
+  });
+
+  it('resumes tracking isValid when subscribing again after every subscriber left', async () => {
+    const { form, change } = setup();
+
+    form.subscribe({ formState: { isValid: true }, callback: jest.fn() })();
+
+    expect(await change()).toBe(0);
+
+    const unsubscribe = form.subscribe({
+      formState: { isValid: true },
+      callback: jest.fn(),
+    });
+
+    expect(await change()).toBeGreaterThan(0);
+
+    unsubscribe();
+
+    expect(await change()).toBe(0);
+  });
+
+  it('releases tracking when a subscriber unsubscribes inside its own callback', async () => {
+    const { form, change } = setup();
+    const unsubscribe = form.subscribe({
+      formState: { isValid: true },
+      callback: () => unsubscribe(),
+    });
+
+    await change();
+
+    expect(await change()).toBe(0);
   });
 });
 

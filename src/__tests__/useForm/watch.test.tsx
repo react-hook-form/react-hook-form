@@ -8,6 +8,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../../controller';
+import { createFormControl } from '../../logic/createFormControl';
 import type { Control, FieldValues } from '../../types';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
@@ -470,6 +471,37 @@ describe('watch', () => {
         test: '1234',
       },
     ]);
+  });
+
+  it('should flush additional render when shouldUnregister is set on useForm with a formControl', async () => {
+    const { formControl } = createFormControl<{ test: string }>();
+
+    const App = () => {
+      const [show, setShow] = useState(false);
+      const { watch, register } = useForm<{ test: string }>({
+        formControl,
+        shouldUnregister: true,
+      });
+      const result = watch();
+
+      return (
+        <div>
+          {show && <input {...register('test')} />}
+          <button type="button" onClick={() => setShow(true)}>
+            show
+          </button>
+          <p>{JSON.stringify(result)}</p>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByText('{}')).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(await screen.findByText('{"test":""}')).toBeVisible();
   });
 
   it('should not be able to overwrite global watch state', () => {

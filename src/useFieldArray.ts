@@ -388,10 +388,13 @@ export function useFieldArray<
           const error = get(result.errors, name);
           const existingError = get(control._formState.errors, name);
           const existingErrorType =
-            existingError && (existingError.type || existingError.root?.type);
+            existingError &&
+            (existingError.type ||
+              (existingError.root && existingError.root.type));
           const existingErrorMessage =
             existingError &&
-            (existingError.message || existingError.root?.message);
+            (existingError.message ||
+              (existingError.root && existingError.root.message));
 
           if (
             existingError
@@ -413,6 +416,7 @@ export function useFieldArray<
             } else {
               unset(control._formState.errors, name);
             }
+            control._formState.errors = { ...control._formState.errors };
             control._subjects.state.next({
               errors: control._formState.errors as FieldErrors<TFieldValues>,
             });
@@ -430,18 +434,21 @@ export function useFieldArray<
             true,
           ).then((error) => {
             if (!isEmptyObject(error)) {
+              updateFieldArrayRootError(
+                control._formState.errors as FieldErrors<TFieldValues>,
+                error,
+                name,
+              );
+              control._formState.errors = { ...control._formState.errors };
               control._subjects.state.next({
-                errors: updateFieldArrayRootError(
-                  control._formState.errors as FieldErrors<TFieldValues>,
-                  error,
-                  name,
-                ) as FieldErrors<TFieldValues>,
+                errors: control._formState.errors as FieldErrors<TFieldValues>,
               });
             } else {
               const existingError = get(control._formState.errors, name);
 
               if (existingError && existingError[ROOT_ERROR_TYPE]) {
                 unset(control._formState.errors, `${name}.${ROOT_ERROR_TYPE}`);
+                control._formState.errors = { ...control._formState.errors };
                 control._subjects.state.next({
                   errors: control._formState
                     .errors as FieldErrors<TFieldValues>,

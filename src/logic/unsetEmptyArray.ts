@@ -6,6 +6,6 @@ export default <T>(ref: T, name: string) => {
   const array = get(ref, name);
 
   !compact(array).length &&
-    !(array as { root?: unknown })?.root &&
+    !(array && (array as { root?: unknown }).root) &&
     unset(ref, name);
 };

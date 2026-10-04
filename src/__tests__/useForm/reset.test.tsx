@@ -353,6 +353,49 @@ describe('reset', () => {
     expect(screen.getByText('{"firstName":true}')).toBeVisible();
   });
 
+  it('should not be dirty after reset without values when keepDefaultValues is set', async () => {
+    function App() {
+      const {
+        register,
+        reset,
+        formState: { isDirty, dirtyFields },
+      } = useForm({
+        defaultValues: {
+          firstName: 'test',
+        },
+      });
+
+      return (
+        <form>
+          <input {...register('firstName')} placeholder="First Name" />
+          <p>{isDirty ? 'dirty' : 'pristine'}</p>
+          <p>{JSON.stringify(dirtyFields)}</p>
+
+          <button
+            type="button"
+            onClick={() => reset(undefined, { keepDefaultValues: true })}
+          >
+            reset
+          </button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.input(screen.getByRole('textbox'), {
+      target: { value: 'changed' },
+    });
+
+    expect(await screen.findByText('dirty')).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(await screen.findByText('pristine')).toBeVisible();
+    expect(screen.getByText('{}')).toBeVisible();
+    expect(screen.getByRole('textbox')).toHaveValue('test');
+  });
+
   it('should not reset if keepStateOption is specified', async () => {
     let formState = {};
     const onSubmit = jest.fn();

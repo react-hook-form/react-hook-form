@@ -2,17 +2,11 @@ import shouldRenderFormState from '../../logic/shouldRenderFormState';
 import type { ReadFormState } from '../../types';
 
 describe('shouldRenderFormState', () => {
-  const updateFormState = jest.fn();
-
-  beforeEach(() => {
-    updateFormState.mockClear();
-  });
-
   it('should return true when formState is Empty', () => {
     const proxy = {
       isValid: true,
     } as ReadFormState;
-    const result = shouldRenderFormState({}, proxy, updateFormState);
+    const result = shouldRenderFormState({}, proxy);
     expect(result).toBe(true);
   });
 
@@ -21,7 +15,6 @@ describe('shouldRenderFormState', () => {
     const result = shouldRenderFormState(
       { isValid: false, isDirty: true },
       proxy,
-      updateFormState,
     );
     expect(result).toBe('isValid');
   });
@@ -31,7 +24,6 @@ describe('shouldRenderFormState', () => {
     const result = shouldRenderFormState(
       { name: 'secondName', errors: {} },
       proxy,
-      updateFormState,
     );
     expect(result).toBeUndefined();
   });
@@ -41,14 +33,9 @@ describe('shouldRenderFormState', () => {
       isDirty: true,
       isValid: false,
     } as ReadFormState;
-    const result = shouldRenderFormState(
-      { isDirty: true },
-      proxy,
-      updateFormState,
-    );
+    const result = shouldRenderFormState({ isDirty: true }, proxy);
 
     expect(result).toBe('isDirty');
-    expect(updateFormState).toHaveBeenCalledWith({ isDirty: true });
   });
 
   it('should return false when changed state key is not subscribed', () => {
@@ -56,11 +43,7 @@ describe('shouldRenderFormState', () => {
       isDirty: false,
       isValid: true,
     } as ReadFormState;
-    const result = shouldRenderFormState(
-      { isDirty: true },
-      proxy,
-      updateFormState,
-    );
+    const result = shouldRenderFormState({ isDirty: true }, proxy);
 
     expect(result).toBeUndefined();
   });
@@ -70,7 +53,7 @@ describe('shouldRenderFormState', () => {
 
     // non-root, non-empty, no matching key → reaches .find() branch
     const proxy = { isValid: true } as ReadFormState;
-    shouldRenderFormState({ isDirty: true }, proxy, updateFormState);
+    shouldRenderFormState({ isDirty: true }, proxy);
 
     // Each call to shouldRenderFormState should produce exactly one
     // Object.keys(formState) call. The proxy may also be keyed once (isRoot
@@ -92,12 +75,7 @@ describe('shouldRenderFormState', () => {
         isDirty: 'all',
         isValid: false,
       } as ReadFormState;
-      const result = shouldRenderFormState(
-        { isDirty: true },
-        proxy,
-        updateFormState,
-        true,
-      );
+      const result = shouldRenderFormState({ isDirty: true }, proxy, true);
 
       expect(result).toBe('isDirty');
     });
@@ -107,12 +85,7 @@ describe('shouldRenderFormState', () => {
         isDirty: true,
         isValid: false,
       } as ReadFormState;
-      const result = shouldRenderFormState(
-        { isDirty: true },
-        proxy,
-        updateFormState,
-        true,
-      );
+      const result = shouldRenderFormState({ isDirty: true }, proxy, true);
 
       expect(result).toBeUndefined();
     });

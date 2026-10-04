@@ -77,6 +77,48 @@ describe('insert', () => {
     ]);
   });
 
+  it('should insert relative to the end when index is negative', () => {
+    const { result } = renderHook(() => {
+      const { control } = useForm({
+        defaultValues: {
+          test: [{ test: '1' }, { test: '2' }],
+        },
+      });
+      return useFieldArray({ control, name: 'test' });
+    });
+
+    act(() => {
+      result.current.insert(-1, { test: '3' });
+    });
+
+    expect(result.current.fields.map(({ test }) => test)).toEqual([
+      '1',
+      '3',
+      '2',
+    ]);
+  });
+
+  it('should append at the end when index is beyond the array length', () => {
+    const { result } = renderHook(() => {
+      const { control } = useForm({
+        defaultValues: {
+          test: [{ test: '1' }, { test: '2' }],
+        },
+      });
+      return useFieldArray({ control, name: 'test' });
+    });
+
+    act(() => {
+      result.current.insert(10, { test: '3' });
+    });
+
+    expect(result.current.fields.map(({ test }) => test)).toEqual([
+      '1',
+      '2',
+      '3',
+    ]);
+  });
+
   it.each(['isDirty', 'dirtyFields'])(
     'should insert data to formState.%s at index with single value',
     () => {

@@ -9,6 +9,7 @@ const isEmptyObjectWithCustomPrototype = (object: object, keys: string[]) =>
 export default function deepEqual(
   object1: unknown,
   object2: unknown,
+  isErrorObject = false,
   visited = new WeakMap<object, WeakSet<object>>(),
 ) {
   if (object1 === object2) {
@@ -62,14 +63,14 @@ export default function deepEqual(
       return false;
     }
 
-    if (key !== 'ref') {
+    if (!isErrorObject || key !== 'ref') {
       const val2 = (object2 as Record<string, unknown>)[key];
 
       if (
         (isDateObject(val1) && isDateObject(val2)) ||
         ((isObject(val1) || Array.isArray(val1)) &&
           (isObject(val2) || Array.isArray(val2)))
-          ? !deepEqual(val1, val2, visited)
+          ? !deepEqual(val1, val2, isErrorObject, visited)
           : !Object.is(val1, val2)
       ) {
         return false;
