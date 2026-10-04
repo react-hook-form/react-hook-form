@@ -529,9 +529,6 @@ export function useFieldArray<
         });
       }
 
-      // Parent insert/remove/move has already reindexed values. This cleanup
-      // still closes over the previous name, so unregistering it would delete
-      // the row that shifted into that index.
       if (!shouldKeepFieldArrayValues && control._state.action) {
         return;
       }
