@@ -1,21 +1,6 @@
 import React from 'react';
 
 import { DEFAULT_FORM_STATE, defaultOptions } from './logic/createFormControl';
-
-// The control options that are synchronized back when they are removed from
-// the props. Props with their own lifecycle handling in `useForm` (`values`,
-// `errors`, `defaultValues`, `formControl`) are deliberately not in this list.
-const SYNCED_OPTIONS = [
-  'mode',
-  'reValidateMode',
-  'shouldFocusError',
-  'resolver',
-  'criteriaMode',
-  'delayError',
-  'shouldUnregister',
-  'shouldUseNativeValidation',
-  'context',
-] as const;
 import getProxyFormState from './logic/getProxyFormState';
 import cloneObject from './utils/cloneObject';
 import deepEqual from './utils/deepEqual';
@@ -30,6 +15,18 @@ import type {
 } from './types';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import { useResyncOnReconnect } from './useResyncOnReconnect';
+
+const RESET_OPTIONS = {
+  mode: defaultOptions.mode,
+  reValidateMode: defaultOptions.reValidateMode,
+  shouldFocusError: defaultOptions.shouldFocusError,
+  resolver: undefined,
+  criteriaMode: undefined,
+  delayError: undefined,
+  shouldUnregister: undefined,
+  shouldUseNativeValidation: undefined,
+  context: undefined,
+} as const;
 
 /**
  * Core hook for managing a form. Returns all methods and state for
@@ -95,20 +92,22 @@ export function useForm<
   }
 
   const control = _formControl.current.control;
-  // A synced option that was dropped from the props since the last render goes
-  // back to its default, otherwise it would keep the value from an earlier
-  // render.
+
   const previousOptions = control._options;
   const removedOptions: Record<string, unknown> = {};
-  for (const key of SYNCED_OPTIONS) {
+
+  for (const key in RESET_OPTIONS) {
     if (key in previousOptions && !(key in props)) {
       removedOptions[key] =
-        key in defaultOptions
-          ? defaultOptions[key as keyof typeof defaultOptions]
-          : undefined;
+        RESET_OPTIONS[key as keyof typeof RESET_OPTIONS];
     }
   }
-  control._options = { ...removedOptions, ...props, validate: props.validate };
+
+  control._options = {
+    ...removedOptions,
+    ...props,
+    validate: props.validate,
+  };
 
   const getCurrentFormState = () => ({
     ...control._formState,
