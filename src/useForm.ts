@@ -1,6 +1,21 @@
 import React from 'react';
 
-import { DEFAULT_FORM_STATE } from './logic/createFormControl';
+import { DEFAULT_FORM_STATE, defaultOptions } from './logic/createFormControl';
+
+// The control options that are synchronized back when they are removed from
+// the props. Props with their own lifecycle handling in `useForm` (`values`,
+// `errors`, `defaultValues`, `formControl`) are deliberately not in this list.
+const SYNCED_OPTIONS = [
+  'mode',
+  'reValidateMode',
+  'shouldFocusError',
+  'resolver',
+  'criteriaMode',
+  'delayError',
+  'shouldUnregister',
+  'shouldUseNativeValidation',
+  'context',
+] as const;
 import getProxyFormState from './logic/getProxyFormState';
 import cloneObject from './utils/cloneObject';
 import deepEqual from './utils/deepEqual';
@@ -80,7 +95,20 @@ export function useForm<
   }
 
   const control = _formControl.current.control;
-  control._options = { ...props, validate: props.validate };
+  // A synced option that was dropped from the props since the last render goes
+  // back to its default, otherwise it would keep the value from an earlier
+  // render.
+  const previousOptions = control._options;
+  const removedOptions: Record<string, unknown> = {};
+  for (const key of SYNCED_OPTIONS) {
+    if (key in previousOptions && !(key in props)) {
+      removedOptions[key] =
+        key in defaultOptions
+          ? defaultOptions[key as keyof typeof defaultOptions]
+          : undefined;
+    }
+  }
+  control._options = { ...removedOptions, ...props, validate: props.validate };
 
   const getCurrentFormState = () => ({
     ...control._formState,
