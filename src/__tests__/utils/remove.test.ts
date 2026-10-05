@@ -137,4 +137,17 @@ describe('remove', () => {
       ),
     ).toEqual([]);
   });
+
+  it('should ignore duplicated indexes', () => {
+    expect(remove(['a', 'b', 'c', 'd'], [1, 1])).toEqual(['a', 'c', 'd']);
+    expect(remove(['a', 'b', 'c', 'd'], [3, 1, 3, 1])).toEqual(['a', 'c']);
+  });
+
+  it('should not change the indexes passed in', () => {
+    const indexes = [3, 1];
+
+    remove(['a', 'b', 'c', 'd'], indexes);
+
+    expect(indexes).toEqual([3, 1]);
+  });
 });

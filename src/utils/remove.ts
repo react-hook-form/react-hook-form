@@ -19,5 +19,7 @@ export default <T>(data: T[], index?: number | number[]): T[] =>
     ? []
     : removeAtIndexes(
         data,
-        (convertToArrayPayload(index) as number[]).sort((a, b) => a - b),
+        [...new Set(convertToArrayPayload(index) as number[])].sort(
+          (a, b) => a - b,
+        ),
       );
