@@ -98,8 +98,7 @@ export function useForm<
 
   for (const key in RESET_OPTIONS) {
     if (key in previousOptions && !(key in props)) {
-      removedOptions[key] =
-        RESET_OPTIONS[key as keyof typeof RESET_OPTIONS];
+      removedOptions[key] = RESET_OPTIONS[key as keyof typeof RESET_OPTIONS];
     }
   }
 
