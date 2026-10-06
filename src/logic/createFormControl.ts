@@ -110,7 +110,7 @@ import unsetEmptyArray from './unsetEmptyArray';
 import updateFieldArrayRootError from './updateFieldArrayRootError';
 import validateField from './validateField';
 
-const defaultOptions = {
+export const defaultOptions = {
   mode: VALIDATION_MODE.onSubmit,
   reValidateMode: VALIDATION_MODE.onChange,
   shouldFocusError: true,
