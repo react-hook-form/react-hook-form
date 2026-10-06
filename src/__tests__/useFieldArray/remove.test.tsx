@@ -1881,4 +1881,30 @@ describe('remove', () => {
       );
     });
   });
+
+  it('should ignore duplicated indexes and keep the passed indexes unchanged', () => {
+    const { result } = renderHook(() => {
+      const form = useForm<{ test: { value: string }[] }>({
+        defaultValues: {
+          test: [
+            { value: 'a' },
+            { value: 'b' },
+            { value: 'c' },
+            { value: 'd' },
+          ],
+        },
+      });
+      const fieldArray = useFieldArray({ control: form.control, name: 'test' });
+
+      return { form, fieldArray };
+    });
+    const indexes = [3, 1, 1];
+
+    act(() => result.current.fieldArray.remove(indexes));
+
+    expect(indexes).toEqual([3, 1, 1]);
+    expect(result.current.form.getValues()).toEqual({
+      test: [{ value: 'a' }, { value: 'c' }],
+    });
+  });
 });
