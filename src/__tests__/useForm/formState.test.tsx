@@ -1102,6 +1102,33 @@ describe('formState', () => {
     expect(dirtyFieldsState).toEqual({});
   });
 
+  it('should mark fields named after Object.prototype members as touched on blur', async () => {
+    let touchedFieldsState = {};
+
+    const App = () => {
+      const {
+        register,
+        formState: { touchedFields },
+      } = useForm({
+        defaultValues: { hasOwnProperty: '' },
+      });
+
+      touchedFieldsState = touchedFields;
+
+      return (
+        <form>
+          <input {...register('hasOwnProperty')} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.blur(screen.getByRole('textbox'));
+
+    expect(touchedFieldsState).toEqual({ hasOwnProperty: true });
+  });
+
   it('should mark an array-valued registered field dirty as a boolean rather than diffing its elements (#13584)', async () => {
     function App() {
       const {

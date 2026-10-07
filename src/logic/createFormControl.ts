@@ -641,7 +641,9 @@ export function createFormControl<
       }
 
       if (isBlurEvent) {
-        const isPreviousFieldTouched = get(_formState.touchedFields, name);
+        const isPreviousFieldTouched = has(_formState.touchedFields, name)
+          ? get(_formState.touchedFields, name)
+          : undefined;
 
         if (!isPreviousFieldTouched) {
           set(_formState.touchedFields, name, isBlurEvent);
@@ -1317,8 +1319,9 @@ export function createFormControl<
       if (isBlurEvent) {
         if (!target || !target.readOnly) {
           field._f.onBlur && field._f.onBlur(event);
-          const pendingDelayError = delayErrorCallbacks[name];
-          pendingDelayError && pendingDelayError(0);
+          if (Object.prototype.hasOwnProperty.call(delayErrorCallbacks, name)) {
+            delayErrorCallbacks[name]!(0);
+          }
         }
       } else if (field._f.onChange) {
         field._f.onChange(event);
