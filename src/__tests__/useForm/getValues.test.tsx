@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  act,
   fireEvent,
   render,
   renderHook,
@@ -391,6 +392,25 @@ describe('getValues', () => {
 
     expect(dirtyValues).toEqual({
       records: [undefined, { name: 'changed' }],
+    });
+  });
+});
+
+describe('getValues with an own hasOwnProperty field', () => {
+  it('extracts dirty values without calling the field value', () => {
+    const { result } = renderHook(() => {
+      const methods = useForm({ defaultValues: { hasOwnProperty: 'before' } });
+      methods.formState.dirtyFields;
+      return methods;
+    });
+    result.current.register('hasOwnProperty');
+    act(() => {
+      result.current.setValue('hasOwnProperty', 'after', {
+        shouldDirty: true,
+      });
+    });
+    expect(result.current.getValues(undefined, { dirtyFields: true })).toEqual({
+      hasOwnProperty: 'after',
     });
   });
 });
