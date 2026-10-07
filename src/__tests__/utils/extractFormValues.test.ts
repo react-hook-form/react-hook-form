@@ -53,3 +53,45 @@ describe('extractFormValues', () => {
     });
   });
 });
+
+describe('extractFormValues own-property safety', () => {
+  it('extracts an own field that shadows hasOwnProperty', () => {
+    expect(
+      extractFormValues({ hasOwnProperty: true }, { hasOwnProperty: 'value' }),
+    ).toEqual({ hasOwnProperty: 'value' });
+  });
+
+  it('extracts a nested field that shadows hasOwnProperty', () => {
+    expect(
+      extractFormValues(
+        { nested: { hasOwnProperty: true } },
+        { nested: { hasOwnProperty: 'value', untouched: 'keep out' } },
+      ),
+    ).toEqual({ nested: { hasOwnProperty: 'value' } });
+  });
+
+  it('extracts an array entry with a field that shadows hasOwnProperty', () => {
+    expect(
+      extractFormValues(
+        { records: [{ hasOwnProperty: true }] },
+        { records: [{ hasOwnProperty: 'value', untouched: 'keep out' }] },
+      ),
+    ).toEqual({ records: [{ hasOwnProperty: 'value' }] });
+  });
+
+  it('extracts fields from a null-prototype state object', () => {
+    const fieldsState = Object.assign(Object.create(null), { name: true });
+    expect(extractFormValues(fieldsState, { name: 'value' })).toEqual({
+      name: 'value',
+    });
+  });
+
+  it('does not extract inherited fields', () => {
+    const fieldsState = Object.assign(Object.create({ inherited: true }), {
+      name: true,
+    });
+    expect(
+      extractFormValues(fieldsState, { name: 'value', inherited: 'keep out' }),
+    ).toEqual({ name: 'value' });
+  });
+});
