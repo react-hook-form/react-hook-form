@@ -641,8 +641,6 @@ export function createFormControl<
       }
 
       if (isBlurEvent) {
-        // own-property lookup: a field named after an Object.prototype
-        // member (e.g. "hasOwnProperty") must not count as previously touched
         const isPreviousFieldTouched = has(_formState.touchedFields, name)
           ? get(_formState.touchedFields, name)
           : undefined;
