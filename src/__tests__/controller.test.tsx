@@ -472,7 +472,12 @@ describe('Controller', () => {
 
   it('should invoke custom onChange method', () => {
     const onChange = jest.fn();
-    const Component = () => {
+
+    type ComponentProps = {
+      onChange: () => void;
+    };
+
+    const Component = ({ onChange }: ComponentProps) => {
       const { control } = useForm<{
         test: string;
       }>();
@@ -492,7 +497,7 @@ describe('Controller', () => {
       );
     };
 
-    render(<Component />);
+    render(<Component onChange={onChange} />);
 
     fireEvent.input(screen.getByRole('textbox'), {
       target: {
@@ -505,7 +510,12 @@ describe('Controller', () => {
 
   it('should invoke custom onBlur method', () => {
     const onBlur = jest.fn();
-    const Component = () => {
+
+    type ComponentProps = {
+      onBlur: () => void;
+    };
+
+    const Component = ({ onBlur }: ComponentProps) => {
       const { control } = useForm();
       return (
         <>
@@ -521,7 +531,7 @@ describe('Controller', () => {
       );
     };
 
-    render(<Component />);
+    render(<Component onBlur={onBlur} />);
 
     fireEvent.blur(screen.getByRole('textbox'));
 
@@ -633,7 +643,7 @@ describe('Controller', () => {
         <form>
           {fields.map((field, i) => (
             <Controller
-              key={field.id}
+              key={field.key}
               defaultValue={field.value}
               name={`test.${i}.value` as const}
               render={({ field }) => <input {...field} />}
@@ -674,7 +684,7 @@ describe('Controller', () => {
       return (
         <form>
           {fields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               <Controller
                 render={({ field }) => <input {...field} />}
                 name={`test.${i}.value`}
@@ -1084,7 +1094,7 @@ describe('Controller', () => {
             name={'test'}
             render={({ field }) => <input {...field} />}
           />
-          <p>{JSON.stringify(dirtyFields)}</p>
+          <p>{dirtyFields.test ? 'dirty' : 'notDirty'}</p>
           <p>{isDirty ? 'true' : 'false'}</p>
         </>
       );
@@ -1094,12 +1104,12 @@ describe('Controller', () => {
 
     fireEvent.change(screen.getByRole('textbox'), { target: { value: '1' } });
 
-    expect(screen.getByText('{"test":true}')).toBeVisible();
+    expect(screen.getByText('dirty')).toBeVisible();
     expect(screen.getByText('true')).toBeVisible();
 
     fireEvent.change(screen.getByRole('textbox'), { target: { value: '' } });
 
-    expect(screen.getByText('{}')).toBeVisible();
+    expect(screen.getByText('notDirty')).toBeVisible();
     expect(screen.getByText('false')).toBeVisible();
   });
 
@@ -1250,7 +1260,7 @@ describe('Controller', () => {
         <form onSubmit={handleSubmit(noop)}>
           {fields.map((field, index) => {
             return (
-              <div key={field.id}>
+              <div key={field.key}>
                 <Controller
                   control={control}
                   render={({ field }) => <input {...field} />}
@@ -1504,7 +1514,7 @@ describe('Controller', () => {
           />
 
           {fields.map((field, i) => (
-            <div key={field.id}>
+            <div key={field.key}>
               {show && (
                 <Controller
                   shouldUnregister

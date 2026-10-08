@@ -5,6 +5,7 @@ import getProxyFormState from './logic/getProxyFormState';
 import cloneObject from './utils/cloneObject';
 import deepEqual from './utils/deepEqual';
 import isFunction from './utils/isFunction';
+import { updateMethodsReference } from './utils/updateMethodsReference';
 import { FORM_ERROR_TYPE } from './constants';
 import { createFormControl } from './logic';
 import type {
@@ -52,6 +53,9 @@ export function useForm<
   const _formControl = React.useRef<
     UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
   >(undefined);
+  const _methods = React.useRef<
+    UseFormReturn<TFieldValues, TContext, TTransformedValues> | undefined
+  >(undefined);
   const _values = React.useRef<typeof props.values>(undefined);
   const _formControlProp = React.useRef(props.formControl);
   const _hadValidate = React.useRef(!!props.validate);
@@ -89,6 +93,8 @@ export function useForm<
         formState,
       };
     }
+
+    _methods.current = { ..._formControl.current };
   }
 
   const control = _formControl.current.control;
@@ -225,10 +231,23 @@ export function useForm<
     control._removeUnmounted();
   });
 
-  _formControl.current.formState = React.useMemo(
-    () => getProxyFormState(formState, control),
-    [control, formState],
-  );
+  return React.useMemo(() => {
+    const methods = _formControl.current as UseFormReturn<
+      TFieldValues,
+      TContext,
+      TTransformedValues
+    >;
 
-  return _formControl.current;
+    updateMethodsReference(
+      methods,
+      _methods.current as UseFormReturn<
+        TFieldValues,
+        TContext,
+        TTransformedValues
+      >,
+    );
+    methods.formState = getProxyFormState(formState, control);
+
+    return methods;
+  }, [formState, control]);
 }

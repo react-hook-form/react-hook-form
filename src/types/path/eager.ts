@@ -98,7 +98,9 @@ type ArrayPathImpl<
     ? U extends Primitive | BrowserNativeObject | OpaqueType
       ? IsAny<V> extends true
         ? string
-        : never
+        : U extends Primitive
+          ? `${K}`
+          : never
       : // Check so that we don't recurse into the same type
         // by ensuring that the types are mutually assignable
         // mutually required to avoid false positives of subtypes
