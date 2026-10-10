@@ -1563,6 +1563,83 @@ describe('select', () => {
       );
     });
 
+    it.each([
+      ['remove', (fieldArray: any) => fieldArray.remove(1), ['a', 'c', 'd']],
+      [
+        'move',
+        (fieldArray: any) => fieldArray.move(3, 0),
+        ['d', 'a', 'b', 'c'],
+      ],
+      [
+        'swap',
+        (fieldArray: any) => fieldArray.swap(0, 2),
+        ['c', 'b', 'a', 'd'],
+      ],
+    ])('should keep reshaped array indices after %s', (_, action, expected) => {
+      type Values = {
+        items: { value: { inside: string; tag: string } }[];
+      };
+
+      const { result } = renderHook(() => {
+        const form = useForm<Values>({
+          defaultValues: {
+            items: ['a', 'b', 'c', 'd'].map((inside) => ({
+              value: { inside, tag: `${inside}-tag` },
+            })),
+          },
+        });
+        const items = form
+          .select('items')
+          .select([{ data: 'value.inside', meta: { tag: 'value.tag' } }]);
+
+        return {
+          form,
+          items,
+          fieldArray: useFieldArray({ control: items.control }),
+          last: useWatch({
+            control: items.control,
+            name: `${expected.length - 1}.data` as '0.data',
+          }),
+        };
+      });
+
+      act(() => action(result.current.fieldArray));
+
+      expect(
+        result.current.fieldArray.fields.map(({ data, meta }) => [
+          data,
+          meta.tag,
+        ]),
+      ).toEqual(expected.map((inside) => [inside, `${inside}-tag`]));
+      expect(result.current.form.getValues('items')).toEqual(
+        expected.map((inside) => ({
+          value: { inside, tag: `${inside}-tag` },
+        })),
+      );
+      expect(result.current.last).toBe(expected[expected.length - 1]);
+
+      expected.forEach((inside, index) => {
+        const item = result.current.items.select(index);
+
+        expect(item.getValues()).toEqual({
+          data: inside,
+          meta: { tag: `${inside}-tag` },
+        });
+        expect(item.register('meta.tag').name).toBe(`items.${index}.value.tag`);
+        expect(
+          result.current.items.register(`${index}.data` as '0.data').name,
+        ).toBe(`items.${index}.value.inside`);
+      });
+
+      act(() => {
+        result.current.items.select(0).setValue('data', 'changed');
+      });
+
+      expect(result.current.form.getValues('items.0.value.inside')).toBe(
+        'changed',
+      );
+    });
+
     it('should map fields to item selections', () => {
       const App = () => {
         const form = useForm<FormValues>({ defaultValues });

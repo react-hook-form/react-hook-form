@@ -300,6 +300,11 @@ type FormValues = {
 
     // @ts-expect-error only arrays reshape items
     form.select('user').select([{ label: 'firstName' }]);
+
+    // @ts-expect-error arrays are only reshaped from their own selection
+    form.select({ list: [{ label: 'items.0.name' }] });
+    // @ts-expect-error arrays are only reshaped from their own selection
+    form.select('user').select({ list: [{ label: 'firstName' }] });
   }
 
   /** it should map field array fields to item selections */ {

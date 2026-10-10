@@ -39,6 +39,13 @@ type SelectMethods = Omit<UseFormReturn<any, any, any>, 'formState' | 'select'>;
 
 type Method = (...args: any[]) => any;
 
+const FIELD_STATE_KEYS = [
+  'errors',
+  'dirtyFields',
+  'touchedFields',
+  'validatingFields',
+];
+
 const scopes = new WeakMap<object, Scope>();
 
 const scopedFormStates = new WeakMap<object, FormState<FieldValues>>();
@@ -287,7 +294,7 @@ export const scopeFormState = <T extends Record<string, any>>(
     Object.defineProperty(result, key, {
       enumerable: formState.propertyIsEnumerable(key),
       get: () =>
-        key === 'errors' || key.endsWith('Fields')
+        FIELD_STATE_KEYS.includes(key)
           ? pick(scope, formState[key]) || empty
           : key === 'isDirty'
             ? (formState.isDirty,
