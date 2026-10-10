@@ -1,7 +1,11 @@
 import getDirtyFields from '../../logic/getDirtyFields';
 
 describe('getDirtyFields', () => {
-  it('should return all the dirty fields', () => {
+  it('preserve the top-level array shape', () => {
+    expect(getDirtyFields(['default'], ['updated'])).toEqual([true]);
+  });
+
+  it('return all the dirty fields', () => {
     expect(
       getDirtyFields(
         {},
@@ -75,7 +79,7 @@ describe('getDirtyFields', () => {
     });
   });
 
-  it('should set correctly dirty', () => {
+  it('set correctly dirty', () => {
     expect(
       getDirtyFields(
         {
@@ -98,7 +102,7 @@ describe('getDirtyFields', () => {
     });
   });
 
-  it('should not set dirtyFields fields for nested input data which are deep equal', () => {
+  it('not set dirtyFields fields for nested input data which are deep equal', () => {
     expect(
       getDirtyFields(
         { test: [{ data: 'luo', data1: 'luo1' }] },
@@ -107,7 +111,7 @@ describe('getDirtyFields', () => {
     ).toEqual({});
   });
 
-  it('should unset dirtyFields fields when value matches', () => {
+  it('unset dirtyFields fields when value matches', () => {
     expect(
       getDirtyFields(
         { test: [{ data: 'bill' }, { data: 'luo2', data1: 'luo1' }] },
@@ -116,7 +120,7 @@ describe('getDirtyFields', () => {
     ).toEqual({ test: [{ data: true }, { data1: true }] });
   });
 
-  it('should works in reverse dirtyFields fields check', () => {
+  it('works in reverse dirtyFields fields check', () => {
     expect(
       getDirtyFields(
         { test: [{ data: 'bill1' }, { data: 'luo2' }] },
@@ -132,7 +136,7 @@ describe('getDirtyFields', () => {
     ).toEqual({ test: [{ data: true }, { data1: true }] });
   });
 
-  it('should work for empty values compare with defaultValues', () => {
+  it('work for empty values compare with defaultValues', () => {
     expect(
       getDirtyFields(
         { test: [] },
@@ -151,7 +155,7 @@ describe('getDirtyFields', () => {
     });
   });
 
-  it('should set correctly with nested dirty', () => {
+  it('set correctly with nested dirty', () => {
     expect(
       getDirtyFields(
         {
@@ -182,7 +186,7 @@ describe('getDirtyFields', () => {
     });
   });
 
-  it('should keep nested dirtyFields fields when value matches', () => {
+  it('keep nested dirtyFields fields when value matches', () => {
     expect(
       getDirtyFields(
         {
@@ -220,7 +224,7 @@ describe('getDirtyFields', () => {
     });
   });
 
-  it('should reset dirtyFields fields', () => {
+  it('reset dirtyFields fields', () => {
     expect(
       getDirtyFields(
         { test: [{ data: 'bill' }] },
@@ -229,7 +233,7 @@ describe('getDirtyFields', () => {
     ).toEqual({});
   });
 
-  it('should reset dirtyFields fields', () => {
+  it('reset dirtyFields fields', () => {
     expect(
       getDirtyFields(
         {
@@ -284,7 +288,7 @@ describe('getDirtyFields', () => {
     });
   });
 
-  it('should work out with different data type', () => {
+  it('work out with different data type', () => {
     expect(
       getDirtyFields(
         {
@@ -338,7 +342,7 @@ describe('getDirtyFields', () => {
     });
   });
 
-  it('should include fields with null values', () => {
+  it('include fields with null values', () => {
     expect(
       getDirtyFields(
         {},
@@ -355,7 +359,7 @@ describe('getDirtyFields', () => {
     });
   });
 
-  it('should prune empty array', () => {
+  it('prune empty array', () => {
     expect(
       getDirtyFields(
         { test: { data: [{ value: 'default' }] } },
@@ -364,11 +368,11 @@ describe('getDirtyFields', () => {
     ).toEqual({});
   });
 
-  it('should not leave a stray empty array for a field array with no default value once all items are removed (#13600)', () => {
+  it('not leave a stray empty array for a field array with no default value once all items are removed (#13600)', () => {
     expect(getDirtyFields({}, { data: [] })).toEqual({});
   });
 
-  it('should not leave a stray empty array for a nested field array with no default value once all items are removed (#13600)', () => {
+  it('not leave a stray empty array for a nested field array with no default value once all items are removed (#13600)', () => {
     expect(
       getDirtyFields(
         { test: [{ firstName: 'bill' }, { firstName: 'bill' }] },
@@ -381,7 +385,7 @@ describe('getDirtyFields', () => {
     });
   });
 
-  it('should mark null values as dirty when comparing with defaultValues', () => {
+  it('mark null values as dirty when comparing with defaultValues', () => {
     expect(
       getDirtyFields(
         {
@@ -398,7 +402,7 @@ describe('getDirtyFields', () => {
     });
   });
 
-  it('should mark an array-valued registered field as dirty with a boolean rather than diffing elements (#13584)', () => {
+  it('mark an array-valued registered field as dirty with a boolean rather than diffing elements (#13584)', () => {
     const fieldRefs = {
       fruits: { _f: { name: 'fruits', ref: {} } },
     };
@@ -424,7 +428,7 @@ describe('getDirtyFields', () => {
     ).toEqual({});
   });
 
-  it('should still diff a field array element-by-element when the array path itself is not a registered leaf', () => {
+  it('still diff a field array element-by-element when the array path itself is not a registered leaf', () => {
     const fieldRefs = {
       test: [{ value: { _f: { name: 'test.0.value', ref: {} } } }],
     };

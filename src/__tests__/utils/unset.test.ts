@@ -1,14 +1,14 @@
 import unset from '../../utils/unset';
 
 describe('unset', () => {
-  it('should unset the array', () => {
+  it('unset the array', () => {
     const test = ['test', 'test1', 'test2'];
     expect(unset(test, '[0]')).toEqual([undefined, 'test1', 'test2']);
     expect(unset(test, '[1]')).toEqual([undefined, undefined, 'test2']);
     expect(unset(test, '[2]')).toEqual([undefined, undefined, undefined]);
   });
 
-  it('should return original object when path is not defined', () => {
+  it('return original object when path is not defined', () => {
     const test = {
       test: 'test',
     };
@@ -16,7 +16,7 @@ describe('unset', () => {
     expect(unset(test, '')).toEqual(test);
   });
 
-  it('should allow unsetting flat keep', () => {
+  it('allow unsetting flat keep', () => {
     const test = {
       'test.is.flat': 'test',
       test: {
@@ -31,7 +31,7 @@ describe('unset', () => {
     });
   });
 
-  it('should unset the flat object', () => {
+  it('unset the flat object', () => {
     const test = {
       test: 'test',
     };
@@ -39,7 +39,7 @@ describe('unset', () => {
     expect(unset(test, 'test')).toEqual({});
   });
 
-  it('should not unset if specified field is undefined', () => {
+  it('not unset if specified field is undefined', () => {
     const test = {
       test: {
         test1: 'test',
@@ -49,7 +49,7 @@ describe('unset', () => {
     expect(unset(test, 'testDummy.test1')).toEqual({ test: { test1: 'test' } });
   });
 
-  it('should unset the nest object', () => {
+  it('unset the nest object', () => {
     const test = {
       test: {
         min: 'test',
@@ -59,7 +59,7 @@ describe('unset', () => {
     expect(unset(test, 'test.min')).toEqual({});
   });
 
-  it('should unset deep object', () => {
+  it('unset deep object', () => {
     const test = {
       test: {
         bill: {
@@ -71,7 +71,7 @@ describe('unset', () => {
     expect(unset(test, 'test.bill.min')).toEqual({});
   });
 
-  it('should unset the including multiple field object', () => {
+  it('unset the including multiple field object', () => {
     const deep = {
       data: {
         firstName: 'test',
@@ -104,14 +104,14 @@ describe('unset', () => {
     });
   });
 
-  it('should unset the object in array', () => {
+  it('unset the object in array', () => {
     const test = {
       test: [{ min: 'required' }],
     };
     expect(unset(test, 'test[0].min')).toEqual({});
   });
 
-  it('should return empty object when inner object is empty object', () => {
+  it('return empty object when inner object is empty object', () => {
     const test = {
       data: {
         firstName: {},
@@ -121,7 +121,7 @@ describe('unset', () => {
     expect(unset(test, 'data.firstName')).toEqual({});
   });
 
-  it('should clear empty array', () => {
+  it('clear empty array', () => {
     const test = {
       data: {
         firstName: {
@@ -173,7 +173,7 @@ describe('unset', () => {
     });
   });
 
-  it('should only remove relevant data', () => {
+  it('only remove relevant data', () => {
     const data = {
       test: {},
       testing: {
@@ -210,7 +210,7 @@ describe('unset', () => {
     });
   });
 
-  it('should remove empty array item', () => {
+  it('remove empty array item', () => {
     const data = {
       name: [
         {
@@ -222,7 +222,7 @@ describe('unset', () => {
     expect(unset(data, 'name[0]')).toEqual({});
   });
 
-  it('should not remove nested empty array item', () => {
+  it('not remove nested empty array item', () => {
     const data = {
       scenario: {
         steps: [
@@ -248,7 +248,7 @@ describe('unset', () => {
     });
   });
 
-  it('should not remove parent if boolean value exists in array', () => {
+  it('not remove parent if boolean value exists in array', () => {
     const data = {
       test: [true, undefined, true],
     };
@@ -258,7 +258,7 @@ describe('unset', () => {
     });
   });
 
-  it('should reset the array index', () => {
+  it('reset the array index', () => {
     const data = {
       test: [[{ name: 'test' }], [{ name: 'test1' }]],
     };
@@ -310,7 +310,7 @@ describe('unset', () => {
   });
 
   describe('when there are remaining props', () => {
-    it('should not unset the array', () => {
+    it('not unset the array', () => {
       const test: Record<string, any> = {
         test: [{ firstName: 'test' }],
       };
@@ -331,7 +331,7 @@ describe('unset', () => {
       Array.prototype.somePolyfill = () => 123;
     });
 
-    it('should delete empty arrays', () => {
+    it('delete empty arrays', () => {
       const data = {
         prop: [],
       };
@@ -346,7 +346,7 @@ describe('unset', () => {
     });
   });
 
-  it('should not traverse or delete prototype properties via __proto__ path', () => {
+  it('not traverse or delete prototype properties via __proto__ path', () => {
     const protoPollutionKey = '__rhfTestPolluted__';
 
     // Simulate Object.prototype being extended (e.g. by another library)

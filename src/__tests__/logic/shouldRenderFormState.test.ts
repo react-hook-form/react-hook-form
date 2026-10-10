@@ -2,65 +2,48 @@ import shouldRenderFormState from '../../logic/shouldRenderFormState';
 import type { ReadFormState } from '../../types';
 
 describe('shouldRenderFormState', () => {
-  const updateFormState = jest.fn();
-
-  beforeEach(() => {
-    updateFormState.mockClear();
-  });
-
-  it('should return true when formState is Empty', () => {
+  it('return true when formState is Empty', () => {
     const proxy = {
       isValid: true,
     } as ReadFormState;
-    const result = shouldRenderFormState({}, proxy, updateFormState);
+    const result = shouldRenderFormState({}, proxy);
     expect(result).toBe(true);
   });
 
-  it('should return matched key when incoming state contains subscribed key among others', () => {
+  it('return matched key when incoming state contains subscribed key among others', () => {
     const proxy = { isValid: true } as ReadFormState;
     const result = shouldRenderFormState(
       { isValid: false, isDirty: true },
       proxy,
-      updateFormState,
     );
     expect(result).toBe('isValid');
   });
 
-  it('should not notify when incoming state keys do not overlap with subscribed keys', () => {
+  it('not notify when incoming state keys do not overlap with subscribed keys', () => {
     const proxy = { values: true } as ReadFormState;
     const result = shouldRenderFormState(
       { name: 'secondName', errors: {} },
       proxy,
-      updateFormState,
     );
     expect(result).toBeUndefined();
   });
 
-  it('should return true when changed state key is subscribed', () => {
+  it('return true when changed state key is subscribed', () => {
     const proxy: ReadFormState = {
       isDirty: true,
       isValid: false,
     } as ReadFormState;
-    const result = shouldRenderFormState(
-      { isDirty: true },
-      proxy,
-      updateFormState,
-    );
+    const result = shouldRenderFormState({ isDirty: true }, proxy);
 
     expect(result).toBe('isDirty');
-    expect(updateFormState).toHaveBeenCalledWith({ isDirty: true });
   });
 
-  it('should return false when changed state key is not subscribed', () => {
+  it('return false when changed state key is not subscribed', () => {
     const proxy: ReadFormState = {
       isDirty: false,
       isValid: true,
     } as ReadFormState;
-    const result = shouldRenderFormState(
-      { isDirty: true },
-      proxy,
-      updateFormState,
-    );
+    const result = shouldRenderFormState({ isDirty: true }, proxy);
 
     expect(result).toBeUndefined();
   });
@@ -70,7 +53,7 @@ describe('shouldRenderFormState', () => {
 
     // non-root, non-empty, no matching key → reaches .find() branch
     const proxy = { isValid: true } as ReadFormState;
-    shouldRenderFormState({ isDirty: true }, proxy, updateFormState);
+    shouldRenderFormState({ isDirty: true }, proxy);
 
     // Each call to shouldRenderFormState should produce exactly one
     // Object.keys(formState) call. The proxy may also be keyed once (isRoot
@@ -87,32 +70,22 @@ describe('shouldRenderFormState', () => {
   });
 
   describe('when root subscribe', () => {
-    it('should return subscribed key name if expecting all', () => {
+    it('return subscribed key name if expecting all', () => {
       const proxy: ReadFormState = {
         isDirty: 'all',
         isValid: false,
       } as ReadFormState;
-      const result = shouldRenderFormState(
-        { isDirty: true },
-        proxy,
-        updateFormState,
-        true,
-      );
+      const result = shouldRenderFormState({ isDirty: true }, proxy, true);
 
       expect(result).toBe('isDirty');
     });
 
-    it('should return undefined if not expecting all', () => {
+    it('return undefined if not expecting all', () => {
       const proxy: ReadFormState = {
         isDirty: true,
         isValid: false,
       } as ReadFormState;
-      const result = shouldRenderFormState(
-        { isDirty: true },
-        proxy,
-        updateFormState,
-        true,
-      );
+      const result = shouldRenderFormState({ isDirty: true }, proxy, true);
 
       expect(result).toBeUndefined();
     });

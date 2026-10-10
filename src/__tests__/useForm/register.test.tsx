@@ -1,4 +1,6 @@
 import React from 'react';
+import { hydrateRoot } from 'react-dom/client';
+import { renderToString } from 'react-dom/server';
 import {
   act,
   fireEvent,
@@ -16,6 +18,7 @@ import type {
   Resolver,
   ResolverResult,
   UseFormRegister,
+  UseFormReturn,
 } from '../../types';
 import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
@@ -24,7 +27,7 @@ import isString from '../../utils/isString';
 import noop from '../../utils/noop';
 
 describe('register', () => {
-  it('should support register passed to ref', async () => {
+  it('support register passed to ref', async () => {
     const { result } = renderHook(() =>
       useForm<{ test: string }>({
         defaultValues: {
@@ -125,7 +128,7 @@ describe('register', () => {
     },
   );
 
-  it('should determine checkbox group by type of reference value', async () => {
+  it('determine checkbox group by type of reference value', async () => {
     const callback = jest.fn();
     const Component = () => {
       const { register, handleSubmit } = useForm<{
@@ -160,7 +163,7 @@ describe('register', () => {
     );
   });
 
-  it('should re-render if errors occurred with resolver when formState.isValid is defined', async () => {
+  it('re-render if errors occurred with resolver when formState.isValid is defined', async () => {
     const Component = () => {
       const resolver: Resolver<{ test: string }> = async () => {
         return {
@@ -191,7 +194,7 @@ describe('register', () => {
     expect(screen.getByRole('alert').textContent).toBe('false');
   });
 
-  it('should be set default value when item is remounted again', async () => {
+  it('be set default value when item is remounted again', async () => {
     const { result, unmount } = renderHook(() => useForm<{ test: string }>());
 
     result.current.register('test');
@@ -210,7 +213,7 @@ describe('register', () => {
   });
 
   // issue: https://github.com/react-hook-form/react-hook-form/issues/2298
-  it('should reset isValid formState after reset with valid value in initial render', async () => {
+  it('reset isValid formState after reset with valid value in initial render', async () => {
     const Component = () => {
       const { register, reset, formState } = useForm<{
         issue: string;
@@ -241,7 +244,7 @@ describe('register', () => {
     });
   });
 
-  it('should update isValid correctly with custom registered input', async () => {
+  it('update isValid correctly with custom registered input', async () => {
     function Component() {
       const {
         register,
@@ -297,7 +300,7 @@ describe('register', () => {
     expect(await screen.findByText('true')).toBeVisible();
   });
 
-  it('should custom register with value and can be updated', async () => {
+  it('custom register with value and can be updated', async () => {
     const App = () => {
       const [inputValue, setInput] = React.useState(1);
       const [data, setData] = React.useState('');
@@ -346,7 +349,7 @@ describe('register', () => {
     expect(await screen.findByText('1234')).toBeVisible();
   });
 
-  it('should not affect or check against defaultChecked inputs', async () => {
+  it('not affect or check against defaultChecked inputs', async () => {
     type FormValues = Partial<{
       radio: string;
       checkbox: string[];
@@ -396,7 +399,7 @@ describe('register', () => {
   });
 
   describe('when defaultValue is provided', () => {
-    it('should check checkbox by default when value matches', async () => {
+    it('check checkbox by default when value matches', async () => {
       type FormValues = Partial<{
         checkbox: string;
       }>;
@@ -423,7 +426,7 @@ describe('register', () => {
       );
     });
 
-    it('should not check checkboxes when defaultValue is empty array', async () => {
+    it('not check checkboxes when defaultValue is empty array', async () => {
       type FormValues = Partial<{
         checkbox: string[];
       }>;
@@ -450,7 +453,7 @@ describe('register', () => {
       );
     });
 
-    it('should only check checkboxes when array defaultValue includes input value', async () => {
+    it('only check checkboxes when array defaultValue includes input value', async () => {
       type FormValues = Partial<{
         checkbox: string[];
       }>;
@@ -484,7 +487,7 @@ describe('register', () => {
     });
   });
 
-  it('should remove input value and reference with shouldUnregister: true', () => {
+  it('remove input value and reference with shouldUnregister: true', () => {
     type FormValue = {
       test: string;
     };
@@ -527,7 +530,7 @@ describe('register', () => {
     ]);
   });
 
-  it('should keep defaultValue with shouldUnregister: true when input unmounts', () => {
+  it('keep defaultValue with shouldUnregister: true when input unmounts', () => {
     type FormValue = {
       test: string;
     };
@@ -564,7 +567,7 @@ describe('register', () => {
     );
   });
 
-  it('should skip register absent fields which are checkbox/radio inputs', async () => {
+  it('skip register absent fields which are checkbox/radio inputs', async () => {
     let data: unknown;
 
     const App = () => {
@@ -617,7 +620,7 @@ describe('register', () => {
   });
 
   describe('register disabled', () => {
-    it('should return undefined for disabled inputs', async () => {
+    it('return undefined for disabled inputs', async () => {
       let output = {};
       const defaultValues = {
         test: true,
@@ -660,7 +663,7 @@ describe('register', () => {
       });
     });
 
-    it('should still show all inputs which has disabled set to true', async () => {
+    it('still show all inputs which has disabled set to true', async () => {
       let outputData: object = {};
       const watchedData: object[] = [];
 
@@ -738,7 +741,7 @@ describe('register', () => {
       );
     });
 
-    it('should validate value after toggling enabled/disabled on input', async () => {
+    it('validate value after toggling enabled/disabled on input', async () => {
       const defaultValue = 'Test';
       const validate = jest.fn();
       const submit = jest.fn();
@@ -784,7 +787,7 @@ describe('register', () => {
       );
     });
 
-    it('should not throw errors with disabled input', async () => {
+    it('not throw errors with disabled input', async () => {
       const message = 'Must have at least one checked!';
 
       function Checkbox() {
@@ -845,7 +848,7 @@ describe('register', () => {
       );
     });
 
-    it('should affect a group of checked attribute with disabled attribute', () => {
+    it('affect a group of checked attribute with disabled attribute', () => {
       const App = () => {
         const { register } = useForm();
         const options = [
@@ -887,7 +890,7 @@ describe('register', () => {
       ).toBeFalsy();
     });
 
-    it('should affect a single checked attribute with disabled attribute', () => {
+    it('affect a single checked attribute with disabled attribute', () => {
       const App = () => {
         const { register } = useForm<{
           test: boolean;
@@ -938,7 +941,7 @@ describe('register', () => {
       ).toBeTruthy();
     });
 
-    it('should work correctly with toggle disabled attribute and validation', async () => {
+    it('work correctly with toggle disabled attribute and validation', async () => {
       type FormValues = {
         test: string;
       };
@@ -1007,7 +1010,7 @@ describe('register', () => {
       expect(await screen.findByText('{"test":"a"}')).toBeVisible();
     });
 
-    it('should update isValid when toggling disabled state with required field in onChange mode', async () => {
+    it('update isValid when toggling disabled state with required field in onChange mode', async () => {
       let isValidValue = false;
 
       const App = () => {
@@ -1085,7 +1088,7 @@ describe('register', () => {
   });
 
   describe('register valueAs', () => {
-    it('should return number value with valueAsNumber', async () => {
+    it('return number value with valueAsNumber', async () => {
       let output = {};
       const Component = () => {
         const { register, handleSubmit } = useForm<{
@@ -1125,7 +1128,7 @@ describe('register', () => {
       await waitFor(() => expect(output).toEqual({ test: 12345, test1: true }));
     });
 
-    it('should return undefined value with setValueAs', async () => {
+    it('return undefined value with setValueAs', async () => {
       let output = {};
       const Component = () => {
         const { register, handleSubmit } = useForm<{
@@ -1159,7 +1162,7 @@ describe('register', () => {
       expect(output).toEqual({ test: undefined });
     });
 
-    it('should return NaN when value is valid', async () => {
+    it('return NaN when value is valid', async () => {
       let output = {};
       const Component = () => {
         const { register, handleSubmit } = useForm<{
@@ -1187,7 +1190,7 @@ describe('register', () => {
       await waitFor(() => expect(output).toEqual({ test: NaN }));
     });
 
-    it('should validate input before the valueAs', async () => {
+    it('validate input before the valueAs', async () => {
       const Component = () => {
         const {
           register,
@@ -1240,7 +1243,7 @@ describe('register', () => {
       expect(await screen.findByText('Number length')).toBeVisible();
     });
 
-    it('should be able to validate against formValues', async () => {
+    it('be able to validate against formValues', async () => {
       const App = () => {
         const {
           register,
@@ -1292,7 +1295,7 @@ describe('register', () => {
       await waitFor(() => screen.findByText('No error'));
     });
 
-    it('should send valueAs fields to schema validation', () => {
+    it('send valueAs fields to schema validation', () => {
       let output: any;
 
       const Component = () => {
@@ -1350,7 +1353,7 @@ describe('register', () => {
       });
     });
 
-    it('should send valueAs fields to in build validator', async () => {
+    it('send valueAs fields to in build validator', async () => {
       const Component = () => {
         const {
           register,
@@ -1408,7 +1411,7 @@ describe('register', () => {
       expect(screen.queryByText('test1 error')).not.toBeInTheDocument();
     });
 
-    it('should send valueAs fields to resolver', async () => {
+    it('send valueAs fields to resolver', async () => {
       const Component = () => {
         const resolver: Resolver<{ test: number; test1: number }> = async (
           data,
@@ -1492,7 +1495,7 @@ describe('register', () => {
       expect(screen.queryByText('test1 error')).not.toBeInTheDocument();
     });
 
-    it('should still validate with an error existed', async () => {
+    it('still validate with an error existed', async () => {
       function App() {
         const {
           register,
@@ -1540,7 +1543,7 @@ describe('register', () => {
     });
   });
 
-  it('should not register nested input', () => {
+  it('not register nested input', () => {
     const watchedValue: unknown[] = [];
     let inputs: unknown;
 
@@ -1626,7 +1629,7 @@ describe('register', () => {
   });
 
   describe('when setValueAs is presented with inputs', () => {
-    it('should not update inputs correctly with useForm defaultValues', () => {
+    it('not update inputs correctly with useForm defaultValues', () => {
       const App = () => {
         const { register } = useForm({
           defaultValues: {
@@ -1649,7 +1652,7 @@ describe('register', () => {
       );
     });
 
-    it('should not update inputs correctly with reset', () => {
+    it('not update inputs correctly with reset', () => {
       const App = () => {
         const { register, reset } = useForm();
 
@@ -1675,7 +1678,7 @@ describe('register', () => {
       );
     });
 
-    it('should populate input as string and submit as datetime object ', async () => {
+    it('populate input as string and submit as datetime object ', async () => {
       let submitData: unknown;
 
       const App = () => {
@@ -1715,7 +1718,7 @@ describe('register', () => {
     });
   });
 
-  it('should not throw error when register with non input ref', () => {
+  it('not throw error when register with non input ref', () => {
     const App = () => {
       const { register } = useForm();
 
@@ -1729,7 +1732,7 @@ describe('register', () => {
     render(<App />);
   });
 
-  it('should be able to register input/textarea/select when embedded deeply', async () => {
+  it('be able to register input/textarea/select when embedded deeply', async () => {
     let submitData: unknown;
 
     const Select = React.forwardRef<HTMLDivElement>((_, ref) => {
@@ -1811,7 +1814,7 @@ describe('register', () => {
     ).toEqual('textarea');
   });
 
-  it('should trigger deps validation', async () => {
+  it('trigger deps validation', async () => {
     const App = () => {
       const { register, getValues, formState } = useForm<{
         firstName: string;
@@ -1854,7 +1857,7 @@ describe('register', () => {
     await waitForElementToBeRemoved(screen.queryByText('error'));
   });
 
-  it('should trigger deps validation with schema validation', async () => {
+  it('trigger deps validation with schema validation', async () => {
     const App = () => {
       type Form = {
         firstName: string;
@@ -1927,7 +1930,7 @@ describe('register', () => {
     );
   });
 
-  it('should revalidate deps on setValue with shouldValidate', async () => {
+  it('revalidate deps on setValue with shouldValidate', async () => {
     const App = () => {
       const { register, setValue, getValues, formState } = useForm<{
         password: string;
@@ -1986,7 +1989,7 @@ describe('register', () => {
     );
   });
 
-  it('should revalidate deps on setValue with shouldValidate and resolver', async () => {
+  it('revalidate deps on setValue with shouldValidate and resolver', async () => {
     type Form = {
       password: string;
       confirmPassword: string;
@@ -2054,7 +2057,7 @@ describe('register', () => {
     );
   });
 
-  it('should trigger custom onChange event', async () => {
+  it('trigger custom onChange event', async () => {
     const onChange = jest.fn();
 
     const App = () => {
@@ -2094,7 +2097,7 @@ describe('register', () => {
     );
   });
 
-  it('should trigger custom onBlur event', async () => {
+  it('trigger custom onBlur event', async () => {
     const onBlur = jest.fn();
 
     const App = () => {
@@ -2130,7 +2133,7 @@ describe('register', () => {
     );
   });
 
-  it('should not programmatically set input file value with FileList', async () => {
+  it('not programmatically set input file value with FileList', async () => {
     function App() {
       const { register, watch } = useForm();
       const moreDetail = watch('toggle');
@@ -2170,7 +2173,7 @@ describe('register', () => {
     expect(await screen.findByPlaceholderText('test')).toBeVisible();
   });
 
-  it('should set value before custom onChange', () => {
+  it('set value before custom onChange', () => {
     const test = jest.fn();
 
     const App = () => {
@@ -2198,7 +2201,7 @@ describe('register', () => {
     });
   });
 
-  it('should stop enforcing a validation rule removed at runtime', async () => {
+  it('stop enforcing a validation rule removed at runtime', async () => {
     const onValid = jest.fn();
     const onInvalid = jest.fn();
 
@@ -2233,7 +2236,7 @@ describe('register', () => {
     );
   });
 
-  it('should stop enforcing a validate function removed at runtime', async () => {
+  it('stop enforcing a validate function removed at runtime', async () => {
     let trigger: (() => Promise<boolean>) | undefined;
 
     const App = ({ withValidate }: { withValidate: boolean }) => {
@@ -2263,6 +2266,93 @@ describe('register', () => {
 
     await act(async () => {
       await expect(trigger!()).resolves.toBe(true);
+    });
+  });
+
+  describe('when a server-rendered input is edited before hydration', () => {
+    it('keep the typed text as the field value', async () => {
+      let methods: UseFormReturn<{ test: string }>;
+
+      function App() {
+        methods = useForm({ defaultValues: { test: 'default' } });
+        return <input {...methods.register('test')} />;
+      }
+
+      const container = document.createElement('div');
+      container.innerHTML = renderToString(<App />);
+      const input = container.querySelector('input') as HTMLInputElement;
+      input.value = 'typed';
+
+      await act(async () => {
+        hydrateRoot(container, <App />);
+      });
+
+      expect(input.value).toBe('typed');
+      expect(methods!.getValues('test')).toBe('typed');
+      expect(methods!.getFieldState('test').isDirty).toBe(true);
+    });
+
+    it('keep the typed text through the values reset with keepDirtyValues', async () => {
+      let methods: UseFormReturn<{ test: string }>;
+
+      function App() {
+        methods = useForm({
+          values: { test: 'server' },
+          resetOptions: { keepDirtyValues: true },
+        });
+        return <input {...methods.register('test')} />;
+      }
+
+      const container = document.createElement('div');
+      container.innerHTML = renderToString(<App />);
+      const input = container.querySelector('input') as HTMLInputElement;
+      input.value = 'typed';
+
+      await act(async () => {
+        hydrateRoot(container, <App />);
+      });
+
+      expect(input.value).toBe('typed');
+      expect(methods!.getValues('test')).toBe('typed');
+    });
+
+    it('keep the checkbox state as the field value', async () => {
+      let methods: UseFormReturn<{ test: boolean }>;
+
+      function App() {
+        methods = useForm({ defaultValues: { test: false } });
+        return <input type="checkbox" {...methods.register('test')} />;
+      }
+
+      const container = document.createElement('div');
+      container.innerHTML = renderToString(<App />);
+      const checkbox = container.querySelector('input') as HTMLInputElement;
+      checkbox.checked = true;
+
+      await act(async () => {
+        hydrateRoot(container, <App />);
+      });
+
+      expect(checkbox.checked).toBe(true);
+      expect(methods!.getValues('test')).toBe(true);
+    });
+
+    it('still set a reset value into an input edited after the form is ready', async () => {
+      let methods: UseFormReturn<{ test: string }>;
+
+      function App() {
+        methods = useForm({ defaultValues: { test: 'default' } });
+        return <input {...methods.register('test')} />;
+      }
+
+      render(<App />);
+      const input = screen.getByRole('textbox') as HTMLInputElement;
+      fireEvent.input(input, { target: { value: 'typed' } });
+
+      act(() => methods!.reset({ test: 'reset' }));
+
+      expect(input.value).toBe('reset');
+      expect(methods!.getValues('test')).toBe('reset');
     });
   });
 });

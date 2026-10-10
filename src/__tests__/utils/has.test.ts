@@ -1,7 +1,7 @@
 import has from '../../utils/has';
 
 describe('has', () => {
-  it('should detect paths that resolve to a value', () => {
+  it('detect paths that resolve to a value', () => {
     const test = {
       bill: [1, 2, 3],
       betty: { test: { test1: [{ test2: 'bill' }] } },
@@ -14,7 +14,7 @@ describe('has', () => {
     expect(has(test, 'dotted.filled')).toBeTruthy();
   });
 
-  it('should detect paths that are absent', () => {
+  it('detect paths that are absent', () => {
     const test = {
       bill: [1, 2, 3],
       betty: { test: 'test' },
@@ -26,7 +26,7 @@ describe('has', () => {
     expect(has(test, 'dotted.empty')).toBeFalsy();
   });
 
-  it('should detect a path that is present but holds an empty or nullish value', () => {
+  it('detect a path that is present but holds an empty or nullish value', () => {
     const test = {
       empty: {},
       list: [],
@@ -40,14 +40,14 @@ describe('has', () => {
     expect(has(test, 'nullish')).toBeTruthy();
   });
 
-  it('should not report inherited properties', () => {
+  it('not report inherited properties', () => {
     expect(has({}, 'toString')).toBeFalsy();
     expect(has({}, 'constructor')).toBeFalsy();
     expect(has({}, '__proto__')).toBeFalsy();
     expect(has({ a: {} }, 'a.__proto__.b')).toBeFalsy();
   });
 
-  it('should return false for an empty path or a non-traversable object', () => {
+  it('return false for an empty path or a non-traversable object', () => {
     expect(has({ bill: 'test' }, '')).toBeFalsy();
     expect(has({ bill: 'test' }, undefined)).toBeFalsy();
     expect(has({ bill: 'test' }, null)).toBeFalsy();

@@ -1,7 +1,7 @@
 import isRadioOrCheckbox from '../../utils/isRadioOrCheckbox';
 
 describe('isRadioOrCheckbox', () => {
-  it('should return true when type is either radio or checkbox', () => {
+  it('return true when type is either radio or checkbox', () => {
     expect(isRadioOrCheckbox({ name: 'test', type: 'radio' })).toBeTruthy();
     expect(isRadioOrCheckbox({ name: 'test', type: 'checkbox' })).toBeTruthy();
   });

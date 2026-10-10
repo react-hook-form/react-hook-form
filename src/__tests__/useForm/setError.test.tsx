@@ -73,7 +73,7 @@ describe('setError', () => {
     expect(result.current.formState.isValid).toBeFalsy();
   });
 
-  it('should update isValid with setError', async () => {
+  it('update isValid with setError', async () => {
     const App = () => {
       const {
         formState: { isValid },
@@ -106,7 +106,7 @@ describe('setError', () => {
     expect(await screen.findByText('no')).toBeVisible();
   });
 
-  it('should allow setting global error', async () => {
+  it('allow setting global error', async () => {
     const onSubmit = jest.fn();
 
     type Errors = {
@@ -179,7 +179,7 @@ describe('setError', () => {
     });
   });
 
-  it('should allow sequential calls to set with child after ancestor', async () => {
+  it('allow sequential calls to set with child after ancestor', async () => {
     const { result } = renderHook(() =>
       useForm<{ input: { first: string; last: string } }>(),
     );
@@ -221,7 +221,7 @@ describe('setError', () => {
     });
   });
 
-  it('should allow sequential calls to set with ancestor after child', async () => {
+  it('allow sequential calls to set with ancestor after child', async () => {
     const { result } = renderHook(() =>
       useForm<{ input: { first: string; last: string } }>(),
     );
@@ -266,7 +266,63 @@ describe('setError', () => {
     });
   });
 
-  it('should replace types from a previous validation when overwriting an error', async () => {
+  it('cancel pending delayError timers for nested fields when setError is called on the parent', async () => {
+    jest.useFakeTimers();
+
+    const App = () => {
+      const {
+        register,
+        setError,
+        formState: { errors },
+      } = useForm<{ parent: { child: string } }>({
+        delayError: 500,
+        mode: 'onChange',
+      });
+
+      return (
+        <div>
+          <input
+            {...register('parent.child', {
+              maxLength: { value: 3, message: 'too long' },
+            })}
+          />
+          <button
+            type="button"
+            onClick={() =>
+              setError('parent', { type: 'server', message: 'server error' })
+            }
+          >
+            setError
+          </button>
+          {errors.parent?.child && <p>child error</p>}
+          {errors.parent?.message && <p>{errors.parent.message}</p>}
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    // Schedule a delayed child error, then call setError on the parent
+    // before the delay elapses.
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'toolong' },
+      });
+    });
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await act(async () => {
+      jest.advanceTimersByTime(500);
+    });
+
+    expect(screen.queryByText('child error')).not.toBeInTheDocument();
+    expect(screen.getByText('server error')).toBeVisible();
+
+    jest.useRealTimers();
+  });
+
+  it('replace types from a previous validation when overwriting an error', async () => {
     type FormValues = { password: string };
 
     let currentErrors: FieldErrors<FormValues> = {};
@@ -316,7 +372,7 @@ describe('setError', () => {
   });
 });
 
-it('should update error state in FormProvider when setError is called in useEffect', async () => {
+it('update error state in FormProvider when setError is called in useEffect', async () => {
   type FormValues = {
     firstname: string;
     lastname: string;

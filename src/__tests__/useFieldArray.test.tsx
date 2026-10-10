@@ -44,7 +44,7 @@ describe('useFieldArray', () => {
   });
 
   describe('initialize', () => {
-    it('should return default fields value', () => {
+    it('return default fields value', () => {
       const { result } = renderHook(() => {
         const { control } = useForm();
         return useFieldArray({
@@ -56,7 +56,7 @@ describe('useFieldArray', () => {
       expect(result.current.fields).toEqual([]);
     });
 
-    it('should populate default values into fields', () => {
+    it('populate default values into fields', () => {
       const { result } = renderHook(() => {
         const { control } = useForm({
           defaultValues: { test: [{ test: '1' }, { test: '2' }] },
@@ -73,7 +73,7 @@ describe('useFieldArray', () => {
       ]);
     });
 
-    it('should populate values into fields instead of defaultValues', () => {
+    it('populate values into fields instead of defaultValues', () => {
       const { result } = renderHook(() => {
         const { control } = useForm({
           defaultValues: { test: [{ test: '3' }, { test: '21' }] },
@@ -92,7 +92,7 @@ describe('useFieldArray', () => {
       ]);
     });
 
-    it('should not initialize missing nested field array values when disabled', () => {
+    it('not initialize missing nested field array values when disabled', () => {
       type FormValues = {
         name: string;
         union:
@@ -134,7 +134,7 @@ describe('useFieldArray', () => {
       });
     });
 
-    it('should render with FormProvider', () => {
+    it('render with FormProvider', () => {
       const Provider = ({ children }: { children: React.ReactNode }) => {
         const methods = useForm();
         return <FormProvider {...methods}>{children}</FormProvider>;
@@ -147,8 +147,131 @@ describe('useFieldArray', () => {
     });
   });
 
+  describe('touchedFields subscriptions', () => {
+    type FormValues = { test: { value: string }[] };
+
+    it('update an isolated useFormState subscriber when a touched row is removed', () => {
+      const TouchedStatus = ({
+        control,
+      }: {
+        control: Control<FormValues>;
+      }): React.ReactElement => {
+        const { touchedFields } = useFormState({ control });
+
+        return (
+          <p>{touchedFields.test?.[0]?.value ? 'touched' : 'untouched'}</p>
+        );
+      };
+
+      const Fields = ({
+        methods,
+      }: {
+        methods: UseFormReturn<FormValues>;
+      }): React.ReactElement => {
+        const { fields, remove } = useFieldArray({
+          control: methods.control,
+          name: 'test',
+        });
+
+        return (
+          <>
+            {fields.map((field, index) => (
+              <input
+                key={field.id}
+                {...methods.register(`test.${index}.value`)}
+              />
+            ))}
+            <button type="button" onClick={() => remove(0)}>
+              remove
+            </button>
+          </>
+        );
+      };
+
+      const App = (): React.ReactElement => {
+        const methods = useForm<FormValues>({
+          defaultValues: { test: [{ value: 'a' }, { value: 'b' }] },
+        });
+
+        // Keep the subscriber outside the component rerendered by array actions.
+        return (
+          <>
+            <Fields methods={methods} />
+            <TouchedStatus control={methods.control} />
+          </>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.blur(screen.getAllByRole('textbox')[0]);
+      expect(screen.getByText('touched')).toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+
+      expect(screen.getByRole('textbox')).toHaveValue('b');
+      expect(screen.getByText('untouched')).toBeInTheDocument();
+    });
+
+    it('notify touchedFields-only subscribers after swap and removal', () => {
+      const { result } = renderHook(() => {
+        const methods = useForm<FormValues>({
+          defaultValues: { test: [{ value: 'a' }, { value: 'b' }] },
+        });
+
+        return {
+          methods,
+          fieldArray: useFieldArray({
+            control: methods.control,
+            name: 'test',
+          }),
+        };
+      });
+      const touchedRows: [boolean, boolean][] = [];
+      const unsubscribe = result.current.methods.subscribe({
+        name: 'test',
+        formState: { touchedFields: true },
+        callback: ({ touchedFields }) => {
+          // Capture flags immediately because subsequent actions mutate form state.
+          touchedRows.push([
+            !!touchedFields.test?.[0]?.value,
+            !!touchedFields.test?.[1]?.value,
+          ]);
+        },
+      });
+
+      act(() => result.current.fieldArray.append({ value: 'c' }));
+      expect(touchedRows).toEqual([]);
+
+      act(() =>
+        result.current.methods.setValue('test.1.value', 'b', {
+          shouldTouch: true,
+        }),
+      );
+      expect(touchedRows).toEqual([[false, true]]);
+
+      act(() => result.current.fieldArray.swap(0, 1));
+      expect(touchedRows).toEqual([
+        [false, true],
+        [true, false],
+      ]);
+
+      act(() => result.current.fieldArray.remove(0));
+      expect(touchedRows).toEqual([
+        [false, true],
+        [true, false],
+        [false, false],
+      ]);
+      expect(
+        result.current.methods.getFieldState('test.0.value').isTouched,
+      ).toBeFalsy();
+
+      unsubscribe();
+    });
+  });
+
   describe('with should unregister false', () => {
-    it('should still remain input value with toggle', () => {
+    it('still remain input value with toggle', () => {
       const Component = () => {
         const { register, control } = useForm<{
           test: {
@@ -190,7 +313,7 @@ describe('useFieldArray', () => {
       expect(screen.getAllByRole('textbox').length).toEqual(1);
     });
 
-    it('should show errors during mount when mode is set to onChange', async () => {
+    it('show errors during mount when mode is set to onChange', async () => {
       const Component = () => {
         const {
           register,
@@ -238,7 +361,7 @@ describe('useFieldArray', () => {
       expect(await screen.findByText('not valid')).toBeVisible();
     });
 
-    it('should retain input values during unmount', async () => {
+    it('retain input values during unmount', async () => {
       type FormValues = {
         test: { name: string }[];
       };
@@ -304,7 +427,7 @@ describe('useFieldArray', () => {
   });
 
   describe('with resolver', () => {
-    it('should provide updated form value each action', async () => {
+    it('provide updated form value each action', async () => {
       let formData = {};
       const Component = () => {
         const {
@@ -349,7 +472,7 @@ describe('useFieldArray', () => {
       });
     });
 
-    it('should provide correct form data with nested field array', async () => {
+    it('provide correct form data with nested field array', async () => {
       type FormValues = {
         test: {
           value: string;
@@ -452,7 +575,7 @@ describe('useFieldArray', () => {
       });
     });
 
-    it('should report field array error during user action', async () => {
+    it('report field array error during user action', async () => {
       type FormValues = {
         test: { value: string }[];
       };
@@ -509,7 +632,7 @@ describe('useFieldArray', () => {
       expect(await screen.findByText('minLength')).toBeVisible();
     });
 
-    it('should not return schema error without user action', () => {
+    it('not return schema error without user action', () => {
       type FormValues = {
         test: { value: string }[];
       };
@@ -559,7 +682,7 @@ describe('useFieldArray', () => {
       expect(screen.queryByText('minLength')).not.toBeInTheDocument();
     });
 
-    it('should update error when user action corrects it', async () => {
+    it('update error when user action corrects it', async () => {
       type FormValues = {
         test: { value: string }[];
       };
@@ -633,7 +756,7 @@ describe('useFieldArray', () => {
       );
     });
 
-    it('should update error when array is changed', async () => {
+    it('update error when array is changed', async () => {
       type FormValues = {
         test: { value: string }[];
       };
@@ -811,7 +934,7 @@ describe('useFieldArray', () => {
       });
     });
 
-    it('should preserve nested field errors after remove when both root and field errors exist', async () => {
+    it('preserve nested field errors after remove when both root and field errors exist', async () => {
       type FormValues = {
         test: { value: string }[];
       };
@@ -928,7 +1051,7 @@ describe('useFieldArray', () => {
   });
 
   describe('when component unMount', () => {
-    it('should keep field array values', async () => {
+    it('keep field array values', async () => {
       let getValues: any;
       const Component = () => {
         const [show, setShow] = React.useState(true);
@@ -973,7 +1096,7 @@ describe('useFieldArray', () => {
       expect(screen.getAllByRole('textbox').length).toEqual(3);
     });
 
-    it('should remove reset method when field array is removed', () => {
+    it('remove reset method when field array is removed', () => {
       let controlTemp: any;
       let fieldsTemp: unknown[] = [];
 
@@ -1035,7 +1158,7 @@ describe('useFieldArray', () => {
       ]);
     });
 
-    it('should unset field array values correctly on DOM removing', async () => {
+    it('unset field array values correctly on DOM removing', async () => {
       interface NestedComponentProps extends Pick<
         UseFormReturn<FormValues>,
         'control' | 'register'
@@ -1134,7 +1257,7 @@ describe('useFieldArray', () => {
   });
 
   describe('with should unregister true', () => {
-    it('should not unregister field if unregister method is triggered', () => {
+    it('not unregister field if unregister method is triggered', () => {
       let getValues: any;
       const Component = () => {
         const {
@@ -1177,7 +1300,7 @@ describe('useFieldArray', () => {
       });
     });
 
-    it('should remove field array after useFieldArray is unmounted', () => {
+    it('remove field array after useFieldArray is unmounted', () => {
       type FormValues = {
         test: { name: string }[];
       };
@@ -1226,10 +1349,100 @@ describe('useFieldArray', () => {
 
       expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
     });
+
+    it('keep the shifted nested field array when a previous row is removed with shouldUnregister', () => {
+      type FormValues = {
+        items: {
+          name: string;
+          nested: { value: string }[];
+        }[];
+      };
+
+      let getValues: UseFormReturn<FormValues>['getValues'];
+
+      const Nested = ({
+        control,
+        index,
+      }: {
+        control: Control<FormValues>;
+        index: number;
+      }) => {
+        const { fields } = useFieldArray({
+          control,
+          name: `items.${index}.nested` as 'items.0.nested',
+        });
+
+        return (
+          <>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                aria-label={`nested-${index}-${i}`}
+                {...control.register(
+                  `items.${index}.nested.${i}.value` as const,
+                )}
+              />
+            ))}
+          </>
+        );
+      };
+
+      const Component = () => {
+        const {
+          control,
+          register,
+          getValues: tempGetValues,
+        } = useForm<FormValues>({
+          shouldUnregister: true,
+          defaultValues: {
+            items: [
+              { name: 'a', nested: [{ value: 'a0' }] },
+              { name: 'b', nested: [{ value: 'b0' }] },
+            ],
+          },
+        });
+        const { fields, remove } = useFieldArray({ control, name: 'items' });
+
+        getValues = tempGetValues;
+
+        return (
+          <form>
+            {fields.map((field, index) => (
+              <div key={field.id}>
+                <input
+                  aria-label={`name-${index}`}
+                  {...register(`items.${index}.name` as const)}
+                />
+                <Nested control={control} index={index} />
+              </div>
+            ))}
+            <button type="button" onClick={() => remove(0)}>
+              remove first
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      expect(screen.getByLabelText('name-0')).toHaveValue('a');
+      expect(screen.getByLabelText('nested-0-0')).toHaveValue('a0');
+      expect(screen.getByLabelText('name-1')).toHaveValue('b');
+      expect(screen.getByLabelText('nested-1-0')).toHaveValue('b0');
+
+      fireEvent.click(screen.getByRole('button', { name: 'remove first' }));
+
+      expect(screen.getByLabelText('name-0')).toHaveValue('b');
+      expect(screen.getByLabelText('nested-0-0')).toHaveValue('b0');
+      expect(screen.queryByLabelText('name-1')).not.toBeInTheDocument();
+      expect(getValues()).toEqual({
+        items: [{ name: 'b', nested: [{ value: 'b0' }] }],
+      });
+    });
   });
 
   describe('setError', () => {
-    it('should be able to set an field array error', async () => {
+    it('be able to set an field array error', async () => {
       const Component = () => {
         const {
           register,
@@ -1282,7 +1495,7 @@ describe('useFieldArray', () => {
   });
 
   describe('with reset', () => {
-    it('should reset with field array', async () => {
+    it('reset with field array', async () => {
       let fieldsTemp: unknown[] = [];
 
       const App = () => {
@@ -1335,7 +1548,7 @@ describe('useFieldArray', () => {
       expect(fieldsTemp).toEqual([{ id: '5', value: 'default' }]);
     });
 
-    it('should only notify a useWatch subscriber once when reset is called', () => {
+    it('only notify a useWatch subscriber once when reset is called', () => {
       let renderCount = 0;
 
       const Watch = ({ control }: { control: Control<any> }) => {
@@ -1381,7 +1594,7 @@ describe('useFieldArray', () => {
       expect(renderCount).toBe(1);
     });
 
-    it('should reset with field array with shouldUnregister set to false', () => {
+    it('reset with field array with shouldUnregister set to false', () => {
       const { result } = renderHook(() => {
         const { register, reset, control } = useForm({
           defaultValues: {
@@ -1416,7 +1629,7 @@ describe('useFieldArray', () => {
       expect(result.current.fields).toEqual([{ id: '7', value: 'data' }]);
     });
 
-    it('should reset with async', async () => {
+    it('reset with async', async () => {
       type FormValues = {
         test: {
           value: string;
@@ -1490,7 +1703,7 @@ describe('useFieldArray', () => {
       );
     });
 
-    it('should update isDirty after reset when using fieldArray operations with useFormState subscription', () => {
+    it('update isDirty after reset when using fieldArray operations with useFormState subscription', () => {
       const { result } = renderHook(() => {
         const { control, reset } = useForm({
           defaultValues: {
@@ -1589,7 +1802,7 @@ describe('useFieldArray', () => {
       },
     );
 
-    it('should not remount field-array rows on consecutive descendant setValue calls (key thrashing regression, #13420)', async () => {
+    it('not remount field-array rows on consecutive descendant setValue calls (key thrashing regression, #13420)', async () => {
       const mountCounts: number[] = [0, 0, 0];
 
       const Row = ({
@@ -1660,7 +1873,7 @@ describe('useFieldArray', () => {
       expect(mountCounts).toEqual([1, 1, 1]);
     });
 
-    it('should not re-render the useFieldArray host on a descendant setValue (#13420)', async () => {
+    it('not re-render the useFieldArray host on a descendant setValue (#13420)', async () => {
       let renderCount = 0;
 
       let setValue: UseFormReturn<{
@@ -1714,7 +1927,7 @@ describe('useFieldArray', () => {
       expect(renderCount).toBe(rendersAfterMount);
     });
 
-    it('should resize a nested field array when setValue targets an ancestor object path (#13621)', async () => {
+    it('resize a nested field array when setValue targets an ancestor object path (#13621)', async () => {
       let setValue: UseFormReturn<{
         myForm: { userDetails: { firstName: string; lastName: string }[] };
       }>['setValue'];
@@ -1843,7 +2056,7 @@ describe('useFieldArray', () => {
       },
     );
 
-    it('should set nested field array correctly', async () => {
+    it('set nested field array correctly', async () => {
       type FormValues = {
         test: {
           firstName: string;
@@ -1940,7 +2153,7 @@ describe('useFieldArray', () => {
   });
 
   describe('array of array fields', () => {
-    it('should remove correctly with nested field array and set shouldUnregister to false', () => {
+    it('remove correctly with nested field array and set shouldUnregister to false', () => {
       type FormValues = {
         fieldArray: {
           value: string;
@@ -2064,7 +2277,7 @@ describe('useFieldArray', () => {
       expect(screen.getAllByRole('textbox').length).toEqual(1);
     });
 
-    it('should prepend correctly with default values on nested array fields', () => {
+    it('prepend correctly with default values on nested array fields', () => {
       type FormInputs = {
         nest: {
           test: {
@@ -2148,7 +2361,7 @@ describe('useFieldArray', () => {
       ).toEqual('test');
     });
 
-    it('should render correct amount of child array fields', async () => {
+    it('render correct amount of child array fields', async () => {
       type FormValues = {
         nest: {
           test: {
@@ -2242,7 +2455,7 @@ describe('useFieldArray', () => {
       expect(screen.getAllByRole('textbox')).toHaveLength(3);
     });
 
-    it('should populate all array fields with setValue when name match Field Array', () => {
+    it('populate all array fields with setValue when name match Field Array', () => {
       type FormInputs = {
         nest: {
           value: number;
@@ -2343,7 +2556,7 @@ describe('useFieldArray', () => {
       expect(nestedArrayInput1).toHaveValue('21');
     });
 
-    it('should populate all array fields correctly with setValue', () => {
+    it('populate all array fields correctly with setValue', () => {
       type FormValues = {
         nest: {
           value: number;
@@ -2444,7 +2657,7 @@ describe('useFieldArray', () => {
       expect(nestedArrayInput1).toHaveValue('21');
     });
 
-    it('should worked with deep nested field array without chaining useFieldArray', () => {
+    it('worked with deep nested field array without chaining useFieldArray', () => {
       type FormValues = {
         nest: {
           value: string;
@@ -2590,7 +2803,7 @@ describe('useFieldArray', () => {
       expect(deepNestInput3).toHaveValue('test');
     });
 
-    it('should allow append with deeply nested field array even with flat structure', async () => {
+    it('allow append with deeply nested field array even with flat structure', async () => {
       const watchValue: unknown[] = [];
 
       const App = () => {
@@ -2669,7 +2882,7 @@ describe('useFieldArray', () => {
   });
 
   describe('submit form', () => {
-    it('should not leave defaultValues as empty array', async () => {
+    it('not leave defaultValues as empty array', async () => {
       let submitData: any;
       type FormValues = {
         test: {
@@ -2712,7 +2925,7 @@ describe('useFieldArray', () => {
     });
   });
 
-  it('should custom register append, prepend and insert inputs with values', () => {
+  it('custom register append, prepend and insert inputs with values', () => {
     type FormValues = {
       test: {
         test: string;
@@ -2967,7 +3180,7 @@ describe('useFieldArray', () => {
     expect(watchValues).toMatchSnapshot();
   });
 
-  it('should append multiple inputs correctly', () => {
+  it('append multiple inputs correctly', () => {
     type FormValues = {
       test: {
         value: string;
@@ -3036,7 +3249,7 @@ describe('useFieldArray', () => {
     expect(watchedValue).toMatchSnapshot();
   });
 
-  it('should update field array defaultValues when invoke setValue', async () => {
+  it('update field array defaultValues when invoke setValue', async () => {
     type FormValues = {
       names: {
         name: string;
@@ -3160,7 +3373,7 @@ describe('useFieldArray', () => {
     ]);
   });
 
-  it('should unregister field array when shouldUnregister set to true', () => {
+  it('unregister field array when shouldUnregister set to true', () => {
     type FormValues = {
       test: {
         value: string;
@@ -3258,7 +3471,7 @@ describe('useFieldArray', () => {
     ]);
   });
 
-  it('should keep field values when field array gets unmounted and mounted', async () => {
+  it('keep field values when field array gets unmounted and mounted', async () => {
     type FormValues = {
       test: { firstName: string }[];
     };
@@ -3428,7 +3641,7 @@ describe('useFieldArray', () => {
     },
   );
 
-  it('should append deep nested field array correctly with strict mode', async () => {
+  it('append deep nested field array correctly with strict mode', async () => {
     function App() {
       const { control, register, handleSubmit } = useForm<{
         test: {
@@ -3483,7 +3696,7 @@ describe('useFieldArray', () => {
     ).toEqual('luo');
   });
 
-  it('should not populate defaultValue when field array is already mounted', async () => {
+  it('not populate defaultValue when field array is already mounted', async () => {
     type FormValues = {
       root: {
         test: string;
@@ -3594,7 +3807,7 @@ describe('useFieldArray', () => {
     ).toEqual('child of index 0');
   });
 
-  it('should update field array correctly when unmounted field', () => {
+  it('update field array correctly when unmounted field', () => {
     type FormValues = {
       nest: {
         value: string;
@@ -3685,7 +3898,7 @@ describe('useFieldArray', () => {
     ).toEqual('1sub-new');
   });
 
-  it('should update field array correctly with async invocation', async () => {
+  it('update field array correctly with async invocation', async () => {
     type FormValues = {
       items: { id: string; name: string }[];
     };
@@ -3756,7 +3969,7 @@ describe('useFieldArray', () => {
     expect(controlObj._fields.items.length).toEqual(2);
   });
 
-  it('should avoid omit keyName when defaultValues contains keyName attribute', () => {
+  it('avoid omit keyName when defaultValues contains keyName attribute', () => {
     let getValuesMethod: Function = noop;
 
     const App = () => {
@@ -3784,7 +3997,7 @@ describe('useFieldArray', () => {
   });
 
   describe('with rules', () => {
-    it('should validate the minLength of the entire field array after submit and correct accordingly', async () => {
+    it('validate the minLength of the entire field array after submit and correct accordingly', async () => {
       const App = () => {
         const {
           control,
@@ -3841,7 +4054,7 @@ describe('useFieldArray', () => {
       expect(screen.queryByAltText('Min length should be 2')).toBeNull();
     });
 
-    it('should validate with custom validation after submit and correct accordingly', async () => {
+    it('validate with custom validation after submit and correct accordingly', async () => {
       const App = () => {
         const {
           control,
@@ -3901,7 +4114,7 @@ describe('useFieldArray', () => {
       expect(screen.queryByAltText('Min length should be 2')).toBeNull();
     });
 
-    it('should respect rules passed from parent component', async () => {
+    it('respect rules passed from parent component', async () => {
       const onValid = jest.fn();
       const onInvalid = jest.fn();
 
@@ -3988,7 +4201,7 @@ describe('useFieldArray', () => {
       expect(onValid).not.toHaveBeenCalled();
     });
 
-    it('should validate the maxLength of the entire field array after submit and correct accordingly', async () => {
+    it('validate the maxLength of the entire field array after submit and correct accordingly', async () => {
       const App = () => {
         const {
           control,
@@ -4042,7 +4255,7 @@ describe('useFieldArray', () => {
       expect(screen.queryByAltText('Max length should be 2')).toBeNull();
     });
 
-    it('should respect the validation mode and trigger validation after each field array action', async () => {
+    it('respect the validation mode and trigger validation after each field array action', async () => {
       const App = () => {
         const {
           control,
@@ -4110,7 +4323,7 @@ describe('useFieldArray', () => {
       expect(screen.queryByAltText('Max length should be 2')).toBeNull();
     });
 
-    it('should no longer validate when unmounted', async () => {
+    it('no longer validate when unmounted', async () => {
       const ArrayField = () => {
         const { fields } = useFieldArray({
           name: 'array',
@@ -4193,7 +4406,7 @@ describe('useFieldArray', () => {
       ).not.toBeInTheDocument();
     });
 
-    it('should not conflict with field level error', async () => {
+    it('not conflict with field level error', async () => {
       const App = () => {
         const {
           control,
@@ -4293,7 +4506,7 @@ describe('useFieldArray', () => {
       expect(screen.queryByAltText('Max length should be 2')).toBeNull();
     });
 
-    it('should not throw error when required is not defined but minLength', async () => {
+    it('not throw error when required is not defined but minLength', async () => {
       const App = () => {
         const {
           control,
@@ -4346,7 +4559,7 @@ describe('useFieldArray', () => {
       expect(screen.queryByAltText('Max length should be 2')).toBeNull();
     });
 
-    it('should throw error when required is defined', async () => {
+    it('throw error when required is defined', async () => {
       const App = () => {
         const {
           control,
@@ -4396,7 +4609,7 @@ describe('useFieldArray', () => {
       expect(screen.queryByAltText('Please enter some data')).toBeNull();
     });
 
-    it('should keep the root error after append/prepend/insert/remove when triggered before submit', async () => {
+    it('keep the root error after append/prepend/insert/remove when triggered before submit', async () => {
       const App = () => {
         const {
           control,
@@ -4446,7 +4659,7 @@ describe('useFieldArray', () => {
       screen.getByText('Min length should be 3');
     });
 
-    it('should keep the root error after swap/move when triggered before submit', async () => {
+    it('keep the root error after swap/move when triggered before submit', async () => {
       const App = () => {
         const {
           control,
@@ -4505,7 +4718,7 @@ describe('useFieldArray', () => {
       screen.getByText('Min length should be 5');
     });
 
-    it('should clear the root error after append satisfies the array rule', async () => {
+    it('clear the root error after append satisfies the array rule', async () => {
       const App = () => {
         const {
           control,
@@ -4560,7 +4773,7 @@ describe('useFieldArray', () => {
       screen.getByText('valid');
     });
 
-    it('should clear the required root error after append to an empty array', async () => {
+    it('clear the required root error after append to an empty array', async () => {
       const App = () => {
         const {
           control,
@@ -4611,7 +4824,7 @@ describe('useFieldArray', () => {
       );
     });
 
-    it('should keep row errors when append clears the array root error', async () => {
+    it('keep row errors when append clears the array root error', async () => {
       const App = () => {
         const {
           control,
@@ -4736,7 +4949,7 @@ describe('useFieldArray', () => {
       );
     };
 
-    it('should report field array error at the nested useFieldArray level when form submitted', async () => {
+    it('report field array error at the nested useFieldArray level when form submitted', async () => {
       const Component = () => {
         const {
           register,
@@ -4795,7 +5008,7 @@ describe('useFieldArray', () => {
       screen.getByText('This is required');
     });
 
-    it('should report field array error at the nested useFieldArray level during field level action', async () => {
+    it('report field array error at the nested useFieldArray level during field level action', async () => {
       const Component = () => {
         const {
           register,
@@ -4859,7 +5072,7 @@ describe('useFieldArray', () => {
     });
   });
 
-  it('should update isValid correctly with rules props and inline validation', async () => {
+  it('update isValid correctly with rules props and inline validation', async () => {
     const App = () => {
       const {
         control,
@@ -4916,7 +5129,7 @@ describe('useFieldArray', () => {
   });
 
   describe('with formState observers', () => {
-    it('should trigger reRender when user subscribes to root formState', async () => {
+    it('trigger reRender when user subscribes to root formState', async () => {
       type FormValues = { test: { value: string }[] };
 
       const FieldArray = ({
@@ -4966,7 +5179,7 @@ describe('useFieldArray', () => {
       await waitFor(() => expect(renderCount).toEqual(3));
     });
 
-    it('should trigger reRender on components that subscribe to useFieldArray fieldState', async () => {
+    it('trigger reRender on components that subscribe to useFieldArray fieldState', async () => {
       type FormValues = { test: { value: string }[] };
       let rootRenderCount = 0;
       let observerRenderCount = 0;
@@ -5029,7 +5242,7 @@ describe('useFieldArray', () => {
       });
     });
 
-    it('should unmount field array and remove its reference with shouldUnregister: true', () => {
+    it('unmount field array and remove its reference with shouldUnregister: true', () => {
       type FormValues = {
         type: string;
         array: {
@@ -5079,7 +5292,7 @@ describe('useFieldArray', () => {
       expect(array).toBeUndefined();
     });
 
-    it('should not trigger reRender on components that do not subscribe to useFieldArray fieldState', async () => {
+    it('not trigger reRender on components that do not subscribe to useFieldArray fieldState', async () => {
       type FormValues = { test: { value: string }[]; other: string };
       let rootRenderCount = 0;
       let notObserverRenderCount = 0;
@@ -5144,7 +5357,7 @@ describe('useFieldArray', () => {
 });
 
 describe('useFieldArray with checkbox', () => {
-  it('should correctly duplicate checkbox items with their values', async () => {
+  it('correctly duplicate checkbox items with their values', async () => {
     const App = () => {
       const methods = useForm<{
         checkboxes: {
@@ -5232,7 +5445,7 @@ describe('useFieldArray with checkbox', () => {
     });
   });
 
-  it('should maintain correct checkbox states after multiple duplications', async () => {
+  it('maintain correct checkbox states after multiple duplications', async () => {
     const App = () => {
       const methods = useForm<{
         checkboxes: {
@@ -5319,7 +5532,7 @@ describe('useFieldArray with checkbox', () => {
     });
   });
 
-  it('should skip validation for field array operations when mode is onBlur', async () => {
+  it('skip validation for field array operations when mode is onBlur', async () => {
     const App = () => {
       const {
         control,
@@ -5387,7 +5600,7 @@ describe('useFieldArray with checkbox', () => {
   });
 });
 
-it('should not lose defaultValues when useFieldArray and watch are used together', async () => {
+it('not lose defaultValues when useFieldArray and watch are used together', async () => {
   type FormValues = {
     pets: { name: string }[];
   };
@@ -5431,7 +5644,7 @@ it('should not lose defaultValues when useFieldArray and watch are used together
   }
 });
 
-it('should not corrupt parent state when remove is called with values prop', async () => {
+it('not corrupt parent state when remove is called with values prop', async () => {
   type Item = { name: string; text: string };
   type FormValues = { myfield: Item[] };
 
@@ -5552,7 +5765,7 @@ it('should not corrupt parent state when remove is called with values prop', asy
   }
 });
 
-it('should not restore defaultValues when appending null after remove in same action', async () => {
+it('not restore defaultValues when appending null after remove in same action', async () => {
   type FormValues = {
     items: { obj: { value: string } | null }[];
   };
@@ -5616,7 +5829,7 @@ it('should not restore defaultValues when appending null after remove in same ac
   });
 });
 
-it('should not initialize array in form values when disabled', () => {
+it('not initialize array in form values when disabled', () => {
   type FormValues = {
     name: string;
     union: { type: 'empty' } | { type: 'array'; values: string[] };
@@ -5641,7 +5854,7 @@ it('should not initialize array in form values when disabled', () => {
   expect(result.current.fieldArray.fields).toEqual([]);
 });
 
-it('should not modify form values when disabled methods are called', () => {
+it('not modify form values when disabled methods are called', () => {
   type FormValues = { items: { value: string }[] };
 
   const { result } = renderHook(() => {
@@ -5664,7 +5877,7 @@ it('should not modify form values when disabled methods are called', () => {
   expect(result.current.form.getValues('items')).toEqual([]);
 });
 
-it('should propagate disabled to field objects when disabled is set', () => {
+it('propagate disabled to field objects when disabled is set', () => {
   type FormValues = { items: { value: string }[] };
 
   const { result } = renderHook(() => {

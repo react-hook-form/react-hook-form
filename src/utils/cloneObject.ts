@@ -18,12 +18,13 @@ export default function cloneObject<T>(data: T): T {
   }
 
   const isArray = Array.isArray(data);
+  const prototype = Object.getPrototypeOf(data);
 
-  if (!isArray && (data as object).constructor !== Object) {
+  if (!isArray && prototype && (data as object).constructor !== Object) {
     return data;
   }
 
-  const copy = isArray ? [] : Object.create(Object.getPrototypeOf(data));
+  const copy = isArray ? new Array(data.length) : Object.create(prototype);
 
   for (const key in data) {
     if (Object.prototype.hasOwnProperty.call(data, key)) {

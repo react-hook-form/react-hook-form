@@ -36,7 +36,13 @@ import {
   useFormState,
 } from '../';
 
-jest.useFakeTimers();
+beforeEach(() => {
+  jest.useFakeTimers();
+});
+
+afterEach(() => {
+  jest.useRealTimers();
+});
 
 // Activity is a React 19.2+ API. Only run Activity-dependent tests when the
 // installed React actually provides it.
@@ -49,7 +55,7 @@ const itWithActivity = Activity ? it : it.skip;
 
 describe('useForm', () => {
   describe('when component unMount', () => {
-    it('should call unSubscribe', () => {
+    it('call unSubscribe', () => {
       const { result, unmount } = renderHook(() => useForm<{ test: string }>());
 
       result.current.register('test');
@@ -58,7 +64,7 @@ describe('useForm', () => {
       expect(result.current.getValues()).toEqual({});
     });
 
-    it('should remain array field values when inputs gets unmounted', () => {
+    it('remain array field values when inputs gets unmounted', () => {
       const { result, unmount } = renderHook(() =>
         useForm<{ test: string[] }>(),
       );
@@ -74,7 +80,7 @@ describe('useForm', () => {
       });
     });
 
-    it('should not unregister errors when unmounted', async () => {
+    it('not unregister errors when unmounted', async () => {
       const { result, unmount } = renderHook(() =>
         useForm<{
           test: string;
@@ -98,7 +104,7 @@ describe('useForm', () => {
       expect(result.current.formState.errors.test).toBeDefined();
     });
 
-    it('should only unregister errors when unregister method invoked', async () => {
+    it('only unregister errors when unregister method invoked', async () => {
       const { result } = renderHook(() =>
         useForm<{
           test: string;
@@ -124,7 +130,7 @@ describe('useForm', () => {
       expect(result.current.formState.errors.test).not.toBeDefined();
     });
 
-    it('should not unregister touched', () => {
+    it('not unregister touched', () => {
       let formState: any;
       const Component = () => {
         const { register, formState: tempFormState } = useForm<{
@@ -157,7 +163,7 @@ describe('useForm', () => {
       expect(formState.isDirty).toBeFalsy();
     });
 
-    it('should update dirtyFields during unregister', () => {
+    it('update dirtyFields during unregister', () => {
       let formState: any;
       const Component = () => {
         const { register, formState: tempFormState } = useForm<{
@@ -187,7 +193,7 @@ describe('useForm', () => {
       expect(formState.isDirty).toBeTruthy();
     });
 
-    it('should only validate input which are mounted even with shouldUnregister: false', async () => {
+    it('only validate input which are mounted even with shouldUnregister: false', async () => {
       const Component = () => {
         const [show, setShow] = React.useState(true);
         const {
@@ -269,7 +275,7 @@ describe('useForm', () => {
         );
       };
 
-      it('should remove and unregister inputs when inputs gets unmounted', async () => {
+      it('remove and unregister inputs when inputs gets unmounted', async () => {
         let submittedData: FormValues;
 
         const Component = () => {
@@ -328,7 +334,7 @@ describe('useForm', () => {
       });
     });
 
-    it('should not mutate defaultValues', () => {
+    it('not mutate defaultValues', () => {
       const defaultValues = {
         test: {
           test: '123',
@@ -388,7 +394,7 @@ describe('useForm', () => {
       });
     });
 
-    it('should not register or shallow defaultValues into submission data', () => {
+    it('not register or shallow defaultValues into submission data', () => {
       let data = {};
 
       const App = () => {
@@ -416,7 +422,7 @@ describe('useForm', () => {
       expect(data).toEqual({});
     });
 
-    it('should keep validation during unmount', async () => {
+    it('keep validation during unmount', async () => {
       const onSubmit = jest.fn();
 
       function Component() {
@@ -478,7 +484,7 @@ describe('useForm', () => {
       expect(screen.getByText('max length')).toBeVisible();
     });
 
-    it('should only unregister inputs when all checkboxes are unmounted', async () => {
+    it('only unregister inputs when all checkboxes are unmounted', async () => {
       let result: Record<string, string> | undefined = undefined;
 
       const Component = () => {
@@ -528,7 +534,7 @@ describe('useForm', () => {
   });
 
   describe('when errors changes', () => {
-    it('should display the latest error message', async () => {
+    it('display the latest error message', async () => {
       const Form = () => {
         const {
           register,
@@ -577,7 +583,7 @@ describe('useForm', () => {
       await waitFor(() => expect(span.textContent).toBe('data'));
     });
 
-    it('should display the latest error message with errors prop', () => {
+    it('display the latest error message with errors prop', () => {
       const Form = () => {
         type FormValues = {
           test1: string;
@@ -629,7 +635,7 @@ describe('useForm', () => {
       expect(test1Input).toHaveFocus();
     });
 
-    it("shouldn't focus the input of the error defined in the errors prop if shouldFocusError is false", () => {
+    it('not focus the input of the error defined in the errors prop if shouldFocusError is false', () => {
       const formErrors = {
         test1: { type: 'test1', message: 'test1 error' },
       };
@@ -659,7 +665,7 @@ describe('useForm', () => {
       expect(renderRes.baseElement).toHaveFocus();
     });
 
-    it('should recompute isValid when the errors prop is emptied', async () => {
+    it('recompute isValid when the errors prop is emptied', async () => {
       type FormValues = { test1: string };
 
       const Form = ({ errors }: { errors: FieldErrors<FormValues> }) => {
@@ -696,7 +702,7 @@ describe('useForm', () => {
       await waitFor(() => expect(screen.getByText('valid')).toBeVisible());
     });
 
-    it('should keep isValid false while the errors prop holds an error', async () => {
+    it('keep isValid false while the errors prop holds an error', async () => {
       type FormValues = { test1: string };
 
       const Form = ({ errors }: { errors: FieldErrors<FormValues> }) => {
@@ -723,7 +729,7 @@ describe('useForm', () => {
       await waitFor(() => expect(screen.getByText('invalid')).toBeVisible());
     });
 
-    it('should keep isValid false when the errors prop is emptied but the rules still fail', async () => {
+    it('keep isValid false when the errors prop is emptied but the rules still fail', async () => {
       type FormValues = { test1: string };
 
       const Form = ({ errors }: { errors: FieldErrors<FormValues> }) => {
@@ -795,7 +801,7 @@ describe('useForm', () => {
     let methods: UseFormReturn<{ test: string }>;
 
     describe('onSubmit mode', () => {
-      it('should not contain error if value is valid', async () => {
+      it('not contain error if value is valid', async () => {
         const onSubmit = jest.fn();
 
         render(<Component onSubmit={onSubmit} />);
@@ -818,7 +824,7 @@ describe('useForm', () => {
         expect(alert.textContent).toBe('');
       });
 
-      it('should not contain error if name is invalid', async () => {
+      it('not contain error if name is invalid', async () => {
         const onSubmit = jest.fn();
 
         render(<Component onSubmit={onSubmit} />);
@@ -841,7 +847,7 @@ describe('useForm', () => {
         expect(alert.textContent).toBe('');
       });
 
-      it('should contain error if value is invalid with revalidateMode is onChange', async () => {
+      it('contain error if value is invalid with revalidateMode is onChange', async () => {
         const onSubmit = jest.fn();
 
         render(<Component onSubmit={onSubmit} />);
@@ -863,7 +869,7 @@ describe('useForm', () => {
         );
       });
 
-      it('should not call reRender method if the current error is the same as the previous error', async () => {
+      it('not call reRender method if the current error is the same as the previous error', async () => {
         render(<Component />);
 
         const input = screen.getByRole('textbox');
@@ -881,7 +887,7 @@ describe('useForm', () => {
         expect(screen.getByRole('alert').textContent).toBe('required');
       });
 
-      it('should set name to formState.touchedFields when formState.touchedFields is defined', async () => {
+      it('set name to formState.touchedFields when formState.touchedFields is defined', async () => {
         const onSubmit = jest.fn();
 
         render(<Component onSubmit={onSubmit} rules={{}} />);
@@ -905,7 +911,7 @@ describe('useForm', () => {
       });
 
       // check https://github.com/react-hook-form/react-hook-form/issues/2153
-      it('should perform correct behavior when reValidateMode is onBlur', async () => {
+      it('perform correct behavior when reValidateMode is onBlur', async () => {
         const onSubmit = jest.fn();
 
         const Component = () => {
@@ -952,7 +958,7 @@ describe('useForm', () => {
     });
 
     describe('onChange', () => {
-      it('should display error with onChange', async () => {
+      it('display error with onChange', async () => {
         render(<Component mode="onChange" />);
 
         fireEvent.change(screen.getByRole('textbox'), {
@@ -974,7 +980,7 @@ describe('useForm', () => {
         );
       });
 
-      it('should display error with onSubmit', async () => {
+      it('display error with onSubmit', async () => {
         render(<Component mode="onChange" />);
 
         fireEvent.click(screen.getByRole('button'));
@@ -984,7 +990,7 @@ describe('useForm', () => {
         );
       });
 
-      it('should not display error with onBlur', async () => {
+      it('not display error with onBlur', async () => {
         render(<Component mode="onChange" />);
 
         fireEvent.blur(screen.getByRole('textbox'), {
@@ -998,7 +1004,7 @@ describe('useForm', () => {
     });
 
     describe('onBlur', () => {
-      it('should display error with onBlur', async () => {
+      it('display error with onBlur', async () => {
         render(<Component mode="onBlur" />);
 
         fireEvent.blur(screen.getByRole('textbox'), {
@@ -1012,7 +1018,7 @@ describe('useForm', () => {
         );
       });
 
-      it('should display error with onSubmit', async () => {
+      it('display error with onSubmit', async () => {
         render(<Component mode="onBlur" />);
 
         fireEvent.click(screen.getByRole('button'));
@@ -1022,7 +1028,7 @@ describe('useForm', () => {
         );
       });
 
-      it('should not display error with onChange', async () => {
+      it('not display error with onChange', async () => {
         render(<Component mode="onBlur" />);
 
         fireEvent.input(screen.getByRole('textbox'), {
@@ -1036,7 +1042,7 @@ describe('useForm', () => {
     });
 
     describe('with watch', () => {
-      it('should be return undefined or null value', () => {
+      it('be return undefined or null value', () => {
         const { result } = renderHook(() =>
           useForm<{
             test: string | null;
@@ -1062,7 +1068,7 @@ describe('useForm', () => {
         expect(test1).toBeUndefined();
       });
 
-      it('should be called reRender method if isWatchAllRef is true', async () => {
+      it('be called reRender method if isWatchAllRef is true', async () => {
         let watchedField: any;
         const Component = () => {
           const { register, handleSubmit, watch } = useForm<{
@@ -1085,7 +1091,7 @@ describe('useForm', () => {
         expect(watchedField).toEqual({ test: 'test' });
       });
 
-      it('should be called reRender method if field is watched', async () => {
+      it('be called reRender method if field is watched', async () => {
         let watchedField: any;
         const Component = () => {
           const { register, handleSubmit, watch } = useForm<{
@@ -1108,7 +1114,7 @@ describe('useForm', () => {
         expect(watchedField).toBe('test');
       });
 
-      it('should be called reRender method if array field is watched', async () => {
+      it('be called reRender method if array field is watched', async () => {
         let watchedField: any;
         const Component = () => {
           const { register, handleSubmit, watch } = useForm<{
@@ -1135,7 +1141,7 @@ describe('useForm', () => {
     });
 
     describe('with resolver', () => {
-      it('should contain error if value is invalid with resolver', async () => {
+      it('contain error if value is invalid with resolver', async () => {
         const resolver = jest.fn(async (data: any) => {
           if (data.test) {
             return { values: data, errors: {} };
@@ -1174,7 +1180,7 @@ describe('useForm', () => {
         expect(methods.formState.isValid).toBeFalsy();
       });
 
-      it('with sync resolver it should contain error if value is invalid with resolver', async () => {
+      it('with sync resolver it contain error if value is invalid with resolver', async () => {
         const resolver = jest.fn((data: any) => {
           if (data.test) {
             return { values: data, errors: {} };
@@ -1210,7 +1216,7 @@ describe('useForm', () => {
         expect(resolver).toHaveBeenCalled();
       });
 
-      it('should make isValid change to false if it contain error that is not related name with onChange mode', async () => {
+      it('make isValid change to false if it contain error that is not related name with onChange mode', async () => {
         const resolver = jest.fn(async (data: any) => {
           if (data.test) {
             return { values: data, errors: {} };
@@ -1245,7 +1251,7 @@ describe('useForm', () => {
         expect(screen.getByRole('alert').textContent).toBe('');
       });
 
-      it("should call the resolver with the field being validated when an input's value change", async () => {
+      it("call the resolver with the field being validated when an input's value change", async () => {
         const resolver = jest.fn((values: any) => ({ values, errors: {} }));
         const onSubmit = jest.fn();
 
@@ -1329,7 +1335,7 @@ describe('useForm', () => {
         );
       });
 
-      it('should call the resolver with the field being validated when `trigger` is called', async () => {
+      it('call the resolver with the field being validated when `trigger` is called', async () => {
         const resolver = jest.fn((values: any) => ({ values, errors: {} }));
         const defaultValues = { test: { sub: 'test' }, test1: 'test1' };
 
@@ -1399,7 +1405,7 @@ describe('useForm', () => {
   });
 
   describe('when mode or reValidateMode changes', () => {
-    it('should use updated mode and reValidateMode inside of onChange handler', async () => {
+    it('use updated mode and reValidateMode inside of onChange handler', async () => {
       const resolver = jest.fn(async (data: any) => ({
         values: data,
         errors: {},
@@ -1477,7 +1483,7 @@ describe('useForm', () => {
   });
 
   describe('updateValid', () => {
-    it('should be called resolver with default values if default value is defined', async () => {
+    it('be called resolver with default values if default value is defined', async () => {
       type FormValues = {
         test: string;
       };
@@ -1533,7 +1539,7 @@ describe('useForm', () => {
       );
     });
 
-    it('should be called resolver with field values if value is undefined', async () => {
+    it('be called resolver with field values if value is undefined', async () => {
       type FormValues = {
         test: string;
       };
@@ -1572,7 +1578,7 @@ describe('useForm', () => {
   });
 
   describe('mode with onTouched', () => {
-    it('should validate form only when input is been touched', async () => {
+    it('validate form only when input is been touched', async () => {
       const Component = () => {
         const {
           register,
@@ -1623,7 +1629,7 @@ describe('useForm', () => {
       expect(await screen.findByText('This is required.')).toBeVisible();
     });
 
-    it('should validate onFocusout event', async () => {
+    it('validate onFocusout event', async () => {
       const Component = () => {
         const {
           register,
@@ -1676,7 +1682,7 @@ describe('useForm', () => {
   });
 
   describe('with schema validation', () => {
-    it('should trigger and clear errors for group errors object', async () => {
+    it('trigger and clear errors for group errors object', async () => {
       let errorsObject = {};
 
       const Component = () => {
@@ -1754,7 +1760,7 @@ describe('useForm', () => {
       await waitFor(() => expect(errorsObject).toEqual({}));
     });
 
-    it('should not clear errors for non checkbox parent inputs', async () => {
+    it('not clear errors for non checkbox parent inputs', async () => {
       let errorsObject = {};
 
       const Component = () => {
@@ -1830,7 +1836,7 @@ describe('useForm', () => {
       );
     });
 
-    it('should have formState.isValid equals true with defined default values after executing resolver', async () => {
+    it('have formState.isValid equals true with defined default values after executing resolver', async () => {
       const Toggle = () => {
         const [toggle, setToggle] = React.useState(false);
 
@@ -1913,7 +1919,7 @@ describe('useForm', () => {
   });
 
   describe('when input is not registered', () => {
-    it('trigger should not throw warn', async () => {
+    it('trigger not throw warn', async () => {
       const { result } = renderHook(() =>
         useForm<{
           test: string;
@@ -1926,7 +1932,7 @@ describe('useForm', () => {
     });
   });
 
-  it('should update isValidating form and field states correctly', async () => {
+  it('update isValidating form and field states correctly', async () => {
     jest.useFakeTimers();
 
     let formState = {} as FormState<FieldValues>;
@@ -2013,7 +2019,7 @@ describe('useForm', () => {
     screen.getByText('stateValidation: false');
   });
 
-  it('should update isValidating without subscribing to validatingFields', async () => {
+  it('update isValidating without subscribing to validatingFields', async () => {
     const App = () => {
       const {
         register,
@@ -2062,7 +2068,7 @@ describe('useForm', () => {
     });
   });
 
-  it('should correctly handle multiple async validation triggers', async () => {
+  it('correctly handle multiple async validation triggers', async () => {
     jest.useFakeTimers();
 
     let formState = {} as FormState<FieldValues>;
@@ -2140,7 +2146,7 @@ describe('useForm', () => {
     expect(getFieldState('lastName').isValidating).toBe(false);
   });
 
-  it('should update isValidating to true when using with resolver', async () => {
+  it('update isValidating to true when using with resolver', async () => {
     jest.useFakeTimers();
 
     let formState = {} as FormState<FieldValues>;
@@ -2214,7 +2220,7 @@ describe('useForm', () => {
     expect(getFieldState('firstName').isValidating).toBe(false);
   });
 
-  it('should remove field from validatingFields on unregister', async () => {
+  it('remove field from validatingFields on unregister', async () => {
     jest.useFakeTimers();
     let unregister: UseFormUnregister<FieldValues>;
     let formState = {} as FormState<FieldValues>;
@@ -2257,7 +2263,7 @@ describe('useForm', () => {
     expect(formState.validatingFields).toEqual({});
   });
 
-  it('should update defaultValues async', async () => {
+  it('update defaultValues async', async () => {
     const App = () => {
       const {
         register,
@@ -2299,7 +2305,7 @@ describe('useForm', () => {
     });
   });
 
-  it('should update async default values for controlled components', async () => {
+  it('update async default values for controlled components', async () => {
     const App = () => {
       const { control } = useForm<{
         test: string;
@@ -2334,7 +2340,7 @@ describe('useForm', () => {
     });
   });
 
-  it('should update async form values', async () => {
+  it('update async form values', async () => {
     type FormValues = {
       test: string;
     };
@@ -2380,7 +2386,7 @@ describe('useForm', () => {
     });
   });
 
-  it('should submit mounted values from values prop when shouldUnregister is true', async () => {
+  it('submit mounted values from values prop when shouldUnregister is true', async () => {
     const onSubmit = jest.fn();
     const onInvalid = jest.fn();
 
@@ -2421,7 +2427,7 @@ describe('useForm', () => {
     expect(onInvalid).not.toHaveBeenCalled();
   });
 
-  it('should use values prop over defaultValues with shouldUnregister and Controller (#12697)', async () => {
+  it('use values prop over defaultValues with shouldUnregister and Controller (#12697)', async () => {
     const App = () => {
       const { control, handleSubmit } = useForm<{
         firstName: string;
@@ -2454,7 +2460,7 @@ describe('useForm', () => {
     });
   });
 
-  it('should only update async form values which are not interacted', async () => {
+  it('only update async form values which are not interacted', async () => {
     type FormValues = {
       test: string;
       test1: string;
@@ -2519,7 +2525,7 @@ describe('useForm', () => {
     });
   });
 
-  it('should not update isLoading when literal defaultValues are provided', async () => {
+  it('not update isLoading when literal defaultValues are provided', async () => {
     const { result } = renderHook(() =>
       useForm({ defaultValues: { test: 'default' } }),
     );
@@ -2527,7 +2533,7 @@ describe('useForm', () => {
     expect(result.current.formState.isLoading).toBe(false);
   });
 
-  it('should update form values when values updates even with the same values', async () => {
+  it('update form values when values updates even with the same values', async () => {
     type FormValues = {
       firstName: string;
     };
@@ -2592,7 +2598,7 @@ describe('useForm', () => {
     });
   });
 
-  it('should update form values when rerendered values reuse an object reference', async () => {
+  it('update form values when rerendered values reuse an object reference', async () => {
     type FormValues = {
       home: { street: string };
       work: { street: string };
@@ -2615,7 +2621,7 @@ describe('useForm', () => {
     expect(result.current.getValues('work.street')).toBe('a');
   });
 
-  it('should keep defaultValues if set keep default values is true on reset option', async () => {
+  it('keep defaultValues if set keep default values is true on reset option', async () => {
     type FormValues = {
       firstName: string;
     };
@@ -2655,7 +2661,7 @@ describe('useForm', () => {
     screen.getByText('false');
   });
 
-  it('should change defaultValues if not reset options presented', async () => {
+  it('change defaultValues if not reset options presented', async () => {
     type FormValues = {
       firstName: string;
     };
@@ -2694,7 +2700,7 @@ describe('useForm', () => {
     screen.getByText('false');
   });
 
-  it('should disable the entire form inputs', async () => {
+  it('disable the entire form inputs', async () => {
     function App() {
       const { register } = useForm({
         disabled: true,
@@ -2724,7 +2730,7 @@ describe('useForm', () => {
     });
   });
 
-  it('should disable the entire form', () => {
+  it('disable the entire form', () => {
     const App = () => {
       const [disabled, setDisabled] = useState(false);
       const { register, control } = useForm({
@@ -2785,7 +2791,7 @@ describe('useForm', () => {
     expect(screen.getByTestId('controller')).not.toBeDisabled();
   });
 
-  it('should disable form inputs separately from its form', async () => {
+  it('disable form inputs separately from its form', async () => {
     function App() {
       const { register } = useForm({
         disabled: false,
@@ -2821,7 +2827,7 @@ describe('useForm', () => {
     });
   });
 
-  it('should be able to disable the entire form', async () => {
+  it('be able to disable the entire form', async () => {
     const App = () => {
       const [disabled, setDisabled] = useState(false);
       const { register, handleSubmit } = useForm({
@@ -2898,7 +2904,7 @@ describe('useForm', () => {
     });
   });
 
-  it('should allow submitting a form with disabled form fields', async () => {
+  it('allow submitting a form with disabled form fields', async () => {
     function App() {
       const { register, getFieldState, formState, handleSubmit } = useForm();
 
@@ -2986,7 +2992,7 @@ describe('useForm', () => {
       expect(input.value).toBe('abc');
     });
 
-    it('should reset useController value on remount with defaultValues', async () => {
+    it('reset useController value on remount with defaultValues', async () => {
       type FormValues = {
         firstName: string;
         lastName: string;
@@ -3069,7 +3075,7 @@ describe('useForm', () => {
       await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     });
 
-    it('should re-initialise when formControl prop reference changes (e.g. HMR/Fast Refresh)', async () => {
+    it('re-initialise when formControl prop reference changes (e.g. HMR/Fast Refresh)', async () => {
       type FormValues = {
         firstName: string;
       };
@@ -3214,7 +3220,7 @@ describe('useForm', () => {
       );
     }
 
-    it('formState.defaultValues and useFormState().defaultValues should be equal after reset', () => {
+    it('formState.defaultValues and useFormState().defaultValues be equal after reset', () => {
       render(<App />);
 
       fireEvent.click(screen.getByText('reset'));
@@ -3290,7 +3296,7 @@ describe('useForm', () => {
       },
     );
 
-    it('should treat an empty form-level error object as valid', async () => {
+    it('treat an empty form-level error object as valid', async () => {
       const { result } = renderHook(() =>
         useForm<{ name: string }>({
           validate: () => ({}),
@@ -3302,7 +3308,7 @@ describe('useForm', () => {
       });
     });
 
-    it('should replace previous form-level errors with the latest result', async () => {
+    it('replace previous form-level errors with the latest result', async () => {
       let validateLastName = true;
       const { result } = renderHook(() =>
         useForm<{ firstName: string; lastName: string }>({
@@ -3395,7 +3401,7 @@ describe('useForm', () => {
       },
     );
 
-    it('should run form level validation once per nested field traversal', async () => {
+    it('run form level validation once per nested field traversal', async () => {
       const validateForm = jest.fn(() => true);
       const validateField = jest.fn(() => true);
       const onValid = jest.fn();
@@ -3442,7 +3448,7 @@ describe('useForm', () => {
       expect(validateField).toHaveBeenCalledTimes(400);
     });
 
-    it('should return form level error', async () => {
+    it('return form level error', async () => {
       const App = () => {
         const {
           register,
@@ -3485,7 +3491,7 @@ describe('useForm', () => {
       );
     });
 
-    it('should use error message from object return value', async () => {
+    it('use error message from object return value', async () => {
       const App = () => {
         const {
           register,
@@ -3529,7 +3535,7 @@ describe('useForm', () => {
       );
     });
 
-    it('should preserve custom error type from object return value', async () => {
+    it('preserve custom error type from object return value', async () => {
       let capturedErrors: any;
 
       const App = () => {
@@ -3571,7 +3577,7 @@ describe('useForm', () => {
       );
     });
 
-    it('should clear object return errors when form becomes valid', async () => {
+    it('clear object return errors when form becomes valid', async () => {
       const App = () => {
         const {
           register,
@@ -3618,6 +3624,177 @@ describe('useForm', () => {
       await waitFor(() =>
         expect(screen.getByTestId('msg').textContent).toBe(''),
       );
+    });
+
+    it('keep running a stable validate function on every change', async () => {
+      const validate = jest.fn(
+        ({ formValues }: { formValues: { firstName: string } }) =>
+          formValues.firstName ? true : 'required',
+      );
+
+      const App = () => {
+        const {
+          register,
+          formState: { errors },
+          handleSubmit,
+        } = useForm({
+          mode: 'onChange',
+          defaultValues: {
+            firstName: 'foo',
+          },
+          validate,
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <input {...register('firstName')} />
+            <p data-testid="msg">{errors.form?.message}</p>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '' },
+      });
+
+      await waitFor(() =>
+        expect(screen.getByTestId('msg').textContent).toBe('required'),
+      );
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'test' },
+      });
+
+      await waitFor(() =>
+        expect(screen.getByTestId('msg').textContent).toBe(''),
+      );
+
+      expect(validate).toHaveBeenCalled();
+    });
+
+    it('run the latest validate function after a re-render', async () => {
+      const App = () => {
+        const [banned, setBanned] = React.useState('nothing');
+        const {
+          register,
+          formState: { errors },
+          handleSubmit,
+        } = useForm({
+          defaultValues: {
+            firstName: 'foo',
+          },
+          validate: ({ formValues }) =>
+            formValues.firstName === banned ? `${banned} is banned` : true,
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <input {...register('firstName')} />
+            <p data-testid="msg">{errors.form?.message}</p>
+            <button type="button" onClick={() => setBanned('foo')}>
+              ban
+            </button>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'ban' }));
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(screen.getByTestId('msg').textContent).toBe('foo is banned'),
+      );
+    });
+
+    it('run a validate function supplied only after the first render', async () => {
+      const validate = jest.fn(() => 'form is invalid');
+
+      const App = () => {
+        const [enabled, setEnabled] = React.useState(false);
+        const {
+          register,
+          formState: { errors },
+          handleSubmit,
+        } = useForm({
+          defaultValues: {
+            firstName: 'foo',
+          },
+          ...(enabled ? { validate } : {}),
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <input {...register('firstName')} />
+            <p data-testid="msg">{errors.form?.message}</p>
+            <button type="button" onClick={() => setEnabled(true)}>
+              enable
+            </button>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'enable' }));
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(screen.getByTestId('msg').textContent).toBe('form is invalid'),
+      );
+      expect(validate).toHaveBeenCalled();
+    });
+
+    it('stop running a validate function removed after the first render', async () => {
+      const validate = jest.fn(() => 'form is invalid');
+      const onSubmit = jest.fn();
+
+      const App = () => {
+        const [enabled, setEnabled] = React.useState(true);
+        const {
+          register,
+          formState: { errors },
+          handleSubmit,
+        } = useForm({
+          defaultValues: {
+            firstName: 'foo',
+          },
+          ...(enabled ? { validate } : {}),
+        });
+
+        return (
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <input {...register('firstName')} />
+            <p data-testid="msg">{errors.form?.message}</p>
+            <button type="button" onClick={() => setEnabled(false)}>
+              disable
+            </button>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(screen.getByTestId('msg').textContent).toBe('form is invalid'),
+      );
+
+      validate.mockClear();
+
+      fireEvent.click(screen.getByRole('button', { name: 'disable' }));
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+      expect(screen.getByTestId('msg').textContent).toBe('');
+      expect(validate).not.toHaveBeenCalled();
     });
   });
 });

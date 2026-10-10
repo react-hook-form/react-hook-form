@@ -1,7 +1,7 @@
 import insert from '../../utils/insert';
 
 describe('insert', () => {
-  it('should insert value at specific index in array', () => {
+  it('insert value at specific index in array', () => {
     expect(insert([1, 3, 4], 1, 2)).toEqual([1, 2, 3, 4]);
     expect(
       insert(
@@ -53,7 +53,7 @@ describe('insert', () => {
     ]);
   });
 
-  it('should insert undefined as value when value to be inserted is falsy', () => {
+  it('insert undefined as value when value to be inserted is falsy', () => {
     expect(insert([1, 2, 4], 2)).toEqual([1, 2, undefined, 4]);
     expect(insert([1, 2, 4], 2, 0)).toEqual([1, 2, 0, 4]);
     expect(insert([1, 2, 4] as (boolean | number)[], 2, false)).toEqual([
@@ -71,8 +71,20 @@ describe('insert', () => {
     expect(insert([1, 2, 4], 2, undefined)).toEqual([1, 2, undefined, 4]);
   });
 
-  it('should spread value when it is an array at one deep-level', () => {
+  it('spread value when it is an array at one deep-level', () => {
     expect(insert([1, 2], 2, [3, 4])).toEqual([1, 2, 3, 4]);
     expect(insert([1, 2], 2, [3, [4]])).toEqual([1, 2, 3, [4]]);
+  });
+
+  it('insert value at the beginning of the array when index is 0', () => {
+    expect(insert([1, 2, 3], 0, 0)).toEqual([0, 1, 2, 3]);
+  });
+
+  it('insert value before the last item when index is negative', () => {
+    expect(insert([1, 2, 3], -1, 'x')).toEqual([1, 2, 'x', 3]);
+  });
+
+  it('append value at the end when index is beyond the array length', () => {
+    expect(insert([1, 2, 3], 10, 'x')).toEqual([1, 2, 3, 'x']);
   });
 });

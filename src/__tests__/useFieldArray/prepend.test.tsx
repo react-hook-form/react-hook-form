@@ -24,7 +24,7 @@ describe('prepend', () => {
     i = 0;
   });
 
-  it('should pre-append data into the fields', async () => {
+  it('pre-append data into the fields', async () => {
     let currentFields: any = [];
 
     const Component = () => {
@@ -120,7 +120,7 @@ describe('prepend', () => {
     },
   );
 
-  it('should set prepended values to formState.touchedFields', () => {
+  it('set prepended values to formState.touchedFields', () => {
     let touched: any;
 
     const Component = () => {
@@ -158,7 +158,7 @@ describe('prepend', () => {
     });
   });
 
-  it('should prepend error', async () => {
+  it('prepend error', async () => {
     let errors: any;
     const Component = () => {
       const {
@@ -210,7 +210,7 @@ describe('prepend', () => {
     });
   });
 
-  it('should trigger reRender when user is watching the all field array', () => {
+  it('trigger reRender when user is watching the all field array', () => {
     const watched: any[] = [];
     const Component = () => {
       const { register, watch, control } = useForm<{
@@ -246,7 +246,7 @@ describe('prepend', () => {
     ]);
   });
 
-  it('should return watched value with watch API', async () => {
+  it('return watched value with watch API', async () => {
     const renderedItems: any = [];
     const Component = () => {
       const { watch, register, control } = useForm<{
@@ -307,7 +307,7 @@ describe('prepend', () => {
     );
   });
 
-  it('should focus if shouldFocus is true', () => {
+  it('focus if shouldFocus is true', () => {
     const Component = () => {
       const { register, control } = useForm<{
         test: { value: string }[];
@@ -340,7 +340,7 @@ describe('prepend', () => {
     expect(document.activeElement).toEqual(inputs[0]);
   });
 
-  it('should not focus if shouldFocus is false', () => {
+  it('not focus if shouldFocus is false', () => {
     const Component = () => {
       const { register, control } = useForm({
         defaultValues: {
@@ -373,7 +373,7 @@ describe('prepend', () => {
     expect(document.activeElement).toEqual(document.body);
   });
 
-  it('should append nested field value without its reference', () => {
+  it('append nested field value without its reference', () => {
     type FormValues = {
       test: { name: { deep: string } }[];
     };
@@ -457,7 +457,7 @@ describe('prepend', () => {
   });
 
   describe('with resolver', () => {
-    it('should invoke resolver when formState.isValid true', async () => {
+    it('invoke resolver when formState.isValid true', async () => {
       const resolver = jest.fn().mockReturnValue({});
 
       const { result } = renderHook(() => {
@@ -488,7 +488,7 @@ describe('prepend', () => {
       );
     });
 
-    it('should not invoke resolver when formState.isValid false', () => {
+    it('not invoke resolver when formState.isValid false', () => {
       const resolver = jest.fn().mockReturnValue({});
 
       const { result } = renderHook(() => {
@@ -507,7 +507,7 @@ describe('prepend', () => {
       expect(resolver).toHaveBeenCalled();
     });
 
-    it('should not invoke resolver per register during prepend; only array-scoped + final isValid', async () => {
+    it('not invoke resolver per register during prepend; only array-scoped + final isValid', async () => {
       const resolver = jest
         .fn()
         .mockImplementation((values) => ({ values, errors: {} }));
@@ -562,7 +562,7 @@ describe('prepend', () => {
     });
   });
 
-  it('should not omit keyName when provided', async () => {
+  it('not omit keyName when provided', async () => {
     type FormValues = {
       test: {
         test: string;
@@ -618,7 +618,7 @@ describe('prepend', () => {
     ).toBeVisible();
   });
 
-  it('should not omit keyName when provided and defaultValue is empty', async () => {
+  it('not omit keyName when provided and defaultValue is empty', async () => {
     type FormValues = {
       test: {
         test: string;

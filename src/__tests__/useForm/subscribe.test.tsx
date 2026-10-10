@@ -12,7 +12,7 @@ import { useForm } from '../../useForm';
 import { useFormState } from '../../useFormState';
 
 describe('subscribe', () => {
-  it('should properly handle multiple subscriptions', async () => {
+  it('properly handle multiple subscriptions', async () => {
     const callbackFn1 = jest.fn();
     const callbackFn2 = jest.fn();
 
@@ -77,7 +77,7 @@ describe('subscribe', () => {
     expect(callbackFn1).toHaveBeenCalledTimes(1);
   });
 
-  it('should only react to formState changes it subscribes to', async () => {
+  it('only react to formState changes it subscribes to', async () => {
     const callbackFn = jest.fn();
 
     const App = () => {
@@ -127,7 +127,7 @@ describe('subscribe', () => {
     expect(callbackFn).toHaveBeenCalledTimes(2);
   });
 
-  it('should allow subscribing to submit state updates', async () => {
+  it('allow subscribing to submit state updates', async () => {
     const callbackFn = jest.fn();
 
     const App = () => {
@@ -164,7 +164,7 @@ describe('subscribe', () => {
     );
   });
 
-  it('should not call subscribe callback when setValue is called with the same value and shouldDirty option', async () => {
+  it('not call subscribe callback when setValue is called with the same value and shouldDirty option', async () => {
     const callbackFn = jest.fn();
 
     const App = () => {
@@ -203,7 +203,7 @@ describe('subscribe', () => {
     expect(callbackFn).not.toHaveBeenCalled();
   });
 
-  it('should not call subscribe callback when setValue is called with the same value and shouldTouch/shouldValidate options', async () => {
+  it('not call subscribe callback when setValue is called with the same value and shouldTouch/shouldValidate options', async () => {
     const callbackFn = jest.fn();
 
     const App = () => {
@@ -247,7 +247,7 @@ describe('subscribe', () => {
     expect(callbackFn).not.toHaveBeenCalled();
   });
 
-  it('should call subscribe callback with a values snapshot', async () => {
+  it('call subscribe callback with a values snapshot', async () => {
     const callbackFn = jest.fn();
     let capturedValues: Record<string, unknown> | undefined;
 
@@ -288,7 +288,7 @@ describe('subscribe', () => {
     expect(capturedValues).toEqual({ test: 'hello' });
   });
 
-  it('should not leak the last changed field name into a reset triggered callback', async () => {
+  it('not leak the last changed field name into a reset triggered callback', async () => {
     const names: (string | undefined)[] = [];
 
     const App = () => {
@@ -330,7 +330,7 @@ describe('subscribe', () => {
     expect(names).toEqual([undefined, 'firstName', undefined]);
   });
 
-  it('should not leak a clearErrors field name into a later unrelated callback', async () => {
+  it('not leak a clearErrors field name into a later unrelated callback', async () => {
     const names: (string | undefined)[] = [];
 
     const App = () => {
@@ -373,7 +373,7 @@ describe('subscribe', () => {
     expect(names.at(-1)).toBeUndefined();
   });
 
-  it('should keep isDirty true when reset keeps values and updates defaultValues', async () => {
+  it('keep isDirty true when reset keeps values and updates defaultValues', async () => {
     const callbackFn = jest.fn();
 
     const App = () => {
@@ -445,7 +445,7 @@ describe('subscribe', () => {
 });
 
 describe('call setValue within subscribe', () => {
-  it('should update a dependent field when subscribed field changes', () => {
+  it('update a dependent field when subscribed field changes', () => {
     const callbackSpy = jest.fn();
 
     function App() {
@@ -715,7 +715,7 @@ describe('call setValue within subscribe', () => {
     expect(dirtyFieldsSpy).toMatchObject({ name: true, nameLength: true });
   });
 
-  it('should invoke the values callback only once per setValue call', () => {
+  it('invoke the values callback only once per setValue call', () => {
     const callbackFn = jest.fn();
 
     const App = () => {

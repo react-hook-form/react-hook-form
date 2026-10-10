@@ -1,7 +1,7 @@
 import get from '../../utils/get';
 
 describe('get', () => {
-  it('should get the right data', () => {
+  it('get the right data', () => {
     const test = {
       bill: [1, 2, 3],
       luo: [1, 3, { betty: 'test' }],
@@ -21,14 +21,14 @@ describe('get', () => {
     expect(get(test, 'dotted.nonexistent', 'default')).toEqual('default');
   });
 
-  it('should get from the flat data', () => {
+  it('get from the flat data', () => {
     const test = {
       bill: 'test',
     };
     expect(get(test, 'bill')).toEqual('test');
   });
 
-  it('should return undefined when provided with empty path', () => {
+  it('return undefined when provided with empty path', () => {
     const test = {
       bill: 'test',
     };
@@ -37,7 +37,7 @@ describe('get', () => {
     expect(get(test, null)).toEqual(undefined);
   });
 
-  it('should retrieve values from path containing quotes', () => {
+  it('retrieve values from path containing quotes', () => {
     const object = {
       'Im with single quote!': {
         _f: {
@@ -60,7 +60,7 @@ describe('get', () => {
     expect(get(object, 'With " dobule quote')).toEqual(undefined);
   });
 
-  it('should not retrieve prototype properties through path traversal', () => {
+  it('not retrieve prototype properties through path traversal', () => {
     const pollutedKey = '__reactHookFormPolluted__';
     const object = { name: 'John' };
 

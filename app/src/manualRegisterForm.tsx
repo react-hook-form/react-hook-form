@@ -146,7 +146,7 @@ const ManualRegisterForm: React.FC = () => {
       >
         <option value="">Select</option>
         <option value={1}>1</option>
-        <option value={2}>1</option>
+        <option value={2}>2</option>
       </select>
       {errors.selectNumber && <p>selectNumber error</p>}
       <input

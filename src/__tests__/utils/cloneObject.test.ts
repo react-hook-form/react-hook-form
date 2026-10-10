@@ -2,7 +2,7 @@ import cloneObject from '../../utils/cloneObject';
 import noop from '../../utils/noop';
 
 describe('clone', () => {
-  it('should clone object and not mutate the original object', () => {
+  it('clone object and not mutate the original object', () => {
     const fileData = new File([''], 'filename');
     const data: Record<string, any> = {
       items: [],
@@ -80,7 +80,7 @@ describe('clone', () => {
     expect(copy.items).toEqual([2]);
   });
 
-  it('should skip clone if a node is instance of function', () => {
+  it('skip clone if a node is instance of function', () => {
     const data = {
       test: {
         testFunction: noop,
@@ -111,7 +111,7 @@ describe('clone', () => {
     });
   });
 
-  it('should skip clone if a node is not planeObject', () => {
+  it('skip clone if a node is not planeObject', () => {
     class Foo {
       a = 1;
       b = 1;
@@ -137,7 +137,7 @@ describe('clone', () => {
       globalThis.FileList = fileList;
     });
 
-    it('should skip clone if FileList is not defined', () => {
+    it('skip clone if FileList is not defined', () => {
       const data = {
         a: 1,
         b: 2,
@@ -155,7 +155,7 @@ describe('clone', () => {
       globalThis.Blob = blob;
     });
 
-    it('should skip clone if Blob is undefined', () => {
+    it('skip clone if Blob is undefined', () => {
       // @ts-expect-error we want to test that clone skips if Blob is undefined.
       globalThis.Blob = undefined;
 
@@ -168,7 +168,7 @@ describe('clone', () => {
       expect(cloneObject(data)).toEqual(data);
     });
 
-    it('should skip clone if Blob is not defined', () => {
+    it('skip clone if Blob is not defined', () => {
       // @ts-expect-error we want to test that clone skips if Blob is not defined.
       delete globalThis.Blob;
 
@@ -188,7 +188,7 @@ describe('clone', () => {
       Array.prototype.somePolyfill = () => 123;
     });
 
-    it('should skip polyfills while cloning', () => {
+    it('skip polyfills while cloning', () => {
       const data = [1];
       const copy = cloneObject(data);
 
@@ -201,7 +201,7 @@ describe('clone', () => {
     });
   });
 
-  it('should not override prototype of nested object', () => {
+  it('not override prototype of nested object', () => {
     const UtcProto = {
       _tag: 'Utc',
     };
@@ -213,12 +213,30 @@ describe('clone', () => {
     expect(copy.dateTime._tag).toBe('Utc');
   });
 
-  it('should not override prototype of nested object', () => {
+  it('not override prototype of nested object', () => {
     const UtcProto = {
       _tag: 'Utc',
     };
     const dateTime = Object.create(UtcProto);
     const copy = cloneObject(dateTime);
     expect(copy._tag).toBe('Utc');
+  });
+
+  it('clone object with null prototype', () => {
+    const data = Object.assign(Object.create(null), {
+      name: 'test',
+      nested: Object.assign(Object.create(null), { value: 1 }),
+    });
+    const copy = cloneObject(data);
+
+    expect(copy).not.toBe(data);
+    expect(copy.nested).not.toBe(data.nested);
+    expect(Object.getPrototypeOf(copy)).toBeNull();
+
+    copy.name = 'changed';
+    copy.nested.value = 2;
+
+    expect(data.name).toBe('test');
+    expect(data.nested.value).toBe(1);
   });
 });

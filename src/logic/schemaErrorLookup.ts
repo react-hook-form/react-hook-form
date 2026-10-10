@@ -11,7 +11,7 @@ export default function schemaErrorLookup<T extends FieldValues = FieldValues>(
 } {
   const error = get(errors, name);
 
-  if (error?.type || error?.message || Array.isArray(error)) {
+  if ((error && (error.type || error.message)) || Array.isArray(error)) {
     return {
       error,
       name,

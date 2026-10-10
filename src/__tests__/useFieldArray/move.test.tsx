@@ -64,7 +64,7 @@ describe('move', () => {
     },
   );
 
-  it('should move errors', async () => {
+  it('move errors', async () => {
     let errors: any;
     const Component = () => {
       const { register, handleSubmit, control, ...rest } = useForm({
@@ -110,7 +110,7 @@ describe('move', () => {
     expect(errors.test[1]).toBeUndefined();
   });
 
-  it('should move touched fields', async () => {
+  it('move touched fields', async () => {
     let touched: any;
     const Component = () => {
       const { register, formState, control } = useForm({
@@ -152,7 +152,7 @@ describe('move', () => {
     });
   });
 
-  it('should trigger reRender when user is watching the all field array', () => {
+  it('trigger reRender when user is watching the all field array', () => {
     const watched: any[] = [];
     const Component = () => {
       const { register, watch, control } = useForm({
@@ -190,7 +190,7 @@ describe('move', () => {
     ]);
   });
 
-  it('should populate all fields with default values', () => {
+  it('populate all fields with default values', () => {
     let getValues: any;
     const Component = () => {
       const {
@@ -222,7 +222,7 @@ describe('move', () => {
     expect(getValues()).toEqual({ test: [{ value: '1' }, { value: '2' }] });
   });
 
-  it('should return watched value with watch API', async () => {
+  it('return watched value with watch API', async () => {
     const renderedItems: any = [];
     const Component = () => {
       const { watch, register, control } = useForm<{
@@ -285,7 +285,7 @@ describe('move', () => {
   });
 
   describe('with resolver', () => {
-    it('should invoke resolver when formState.isValid true', async () => {
+    it('invoke resolver when formState.isValid true', async () => {
       const resolver = jest.fn().mockReturnValue({});
 
       const { result } = renderHook(() => {
@@ -319,7 +319,7 @@ describe('move', () => {
       );
     });
 
-    it('should not invoke resolver when formState.isValid false', () => {
+    it('not invoke resolver when formState.isValid false', () => {
       const resolver = jest.fn().mockReturnValue({});
 
       const { result } = renderHook(() => {
@@ -342,7 +342,7 @@ describe('move', () => {
     });
   });
 
-  it('should not omit keyName when provided', async () => {
+  it('not omit keyName when provided', async () => {
     type FormValues = {
       test: {
         test: string;
@@ -398,7 +398,7 @@ describe('move', () => {
     ).toBeVisible();
   });
 
-  it('should not omit keyName when provided and defaultValue is empty', async () => {
+  it('not omit keyName when provided and defaultValue is empty', async () => {
     type FormValues = {
       test: {
         test: string;
@@ -506,7 +506,7 @@ describe('move', () => {
       );
     };
 
-    it('should not materialize a vacated path when a leaf re-renders before the move commits', async () => {
+    it('not materialize a vacated path when a leaf re-renders before the move commits', async () => {
       let getValues: UseFormGetValues<NestedFormValues> = () => ({}) as never;
 
       const App = () => {
@@ -547,7 +547,7 @@ describe('move', () => {
       ).toEqual([1, 1, 2]);
     });
 
-    it('should keep guarding the moved array when another array acts in the same handler', async () => {
+    it('keep guarding the moved array when another array acts in the same handler', async () => {
       type TwoArrayValues = NestedFormValues & { others: { value: string }[] };
 
       let getValues: UseFormGetValues<TwoArrayValues> = () => ({}) as never;
@@ -601,7 +601,7 @@ describe('move', () => {
       expect(getValues().others).toEqual([{ value: 'o1' }, { value: 'o2' }]);
     });
 
-    it('should not resize nested arrays when index-keyed children render the pre-move arrangement', async () => {
+    it('not resize nested arrays when index-keyed children render the pre-move arrangement', async () => {
       let getValues: UseFormGetValues<NestedFormValues> = () => ({}) as never;
 
       const App = () => {
