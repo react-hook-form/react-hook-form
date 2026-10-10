@@ -1942,6 +1942,179 @@ describe('select', () => {
       expect(result.current.value).toEqual({ title: 'changed' });
     });
 
+    it('should keep unrelated fields when mapped setValues updates one field', () => {
+      type Values = {
+        title: string;
+        user: {
+          firstName: string;
+          lastName: string;
+          address: { city: string; postcode: string };
+        };
+      };
+      const values: Values = {
+        title: 'title',
+        user: {
+          firstName: 'bill',
+          lastName: 'luo',
+          address: { city: 'sydney', postcode: '2000' },
+        },
+      };
+
+      const { result } = renderHook(() =>
+        useForm<Values>({ defaultValues: values }),
+      );
+      const person = result.current.select('user').select({
+        first: 'firstName',
+        last: 'lastName',
+        town: 'address.city',
+      });
+
+      act(() => {
+        person.setValues({ first: 'kotaro' });
+      });
+
+      expect(result.current.getValues()).toEqual({
+        ...values,
+        user: { ...values.user, firstName: 'kotaro' },
+      });
+
+      act(() => {
+        person.setValues((current) => ({ ...current, town: 'tokyo' }));
+      });
+
+      expect(result.current.getValues()).toEqual({
+        title: 'title',
+        user: {
+          firstName: 'kotaro',
+          lastName: 'luo',
+          address: { city: 'tokyo', postcode: '2000' },
+        },
+      });
+    });
+
+    it('should report mapped values and names to subscribe', () => {
+      const { result } = renderHook(() =>
+        useForm<FormValues>({ defaultValues }),
+      );
+      const callback = jest.fn();
+      const unsubscribe = result.current
+        .select('user')
+        .select({ name: 'firstName', location: { town: 'address.city' } })
+        .subscribe({ formState: { values: true }, callback });
+
+      act(() => {
+        result.current.setValue('title', 'changed');
+        result.current.setValue('user.lastName', 'changed');
+      });
+
+      expect(callback).not.toHaveBeenCalled();
+
+      act(() => {
+        result.current.setValue('user.address.city', 'tokyo');
+      });
+
+      expect(callback).toHaveBeenCalledTimes(1);
+      expect(callback.mock.lastCall[0].name).toBe('location.town');
+      expect(callback.mock.lastCall[0].values).toEqual({
+        name: 'bill',
+        location: { town: 'tokyo' },
+      });
+
+      act(() => {
+        result.current.setValue('user.firstName', 'kotaro');
+      });
+
+      expect(callback.mock.lastCall[0].name).toBe('name');
+      expect(callback.mock.lastCall[0].values).toEqual({
+        name: 'kotaro',
+        location: { town: 'tokyo' },
+      });
+
+      unsubscribe();
+    });
+
+    it('should expose validation state under mapped names', async () => {
+      const { result } = renderHook(() => {
+        const form = useForm<FormValues>({
+          defaultValues: {
+            ...defaultValues,
+            user: { ...defaultValues.user, firstName: '' },
+          },
+        });
+
+        form.register('user.firstName', { required: 'name' });
+        form.register('user.address.city', {
+          validate: (value) => value !== 'invalid' || 'town',
+        });
+
+        const person = form
+          .select('user')
+          .select({ name: 'firstName', location: { town: 'address.city' } });
+
+        return {
+          form,
+          person,
+          formState: useFormState({ control: person.control }),
+        };
+      });
+
+      await act(async () => {
+        expect(await result.current.person.trigger('name')).toBe(false);
+      });
+
+      expect(result.current.formState.errors).toEqual({
+        name: expect.objectContaining({ message: 'name' }),
+      });
+      expect(result.current.person.getFieldState('name').invalid).toBe(true);
+      expect(result.current.formState.isValid).toBe(false);
+
+      act(() => {
+        result.current.form.setValue('user.address.city', 'invalid');
+      });
+
+      await act(async () => {
+        expect(await result.current.person.trigger()).toBe(false);
+      });
+
+      expect(result.current.formState.errors).toEqual({
+        name: expect.objectContaining({ message: 'name' }),
+        location: { town: expect.objectContaining({ message: 'town' }) },
+      });
+
+      act(() => {
+        result.current.person.setError('location.town', {
+          type: 'manual',
+          message: 'manual',
+        });
+      });
+
+      expect(result.current.formState.errors.location?.town).toMatchObject({
+        message: 'manual',
+      });
+      expect(
+        result.current.person.getFieldState(
+          'location.town',
+          result.current.formState,
+        ).error,
+      ).toMatchObject({ message: 'manual' });
+
+      act(() => {
+        result.current.form.setValue('user.firstName', 'bill');
+        result.current.form.setValue('user.address.city', 'tokyo');
+      });
+
+      await act(async () => {
+        expect(await result.current.person.trigger()).toBe(true);
+      });
+
+      expect(result.current.formState.errors).toEqual({});
+      expect(result.current.person.getFieldState('name').invalid).toBe(false);
+      expect(result.current.person.getFieldState('location.town').invalid).toBe(
+        false,
+      );
+      expect(result.current.formState.isValid).toBe(true);
+    });
+
     it('should return the same selection from type helpers', () => {
       const { result } = renderHook(() =>
         useForm<FormValues>({ defaultValues }),
