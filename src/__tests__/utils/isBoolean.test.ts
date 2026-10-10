@@ -1,12 +1,12 @@
 import isBoolean from '../../utils/isBoolean';
 
 describe('isBoolean', () => {
-  it('should return true when value is a boolean', () => {
+  it('return true when value is a boolean', () => {
     expect(isBoolean(true)).toBeTruthy();
     expect(isBoolean(false)).toBeTruthy();
   });
 
-  it('should return false when value is not a boolean', () => {
+  it('return false when value is not a boolean', () => {
     expect(isBoolean(null)).toBeFalsy();
     expect(isBoolean(undefined)).toBeFalsy();
     expect(isBoolean(-1)).toBeFalsy();

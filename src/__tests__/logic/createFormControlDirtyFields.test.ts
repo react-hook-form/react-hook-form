@@ -72,7 +72,7 @@ describe('createFormControl dirtyFields', () => {
         formState: { dirtyFields: true, isDirty: true },
       },
     ])('%o', (options) => {
-      it('should clear nested dirty state when a child restores a parent update', () => {
+      it('clear nested dirty state when a child restores a parent update', () => {
         const { control, setValue } = setup(options);
 
         setValue(
@@ -92,7 +92,7 @@ describe('createFormControl dirtyFields', () => {
         expect(control._formState.dirtyFields).toEqual({});
       });
 
-      it('should clear nested dirty state when a parent restores a child update', () => {
+      it('clear nested dirty state when a parent restores a child update', () => {
         const { control, setValue } = setup(options);
 
         setValue('user.name', 'John', { shouldDirty: true });
@@ -112,7 +112,7 @@ describe('createFormControl dirtyFields', () => {
         expect(control._formState.dirtyFields).toEqual({});
       });
 
-      it('should keep sibling dirty state when a child restores part of a parent update', () => {
+      it('keep sibling dirty state when a child restores part of a parent update', () => {
         const { control, setValue } = setup(options);
 
         setValue(
@@ -134,7 +134,7 @@ describe('createFormControl dirtyFields', () => {
         });
       });
 
-      it('should settle nested dirty state across child, parent, child updates', () => {
+      it('settle nested dirty state across child, parent, child updates', () => {
         const { control, setValue } = setup(options);
 
         setValue('user.name', 'John', { shouldDirty: true });
@@ -156,7 +156,7 @@ describe('createFormControl dirtyFields', () => {
       });
     });
 
-    it('should clear nested dirty state when a parent update restores a user edit', async () => {
+    it('clear nested dirty state when a parent update restores a user edit', async () => {
       const { control, register, setValue } = setup({
         registerChildren: true,
         formState: { dirtyFields: true },
@@ -182,7 +182,7 @@ describe('createFormControl dirtyFields', () => {
       expect(control._formState.dirtyFields).toEqual({});
     });
 
-    it('should clear nested dirty state when a user edit restores a parent update', async () => {
+    it('clear nested dirty state when a user edit restores a parent update', async () => {
       const { control, register, setValue } = setup({
         registerChildren: true,
         formState: { dirtyFields: true },

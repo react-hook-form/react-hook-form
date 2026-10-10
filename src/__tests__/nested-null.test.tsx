@@ -4,7 +4,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useForm } from '../useForm';
 
 describe('nested null bug', () => {
-  it('should not keep parent as null and allow nested value', async () => {
+  it('not keep parent as null and allow nested value', async () => {
     function TestComponent() {
       const { register, handleSubmit } = useForm<{
         example: { inner?: string } | null;
@@ -34,7 +34,7 @@ describe('nested null bug', () => {
     });
   });
 
-  it('should not throw when unregistering nested field with null parent', () => {
+  it('not throw when unregistering nested field with null parent', () => {
     function TestComponent() {
       const { register, unregister } = useForm<{
         example: { nested?: { deep?: string } } | null;

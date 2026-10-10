@@ -1,7 +1,7 @@
 import { flatten } from '../../utils/flatten';
 
 describe('flatten', () => {
-  it('should flatten form values into flat form data', () => {
+  it('flatten form values into flat form data', () => {
     expect(
       flatten({
         hey: 'test',
@@ -23,7 +23,7 @@ describe('flatten', () => {
     ).toMatchSnapshot();
   });
 
-  it('should preserve Date values as leaf nodes and not drop them', () => {
+  it('preserve Date values as leaf nodes and not drop them', () => {
     const date = new Date('2024-01-01T00:00:00.000Z');
 
     expect(flatten({ name: 'Alice', createdAt: date, age: 30 })).toEqual({
@@ -33,7 +33,7 @@ describe('flatten', () => {
     });
   });
 
-  it('should preserve nested Date values as leaf nodes', () => {
+  it('preserve nested Date values as leaf nodes', () => {
     const start = new Date('2024-01-01');
     const end = new Date('2024-12-31');
 
@@ -44,7 +44,7 @@ describe('flatten', () => {
     });
   });
 
-  it('should preserve File and Blob values as leaf nodes and not drop them', () => {
+  it('preserve File and Blob values as leaf nodes and not drop them', () => {
     const file = new File(['content'], 'resume.pdf');
     const blob = new Blob(['content']);
 
@@ -55,7 +55,7 @@ describe('flatten', () => {
     });
   });
 
-  it('should preserve nested and indexed File values as leaf nodes', () => {
+  it('preserve nested and indexed File values as leaf nodes', () => {
     const first = new File(['1'], 'first.pdf');
     const second = new File(['2'], 'second.pdf');
 
@@ -67,7 +67,7 @@ describe('flatten', () => {
     });
   });
 
-  it('should preserve FileList values as leaf nodes and not split them', () => {
+  it('preserve FileList values as leaf nodes and not split them', () => {
     const fileList = Object.create(FileList.prototype) as FileList;
     const file = new File(['1'], 'first.pdf');
 

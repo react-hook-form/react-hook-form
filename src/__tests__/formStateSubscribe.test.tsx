@@ -1,5 +1,11 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 
 import { Controller } from '../controller';
 import { FormStateSubscribe } from '../formState';
@@ -11,7 +17,7 @@ import deepEqual from '../utils/deepEqual';
 import noop from '../utils/noop';
 
 describe('FormStateSubscribe', () => {
-  it('should render correct form state with isDirty, dirty, touched', () => {
+  it('render correct form state with isDirty, dirty, touched', async () => {
     let count = 0;
 
     const Test = ({ control }: { control: Control<{ test: string }> }) => (
@@ -40,19 +46,23 @@ describe('FormStateSubscribe', () => {
 
     render(<Component />);
 
-    fireEvent.input(screen.getByLabelText('test'), {
-      target: { value: 'test' },
+    await act(async () => {
+      fireEvent.input(screen.getByLabelText('test'), {
+        target: { value: 'test' },
+      });
     });
     expect(screen.getByText('isDirty')).toBeVisible();
     expect(screen.getByText('dirty field')).toBeVisible();
     expect(count).toEqual(2);
 
-    fireEvent.blur(screen.getByLabelText('test'));
+    await act(async () => {
+      fireEvent.blur(screen.getByLabelText('test'));
+    });
     expect(screen.getByText('isTouched')).toBeVisible();
     expect(count).toEqual(2);
   });
 
-  it('should render correct isolated errors message', async () => {
+  it('render correct isolated errors message', async () => {
     let count = 0;
 
     const Test = ({ control }: { control: Control }) => (
@@ -82,14 +92,18 @@ describe('FormStateSubscribe', () => {
 
     await waitFor(() => expect(screen.getByText('yes')).toBeVisible());
 
-    fireEvent.input(screen.getByLabelText('test'), {
-      target: { value: 'test' },
+    await act(async () => {
+      fireEvent.input(screen.getByLabelText('test'), {
+        target: { value: 'test' },
+      });
     });
     expect(await screen.findByText('error')).toBeVisible();
     expect(screen.getByText('no')).toBeVisible();
 
-    fireEvent.input(screen.getByLabelText('test'), {
-      target: { value: 'testtest' },
+    await act(async () => {
+      fireEvent.input(screen.getByLabelText('test'), {
+        target: { value: 'testtest' },
+      });
     });
     expect(await screen.findByText('valid')).toBeVisible();
     expect(screen.getByText('yes')).toBeVisible();
@@ -97,7 +111,7 @@ describe('FormStateSubscribe', () => {
     expect(count).toEqual(2);
   });
 
-  it('should update isValidating correctly', async () => {
+  it('update isValidating correctly', async () => {
     function Child() {
       return (
         <FormStateSubscribe
@@ -129,14 +143,20 @@ describe('FormStateSubscribe', () => {
 
     render(<App />);
 
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: '1' } });
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), { target: { value: '1' } });
+    });
     await waitFor(() => expect(screen.getByRole('button')).not.toBeDisabled());
 
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: '12' } });
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '12' },
+      });
+    });
     await waitFor(() => expect(screen.getByRole('button')).not.toBeDisabled());
   });
 
-  it('should update formState separately with multiple FormState instances', async () => {
+  it('update formState separately with multiple FormState instances', async () => {
     let count = 0;
     let testCount = 0;
     let test1Count = 0;
@@ -209,7 +229,7 @@ describe('FormStateSubscribe', () => {
     expect(test1Count).toEqual(3);
   });
 
-  it('should render correct submit state', async () => {
+  it('render correct submit state', async () => {
     let count = 0;
 
     const Test = ({ control }: { control: Control }) => (
@@ -243,7 +263,7 @@ describe('FormStateSubscribe', () => {
     expect(count).toEqual(2);
   });
 
-  it('should only re-render when subscribed field name updated', async () => {
+  it('only re-render when subscribed field name updated', async () => {
     let count = 0;
 
     type FormValues = { firstName: string; lastName: string };
@@ -286,7 +306,7 @@ describe('FormStateSubscribe', () => {
     await waitFor(() => expect(count).toEqual(2));
   });
 
-  it('should not re-render when subscribed field name is not included', () => {
+  it('not re-render when subscribed field name is not included', () => {
     let count = 0;
 
     type FormValues = { firstName: string; lastName: string };
@@ -329,7 +349,7 @@ describe('FormStateSubscribe', () => {
     expect(count).toEqual(2);
   });
 
-  it('should only re-render when subscribed field names updated (array)', async () => {
+  it('only re-render when subscribed field names updated (array)', async () => {
     let count = 0;
 
     type FormValues = { firstName: string; lastName: string; age: number };
@@ -382,7 +402,7 @@ describe('FormStateSubscribe', () => {
     await waitFor(() => expect(count).toEqual(2));
   });
 
-  it('should not re-render when a non-subscribed field changes', () => {
+  it('not re-render when a non-subscribed field changes', () => {
     let count = 0;
 
     type FormValues = { firstName: string; lastName: string; age: number };
@@ -429,7 +449,7 @@ describe('FormStateSubscribe', () => {
     expect(count).toEqual(2);
   });
 
-  it('should be able to stop the formState subscription (disabled toggle)', async () => {
+  it('be able to stop the formState subscription (disabled toggle)', async () => {
     type FormValues = { test: string };
 
     function Child({ control }: { control: Control<FormValues> }) {
@@ -469,7 +489,7 @@ describe('FormStateSubscribe', () => {
     expect(await screen.findByText('error')).toBeVisible();
   });
 
-  it('should not start early subscription in StrictMode flow', async () => {
+  it('not start early subscription in StrictMode flow', async () => {
     type FormValues = { test: { data: string }[] };
 
     function FieldArray() {
@@ -506,7 +526,7 @@ describe('FormStateSubscribe', () => {
     expect(await screen.findAllByRole('textbox')).toHaveLength(1);
   });
 
-  it('should subscribe to exact form state update (exact)', () => {
+  it('subscribe to exact form state update (exact)', () => {
     const App = () => {
       const { control, register } = useForm();
       const [exact, setExact] = React.useState(true);
@@ -539,7 +559,7 @@ describe('FormStateSubscribe', () => {
     expect(screen.getByText('touched')).toBeVisible();
   });
 
-  it('should be able to access defaultValues', () => {
+  it('be able to access defaultValues', () => {
     type FormValues = { firstName: string; lastName: string };
     const defaultValues = { firstName: 'a', lastName: 'b' };
 
@@ -563,7 +583,7 @@ describe('FormStateSubscribe', () => {
     expect(screen.getByText('yes')).toBeVisible();
   });
 
-  it('should conditionally update formState after mount', async () => {
+  it('conditionally update formState after mount', async () => {
     function DirtyState() {
       return (
         <FormStateSubscribe
@@ -603,7 +623,7 @@ describe('FormStateSubscribe', () => {
     expect(await screen.findByText('valid')).toBeVisible();
   });
 
-  it('should subscribe and update formState (errors via submit)', async () => {
+  it('subscribe and update formState (errors via submit)', async () => {
     function App() {
       const { register, control, handleSubmit } = useForm({
         defaultValues: { firstName: '' },
@@ -634,7 +654,7 @@ describe('FormStateSubscribe', () => {
     );
   });
 
-  it('should return the latest values with async values', async () => {
+  it('return the latest values with async values', async () => {
     type FormValues = { firstName: string };
 
     function Input({ control }: { control: Control<FormValues> }) {
@@ -672,7 +692,7 @@ describe('FormStateSubscribe', () => {
     });
   });
 
-  it('should reflect disabled state from useForm', async () => {
+  it('reflect disabled state from useForm', async () => {
     function Form({ control }: { control: Control }) {
       return (
         <FormStateSubscribe

@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 
 import type { Control } from '../../types';
 import { useController } from '../../useController';
@@ -52,7 +52,7 @@ const NestedInput = ({ control }: { control: Control<FormValues> }) => {
 describe('getFieldState', () => {
   describe('with field name supplied', () => {
     describe('when input is primitive data type', () => {
-      it('should display error state', async () => {
+      it('display error state', async () => {
         const App = () => {
           const {
             trigger,
@@ -80,12 +80,14 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        fireEvent.click(screen.getByRole('button'));
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button'));
+        });
 
         expect(await screen.findByText('This is required')).toBeVisible();
       });
 
-      it('should display isValid state', async () => {
+      it('display isValid state', async () => {
         const App = () => {
           const {
             trigger,
@@ -113,12 +115,14 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        fireEvent.click(screen.getByRole('button'));
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button'));
+        });
 
         expect(await screen.findByText('error')).toBeVisible();
       });
 
-      it('should display isTouched state', async () => {
+      it('display isTouched state', async () => {
         const App = () => {
           const {
             register,
@@ -148,7 +152,7 @@ describe('getFieldState', () => {
         expect(screen.getByText('touched')).toBeVisible();
       });
 
-      it('should display isDirty state', async () => {
+      it('display isDirty state', async () => {
         const App = () => {
           const {
             register,
@@ -179,7 +183,7 @@ describe('getFieldState', () => {
         expect(screen.getByText('dirty')).toBeVisible();
       });
 
-      it('should not have error', () => {
+      it('not have error', () => {
         const App = () => {
           const {
             register,
@@ -212,7 +216,7 @@ describe('getFieldState', () => {
     });
 
     describe('when input is nested data type', () => {
-      it('should display error state', async () => {
+      it('display error state', async () => {
         const App = () => {
           const {
             trigger,
@@ -243,12 +247,14 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        fireEvent.click(screen.getByRole('button'));
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button'));
+        });
 
         expect(await screen.findByText('This is required')).toBeVisible();
       });
 
-      it('should display isValid state', async () => {
+      it('display isValid state', async () => {
         const App = () => {
           const {
             trigger,
@@ -279,12 +285,14 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        fireEvent.click(screen.getByRole('button'));
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button'));
+        });
 
         expect(await screen.findByText('error')).toBeVisible();
       });
 
-      it('should display isTouched state', async () => {
+      it('display isTouched state', async () => {
         const App = () => {
           const {
             control,
@@ -317,7 +325,7 @@ describe('getFieldState', () => {
         expect(screen.getByText('touched')).toBeVisible();
       });
 
-      it('should display isDirty state', async () => {
+      it('display isDirty state', async () => {
         const App = () => {
           const {
             control,
@@ -351,7 +359,7 @@ describe('getFieldState', () => {
         expect(screen.getByText('dirty')).toBeVisible();
       });
 
-      it('should not have error', () => {
+      it('not have error', () => {
         const App = () => {
           const {
             control,
@@ -389,7 +397,7 @@ describe('getFieldState', () => {
 
   describe('with form state and field name supplied', () => {
     describe('when input is primitive data type', () => {
-      it('should display error state', async () => {
+      it('display error state', async () => {
         const App = () => {
           const { trigger, register, getFieldState, formState } = useForm({
             defaultValues: {
@@ -412,12 +420,14 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        fireEvent.click(screen.getByRole('button'));
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button'));
+        });
 
         expect(await screen.findByText('This is required')).toBeVisible();
       });
 
-      it('should display isValid state', async () => {
+      it('display isValid state', async () => {
         const App = () => {
           const { trigger, register, getFieldState, formState } = useForm({
             defaultValues: {
@@ -440,12 +450,14 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        fireEvent.click(screen.getByRole('button'));
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button'));
+        });
 
         expect(await screen.findByText('error')).toBeVisible();
       });
 
-      it('should display isTouched state', async () => {
+      it('display isTouched state', async () => {
         const App = () => {
           const { register, getFieldState, formState } = useForm({
             defaultValues: {
@@ -471,7 +483,7 @@ describe('getFieldState', () => {
         expect(screen.getByText('touched')).toBeVisible();
       });
 
-      it('should display isDirty state', async () => {
+      it('display isDirty state', async () => {
         const App = () => {
           const { register, getFieldState, formState } = useForm({
             defaultValues: {
@@ -498,7 +510,7 @@ describe('getFieldState', () => {
         expect(screen.getByText('dirty')).toBeVisible();
       });
 
-      it('should not have error', () => {
+      it('not have error', () => {
         const App = () => {
           const { register, getFieldState, formState } = useForm({
             defaultValues: {
@@ -521,7 +533,7 @@ describe('getFieldState', () => {
         expect(screen.getByText('error undefined')).toBeVisible();
       });
 
-      it('should display isValidating state', async () => {
+      it('display isValidating state', async () => {
         const App = () => {
           const { register, getFieldState, formState } = useForm({
             mode: 'onChange',
@@ -559,7 +571,7 @@ describe('getFieldState', () => {
     });
 
     describe('when input is nested data type', () => {
-      it('should display error state', async () => {
+      it('display error state', async () => {
         const App = () => {
           const { trigger, getFieldState, control, formState } =
             useForm<FormValues>({
@@ -586,12 +598,14 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        fireEvent.click(screen.getByRole('button'));
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button'));
+        });
 
         expect(await screen.findByText('This is required')).toBeVisible();
       });
 
-      it('should display isValid state', async () => {
+      it('display isValid state', async () => {
         const App = () => {
           const { trigger, control, getFieldState, formState } =
             useForm<FormValues>({
@@ -618,12 +632,14 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        fireEvent.click(screen.getByRole('button'));
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button'));
+        });
 
         expect(await screen.findByText('error')).toBeVisible();
       });
 
-      it('should display isTouched state', async () => {
+      it('display isTouched state', async () => {
         const App = () => {
           const { control, getFieldState, formState } = useForm<FormValues>({
             defaultValues: {
@@ -652,7 +668,7 @@ describe('getFieldState', () => {
         expect(screen.getByText('touched')).toBeVisible();
       });
 
-      it('should display isDirty state', async () => {
+      it('display isDirty state', async () => {
         const App = () => {
           const { control, getFieldState, formState } = useForm<FormValues>({
             defaultValues: {
@@ -682,7 +698,7 @@ describe('getFieldState', () => {
         expect(screen.getByText('dirty')).toBeVisible();
       });
 
-      it('should not have error', () => {
+      it('not have error', () => {
         const App = () => {
           const { control, getFieldState, formState } = useForm<FormValues>({
             defaultValues: {
@@ -711,7 +727,7 @@ describe('getFieldState', () => {
   });
 
   describe('when field is not found', () => {
-    it('should return field state', async () => {
+    it('return field state', async () => {
       const App = () => {
         const { control, getFieldState, formState } = useForm<FormValues>({
           defaultValues: {

@@ -11,7 +11,7 @@ import { Controller } from '../../controller';
 import { useForm } from '../../useForm';
 
 describe('setValues', () => {
-  it('should batch update multiple values', async () => {
+  it('batch update multiple values', async () => {
     const { result } = renderHook(() =>
       useForm<{ a: string; b: string }>({
         defaultValues: { a: '1', b: '2' },
@@ -31,7 +31,7 @@ describe('setValues', () => {
     });
   });
 
-  it('should support function updater', async () => {
+  it('support function updater', async () => {
     const { result } = renderHook(() =>
       useForm<{ a: string; b: string }>({
         defaultValues: { a: '1', b: '2' },
@@ -51,7 +51,7 @@ describe('setValues', () => {
     });
   });
 
-  it('should not notify subscribers when batch values are unchanged', async () => {
+  it('not notify subscribers when batch values are unchanged', async () => {
     const { result } = renderHook(() =>
       useForm<{ a: string; b: string }>({
         defaultValues: { a: '1', b: '2' },
@@ -78,7 +78,7 @@ describe('setValues', () => {
     expect(valueNotifications).toHaveLength(0);
   });
 
-  it('should notify subscribers only once for batch update', async () => {
+  it('notify subscribers only once for batch update', async () => {
     const { result } = renderHook(() =>
       useForm<{ a: string; b: string }>({
         defaultValues: { a: '1', b: '2' },
@@ -110,7 +110,7 @@ describe('setValues', () => {
     expect(valueNotifications).toHaveLength(1);
   });
 
-  it('should notify the batch update as a whole-form change (no stale name/type)', async () => {
+  it('notify the batch update as a whole-form change (no stale name/type)', async () => {
     const { result } = renderHook(() =>
       useForm<{ a: string; b: string }>({
         defaultValues: { a: '1', b: '2' },
@@ -155,7 +155,7 @@ describe('setValues', () => {
     expect(terminal.values).toEqual({ a: '10', b: '20' });
   });
 
-  it('should update controlled input value when setValues is called', async () => {
+  it('update controlled input value when setValues is called', async () => {
     const Component = () => {
       const { control, setValues } = useForm({
         defaultValues: {
@@ -193,7 +193,7 @@ describe('setValues', () => {
     expect(screen.getByRole('textbox')).toHaveValue('111');
   });
 
-  it('should update registered input value when setValues is called', async () => {
+  it('update registered input value when setValues is called', async () => {
     const Component = () => {
       const { register, setValues } = useForm({
         defaultValues: {
@@ -227,7 +227,7 @@ describe('setValues', () => {
     expect(screen.getByRole('textbox')).toHaveValue('111');
   });
 
-  it('should not leave a stale element behind when setValues shrinks a field array', async () => {
+  it('not leave a stale element behind when setValues shrinks a field array', async () => {
     const { result } = renderHook(() =>
       useForm<{ test: { name: string }[] }>({
         defaultValues: {
@@ -251,7 +251,7 @@ describe('setValues', () => {
     });
   });
 
-  it('should handle setValues shrinking a field array down to empty', async () => {
+  it('handle setValues shrinking a field array down to empty', async () => {
     const { result } = renderHook(() =>
       useForm<{ test: { name: string }[] }>({
         defaultValues: {
@@ -272,7 +272,7 @@ describe('setValues', () => {
     expect(result.current.getValues()).toEqual({ test: [] });
   });
 
-  it('should still propagate an explicitly set undefined value to a mounted field', async () => {
+  it('still propagate an explicitly set undefined value to a mounted field', async () => {
     const { result } = renderHook(() =>
       useForm<{ a: string | undefined; b: string }>({
         defaultValues: { a: '1', b: '2' },
@@ -292,7 +292,7 @@ describe('setValues', () => {
     expect(result.current.getValues()).toEqual({ a: undefined, b: '2' });
   });
 
-  it('should update deep nested registered input values when setValues is called', async () => {
+  it('update deep nested registered input values when setValues is called', async () => {
     const Component = () => {
       const { register, setValues } = useForm({
         defaultValues: {
@@ -339,7 +339,7 @@ describe('setValues', () => {
     expect(screen.getByLabelText('city')).toHaveValue('New York');
   });
 
-  it('should preserve object references for untouched values instead of deep cloning per field', async () => {
+  it('preserve object references for untouched values instead of deep cloning per field', async () => {
     type FormValues = {
       a: { nested: string };
       b: { nested: string };
@@ -370,7 +370,7 @@ describe('setValues', () => {
     expect(values.b).toBe(nextB);
   });
 
-  it('should emit exactly one state notification for a setValues batch', async () => {
+  it('emit exactly one state notification for a setValues batch', async () => {
     const { result } = renderHook(() =>
       useForm<{ a: { nested: string }; b: string }>({
         defaultValues: { a: { nested: '1' }, b: 'x' },
@@ -399,7 +399,7 @@ describe('setValues', () => {
     expect(deliveredValues[0]).toEqual({ a: { nested: '10' }, b: 'y' });
   });
 
-  it('should propagate shouldValidate option to trigger validation and update isValid', async () => {
+  it('propagate shouldValidate option to trigger validation and update isValid', async () => {
     const { result } = renderHook(() =>
       useForm<{ firstName: string }>({
         defaultValues: { firstName: '' },
@@ -425,7 +425,7 @@ describe('setValues', () => {
     expect(result.current.getValues().firstName).toBe('John');
   });
 
-  it('should propagate shouldDirty and shouldTouch options', async () => {
+  it('propagate shouldDirty and shouldTouch options', async () => {
     const { result } = renderHook(() =>
       useForm<{ firstName: string; lastName: string }>({
         defaultValues: { firstName: '', lastName: '' },
@@ -457,7 +457,7 @@ describe('setValues', () => {
     });
   });
 
-  it('should clear errors and update isValid when revalidating with setValues', async () => {
+  it('clear errors and update isValid when revalidating with setValues', async () => {
     const { result } = renderHook(() =>
       useForm<{ email: string }>({
         defaultValues: { email: '' },
@@ -510,7 +510,7 @@ describe('setValues', () => {
     expect(result.current.getValues().email).toBe('test@example.com');
   });
 
-  it('should validate multiple fields and update isValid correctly', async () => {
+  it('validate multiple fields and update isValid correctly', async () => {
     const { result } = renderHook(() =>
       useForm<{ username: string; email: string; age: number }>({
         defaultValues: { username: '', email: '', age: 0 },
@@ -573,7 +573,7 @@ describe('setValues', () => {
     expect(result.current.formState.errors.username).toBeDefined();
   });
 
-  it('should update a multiple select registered under an array value', async () => {
+  it('update a multiple select registered under an array value', async () => {
     const Component = () => {
       const { register, setValues } = useForm<{ tags: string[] }>({
         defaultValues: { tags: ['a'] },
@@ -606,7 +606,7 @@ describe('setValues', () => {
     ).toEqual(['b', 'c']);
   });
 
-  it('should update a checkbox group registered under an array value', async () => {
+  it('update a checkbox group registered under an array value', async () => {
     const Component = () => {
       const { register, setValues } = useForm<{ choices: string[] }>({
         defaultValues: { choices: ['a'] },
@@ -643,7 +643,7 @@ describe('setValues', () => {
     expect(screen.getByLabelText('b')).toBeChecked();
   });
 
-  it('should clear a multiple select when an empty array is provided', async () => {
+  it('clear a multiple select when an empty array is provided', async () => {
     const Component = () => {
       const { register, setValues } = useForm<{ tags: string[] }>({
         defaultValues: { tags: ['a'] },
@@ -673,7 +673,7 @@ describe('setValues', () => {
     expect(select.selectedOptions).toHaveLength(0);
   });
 
-  it('should not validate when shouldValidate is not provided', async () => {
+  it('not validate when shouldValidate is not provided', async () => {
     const { result } = renderHook(() =>
       useForm<{ firstName: string }>({
         defaultValues: { firstName: '' },

@@ -18,7 +18,7 @@ type FormType = {
 };
 
 describe('Watch', () => {
-  it('should render with default value in useForm', () => {
+  it('render with default value in useForm', () => {
     let watched;
     const Component = () => {
       const form = useForm<{ test: string }>({
@@ -39,7 +39,7 @@ describe('Watch', () => {
     expect(watched).toEqual({ test: 'test' });
   });
 
-  it('should render with default value for single input', () => {
+  it('render with default value for single input', () => {
     let watched;
     const Component = () => {
       const form = useForm<{ test: string; test1: string }>({
@@ -64,7 +64,7 @@ describe('Watch', () => {
     expect(watched).toEqual('test');
   });
 
-  it('should render with default values for array of inputs', () => {
+  it('render with default values for array of inputs', () => {
     let watched;
     const Component = () => {
       const form = useForm<{ test: string; test1: string }>({
@@ -89,7 +89,7 @@ describe('Watch', () => {
     expect(watched).toEqual(['test', 'test1']);
   });
 
-  it('should render with own default value for single input', () => {
+  it('render with own default value for single input', () => {
     let watched;
     const Component = () => {
       const form = useForm<{ test: string; test1: string }>({});
@@ -110,7 +110,7 @@ describe('Watch', () => {
     expect(watched).toEqual('somevalue');
   });
 
-  it('should render with own default value for array of inputs', () => {
+  it('render with own default value for array of inputs', () => {
     let watched;
     const Component = () => {
       const form = useForm<{ test: string; test1: string }>({});
@@ -131,7 +131,7 @@ describe('Watch', () => {
     expect(watched).toEqual(['somevalue', 'somevalue1']);
   });
 
-  it('should render with empty array when watch array fields and no default value', () => {
+  it('render with empty array when watch array fields and no default value', () => {
     let watched;
     const Component = () => {
       const form = useForm<{ test: string }>();
@@ -151,7 +151,7 @@ describe('Watch', () => {
     expect(watched).toEqual([undefined]);
   });
 
-  it('should render with undefined when watch single field and no default value', () => {
+  it('render with undefined when watch single field and no default value', () => {
     let watched;
     const Component = () => {
       const form = useForm<{ test: string }>();
@@ -171,7 +171,7 @@ describe('Watch', () => {
     expect(watched).toEqual(undefined);
   });
 
-  it('should subscribe to exact input change', () => {
+  it('subscribe to exact input change', () => {
     const App = () => {
       const { control, register } = useForm();
 
@@ -200,7 +200,7 @@ describe('Watch', () => {
     expect(screen.getByText('test')).toBeVisible();
   });
 
-  it('should partial re-render with array name and exact option', async () => {
+  it('partial re-render with array name and exact option', async () => {
     type FormInputs = {
       child: string;
       childSecond: string;
@@ -316,7 +316,7 @@ describe('Watch', () => {
   });
 
   describe('when disabled prop is used', () => {
-    it('should be able to toggle subscription and start with disabled true', async () => {
+    it('be able to toggle subscription and start with disabled true', async () => {
       type FormValues = {
         test: string;
       };
@@ -396,7 +396,7 @@ describe('Watch', () => {
       expect(screen.getByText('what12345')).toBeVisible();
     });
 
-    it('should be able to toggle the subscription and start with disabled false', async () => {
+    it('be able to toggle the subscription and start with disabled false', async () => {
       type FormValues = {
         test: string;
       };
@@ -466,7 +466,7 @@ describe('Watch', () => {
   });
 
   describe('compute ', () => {
-    it('should only update when value changed within compute', () => {
+    it('only update when value changed within compute', () => {
       type FormValue = {
         test: string;
       };
@@ -534,7 +534,7 @@ describe('Watch', () => {
     });
   });
 
-  it('should pass the values corresponding to the `name` prop to render function', () => {
+  it('pass the values corresponding to the `name` prop to render function', () => {
     const Component = () => {
       const { control, register } = useForm<FormType>();
       return (
@@ -588,7 +588,7 @@ describe('Watch', () => {
     expect(bazQuxText).toHaveTextContent('c');
   });
 
-  it('should trigger re-render only when the values corresponding to the `name` prop change', async () => {
+  it('trigger re-render only when the values corresponding to the `name` prop change', async () => {
     const outerCallback = jest.fn();
     const fooCallback = jest.fn();
     const barCallback = jest.fn();

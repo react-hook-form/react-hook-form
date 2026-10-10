@@ -15,7 +15,13 @@ import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import noop from '../../utils/noop';
 
-jest.useFakeTimers();
+beforeEach(() => {
+  jest.useFakeTimers();
+});
+
+afterEach(() => {
+  jest.useRealTimers();
+});
 
 let i = 0;
 
@@ -26,7 +32,7 @@ describe('insert', () => {
     i = 0;
   });
 
-  it('should insert data at index with single value', () => {
+  it('insert data at index with single value', () => {
     const { result } = renderHook(() => {
       const { control } = useForm({
         defaultValues: {
@@ -51,7 +57,7 @@ describe('insert', () => {
     ]);
   });
 
-  it('should insert data at index with array value', () => {
+  it('insert data at index with array value', () => {
     const { result } = renderHook(() => {
       const { control } = useForm({
         defaultValues: {
@@ -77,7 +83,7 @@ describe('insert', () => {
     ]);
   });
 
-  it('should insert relative to the end when index is negative', () => {
+  it('insert relative to the end when index is negative', () => {
     const { result } = renderHook(() => {
       const { control } = useForm({
         defaultValues: {
@@ -98,7 +104,7 @@ describe('insert', () => {
     ]);
   });
 
-  it('should append at the end when index is beyond the array length', () => {
+  it('append at the end when index is beyond the array length', () => {
     const { result } = renderHook(() => {
       const { control } = useForm({
         defaultValues: {
@@ -201,7 +207,7 @@ describe('insert', () => {
     },
   );
 
-  it('should insert touched fields with single value', () => {
+  it('insert touched fields with single value', () => {
     let touched: any;
     const Component = () => {
       const { register, formState, control } = useForm({
@@ -241,7 +247,7 @@ describe('insert', () => {
     });
   });
 
-  it('should insert touched fields with array value', () => {
+  it('insert touched fields with array value', () => {
     let touched: any;
     const Component = () => {
       const { register, formState, control } = useForm({
@@ -286,7 +292,7 @@ describe('insert', () => {
     });
   });
 
-  it('should insert error with single value', async () => {
+  it('insert error with single value', async () => {
     let errors: any;
     const Component = () => {
       const { register, handleSubmit, control, ...rest } = useForm();
@@ -331,7 +337,7 @@ describe('insert', () => {
     expect(errors.test[2]).toBeDefined();
   });
 
-  it('should insert error with array value', async () => {
+  it('insert error with array value', async () => {
     let errors: any;
     const Component = () => {
       const { register, handleSubmit, control, ...rest } = useForm();
@@ -380,7 +386,7 @@ describe('insert', () => {
     expect(errors.test[3]).toBeDefined();
   });
 
-  it('should focus if shouldFocus is true', () => {
+  it('focus if shouldFocus is true', () => {
     const Component = () => {
       const { register, control } = useForm({
         defaultValues: {
@@ -411,7 +417,7 @@ describe('insert', () => {
     expect(document.activeElement).toEqual(inputs[1]);
   });
 
-  it('should not focus if shouldFocus is false', () => {
+  it('not focus if shouldFocus is false', () => {
     const Component = () => {
       const { register, control } = useForm({
         defaultValues: {
@@ -445,7 +451,7 @@ describe('insert', () => {
     expect(document.activeElement).toEqual(document.body);
   });
 
-  it('should trigger reRender when user is watching the all field array', () => {
+  it('trigger reRender when user is watching the all field array', () => {
     const watched: any[] = [];
     const Component = () => {
       const { register, watch, control } = useForm<{
@@ -483,7 +489,7 @@ describe('insert', () => {
     ]);
   });
 
-  it('should return watched value with watch API', async () => {
+  it('return watched value with watch API', async () => {
     const renderedItems: any = [];
     const Component = () => {
       const { watch, register, control } = useForm<{
@@ -542,7 +548,7 @@ describe('insert', () => {
     ]);
   });
 
-  it('should append nested field value without its reference', () => {
+  it('append nested field value without its reference', () => {
     type FormValues = {
       test: { name: { deep: string } }[];
     };
@@ -626,7 +632,7 @@ describe('insert', () => {
   });
 
   describe('with resolver', () => {
-    it('should invoke resolver when formState.isValid true', async () => {
+    it('invoke resolver when formState.isValid true', async () => {
       const resolver = jest.fn().mockReturnValue({});
 
       const { result } = renderHook(() => {
@@ -657,7 +663,7 @@ describe('insert', () => {
       );
     });
 
-    it('should not invoke resolver when formState.isValid false', () => {
+    it('not invoke resolver when formState.isValid false', () => {
       const resolver = jest.fn().mockReturnValue({});
 
       const { result } = renderHook(() => {
@@ -676,7 +682,7 @@ describe('insert', () => {
       expect(resolver).toHaveBeenCalled();
     });
 
-    it('should insert update fields during async submit', () => {
+    it('insert update fields during async submit', () => {
       type FormValues = {
         test: { name: string }[];
       };
@@ -763,7 +769,7 @@ describe('insert', () => {
     });
   });
 
-  it('should not omit keyName when provided', async () => {
+  it('not omit keyName when provided', async () => {
     type FormValues = {
       test: {
         test: string;
@@ -819,7 +825,7 @@ describe('insert', () => {
     ).toBeVisible();
   });
 
-  it('should not omit keyName when provided and defaultValue is empty', async () => {
+  it('not omit keyName when provided and defaultValue is empty', async () => {
     type FormValues = {
       test: {
         test: string;
@@ -869,7 +875,7 @@ describe('insert', () => {
     ).toBeVisible();
   });
 
-  it('should not invoke resolver per register during insert; only array-scoped + final isValid', async () => {
+  it('not invoke resolver per register during insert; only array-scoped + final isValid', async () => {
     const resolver = jest
       .fn()
       .mockImplementation((values) => ({ values, errors: {} }));

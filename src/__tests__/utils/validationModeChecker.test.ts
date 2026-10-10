@@ -2,7 +2,7 @@ import { VALIDATION_MODE } from '../../constants';
 import validationModeChecker from '../../logic/getValidationModes';
 
 describe('validationModeChecker', () => {
-  it('should return correct mode', () => {
+  it('return correct mode', () => {
     expect(validationModeChecker(VALIDATION_MODE.onBlur)).toEqual({
       isOnSubmit: false,
       isOnBlur: true,

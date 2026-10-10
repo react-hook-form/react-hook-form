@@ -1,7 +1,7 @@
 import extractFormValues from '../../utils/extractFormValues';
 
 describe('extractFormValues', () => {
-  it('should return extracted form values based on form state', () => {
+  it('return extracted form values based on form state', () => {
     const formData = {
       test: {
         test: 'test',
@@ -36,7 +36,7 @@ describe('extractFormValues', () => {
     });
   });
 
-  it('should only extract the marked entries of a field array', () => {
+  it('only extract the marked entries of a field array', () => {
     const formData = {
       records: [
         { name: 'test', note: 'note' },

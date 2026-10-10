@@ -23,7 +23,7 @@ describe('update', () => {
     i = 0;
   });
 
-  it('should update dirtyFields fields correctly', async () => {
+  it('update dirtyFields fields correctly', async () => {
     let dirtyInputs = {};
     const Component = () => {
       const {
@@ -121,7 +121,7 @@ describe('update', () => {
     });
   });
 
-  it('should trigger reRender when user update input and is watching the all field array', () => {
+  it('trigger reRender when user update input and is watching the all field array', () => {
     const watched: any[] = [];
     const Component = () => {
       const { register, watch, control } = useForm<{
@@ -178,7 +178,7 @@ describe('update', () => {
     ]);
   });
 
-  it('should return watched value with update and watch API', async () => {
+  it('return watched value with update and watch API', async () => {
     const renderedItems: any = [];
     const Component = () => {
       const { watch, register, control } = useForm<{
@@ -216,7 +216,7 @@ describe('update', () => {
     );
   });
 
-  it('should update group input correctly', () => {
+  it('update group input correctly', () => {
     type FormValues = {
       test: {
         value: {
@@ -357,7 +357,7 @@ describe('update', () => {
     ]);
   });
 
-  it('should update field array with single value', () => {
+  it('update field array with single value', () => {
     let fieldArrayValues: { value: string }[] | [] = [];
     const App = () => {
       const { register, control } = useForm<{
@@ -401,7 +401,7 @@ describe('update', () => {
     expect(fieldArrayValues[0].value).toEqual('test');
   });
 
-  it('should update field array with multiple values', () => {
+  it('update field array with multiple values', () => {
     let fieldArrayValues: { firstName: string; lastName: string }[] | [] = [];
 
     const App = () => {
@@ -493,7 +493,7 @@ describe('update', () => {
   });
 
   describe('with resolver', () => {
-    it('should invoke resolver when formState.isValid true', async () => {
+    it('invoke resolver when formState.isValid true', async () => {
       const resolver = jest.fn().mockReturnValue({});
 
       const { result } = renderHook(() => {
@@ -524,7 +524,7 @@ describe('update', () => {
       );
     });
 
-    it('should not invoke resolver when formState.isValid false', () => {
+    it('not invoke resolver when formState.isValid false', () => {
       const resolver = jest.fn().mockReturnValue({});
 
       const { result } = renderHook(() => {
@@ -543,7 +543,7 @@ describe('update', () => {
       expect(resolver).toHaveBeenCalled();
     });
 
-    it('should not invoke resolver per register during update; only array-scoped + final isValid', async () => {
+    it('not invoke resolver per register during update; only array-scoped + final isValid', async () => {
       const resolver = jest
         .fn()
         .mockImplementation((values) => ({ values, errors: {} }));
@@ -595,7 +595,7 @@ describe('update', () => {
     });
   });
 
-  it('should not omit keyName when provided', async () => {
+  it('not omit keyName when provided', async () => {
     type FormValues = {
       test: {
         test: string;
@@ -649,7 +649,7 @@ describe('update', () => {
     ).toBeVisible();
   });
 
-  it('should not omit keyName when provided and defaultValue is empty', async () => {
+  it('not omit keyName when provided and defaultValue is empty', async () => {
     type FormValues = {
       test: {
         test: string;
@@ -699,7 +699,7 @@ describe('update', () => {
     ).toBeVisible();
   });
 
-  it('should remove stale errors for the updated field', async () => {
+  it('remove stale errors for the updated field', async () => {
     const App = () => {
       const {
         control,
@@ -760,7 +760,7 @@ describe('update', () => {
     );
   });
 
-  it('should keep errors of other fields when updating an index', async () => {
+  it('keep errors of other fields when updating an index', async () => {
     const App = () => {
       const {
         control,
@@ -825,7 +825,7 @@ describe('update', () => {
     expect(screen.getByText('error0')).toBeVisible();
   });
 
-  it('should clear touched state for the updated field', async () => {
+  it('clear touched state for the updated field', async () => {
     const App = () => {
       const {
         control,

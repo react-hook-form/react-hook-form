@@ -1,7 +1,7 @@
 import isNameInFieldArray from '../../logic/isNameInFieldArray';
 
 describe('isNameInFieldArray', () => {
-  it('should find match array field', () => {
+  it('find match array field', () => {
     expect(isNameInFieldArray(new Set(['test']), 'test.0')).toBeTruthy();
     expect(isNameInFieldArray(new Set(['te']), 'test.0')).toBeFalsy();
     expect(isNameInFieldArray(new Set(['te']), 'test.0')).toBeFalsy();
@@ -15,7 +15,7 @@ describe('isNameInFieldArray', () => {
     expect(isNameInFieldArray(new Set(['test']), 'data.0.data.0')).toBeFalsy();
   });
 
-  it('should find match when field array is nested under a numeric path segment', () => {
+  it('find match when field array is nested under a numeric path segment', () => {
     // Field array registered at `steps.0.items`, Controller name is `steps.0.items.2.name`
     // — the field array is not the first numeric segment's parent (`steps`),
     // so isNameInFieldArray must check deeper parents too.

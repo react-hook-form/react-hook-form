@@ -9,10 +9,16 @@ import {
 
 import { useForm } from '../../useForm';
 
-jest.useFakeTimers();
+beforeEach(() => {
+  jest.useFakeTimers();
+});
+
+afterEach(() => {
+  jest.useRealTimers();
+});
 
 describe('resetDefaultValues', () => {
-  it('should update default values and recompute dirtyFields/isDirty without changing form values', async () => {
+  it('update default values and recompute dirtyFields/isDirty without changing form values', async () => {
     let formRef: ReturnType<
       typeof useForm<{ firstName: string; lastName: string }>
     >;
@@ -63,7 +69,7 @@ describe('resetDefaultValues', () => {
     expect(screen.getByTestId('dirtyFields').textContent).toBe('{}');
   });
 
-  it('should keep dirty state when keepDirty option is true', async () => {
+  it('keep dirty state when keepDirty option is true', async () => {
     let formRef: ReturnType<typeof useForm<{ firstName: string }>>;
 
     const App = () => {
@@ -107,7 +113,7 @@ describe('resetDefaultValues', () => {
     );
   });
 
-  it('should update formState.defaultValues when resetDefaultValues is called', async () => {
+  it('update formState.defaultValues when resetDefaultValues is called', async () => {
     let formRef: ReturnType<typeof useForm<{ name: string }>>;
 
     const App = () => {
@@ -140,7 +146,7 @@ describe('resetDefaultValues', () => {
     );
   });
 
-  it('should work with nested objects', async () => {
+  it('work with nested objects', async () => {
     let formRef: ReturnType<
       typeof useForm<{ user: { name: string; age: number } }>
     >;
@@ -188,7 +194,7 @@ describe('resetDefaultValues', () => {
     ).toBe('Jane');
   });
 
-  it('should recompute dirty fields correctly when some fields still differ from new defaults', async () => {
+  it('recompute dirty fields correctly when some fields still differ from new defaults', async () => {
     let formRef: ReturnType<
       typeof useForm<{ a: string; b: string; c: string }>
     >;

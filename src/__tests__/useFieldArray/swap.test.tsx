@@ -22,7 +22,7 @@ describe('swap', () => {
     i = 0;
   });
 
-  it('should swap into pointed position', () => {
+  it('swap into pointed position', () => {
     const { result } = renderHook(() => {
       const { register, control } = useForm({
         defaultValues: { test: [{ value: '1' }] },
@@ -49,7 +49,7 @@ describe('swap', () => {
     ]);
   });
 
-  it('should swap data order', () => {
+  it('swap data order', () => {
     const { result } = renderHook(() => {
       const { register, control } = useForm({
         defaultValues: { test: [{ value: '1' }] },
@@ -115,7 +115,7 @@ describe('swap', () => {
     },
   );
 
-  it('should swap errors', async () => {
+  it('swap errors', async () => {
     let errors: any;
     const Component = () => {
       const { register, handleSubmit, control, ...rest } = useForm({
@@ -161,7 +161,7 @@ describe('swap', () => {
     expect(errors.test[1]).toBeUndefined();
   });
 
-  it('should swap touched fields', async () => {
+  it('swap touched fields', async () => {
     let touched: any;
     const Component = () => {
       const { register, formState, control } = useForm({
@@ -203,7 +203,7 @@ describe('swap', () => {
     });
   });
 
-  it('should trigger reRender when user is watching the all field array', () => {
+  it('trigger reRender when user is watching the all field array', () => {
     const watched: any[] = [];
     const Component = () => {
       const { register, watch, control } = useForm({
@@ -241,7 +241,7 @@ describe('swap', () => {
     ]);
   });
 
-  it('should return watched value with watch API', async () => {
+  it('return watched value with watch API', async () => {
     const renderedItems: any = [];
     const Component = () => {
       const { watch, register, control } = useForm<{
@@ -303,7 +303,7 @@ describe('swap', () => {
   });
 
   describe('with resolver', () => {
-    it('should invoke resolver when formState.isValid true', async () => {
+    it('invoke resolver when formState.isValid true', async () => {
       const resolver = jest.fn().mockReturnValue({});
 
       const { result } = renderHook(() => {
@@ -337,7 +337,7 @@ describe('swap', () => {
       );
     });
 
-    it('should not invoke resolver when formState.isValid false', () => {
+    it('not invoke resolver when formState.isValid false', () => {
       const resolver = jest.fn().mockReturnValue({});
 
       const { result } = renderHook(() => {
@@ -360,7 +360,7 @@ describe('swap', () => {
     });
   });
 
-  it('should not omit keyName when provided', async () => {
+  it('not omit keyName when provided', async () => {
     type FormValues = {
       test: {
         test: string;
@@ -416,7 +416,7 @@ describe('swap', () => {
     ).toBeVisible();
   });
 
-  it('should not omit keyName when provided and defaultValue is empty', async () => {
+  it('not omit keyName when provided and defaultValue is empty', async () => {
     type FormValues = {
       test: {
         test: string;
