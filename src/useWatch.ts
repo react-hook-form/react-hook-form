@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { getScope, scopeDefaultValue, scopeNames } from './logic/createSelect';
+import { resolveScope, scopeDefaultValue } from './logic/createSelect';
 import generateWatchOutput from './logic/generateWatchOutput';
 import cloneObject from './utils/cloneObject';
 import deepEqual from './utils/deepEqual';
@@ -170,15 +170,11 @@ export function useWatch<TFieldValues extends FieldValues>(
     exact,
     compute,
   } = props || {};
-  const scope = getScope(_control);
-  const control = scope ? scope.control : _control;
-  const name = React.useMemo(
-    () => (scope ? scopeNames(scope.path, _name) : _name),
-    [scope, _name],
+  const [control, name, path] = React.useMemo(
+    () => resolveScope(_control, _name),
+    [_control, _name],
   );
-  const defaultValue = scope
-    ? scopeDefaultValue(scope.path, _name, _defaultValueProp)
-    : _defaultValueProp;
+  const defaultValue = scopeDefaultValue(path, _name, _defaultValueProp);
   const _defaultValue = React.useRef(defaultValue);
   const _compute = React.useRef(compute);
 

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { getScope, joinName } from './logic/createSelect';
+import { resolveScope } from './logic/createSelect';
 import generateId from './logic/generateId';
 import getFocusFieldName from './logic/getFocusFieldName';
 import getValidationModes from './logic/getValidationModes';
@@ -126,9 +126,10 @@ export function useFieldArray<
     shouldUnregister,
     rules,
   } = props;
-  const scope = getScope(_control);
-  const control = scope ? scope.control : _control;
-  const name = (scope ? joinName(scope.path, _name) : _name) as TFieldArrayName;
+  const [control, name] = React.useMemo(
+    () => resolveScope(_control, _name),
+    [_control, _name],
+  );
   const getCurrentFieldArray = () => control._getFieldArray(name);
 
   const [fields, setFields] = React.useState(getCurrentFieldArray);

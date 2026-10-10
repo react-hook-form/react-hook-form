@@ -852,4 +852,294 @@ describe('select', () => {
       ).toEqual(expect.objectContaining({ invalid: false }));
     });
   });
+
+  describe('review regressions', () => {
+    it('should resolve getFieldState against the form formState with the full name', () => {
+      const { result } = renderHook(() => {
+        const form = useForm<FormValues>({ defaultValues });
+        form.formState.errors;
+        return form;
+      });
+
+      act(() => {
+        result.current.setError('user.firstName', { message: 'user' });
+      });
+
+      expect(
+        result.current
+          .select('user')
+          .getFieldState('firstName', result.current.formState).error,
+      ).toMatchObject({ message: 'user' });
+      expect(
+        result.current
+          .select('user.address')
+          .getFieldState('city', result.current.formState).invalid,
+      ).toBe(false);
+    });
+
+    it('should resolve getFieldState against a formState scoped to another path', () => {
+      const { result } = renderHook(() => {
+        const form = useForm<FormValues>({ defaultValues });
+        const formState = useFormState({
+          control: form.select('user').control,
+        });
+
+        return { form, formState };
+      });
+
+      act(() => {
+        result.current.form.setError('user.address.city', { message: 'city' });
+      });
+
+      expect(
+        result.current.form
+          .select('user.address')
+          .getFieldState('city', result.current.formState).error,
+      ).toMatchObject({ message: 'city' });
+    });
+
+    it('should pass options to leaf setError and trigger', async () => {
+      const App = ({ onReady }: { onReady: (form: any) => void }) => {
+        const form = useForm<FormValues>({ defaultValues });
+        onReady(form);
+
+        return (
+          <input
+            {...form.register('user.firstName', { validate: () => 'error' })}
+          />
+        );
+      };
+      let form: ReturnType<typeof useForm<FormValues>>;
+
+      render(<App onReady={(f) => (form = f)} />);
+
+      act(() => {
+        form
+          .select('user.firstName')
+          .setError(
+            { type: 'manual', message: 'manual' },
+            { shouldFocus: true },
+          );
+      });
+
+      expect(screen.getByRole('textbox')).toHaveFocus();
+      expect(form.getErrors('user.firstName')).toMatchObject({
+        message: 'manual',
+      });
+
+      (screen.getByRole('textbox') as HTMLInputElement).blur();
+
+      await act(async () => {
+        await form.select('user.firstName').trigger({ shouldFocus: true });
+      });
+
+      expect(screen.getByRole('textbox')).toHaveFocus();
+      expect(form.getErrors('user.firstName')).toMatchObject({
+        message: 'error',
+      });
+    });
+
+    it('should keep siblings when setValues targets a nested object', () => {
+      const { result } = renderHook(() =>
+        useForm<FormValues>({ defaultValues }),
+      );
+
+      act(() => {
+        result.current.select('user.address').setValues((address) => {
+          expect(address).toEqual({ city: 'sydney' });
+          return { city: 'tokyo' };
+        });
+      });
+
+      expect(result.current.getValues()).toEqual({
+        ...defaultValues,
+        user: { ...defaultValues.user, address: { city: 'tokyo' } },
+      });
+    });
+
+    it('should set values for a missing subtree', () => {
+      const { result } = renderHook(() =>
+        useForm<{ title: string; user?: { firstName: string } }>({
+          defaultValues: { title: 'title' },
+        }),
+      );
+
+      act(() => {
+        result.current.select('user').setValues({ firstName: 'bill' });
+      });
+
+      expect(result.current.getValues()).toEqual({
+        title: 'title',
+        user: { firstName: 'bill' },
+      });
+    });
+
+    it('should not mutate form values when setValues computes from a function', () => {
+      const { result } = renderHook(() =>
+        useForm<FormValues>({ defaultValues }),
+      );
+      const user = result.current.getValues('user');
+
+      act(() => {
+        result.current
+          .select('user')
+          .setValues((current) => ({ ...current, lastName: 'kotaro' }));
+      });
+
+      expect(user.lastName).toBe('luo');
+      expect(result.current.getValues('user.lastName')).toBe('kotaro');
+    });
+
+    it('should compare values with defaults for scoped isDirty', () => {
+      const { result } = renderHook(() => {
+        const form = useForm<FormValues>({ defaultValues });
+        const user = form.select('user');
+
+        return { form, user, isDirty: user.formState.isDirty };
+      });
+
+      act(() => {
+        result.current.form.setValue('user.firstName', 'kotaro');
+      });
+
+      expect(result.current.user.formState.dirtyFields).toEqual({});
+      expect(result.current.user.formState.isDirty).toBe(true);
+      expect(result.current.form.select('user.address').formState.isDirty).toBe(
+        false,
+      );
+
+      act(() => {
+        result.current.form.setValue('user.firstName', 'bill', {
+          shouldDirty: true,
+        });
+      });
+
+      expect(result.current.user.formState.isDirty).toBe(false);
+      expect(result.current.isDirty).toBe(false);
+    });
+
+    it('should notify scoped subscriptions when a parent object is replaced', () => {
+      const { result } = renderHook(() =>
+        useForm<FormValues>({ defaultValues }),
+      );
+      const onUser = jest.fn();
+      const onCity = jest.fn();
+      const nextUser = {
+        firstName: 'kotaro',
+        lastName: 'luo',
+        address: { city: 'tokyo' },
+      };
+
+      const unsubscribe = result.current.select('user').subscribe({
+        formState: { values: true },
+        callback: onUser,
+      });
+      const subscription = result.current
+        .select('user.address.city')
+        .watch(onCity);
+
+      act(() => {
+        result.current.setValue('user', nextUser);
+      });
+
+      expect(onUser.mock.lastCall[0].values).toEqual(nextUser);
+      expect(onCity).toHaveBeenLastCalledWith('tokyo', expect.anything());
+
+      act(() => {
+        result.current.setValue('user.address', { city: 'osaka' });
+      });
+
+      expect(onUser.mock.lastCall[0].values.address).toEqual({ city: 'osaka' });
+      expect(onCity).toHaveBeenLastCalledWith('osaka', expect.anything());
+
+      unsubscribe();
+      subscription.unsubscribe();
+    });
+
+    it('should update useWatch on a nested selection when an ancestor changes', () => {
+      const { result } = renderHook(() => {
+        const form = useForm<FormValues>({ defaultValues });
+        const city = useWatch({
+          control: form.select('user.address.city').control,
+        });
+
+        return { form, city };
+      });
+
+      act(() => {
+        result.current.form.setValue('user.address', { city: 'tokyo' });
+      });
+
+      expect(result.current.city).toBe('tokyo');
+
+      act(() => {
+        result.current.form.setValue('user', {
+          ...defaultValues.user,
+          address: { city: 'osaka' },
+        });
+      });
+
+      expect(result.current.city).toBe('osaka');
+    });
+
+    it.each([
+      ['remove', (fieldArray: any) => fieldArray.remove(0), ['b', 'c']],
+      ['move', (fieldArray: any) => fieldArray.move(2, 0), ['c', 'a', 'b']],
+      ['swap', (fieldArray: any) => fieldArray.swap(0, 1), ['b', 'a', 'c']],
+    ])(
+      'should resolve cached index selections by path after %s',
+      (_, action, expected) => {
+        const Item = React.memo(
+          ({ selection }: { selection: FormSelection<{ name: string }> }) => {
+            const name = useWatch({
+              control: selection.control,
+              name: 'name',
+            });
+
+            return <p>{`${selection.name}:${name}`}</p>;
+          },
+        );
+
+        let fieldArray: ReturnType<typeof useFieldArray<FormValues, 'items'>>;
+        let form: ReturnType<typeof useForm<FormValues>>;
+
+        const App = () => {
+          form = useForm<FormValues>({
+            defaultValues: {
+              ...defaultValues,
+              items: [{ name: 'a' }, { name: 'b' }, { name: 'c' }],
+            },
+          });
+          fieldArray = useFieldArray({ control: form.control, name: 'items' });
+
+          return (
+            <>
+              {fieldArray.fields.map((field, index) => (
+                <Item
+                  key={field.id}
+                  selection={form.select(`items.${index}`)}
+                />
+              ))}
+            </>
+          );
+        };
+
+        render(<App />);
+
+        const first = form!.select('items.0');
+
+        act(() => action(fieldArray));
+
+        expect(form!.select('items.0')).toBe(first);
+        expect(first.getValues()).toEqual({ name: expected[0] });
+        expect(
+          screen.getAllByText(/^items\./).map((node) => node.textContent),
+        ).toEqual(
+          expect.arrayContaining(
+            expected.map((name, index) => `items.${index}:${name}`),
+          ),
+        );
+      },
+    );
+  });
 });

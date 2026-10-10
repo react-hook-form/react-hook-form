@@ -1,10 +1,18 @@
 import type {
   Control,
+  ErrorOption,
   FieldValues,
   FormState,
+  GetValuesConfig,
+  RegisterOptions,
+  SetFocusOptions,
+  SetValueConfig,
+  TriggerConfig,
   UseFormReturn,
   UseFormSelect,
 } from '../types';
+import cloneObject from '../utils/cloneObject';
+import deepEqual from '../utils/deepEqual';
 import get from '../utils/get';
 import isFunction from '../utils/isFunction';
 import isObject from '../utils/isObject';
@@ -13,6 +21,7 @@ import isUndefined from '../utils/isUndefined';
 import set from '../utils/set';
 
 import getProxyFormState from './getProxyFormState';
+import shouldSubscribeByName from './shouldSubscribeByName';
 
 type Scope = {
   control: Control<any, any, any>;
@@ -27,17 +36,16 @@ type Method = (...args: any[]) => any;
 
 const scopes = new WeakMap<object, Scope>();
 
-const SCOPED_KEYS = [
-  'errors',
-  'dirtyFields',
-  'touchedFields',
-  'validatingFields',
-];
+export const resolveScope = <TControl, TName extends Names>(
+  control: TControl,
+  name: TName,
+): [TControl, TName, string?] => {
+  const scope = control && scopes.get(control);
 
-export const getScope = <TControl>(control: TControl) =>
-  (control && scopes.get(control)) as
-    | { control: TControl; path: string }
-    | undefined;
+  return scope
+    ? [scope.control as TControl, scopeNames(scope.path, name), scope.path]
+    : [control, name];
+};
 
 export const joinName = (path: string, name?: string | number) =>
   isUndefined(name) || name === '' ? path : `${path}.${name}`;
@@ -48,11 +56,11 @@ export const scopeNames = <T extends Names>(path: string, names: T): T =>
     : joinName(path, names as string | undefined)) as T;
 
 export const scopeDefaultValue = (
-  path: string,
+  path: string | undefined,
   names: Names,
   defaultValue: unknown,
 ) =>
-  Array.isArray(names) && !isUndefined(defaultValue)
+  path && Array.isArray(names) && !isUndefined(defaultValue)
     ? nest(path, defaultValue)
     : defaultValue;
 
@@ -74,10 +82,17 @@ const hasTrue = (value: unknown): boolean =>
     ? Object.values(value).some(hasTrue)
     : !!value;
 
+const scopedFormStates = new WeakMap<object, string>();
+
 export const scopeFormState = <T extends Record<string, any>>(
   formState: T,
-  path: string,
+  path: string | undefined,
+  control: Pick<Control, '_state' | '_formValues' | '_defaultValues'>,
 ): T => {
+  if (isUndefined(path)) {
+    return formState;
+  }
+
   const result = {} as T;
   const empty = {};
 
@@ -85,27 +100,37 @@ export const scopeFormState = <T extends Record<string, any>>(
     Object.defineProperty(result, key, {
       enumerable: Object.prototype.propertyIsEnumerable.call(formState, key),
       get: () =>
-        SCOPED_KEYS.includes(key)
+        key === 'errors' || key.endsWith('Fields')
           ? get(formState[key], path) || empty
-          : key === 'isDirty' || key === 'isValidating'
-            ? hasTrue(
+          : key === 'isDirty'
+            ? (formState.isDirty,
+              formState.dirtyFields,
+              !deepEqual(
                 get(
-                  formState[
-                    key === 'isDirty' ? 'dirtyFields' : 'validatingFields'
-                  ],
+                  control._state.mount
+                    ? control._formValues
+                    : control._defaultValues,
                   path,
                 ),
-              )
-            : key === 'defaultValues' || key === 'values'
-              ? get(formState[key], path)
-              : key === 'name'
-                ? relativeName(path, formState.name)
-                : formState[key],
+                get(control._defaultValues, path),
+              ))
+            : key === 'isValidating'
+              ? hasTrue(get(formState.validatingFields, path))
+              : key === 'defaultValues' || key === 'values'
+                ? get(formState[key], path)
+                : key === 'name'
+                  ? relativeName(path, formState.name)
+                  : formState[key],
     });
   }
 
+  scopedFormStates.set(result, path);
+
   return result;
 };
+
+const isName = (value: unknown): value is string | readonly string[] =>
+  isString(value) || Array.isArray(value);
 
 const createSelection = (
   methods: SelectMethods,
@@ -113,35 +138,51 @@ const createSelection = (
   select: (name?: string | number) => unknown,
 ) => {
   const control = methods.control;
-  const isName = (value: unknown): value is string | readonly string[] =>
-    isString(value) || Array.isArray(value);
-  const scoped =
-    (method: Method) =>
-    (...args: unknown[]) =>
-      method(
-        isName(args[0]) ? scopeNames(path, args[0]) : path,
-        ...(isName(args[0]) || isUndefined(args[0]) ? args.slice(1) : args),
-      );
-  const register = scoped(methods.register);
-  const setError = scoped(methods.setError);
-  const getFieldState = (name?: unknown, formState?: FormState<FieldValues>) =>
-    isString(name) && formState
-      ? methods.getFieldState(name, formState)
-      : methods.getFieldState(joinName(path, name as string));
+  const resolve = (name: unknown) =>
+    isName(name) ? scopeNames(path, name) : path;
+  const withOptionalName =
+    <T>(method: (name: string, options?: T) => unknown) =>
+    (name?: unknown, options?: T) =>
+      isString(name)
+        ? method(joinName(path, name), options)
+        : method(path, name as T);
+  const register = withOptionalName<RegisterOptions>(methods.register);
+  const setError = (name: unknown, error?: unknown, options?: unknown) =>
+    isString(name)
+      ? methods.setError(
+          joinName(path, name),
+          error as ErrorOption,
+          options as never,
+        )
+      : methods.setError(path, name as ErrorOption, error as never);
+  const getFieldState = (
+    name?: unknown,
+    formState?: FormState<FieldValues>,
+  ) => {
+    const fieldName = joinName(path, name as string | undefined);
+    const formStatePath = formState && scopedFormStates.get(formState);
+    const scopedName = isUndefined(formStatePath)
+      ? fieldName
+      : formStatePath && relativeName(formStatePath, fieldName);
+
+    return scopedName
+      ? methods.getFieldState(scopedName, formState)
+      : methods.getFieldState(fieldName);
+  };
   const unregister = (name?: unknown, options?: unknown) =>
     isName(name)
       ? methods.unregister(scopeNames(path, name), options as never)
       : methods.unregister(
-          [...control._names.mount].filter((fieldName) =>
-            isUndefined(relativeName(path, fieldName)) ? 0 : 1,
+          [...control._names.mount].filter(
+            (fieldName) => !isUndefined(relativeName(path, fieldName)),
           ),
           name as never,
         );
-  const scopedControl = Object.create(control, {
-    register: { value: register },
-    unregister: { value: unregister },
-    getFieldState: { value: getFieldState },
-    setError: { value: setError },
+  const scopedControl = Object.assign(Object.create(control), {
+    register,
+    unregister,
+    getFieldState,
+    setError,
   });
 
   scopes.set(scopedControl, { control, path });
@@ -151,44 +192,54 @@ const createSelection = (
     select: (name: string | number) => select(joinName(path, name)),
     control: scopedControl,
     get formState() {
-      return scopeFormState(getFormState(control), path);
+      return scopeFormState(getFormState(control), path, control);
     },
     register,
     unregister,
     setError,
     getFieldState,
-    getValues: scoped(methods.getValues),
-    getErrors: scoped(methods.getErrors),
-    clearErrors: scoped(methods.clearErrors),
-    trigger: scoped(methods.trigger),
-    resetField: scoped(methods.resetField),
-    setFocus: scoped(methods.setFocus),
-    setValue: (name: string, value: unknown, options?: object) =>
+    getValues: (name?: unknown, config?: GetValuesConfig) =>
+      (methods.getValues as Method)(resolve(name), config),
+    getErrors: (name?: unknown) => (methods.getErrors as Method)(resolve(name)),
+    clearErrors: (name?: unknown) => methods.clearErrors(resolve(name)),
+    trigger: (name?: unknown, options?: TriggerConfig) =>
+      methods.trigger(
+        resolve(name),
+        isName(name) ? options : (name as TriggerConfig),
+      ),
+    resetField: withOptionalName<object>(methods.resetField),
+    setFocus: withOptionalName<SetFocusOptions>(methods.setFocus),
+    setValue: (name: string, value: unknown, options?: SetValueConfig) =>
       methods.setValue(joinName(path, name), value, options),
     setValues: (
       values: FieldValues | ((values: FieldValues) => FieldValues),
-      options?: object,
-    ) => {
-      const current = methods.getValues(path);
+      options?: SetValueConfig,
+    ) =>
+      methods.setValues((formValues: FieldValues) => {
+        const current = get(formValues, path);
+        const next = isFunction(values) ? values(current) : values;
+        const key = path.split('.')[0];
+        const updatedFormValues = cloneObject({ [key]: formValues[key] });
 
-      methods.setValue(
-        path,
-        { ...current, ...(isFunction(values) ? values(current) : values) },
-        options,
-      );
-    },
+        set(
+          updatedFormValues,
+          path,
+          isObject(current) ? { ...current, ...next } : next,
+        );
+
+        return updatedFormValues;
+      }, options),
     watch: (name?: unknown, defaultValue?: unknown) =>
       isFunction(name)
         ? methods.watch((values, info) => {
             const relative = relativeName(path, info.name);
 
-            (!info.name ||
-              !isUndefined(relative) ||
-              path.startsWith(info.name + '.')) &&
+            (!isUndefined(relative) ||
+              shouldSubscribeByName(path, info.name, true)) &&
               name(get(values, path), { ...info, name: relative });
           })
         : (methods.watch as Method)(
-            scopeNames(path, isName(name) ? name : undefined),
+            resolve(name),
             scopeDefaultValue(path, name as Names, defaultValue),
           ),
     subscribe: (props: Parameters<UseFormReturn['subscribe']>[0]) =>
@@ -196,7 +247,7 @@ const createSelection = (
         ...props,
         name: scopeNames(path, props.name),
         callback: (data) =>
-          props.callback(scopeFormState(data, path) as typeof data),
+          props.callback(scopeFormState(data, path, control) as typeof data),
       }),
   };
 };

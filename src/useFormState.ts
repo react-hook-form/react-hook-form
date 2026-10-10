@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { getScope, scopeFormState, scopeNames } from './logic/createSelect';
+import { resolveScope, scopeFormState } from './logic/createSelect';
 import getProxyFormState from './logic/getProxyFormState';
 import type {
   FieldValues,
@@ -71,11 +71,9 @@ export function useFormState<
     name: _name,
     exact,
   } = props || {};
-  const scope = getScope(_control);
-  const control = scope ? scope.control : _control;
-  const name = React.useMemo(
-    () => (scope ? scopeNames(scope.path, _name) : _name),
-    [scope, _name],
+  const [control, name, path] = React.useMemo(
+    () => resolveScope(_control, _name),
+    [_control, _name],
   );
 
   const getCurrentFormState = () => ({
@@ -136,6 +134,6 @@ export function useFormState<
       false,
     );
 
-    return scope ? scopeFormState(proxyFormState, scope.path) : proxyFormState;
-  }, [formState, control, scope]);
+    return scopeFormState(proxyFormState, path, control);
+  }, [formState, control, path]);
 }
