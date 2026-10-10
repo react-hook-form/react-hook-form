@@ -6,6 +6,7 @@ export * from './fields';
 export * from './form';
 export * from './path';
 export * from './resolvers';
+export * from './select';
 export * from './utils';
 export * from './validator';
 export * from './watch';

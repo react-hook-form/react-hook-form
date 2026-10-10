@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { pick, scopeDefaultValue } from './logic/createSelect';
 import generateWatchOutput from './logic/generateWatchOutput';
 import cloneObject from './utils/cloneObject';
 import deepEqual from './utils/deepEqual';
@@ -11,12 +12,46 @@ import type {
   FieldPathValues,
   FieldValues,
   InternalFieldName,
+  SelectionLeafControl,
   UseWatchProps,
 } from './types';
 import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import { useResyncOnReconnect } from './useResyncOnReconnect';
+import { useScope } from './useScope';
 
+/**
+ * Subscribe to the value of a leaf selection.
+ *
+ * @example
+ * ```tsx
+ * const email = useWatch({ control: email.control });
+ * ```
+ */
+export function useWatch<T>(props: {
+  control: SelectionLeafControl<T>;
+  name?: '';
+  defaultValue?: T;
+  disabled?: boolean;
+  exact?: boolean;
+  compute?: undefined;
+}): T;
+/**
+ * Subscribe to the computed value of a leaf selection.
+ *
+ * @example
+ * ```tsx
+ * const length = useWatch({ control: email.control, compute: (v) => v.length });
+ * ```
+ */
+export function useWatch<T, TComputeValue>(props: {
+  control: SelectionLeafControl<T>;
+  name?: '';
+  defaultValue?: T;
+  disabled?: boolean;
+  exact?: boolean;
+  compute: (value: T) => TComputeValue;
+}): TComputeValue;
 /** Watches the entire form; re-renders when any value changes. */
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
@@ -119,24 +154,38 @@ export function useWatch<
  * ```
  */
 export function useWatch<TFieldValues extends FieldValues>(
-  props?: UseWatchProps<TFieldValues>,
+  watchProps?:
+    | UseWatchProps<TFieldValues>
+    | { control: SelectionLeafControl<any>; name?: '' },
 ) {
+  const props = watchProps as UseWatchProps<TFieldValues> | undefined;
   const formControl = useFormControlContext<TFieldValues>();
   const {
-    control = formControl,
-    name,
-    defaultValue,
+    control: _control = formControl,
+    name: _name,
+    defaultValue: _defaultValueProp,
     disabled,
     exact,
     compute,
   } = props || {};
+  const [control, name, scope] = useScope(_control, _name);
+  const defaultValue = scopeDefaultValue(scope, _name, _defaultValueProp);
   const _defaultValue = React.useRef(defaultValue);
-  const _compute = React.useRef(compute);
+  const _compute = React.useRef<((value: any) => unknown) | undefined>(compute);
 
   const _prevControl = React.useRef(control);
   const _prevName = React.useRef(name);
 
-  _compute.current = compute;
+  _compute.current =
+    scope && scope.entries && !_name
+      ? () => {
+          const output = pick(
+            scope,
+            control._getWatch(undefined, _defaultValue.current),
+          );
+          return compute ? compute(output) : output;
+        }
+      : compute;
 
   const getInitialOutput = () => {
     const defaultValue = control._getWatch(

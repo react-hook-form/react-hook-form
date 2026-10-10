@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { mapItems } from './logic/createSelect';
 import generateId from './logic/generateId';
 import getFocusFieldName from './logic/getFocusFieldName';
 import getValidationModes from './logic/getValidationModes';
@@ -40,13 +41,28 @@ import type {
   FormState,
   InternalFieldName,
   RegisterOptions,
+  SelectionLeafFieldArrayProps,
+  SelectionLeafFieldArrayReturn,
   UseFieldArrayProps,
   UseFieldArrayReturn,
 } from './types';
 import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import { useResyncOnReconnect } from './useResyncOnReconnect';
+import { useScope } from './useScope';
 
+/**
+ * Field array for an array selection, `name` is optional.
+ *
+ * @example
+ * ```tsx
+ * const items = form.select('items');
+ * const { fields } = useFieldArray({ control: items.control });
+ * ```
+ */
+export function useFieldArray<T, TKeyName extends string = 'id'>(
+  props: SelectionLeafFieldArrayProps<T, TKeyName>,
+): SelectionLeafFieldArrayReturn<T, TKeyName>;
 /**
  * Hook for dynamic field arrays. Provides `fields` and mutation methods:
  * `append`, `prepend`, `remove`, `insert`, `swap`, `move`, `update`, `replace`.
@@ -72,20 +88,43 @@ export function useFieldArray<
     TKeyName,
     TTransformedValues
   >,
+): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName>;
+export function useFieldArray<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> =
+    FieldArrayPath<TFieldValues>,
+  TKeyName extends string = 'id',
+  TTransformedValues = TFieldValues,
+>(
+  fieldArrayProps:
+    | UseFieldArrayProps<
+        TFieldValues,
+        TFieldArrayName,
+        TKeyName,
+        TTransformedValues
+      >
+    | SelectionLeafFieldArrayProps<any, TKeyName>,
 ): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> {
+  const props = fieldArrayProps as UseFieldArrayProps<
+    TFieldValues,
+    TFieldArrayName,
+    TKeyName,
+    TTransformedValues
+  >;
   const formControl = useFormControlContext<
     TFieldValues,
     unknown,
     TTransformedValues
   >();
   const {
-    control = formControl,
-    name,
+    control: _control = formControl,
+    name: _name,
     keyName = 'id',
     disabled,
     shouldUnregister,
     rules,
   } = props;
+  const [control, name, scope] = useScope(_control, _name);
   const getCurrentFieldArray = () => control._getFieldArray(name);
 
   const [fields, setFields] = React.useState(getCurrentFieldArray);
@@ -185,6 +224,7 @@ export function useFieldArray<
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
+    value = mapItems(scope, value, true);
     if (disabled) {
       return;
     }
@@ -213,6 +253,7 @@ export function useFieldArray<
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
+    value = mapItems(scope, value, true);
     if (disabled) {
       return;
     }
@@ -256,6 +297,7 @@ export function useFieldArray<
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
+    value = mapItems(scope, value, true);
     if (disabled) {
       return;
     }
@@ -324,6 +366,7 @@ export function useFieldArray<
     index: number,
     value: FieldArray<TFieldValues, TFieldArrayName>,
   ) => {
+    value = mapItems(scope, value, true);
     if (disabled) {
       return;
     }
@@ -352,6 +395,7 @@ export function useFieldArray<
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
   ) => {
+    value = mapItems(scope, value, true);
     if (disabled) {
       return;
     }
@@ -547,25 +591,45 @@ export function useFieldArray<
       name,
       control,
       disabled,
+      scope,
     ]),
-    append: React.useCallback(append, [updateValues, name, control, disabled]),
+    append: React.useCallback(append, [
+      updateValues,
+      name,
+      control,
+      disabled,
+      scope,
+    ]),
     remove: React.useCallback(remove, [updateValues, name, control, disabled]),
-    insert: React.useCallback(insert, [updateValues, name, control, disabled]),
-    update: React.useCallback(update, [updateValues, name, control, disabled]),
+    insert: React.useCallback(insert, [
+      updateValues,
+      name,
+      control,
+      disabled,
+      scope,
+    ]),
+    update: React.useCallback(update, [
+      updateValues,
+      name,
+      control,
+      disabled,
+      scope,
+    ]),
     replace: React.useCallback(replace, [
       updateValues,
       name,
       control,
       disabled,
+      scope,
     ]),
     fields: React.useMemo(
       () =>
         fields.map((field, index) => ({
-          ...field,
+          ...mapItems(scope, field),
           ...(isBoolean(disabled) ? { disabled } : {}),
           [keyName]: ids.current[index] || generateId(),
         })) as FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[],
-      [fields, keyName, disabled],
+      [fields, keyName, disabled, scope],
     ),
   };
 }
