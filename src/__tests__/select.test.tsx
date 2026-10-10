@@ -498,6 +498,43 @@ describe('select', () => {
       expect(result.current.user.formState.submitCount).toBe(0);
     });
 
+    it('should expose the form isValid on a selection', async () => {
+      const { result } = renderHook(() => {
+        const form = useForm<FormValues>({
+          defaultValues: { ...defaultValues, title: '' },
+        });
+        const user = form.select('user');
+
+        form.register('title', { required: 'title' });
+        form.register('user.firstName');
+
+        return {
+          form,
+          user,
+          formState: useFormState({ control: user.control }),
+        };
+      });
+
+      await act(async () => {
+        await result.current.form.trigger();
+      });
+
+      expect(result.current.form.getErrors('title')).toBeDefined();
+      expect(result.current.user.formState.errors).toEqual({});
+      expect(result.current.user.formState.isValid).toBe(false);
+      expect(result.current.formState.errors).toEqual({});
+      expect(result.current.formState.isValid).toBe(false);
+
+      act(() => {
+        result.current.form.setValue('title', 'title', {
+          shouldValidate: true,
+        });
+      });
+
+      await waitFor(() => expect(result.current.formState.isValid).toBe(true));
+      expect(result.current.user.formState.isValid).toBe(true);
+    });
+
     it('should scope useFormState to the selection', async () => {
       let renderCount = 0;
 
