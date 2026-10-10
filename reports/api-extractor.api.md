@@ -501,7 +501,7 @@ export type LeafSelection<T, TContext = any> = SelectionShared<T, TContext> & {
     trigger: (options?: TriggerConfig) => Promise<boolean>;
     resetField: (options?: ResetFieldConfig<SelectionLeafValues<T>, SelectionLeafName<T>>) => void;
     setFocus: (options?: SetFocusOptions) => void;
-};
+} & ([NonNullable<T>] extends [ReadonlyArray<any>] ? SelectionMap<T, TContext> : unknown);
 
 // @public (undocumented)
 export type LiteralUnion<T extends U, U extends Primitive> = T | (U & {
@@ -749,18 +749,52 @@ export type SelectionLeafValues<T> = {
 };
 
 // @public (undocumented)
+export type SelectionMap<T, TContext> = {
+    map: <F, R>(fields: readonly F[], callback: (field: F, item: FormSelection<SelectionItem<T>, TContext>, index: number, fields: readonly F[], origin: FormSelection<T, TContext>) => R) => R[];
+};
+
+// @public (undocumented)
 export type SelectionPath<T> = [NonNullable<T>] extends [ReadonlyArray<any>] ? Path<NonNullable<T>> | number : IsSelectionLeaf<T> extends true ? never : FieldPath<SelectionValues<T>>;
 
 // @public (undocumented)
 export type SelectionPathValue<T, P> = P extends number ? NonNullable<T> extends ReadonlyArray<infer U> ? U : never : P extends Path<NonNullable<T>> ? PathValue<NonNullable<T>, P> : never;
 
 // @public (undocumented)
-export type SelectionSelect<T, TContext> = <P extends SelectionPath<T>>(path: P) => FormSelection<SelectionPathValue<T, P>, TContext>;
+export type SelectionSelect<T, TContext> = {
+    <P extends SelectionPath<T>>(path: P): FormSelection<SelectionPathValue<T, P>, TContext>;
+    <M extends {
+        [key: string]: SelectionTemplate<T>;
+    }>(template: M): FormSelection<SelectionTemplateValue<T, M>, TContext>;
+    <M extends SelectionTemplate<SelectionItem<T>>>(template: [NonNullable<T>] extends [ReadonlyArray<any>] ? [M] : never): FormSelection<SelectionTemplateValue<SelectionItem<T>, M>[], TContext>;
+};
 
 // @public (undocumented)
 export type SelectionShared<T, TContext> = {
     readonly name: string;
     select: SelectionSelect<T, TContext>;
+    narrow: {
+        <R extends T>(): FormSelection<R, TContext>;
+        <K extends keyof NonNullable<T>, V extends NonNullable<T>[K]>(key: K, value: V): FormSelection<Extract<NonNullable<T>, Record<K, V>>, TContext>;
+    };
+    assert: {
+        <R extends T>(): asserts this is FormSelection<R, TContext>;
+        <K extends keyof NonNullable<T>, V extends NonNullable<T>[K]>(key: K, value: V): asserts this is FormSelection<Extract<NonNullable<T>, Record<K, V>>, TContext>;
+    };
+    defined: () => FormSelection<NonNullable<T>, TContext>;
+    cast: <R>() => FormSelection<R, TContext>;
+};
+
+// @public (undocumented)
+export type SelectionTemplate<T> = '' | SelectionTemplatePath<T> | {
+    [key: string]: SelectionTemplate<T>;
+};
+
+// @public (undocumented)
+export type SelectionTemplatePath<T> = IsSelectionLeaf<T> extends true ? [NonNullable<T>] extends [ReadonlyArray<any>] ? Path<NonNullable<T>> : never : Path<NonNullable<T>>;
+
+// @public (undocumented)
+export type SelectionTemplateValue<T, M> = M extends '' ? T : M extends SelectionTemplatePath<T> & Path<NonNullable<T>> ? PathValue<NonNullable<T>, M> : {
+    [K in keyof M]: SelectionTemplateValue<T, M[K]>;
 };
 
 // @public
@@ -1002,6 +1036,9 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
 export type UseFormSelect<TFieldValues extends FieldValues, TContext = any, TTransformedValues = TFieldValues> = {
     (): ObjectSelection<TFieldValues, TContext, TTransformedValues>;
     <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName): FormSelection<FieldPathValue<TFieldValues, TFieldName>, TContext>;
+    <M extends {
+        [key: string]: SelectionTemplate<TFieldValues>;
+    }>(template: M): FormSelection<SelectionTemplateValue<TFieldValues, M>, TContext>;
 };
 
 // @public
@@ -1249,6 +1286,7 @@ export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValue
 //
 // src/types/form.ts:585:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
 // src/types/form.ts:960:3 - (ae-forgotten-export) The symbol "FormState_2" needs to be exported by the entry point index.d.ts
+// src/types/select.ts:206:3 - (ae-forgotten-export) The symbol "SelectionItem" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

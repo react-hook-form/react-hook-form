@@ -126,9 +126,38 @@ export type SelectionFieldState = {
   error?: FieldError;
 };
 
-export type SelectionSelect<T, TContext> = <P extends SelectionPath<T>>(
-  path: P,
-) => FormSelection<SelectionPathValue<T, P>, TContext>;
+export type SelectionTemplatePath<T> =
+  IsSelectionLeaf<T> extends true
+    ? [NonNullable<T>] extends [ReadonlyArray<any>]
+      ? Path<NonNullable<T>>
+      : never
+    : Path<NonNullable<T>>;
+
+export type SelectionTemplate<T> =
+  | ''
+  | SelectionTemplatePath<T>
+  | { [key: string]: SelectionTemplate<T> };
+
+export type SelectionTemplateValue<T, M> = M extends ''
+  ? T
+  : M extends SelectionTemplatePath<T> & Path<NonNullable<T>>
+    ? PathValue<NonNullable<T>, M>
+    : { [K in keyof M]: SelectionTemplateValue<T, M[K]> };
+
+type SelectionItem<T> =
+  NonNullable<T> extends ReadonlyArray<infer U> ? U : never;
+
+export type SelectionSelect<T, TContext> = {
+  <P extends SelectionPath<T>>(
+    path: P,
+  ): FormSelection<SelectionPathValue<T, P>, TContext>;
+  <M extends { [key: string]: SelectionTemplate<T> }>(
+    template: M,
+  ): FormSelection<SelectionTemplateValue<T, M>, TContext>;
+  <M extends SelectionTemplate<SelectionItem<T>>>(
+    template: [NonNullable<T>] extends [ReadonlyArray<any>] ? [M] : never,
+  ): FormSelection<SelectionTemplateValue<SelectionItem<T>, M>[], TContext>;
+};
 
 export type SelectionShared<T, TContext> = {
   /**
@@ -136,9 +165,54 @@ export type SelectionShared<T, TContext> = {
    */
   readonly name: string;
   /**
-   * Select a nested path, relative to this selection.
+   * Select a nested path, or reshape the selection with a map of paths.
+   *
+   * @example
+   * ```tsx
+   * user.select({ name: 'firstName', surname: 'lastName' });
+   * ```
    */
   select: SelectionSelect<T, TContext>;
+  narrow: {
+    <R extends T>(): FormSelection<R, TContext>;
+    <K extends keyof NonNullable<T>, V extends NonNullable<T>[K]>(
+      key: K,
+      value: V,
+    ): FormSelection<Extract<NonNullable<T>, Record<K, V>>, TContext>;
+  };
+  assert: {
+    <R extends T>(): asserts this is FormSelection<R, TContext>;
+    <K extends keyof NonNullable<T>, V extends NonNullable<T>[K]>(
+      key: K,
+      value: V,
+    ): asserts this is FormSelection<
+      Extract<NonNullable<T>, Record<K, V>>,
+      TContext
+    >;
+  };
+  defined: () => FormSelection<NonNullable<T>, TContext>;
+  cast: <R>() => FormSelection<R, TContext>;
+};
+
+export type SelectionMap<T, TContext> = {
+  /**
+   * Map field array `fields` to item selections.
+   *
+   * @example
+   * ```tsx
+   * items.map(fields, (field, item) => <Item key={field.id} item={item} />);
+   * ```
+   */
+  map: <F, R>(
+    fields: readonly F[],
+    callback: (
+      field: F,
+      item: FormSelection<SelectionItem<T>, TContext>,
+      index: number,
+      fields: readonly F[],
+      origin: FormSelection<T, TContext>,
+    ) => R,
+  ) => R[];
 };
 
 /**
@@ -195,7 +269,9 @@ export type LeafSelection<T, TContext = any> = SelectionShared<T, TContext> & {
     options?: ResetFieldConfig<SelectionLeafValues<T>, SelectionLeafName<T>>,
   ) => void;
   setFocus: (options?: SetFocusOptions) => void;
-};
+} & ([NonNullable<T>] extends [ReadonlyArray<any>]
+    ? SelectionMap<T, TContext>
+    : unknown);
 
 /**
  * A selection returned by `form.select()`.
@@ -231,6 +307,12 @@ export type UseFormSelect<
   <TFieldName extends FieldPath<TFieldValues>>(
     name: TFieldName,
   ): FormSelection<FieldPathValue<TFieldValues, TFieldName>, TContext>;
+  /**
+   * Select a reshaped view of the form from a map of paths.
+   */
+  <M extends { [key: string]: SelectionTemplate<TFieldValues> }>(
+    template: M,
+  ): FormSelection<SelectionTemplateValue<TFieldValues, M>, TContext>;
 };
 
 export type SelectionLeafControllerProps<T> = Omit<

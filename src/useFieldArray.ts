@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { resolveScope } from './logic/createSelect';
+import type { Template } from './logic/createSelect';
+import { pickTemplate, unpickTemplate } from './logic/createSelect';
 import generateId from './logic/generateId';
 import getFocusFieldName from './logic/getFocusFieldName';
 import getValidationModes from './logic/getValidationModes';
@@ -49,6 +50,7 @@ import type {
 import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import { useResyncOnReconnect } from './useResyncOnReconnect';
+import { useScope } from './useScope';
 
 /**
  * Field array for an array selection, `name` is optional.
@@ -123,10 +125,8 @@ export function useFieldArray<
     shouldUnregister,
     rules,
   } = props;
-  const [control, name] = React.useMemo(
-    () => resolveScope(_control, _name),
-    [_control, _name],
-  );
+  const [control, name, scope] = useScope(_control, _name);
+  const template = scope && (scope.template as Template[] | undefined);
   const getCurrentFieldArray = () => control._getFieldArray(name);
 
   const [fields, setFields] = React.useState(getCurrentFieldArray);
@@ -226,6 +226,7 @@ export function useFieldArray<
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
+    value = unpickTemplate(value, template, true);
     if (disabled) {
       return;
     }
@@ -254,6 +255,7 @@ export function useFieldArray<
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
+    value = unpickTemplate(value, template, true);
     if (disabled) {
       return;
     }
@@ -297,6 +299,7 @@ export function useFieldArray<
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
+    value = unpickTemplate(value, template, true);
     if (disabled) {
       return;
     }
@@ -365,6 +368,7 @@ export function useFieldArray<
     index: number,
     value: FieldArray<TFieldValues, TFieldArrayName>,
   ) => {
+    value = unpickTemplate(value, template, true);
     if (disabled) {
       return;
     }
@@ -393,6 +397,7 @@ export function useFieldArray<
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
   ) => {
+    value = unpickTemplate(value, template, true);
     if (disabled) {
       return;
     }
@@ -588,25 +593,45 @@ export function useFieldArray<
       name,
       control,
       disabled,
+      template,
     ]),
-    append: React.useCallback(append, [updateValues, name, control, disabled]),
+    append: React.useCallback(append, [
+      updateValues,
+      name,
+      control,
+      disabled,
+      template,
+    ]),
     remove: React.useCallback(remove, [updateValues, name, control, disabled]),
-    insert: React.useCallback(insert, [updateValues, name, control, disabled]),
-    update: React.useCallback(update, [updateValues, name, control, disabled]),
+    insert: React.useCallback(insert, [
+      updateValues,
+      name,
+      control,
+      disabled,
+      template,
+    ]),
+    update: React.useCallback(update, [
+      updateValues,
+      name,
+      control,
+      disabled,
+      template,
+    ]),
     replace: React.useCallback(replace, [
       updateValues,
       name,
       control,
       disabled,
+      template,
     ]),
     fields: React.useMemo(
       () =>
         fields.map((field, index) => ({
-          ...field,
+          ...pickTemplate(field, template && template[0]),
           ...(isBoolean(disabled) ? { disabled } : {}),
           [keyName]: ids.current[index] || generateId(),
         })) as FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[],
-      [fields, keyName, disabled],
+      [fields, keyName, disabled, template],
     ),
   };
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { resolveScope, scopeFormState } from './logic/createSelect';
+import { scopeFormState } from './logic/createSelect';
 import getEventValue from './logic/getEventValue';
 import getNullAncestorValue from './logic/getNullAncestorValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
@@ -25,6 +25,7 @@ import type {
 } from './types';
 import { useFormControlContext } from './useFormControlContext';
 import { useFormState } from './useFormState';
+import { useScope } from './useScope';
 import { useWatch } from './useWatch';
 
 /**
@@ -85,10 +86,7 @@ export function useController<
     defaultValue,
     exact = true,
   } = props;
-  const [control, name, path] = React.useMemo(
-    () => resolveScope(_control, _name),
-    [_control, _name],
-  );
+  const [control, name, scope] = useScope(_control, _name);
   const isArrayField = isNameInFieldArray(control._names.array, name);
 
   const defaultValueMemo = React.useMemo(() => {
@@ -315,9 +313,9 @@ export function useController<
   return React.useMemo(
     () => ({
       field,
-      formState: scopeFormState(formState, path, control),
+      formState: scopeFormState(formState, scope, control),
       fieldState,
     }),
-    [field, formState, fieldState, path, control],
+    [field, formState, fieldState, scope, control],
   );
 }

@@ -1307,4 +1307,348 @@ describe('select', () => {
       expect(scopedDirty.slice(renders)).toEqual([true, false]);
     });
   });
+
+  describe('reshape', () => {
+    const template = {
+      name: 'firstName',
+      location: { town: 'address.city' },
+    } as const;
+
+    it('should return the same selection for an equal map', () => {
+      const { result } = renderHook(() =>
+        useForm<FormValues>({ defaultValues }),
+      );
+      const user = result.current.select('user');
+
+      expect(user.select({ ...template })).toBe(user.select(template));
+      expect(user.select(template).select('name')).toBe(
+        result.current.select('user.firstName'),
+      );
+      expect(user.select(template).select('location.town')).toBe(
+        result.current.select('user.address.city'),
+      );
+    });
+
+    it('should read and write values through the map', () => {
+      const { result } = renderHook(() =>
+        useForm<FormValues>({ defaultValues }),
+      );
+      const person = result.current.select('user').select(template);
+
+      expect(person.getValues()).toEqual({
+        name: 'bill',
+        location: { town: 'sydney' },
+      });
+      expect(person.getValues('location.town')).toBe('sydney');
+
+      act(() => {
+        person.setValue('name', 'kotaro');
+      });
+
+      expect(result.current.getValues('user.firstName')).toBe('kotaro');
+
+      act(() => {
+        person.setValues({ location: { town: 'tokyo' } });
+      });
+
+      expect(result.current.getValues()).toEqual({
+        ...defaultValues,
+        user: {
+          ...defaultValues.user,
+          firstName: 'kotaro',
+          address: { city: 'tokyo' },
+        },
+      });
+    });
+
+    it('should register mapped names with their full name', () => {
+      const { result } = renderHook(() =>
+        useForm<FormValues>({ defaultValues }),
+      );
+      const person = result.current.select('user').select(template);
+
+      expect(person.register('location.town').name).toBe('user.address.city');
+      expect(person.control.register('name').name).toBe('user.firstName');
+    });
+
+    it('should scope formState and errors through the map', () => {
+      const { result } = renderHook(() => {
+        const form = useForm<FormValues>({ defaultValues });
+        const person = form.select('user').select(template);
+
+        return {
+          form,
+          person,
+          formState: useFormState({ control: person.control }),
+        };
+      });
+
+      act(() => {
+        result.current.form.setError('user.address.city', { message: 'city' });
+        result.current.form.setValue('user.lastName', 'changed');
+      });
+
+      expect(result.current.formState.errors).toEqual({
+        location: { town: expect.objectContaining({ message: 'city' }) },
+      });
+      expect(result.current.formState.isDirty).toBe(false);
+      expect(result.current.person.getFieldState('location.town').invalid).toBe(
+        true,
+      );
+
+      act(() => {
+        result.current.form.setValue('user.firstName', 'kotaro', {
+          shouldDirty: true,
+        });
+      });
+
+      expect(result.current.formState.isDirty).toBe(true);
+      expect(result.current.formState.dirtyFields).toEqual({ name: true });
+    });
+
+    it('should watch a reshaped selection', () => {
+      const { result } = renderHook(() => {
+        const form = useForm<FormValues>({ defaultValues });
+        const person = form.select('user').select(template);
+
+        return {
+          form,
+          person,
+          value: useWatch({ control: person.control }),
+          name: useWatch({ control: person.control, name: 'name' }),
+        };
+      });
+      const callback = jest.fn();
+      const subscription = result.current.person.watch(callback);
+
+      expect(result.current.value).toEqual({
+        name: 'bill',
+        location: { town: 'sydney' },
+      });
+      expect(result.current.person.watch()).toEqual(result.current.value);
+
+      act(() => {
+        result.current.form.setValue('user.address.city', 'tokyo');
+      });
+
+      expect(result.current.value).toEqual({
+        name: 'bill',
+        location: { town: 'tokyo' },
+      });
+      expect(callback).toHaveBeenLastCalledWith(
+        { name: 'bill', location: { town: 'tokyo' } },
+        expect.objectContaining({ name: 'location.town' }),
+      );
+
+      act(() => {
+        result.current.form.setValue('user.lastName', 'changed');
+      });
+
+      expect(callback).toHaveBeenCalledTimes(1);
+
+      act(() => {
+        result.current.form.setValue('user.firstName', 'kotaro');
+      });
+
+      expect(result.current.name).toBe('kotaro');
+
+      subscription.unsubscribe();
+    });
+
+    it('should reshape the form from the root', () => {
+      const { result } = renderHook(() =>
+        useForm<FormValues>({ defaultValues }),
+      );
+      const reshaped = result.current.select({
+        heading: 'title',
+        city: 'user.address.city',
+      });
+
+      expect(reshaped.getValues()).toEqual({
+        heading: 'title',
+        city: 'sydney',
+      });
+      expect(reshaped.select('city')).toBe(
+        result.current.select('user.address.city'),
+      );
+    });
+
+    it('should wrap a leaf selection', () => {
+      const { result } = renderHook(() => {
+        const form = useForm<FormValues>({ defaultValues });
+        const wrapped = form.select('title').select({ data: '' });
+
+        return {
+          form,
+          wrapped,
+          controller: useController({ control: wrapped.control, name: 'data' }),
+        };
+      });
+
+      expect(result.current.wrapped.getValues()).toEqual({ data: 'title' });
+      expect(result.current.controller.field.name).toBe('title');
+
+      act(() => {
+        result.current.controller.field.onChange('changed');
+      });
+
+      expect(result.current.form.getValues('title')).toBe('changed');
+
+      act(() => {
+        result.current.wrapped.setValues({ data: 'again' });
+      });
+
+      expect(result.current.form.getValues('title')).toBe('again');
+    });
+
+    it('should reshape array items for useFieldArray', () => {
+      type Values = { items: { value: { inside: string } }[] };
+
+      const { result } = renderHook(() => {
+        const form = useForm<Values>({
+          defaultValues: { items: [{ value: { inside: 'a' } }] },
+        });
+        const items = form.select('items').select([{ data: 'value.inside' }]);
+
+        return {
+          form,
+          items,
+          fieldArray: useFieldArray({ control: items.control }),
+        };
+      });
+
+      expect(result.current.fieldArray.fields).toEqual([
+        { data: 'a', id: expect.any(String) },
+      ]);
+      expect(result.current.items.getValues()).toEqual([{ data: 'a' }]);
+
+      act(() => {
+        result.current.fieldArray.append({ data: 'b' });
+      });
+
+      expect(result.current.form.getValues('items')).toEqual([
+        { value: { inside: 'a' } },
+        { value: { inside: 'b' } },
+      ]);
+      expect(result.current.fieldArray.fields).toEqual([
+        { data: 'a', id: expect.any(String) },
+        { data: 'b', id: expect.any(String) },
+      ]);
+
+      act(() => {
+        result.current.fieldArray.update(0, { data: 'c' });
+        result.current.fieldArray.insert(1, [{ data: 'd' }]);
+      });
+
+      expect(result.current.form.getValues('items')).toEqual([
+        { value: { inside: 'c' } },
+        { value: { inside: 'd' } },
+        { value: { inside: 'b' } },
+      ]);
+
+      act(() => {
+        result.current.fieldArray.replace([{ data: 'e' }]);
+      });
+
+      expect(result.current.form.getValues('items')).toEqual([
+        { value: { inside: 'e' } },
+      ]);
+
+      const item = result.current.items.select(0);
+
+      expect(item.getValues()).toEqual({ data: 'e' });
+      expect(item.register('data').name).toBe('items.0.value.inside');
+      expect(result.current.items.register('0.data').name).toBe(
+        'items.0.value.inside',
+      );
+    });
+
+    it('should map fields to item selections', () => {
+      const App = () => {
+        const form = useForm<FormValues>({ defaultValues });
+        const items = form.select('items');
+        const { fields } = useFieldArray({ control: items.control });
+
+        return (
+          <>
+            {items.map(fields, (field, item, index, all, origin) => (
+              <input
+                key={field.id}
+                data-origin={origin.name}
+                data-count={all.length}
+                aria-label={String(index)}
+                {...item.register('name')}
+              />
+            ))}
+          </>
+        );
+      };
+
+      render(<App />);
+
+      const inputs = screen.getAllByRole('textbox');
+
+      expect(inputs).toHaveLength(2);
+      expect(inputs[1]).toHaveAttribute('name', 'items.1.name');
+      expect(inputs[1]).toHaveValue('b');
+      expect(inputs[1]).toHaveAttribute('data-origin', 'items');
+      expect(inputs[1]).toHaveAttribute('data-count', '2');
+    });
+
+    it('should map reshaped array fields to reshaped item selections', () => {
+      const { result } = renderHook(() => {
+        const form = useForm<FormValues>({ defaultValues });
+        const items = form.select('items').select([{ label: 'name' }]);
+        const { fields } = useFieldArray({ control: items.control });
+
+        return items.map(fields, (field, item) => [
+          field.label,
+          item.getValues(),
+        ]);
+      });
+
+      expect(result.current).toEqual([
+        ['a', { label: 'a' }],
+        ['b', { label: 'b' }],
+      ]);
+    });
+
+    it('should apply useWatch default values through the scope', () => {
+      type Values = { user: { firstName?: string; lastName?: string } };
+
+      const { result } = renderHook(() => {
+        const form = useForm<Values>();
+        const user = form.select('user');
+        const person = user.select({ name: 'firstName' });
+
+        return {
+          names: useWatch({
+            control: user.control,
+            name: ['firstName', 'lastName'],
+            defaultValue: { firstName: 'first', lastName: 'last' },
+          }),
+          person: useWatch({
+            control: person.control,
+            defaultValue: { name: 'name' },
+          }),
+        };
+      });
+
+      expect(result.current.names).toEqual(['first', 'last']);
+      expect(result.current.person).toEqual({ name: 'name' });
+    });
+
+    it('should return the same selection from type helpers', () => {
+      const { result } = renderHook(() =>
+        useForm<FormValues>({ defaultValues }),
+      );
+      const user = result.current.select('user');
+
+      expect(user.narrow()).toBe(user);
+      expect(user.defined()).toBe(user);
+      expect(user.cast()).toBe(user);
+      expect(user.select()).toBe(user);
+      expect(() => user.assert()).not.toThrow();
+    });
+  });
 });

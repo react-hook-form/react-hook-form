@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { resolveScope, scopeDefaultValue } from './logic/createSelect';
+import { pickOutput, scopeDefaultValue } from './logic/createSelect';
 import generateWatchOutput from './logic/generateWatchOutput';
 import cloneObject from './utils/cloneObject';
 import deepEqual from './utils/deepEqual';
@@ -18,6 +18,7 @@ import type {
 import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import { useResyncOnReconnect } from './useResyncOnReconnect';
+import { useScope } from './useScope';
 
 /**
  * Subscribe to the value of a leaf selection.
@@ -167,18 +168,21 @@ export function useWatch<TFieldValues extends FieldValues>(
     exact,
     compute,
   } = props || {};
-  const [control, name, path] = React.useMemo(
-    () => resolveScope(_control, _name),
-    [_control, _name],
-  );
-  const defaultValue = scopeDefaultValue(path, _name, _defaultValueProp);
+  const [control, name, scope] = useScope(_control, _name);
+  const defaultValue = scopeDefaultValue(scope, _name, _defaultValueProp);
   const _defaultValue = React.useRef(defaultValue);
-  const _compute = React.useRef(compute);
+  const _compute = React.useRef<((value: any) => unknown) | undefined>(compute);
 
   const _prevControl = React.useRef(control);
   const _prevName = React.useRef(name);
 
-  _compute.current = compute;
+  _compute.current =
+    scope && scope.template && !_name
+      ? (value: unknown) => {
+          const output = pickOutput(scope, _name, value);
+          return compute ? compute(output) : output;
+        }
+      : compute;
 
   const getInitialOutput = () => {
     const defaultValue = control._getWatch(

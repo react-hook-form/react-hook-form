@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { DEFAULT_FORM_STATE, defaultOptions } from './logic/createFormControl';
+import getFormStateSnapshot from './logic/getFormStateSnapshot';
 import getProxyFormState from './logic/getProxyFormState';
 import cloneObject from './utils/cloneObject';
 import deepEqual from './utils/deepEqual';
@@ -108,11 +109,7 @@ export function useForm<
     validate: props.validate,
   };
 
-  const getCurrentFormState = () => ({
-    ...control._formState,
-    defaultValues:
-      control._defaultValues as FormState<TFieldValues>['defaultValues'],
-  });
+  const getCurrentFormState = () => getFormStateSnapshot(control);
 
   const { resyncIfNeeded, snapshot } =
     useResyncOnReconnect<FormState<TFieldValues>>(getCurrentFormState);
@@ -122,12 +119,7 @@ export function useForm<
 
     const unsubscribe = control._subscribe({
       formState: control._proxyFormState,
-      callback: () =>
-        updateFormState({
-          ...control._formState,
-          defaultValues:
-            control._defaultValues as FormState<TFieldValues>['defaultValues'],
-        }),
+      callback: () => updateFormState(getCurrentFormState()),
       reRenderRoot: true,
     });
 

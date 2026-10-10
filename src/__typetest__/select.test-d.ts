@@ -245,4 +245,112 @@ type FormValues = {
     // @ts-expect-error name is still required
     useController({ control: form.control });
   }
+
+  /** it should reshape a selection with a map of paths */ {
+    const person = form.select('user').select({
+      name: 'firstName',
+      location: { town: 'address.city' },
+    });
+
+    type _t1 = Expect<
+      Equal<
+        typeof person,
+        FormSelection<{ name: string; location: { town: string } }>
+      >
+    >;
+
+    person.register('name');
+    person.register('location.town');
+
+    const { field } = useController({ control: person.control, name: 'name' });
+
+    type _t2 = Expect<Equal<typeof field.value, string>>;
+
+    // @ts-expect-error unknown path in the map
+    form.select('user').select({ name: 'unknown' });
+  }
+
+  /** it should reshape the form with a map of paths */ {
+    const reshaped = form.select({
+      heading: 'title',
+      city: 'user.address.city',
+    });
+
+    type _t1 = Expect<
+      Equal<typeof reshaped, FormSelection<{ heading: string; city: string }>>
+    >;
+  }
+
+  /** it should wrap a leaf with a map */ {
+    const wrapped = form.select('title').select({ data: '' });
+
+    type _t1 = Expect<Equal<typeof wrapped, FormSelection<{ data: string }>>>;
+  }
+
+  /** it should reshape array items */ {
+    const items = form.select('items').select([{ label: 'name' }]);
+
+    type _t1 = Expect<Equal<typeof items, FormSelection<{ label: string }[]>>>;
+
+    const { fields, append } = useFieldArray({ control: items.control });
+
+    type _t2 = Expect<Equal<(typeof fields)[number]['label'], string>>;
+
+    append({ label: 'label' });
+
+    // @ts-expect-error only arrays reshape items
+    form.select('user').select([{ label: 'firstName' }]);
+  }
+
+  /** it should map field array fields to item selections */ {
+    const items = form.select('items');
+    const { fields } = useFieldArray({ control: items.control });
+
+    const result = items.map(fields, (field, item, index, all, origin) => {
+      type _t1 = Expect<Equal<typeof field, (typeof fields)[number]>>;
+      type _t2 = Expect<
+        Equal<typeof item, FormSelection<FormValues['items'][number]>>
+      >;
+      type _t3 = Expect<Equal<typeof index, number>>;
+      type _t4 = Expect<
+        Equal<typeof origin, FormSelection<FormValues['items']>>
+      >;
+
+      return all.length;
+    });
+
+    type _t5 = Expect<Equal<typeof result, number[]>>;
+
+    // @ts-expect-error only arrays can be mapped
+    form.select('user').map;
+  }
+
+  /** it should narrow, assert, define and cast selections */ {
+    const pet = form.select('pet');
+    const dog = pet.narrow('type', 'dog');
+    const cat = pet.narrow<{ type: 'cat'; meow: boolean }>();
+    const optional = form.select('optional').defined();
+    const cast = form.select('title').cast<number>();
+
+    type _t1 = Expect<
+      Equal<typeof dog, FormSelection<{ type: 'dog'; bark: boolean }>>
+    >;
+    type _t2 = Expect<
+      Equal<typeof cat, FormSelection<{ type: 'cat'; meow: boolean }>>
+    >;
+    type _t3 = Expect<Equal<typeof optional, FormSelection<string>>>;
+    type _t4 = Expect<Equal<typeof cast, FormSelection<number>>>;
+
+    dog.register('bark');
+
+    const assertPet = (selection: FormSelection<FormValues['pet']>) => {
+      selection.assert('type', 'cat');
+      selection.register('meow');
+    };
+
+    assertPet(pet);
+
+    // @ts-expect-error not a variant of the union
+    pet.narrow('type', 'bird');
+  }
 }

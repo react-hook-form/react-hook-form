@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { resolveScope, scopeFormState } from './logic/createSelect';
+import { scopeFormState } from './logic/createSelect';
+import getFormStateSnapshot from './logic/getFormStateSnapshot';
 import getProxyFormState from './logic/getProxyFormState';
 import type {
   FieldValues,
@@ -13,6 +14,7 @@ import type {
 import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import { useResyncOnReconnect } from './useResyncOnReconnect';
+import { useScope } from './useScope';
 
 /**
  * Form state of a leaf selection.
@@ -69,16 +71,9 @@ export function useFormState<
     name: _name,
     exact,
   } = props || {};
-  const [control, name, path] = React.useMemo(
-    () => resolveScope(_control, _name),
-    [_control, _name],
-  );
+  const [control, name, scope] = useScope(_control, _name);
 
-  const getCurrentFormState = () => ({
-    ...control._formState,
-    defaultValues:
-      control._defaultValues as FormState<TFieldValues>['defaultValues'],
-  });
+  const getCurrentFormState = () => getFormStateSnapshot(control);
 
   const [formState, updateFormState] =
     React.useState<FormState<TFieldValues>>(getCurrentFormState);
@@ -104,13 +99,7 @@ export function useFormState<
       formState: _localProxyFormState.current,
       exact,
       callback: (formState) => {
-        !disabled &&
-          updateFormState({
-            ...control._formState,
-            ...formState,
-            defaultValues:
-              control._defaultValues as FormState<TFieldValues>['defaultValues'],
-          });
+        !disabled && updateFormState(getFormStateSnapshot(control, formState));
       },
     });
 
@@ -132,6 +121,6 @@ export function useFormState<
       false,
     );
 
-    return scopeFormState(proxyFormState, path, control);
-  }, [formState, control, path]);
+    return scopeFormState(proxyFormState, scope, control);
+  }, [formState, control, scope]);
 }
