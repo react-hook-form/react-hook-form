@@ -1715,6 +1715,233 @@ describe('select', () => {
       expect(result.current.person).toEqual({ name: 'name' });
     });
 
+    it('should resolve mapped array item names before and after array operations', () => {
+      const { result } = renderHook(() => {
+        const form = useForm<FormValues>({ defaultValues });
+        const items = form.select('items').select([{ title: 'name' }]);
+
+        return {
+          form,
+          items,
+          fieldArray: useFieldArray({ control: items.control }),
+        };
+      });
+      const expectNames = (names: string[]) =>
+        names.forEach((name, index) => {
+          const item = result.current.items.select(index);
+
+          expect(item.register('title').name).toBe(`items.${index}.name`);
+          expect(item.getValues()).toEqual({ title: name });
+        });
+
+      expectNames(['a', 'b']);
+
+      act(() => {
+        result.current.fieldArray.append({ title: 'c' });
+      });
+
+      expectNames(['a', 'b', 'c']);
+
+      act(() => {
+        result.current.fieldArray.insert(1, { title: 'd' });
+      });
+
+      expectNames(['a', 'd', 'b', 'c']);
+
+      act(() => {
+        result.current.fieldArray.move(0, 3);
+      });
+
+      expectNames(['d', 'b', 'c', 'a']);
+
+      act(() => {
+        result.current.fieldArray.remove(0);
+      });
+
+      expectNames(['b', 'c', 'a']);
+      expect(result.current.form.getValues('items')).toEqual([
+        { name: 'b' },
+        { name: 'c' },
+        { name: 'a' },
+      ]);
+    });
+
+    it('should resolve names through nested maps', () => {
+      const { result } = renderHook(() =>
+        useForm<FormValues>({ defaultValues }),
+      );
+      const person = result.current.select('user').select({
+        person: { first: 'firstName' },
+        city: 'address.city',
+      });
+      const renamed = person.select({ name: 'person.first', town: 'city' });
+      const title = result.current
+        .select('items')
+        .select([{ title: 'name' }])
+        .select(1)
+        .select({ heading: 'title' });
+
+      expect(renamed.register('name').name).toBe('user.firstName');
+      expect(renamed.register('town').name).toBe('user.address.city');
+      expect(renamed.getValues()).toEqual({ name: 'bill', town: 'sydney' });
+      expect(renamed.select('name')).toBe(
+        result.current.select('user.firstName'),
+      );
+      expect(person.select('person').register('first').name).toBe(
+        'user.firstName',
+      );
+      expect(title.register('heading').name).toBe('items.1.name');
+      expect(title.getValues()).toEqual({ heading: 'b' });
+    });
+
+    it.each([
+      ['move', (fieldArray: any) => fieldArray.move(0, 2), ['b', 'c', 'a']],
+      ['swap', (fieldArray: any) => fieldArray.swap(0, 2), ['c', 'b', 'a']],
+    ])(
+      'should pass matching fields and items to map after %s',
+      (_, action, expected) => {
+        let fieldArray: any;
+
+        const App = () => {
+          const form = useForm<FormValues>({
+            defaultValues: {
+              ...defaultValues,
+              items: [{ name: 'a' }, { name: 'b' }, { name: 'c' }],
+            },
+          });
+          const items = form.select('items');
+          fieldArray = useFieldArray({ control: items.control });
+
+          return (
+            <>
+              {items.map(fieldArray.fields, (field: any, item, index) => (
+                <p key={field.id}>
+                  {`${index}:${field.name}:${item.getValues().name}:${item.name}`}
+                </p>
+              ))}
+            </>
+          );
+        };
+
+        render(<App />);
+
+        act(() => action(fieldArray));
+
+        expect(
+          screen.getAllByText(/^\d:/).map((node) => node.textContent),
+        ).toEqual(
+          expected.map(
+            (name, index) => `${index}:${name}:${name}:items.${index}`,
+          ),
+        );
+      },
+    );
+
+    it('should read and write two names mapped to the same field', () => {
+      const { result } = renderHook(() =>
+        useForm<FormValues>({ defaultValues }),
+      );
+      const aliases = result.current
+        .select('user')
+        .select({ first: 'firstName', alias: 'firstName' });
+
+      expect(aliases.getValues()).toEqual({ first: 'bill', alias: 'bill' });
+      expect(aliases.register('alias').name).toBe('user.firstName');
+
+      act(() => {
+        aliases.setValue('first', 'kotaro');
+      });
+
+      expect(aliases.getValues('alias')).toBe('kotaro');
+
+      act(() => {
+        aliases.setValues({ first: 'first', alias: 'alias' });
+      });
+
+      expect(result.current.getValues('user.firstName')).toBe('alias');
+    });
+
+    it('should keep other mapped fields when one is unregistered', () => {
+      const { result } = renderHook(() => {
+        const form = useForm<FormValues>({ defaultValues });
+
+        form.register('user.firstName', { required: 'required' });
+        form.register('user.lastName', { required: 'required' });
+
+        return form;
+      });
+      const person = result.current
+        .select('user')
+        .select({ name: 'firstName', surname: 'lastName' });
+
+      act(() => {
+        person.setError('surname', { message: 'surname' });
+        person.unregister('name');
+      });
+
+      expect(person.getValues()).toEqual({ surname: 'luo' });
+      expect(person.getValues('surname')).toBe('luo');
+      expect(person.getErrors()).toEqual({
+        surname: expect.objectContaining({ message: 'surname' }),
+      });
+      expect(result.current.control._names.mount.has('user.lastName')).toBe(
+        true,
+      );
+    });
+
+    it('should only unregister mapped fields when unregister has no name', () => {
+      const { result } = renderHook(() =>
+        useForm<FormValues>({ defaultValues }),
+      );
+
+      act(() => {
+        result.current.register('user.firstName');
+        result.current.register('user.lastName');
+        result.current.register('user.address.city');
+      });
+
+      act(() => {
+        result.current
+          .select('user')
+          .select({ name: 'firstName', town: 'address.city' })
+          .unregister();
+      });
+
+      expect(result.current.getValues('user')).toEqual({ lastName: 'luo' });
+      expect([...result.current.control._names.mount]).toEqual([
+        'user.lastName',
+      ]);
+    });
+
+    it('should use hooks on reshaped array items', () => {
+      const { result } = renderHook(() => {
+        const form = useForm<FormValues>({ defaultValues });
+        const item = form
+          .select('items')
+          .select([{ title: 'name' }])
+          .select(1);
+
+        return {
+          form,
+          title: useWatch({ control: item.control, name: 'title' }),
+          value: useWatch({ control: item.control }),
+          controller: useController({ control: item.control, name: 'title' }),
+        };
+      });
+
+      expect(result.current.title).toBe('b');
+      expect(result.current.value).toEqual({ title: 'b' });
+      expect(result.current.controller.field.name).toBe('items.1.name');
+
+      act(() => {
+        result.current.controller.field.onChange('changed');
+      });
+
+      expect(result.current.form.getValues('items.1.name')).toBe('changed');
+      expect(result.current.title).toBe('changed');
+      expect(result.current.value).toEqual({ title: 'changed' });
+    });
+
     it('should return the same selection from type helpers', () => {
       const { result } = renderHook(() =>
         useForm<FormValues>({ defaultValues }),
