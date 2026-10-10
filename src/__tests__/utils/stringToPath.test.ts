@@ -34,4 +34,24 @@ describe('stringToPath', () => {
       'data',
     ]);
   });
+
+  it('should return the cached path for a repeated input', () => {
+    const path = stringToPath('cached.path[0].name');
+
+    expect(stringToPath('cached.path[0].name')).toBe(path);
+    expect(path).toEqual(['cached', 'path', '0', 'name']);
+  });
+
+  it('should evict the oldest entry once the cache is full', () => {
+    const first = stringToPath('evict.first');
+
+    for (let i = 0; i < 1000; i++) {
+      stringToPath(`evict.filler${i}`);
+    }
+
+    const reparsed = stringToPath('evict.first');
+
+    expect(reparsed).not.toBe(first);
+    expect(reparsed).toEqual(['evict', 'first']);
+  });
 });

@@ -8,7 +8,7 @@ import isString from './isString';
 import isUndefined from './isUndefined';
 import stringToPath from './stringToPath';
 
-function baseGet(object: any, updatePath: (string | number)[]) {
+function baseGet(object: any, updatePath: readonly (string | number)[]) {
   const length = updatePath.length - 1;
   let index = 0;
 
