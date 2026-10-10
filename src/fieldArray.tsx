@@ -16,35 +16,11 @@ type FieldArray<
 > = FieldArrayType<TFieldValues, TFieldArrayName>;
 
 /**
- * Component based on `useFieldArray` hook to work with controlled component.
+ * Field array for an array selection, `name` is optional.
  *
  * @example
  * ```tsx
- * function App() {
- *   const { control, register } = useForm<FormValues>({
- *     defaultValues: {
- *       test: [
- *         {
- *           value: '',
- *         },
- *       ],
- *     },
- *   });
- *
- *   return (
- *     <form>
- *       <FieldArray
- *         control={control}
- *         name="test"
- *         render={({ fields }) =>
- *           fields.map((field, index) => (
- *             <input key={field.id} {...register(`test.${index}.value`)} />
- *           ))
- *         }
- *       />
- *     </form>
- *   );
- * }
+ * <FieldArray control={items.control} render={({ fields }) => null} />
  * ```
  */
 function FieldArray<T, TKeyName extends string = 'id'>(

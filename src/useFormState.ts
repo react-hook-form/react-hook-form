@@ -15,14 +15,12 @@ import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import { useResyncOnReconnect } from './useResyncOnReconnect';
 
 /**
- * Subscribes to form state with re-renders isolated to this hook.
- * Optionally scope to specific field names to minimize re-render surface.
- *
- * @see [API](https://react-hook-form.com/docs/useformstate)
+ * Form state of a leaf selection.
  *
  * @example
  * ```tsx
- * const { errors, isDirty } = useFormState({ control, name: "email" });
+ * const email = form.select('email');
+ * const { isDirty } = useFormState({ control: email.control });
  * ```
  */
 export function useFormState<T>(props: {

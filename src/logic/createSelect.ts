@@ -82,7 +82,7 @@ const hasTrue = (value: unknown): boolean =>
     ? Object.values(value).some(hasTrue)
     : !!value;
 
-const scopedFormStates = new WeakMap<object, string>();
+const scopedFormStates = new WeakMap<object, FormState<FieldValues>>();
 
 export const scopeFormState = <T extends Record<string, any>>(
   formState: T,
@@ -124,7 +124,7 @@ export const scopeFormState = <T extends Record<string, any>>(
     });
   }
 
-  scopedFormStates.set(result, path);
+  scopedFormStates.set(result, formState as unknown as FormState<FieldValues>);
 
   return result;
 };
@@ -155,20 +155,11 @@ const createSelection = (
           options as never,
         )
       : methods.setError(path, name as ErrorOption, error as never);
-  const getFieldState = (
-    name?: unknown,
-    formState?: FormState<FieldValues>,
-  ) => {
-    const fieldName = joinName(path, name as string | undefined);
-    const formStatePath = formState && scopedFormStates.get(formState);
-    const scopedName = isUndefined(formStatePath)
-      ? fieldName
-      : formStatePath && relativeName(formStatePath, fieldName);
-
-    return scopedName
-      ? methods.getFieldState(scopedName, formState)
-      : methods.getFieldState(fieldName);
-  };
+  const getFieldState = (name?: unknown, formState?: FormState<FieldValues>) =>
+    methods.getFieldState(
+      joinName(path, name as string | undefined),
+      (formState && scopedFormStates.get(formState)) || formState,
+    );
   const unregister = (name?: unknown, options?: unknown) =>
     isName(name)
       ? methods.unregister(scopeNames(path, name), options as never)

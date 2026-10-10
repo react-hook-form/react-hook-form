@@ -9,17 +9,11 @@ import type {
 import { useController } from './useController';
 
 /**
- * Component wrapper around `useController` for controlled inputs.
- *
- * @see [API](https://react-hook-form.com/docs/usecontroller/controller)
+ * Controller for a leaf selection, `name` is optional.
  *
  * @example
  * ```tsx
- * <Controller
- *   control={control}
- *   name="test"
- *   render={({ field, fieldState, formState }) => <input {...field} />}
- * />
+ * <Controller control={email.control} render={({ field }) => <input {...field} />} />
  * ```
  */
 export function Controller<T>(

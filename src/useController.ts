@@ -28,15 +28,12 @@ import { useFormState } from './useFormState';
 import { useWatch } from './useWatch';
 
 /**
- * Hook for controlled inputs. Returns `field`, `fieldState`, and `formState`.
- * Re-renders are isolated to the hook level.
- *
- * @see [API](https://react-hook-form.com/docs/usecontroller)
+ * Controller for a leaf selection, `name` is optional.
  *
  * @example
  * ```tsx
- * const { field, fieldState } = useController({ control, name: "email" });
- * return <input {...field} />;
+ * const email = form.select('email');
+ * const { field } = useController({ control: email.control });
  * ```
  */
 export function useController<T>(

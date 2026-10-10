@@ -24,7 +24,7 @@ import { useResyncOnReconnect } from './useResyncOnReconnect';
  *
  * @example
  * ```tsx
- * const firstName = useWatch({ control: form.select('firstName').control });
+ * const email = useWatch({ control: email.control });
  * ```
  */
 export function useWatch<T>(props: {
@@ -40,10 +40,7 @@ export function useWatch<T>(props: {
  *
  * @example
  * ```tsx
- * const length = useWatch({
- *   control: form.select('firstName').control,
- *   compute: (value) => value.length,
- * });
+ * const length = useWatch({ control: email.control, compute: (v) => v.length });
  * ```
  */
 export function useWatch<T, TComputeValue>(props: {

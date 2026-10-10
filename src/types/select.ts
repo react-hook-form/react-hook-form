@@ -202,15 +202,8 @@ export type LeafSelection<T, TContext = any> = SelectionShared<T, TContext> & {
  *
  * @example
  * ```tsx
- * const form = useForm<FormValues>();
  * const user = form.select('user');
- *
  * user.register('firstName');
- * user.setValue('firstName', 'Bill');
- * useController({ control: user.control, name: 'firstName' });
- *
- * const firstName = user.select('firstName');
- * useController({ control: firstName.control });
  * ```
  */
 export type FormSelection<

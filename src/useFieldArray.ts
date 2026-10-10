@@ -51,15 +51,12 @@ import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import { useResyncOnReconnect } from './useResyncOnReconnect';
 
 /**
- * Hook for dynamic field arrays. Provides `fields` and mutation methods:
- * `append`, `prepend`, `remove`, `insert`, `swap`, `move`, `update`, `replace`.
- *
- * @see [API](https://react-hook-form.com/docs/usefieldarray)
+ * Field array for an array selection, `name` is optional.
  *
  * @example
  * ```tsx
- * const { fields, append } = useFieldArray({ control, name: "items" });
- * return fields.map((f, i) => <input key={f.id} {...register(`items.${i}.name`)} />);
+ * const items = form.select('items');
+ * const { fields } = useFieldArray({ control: items.control });
  * ```
  */
 export function useFieldArray<T, TKeyName extends string = 'id'>(

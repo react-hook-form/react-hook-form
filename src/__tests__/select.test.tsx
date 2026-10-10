@@ -11,7 +11,8 @@ import {
 import { Controller } from '../controller';
 import { FieldArray } from '../fieldArray';
 import { createFormControl } from '../logic/createFormControl';
-import type { Control, FormSelection } from '../types';
+import { scopeFormState } from '../logic/createSelect';
+import type { Control, FormSelection, FormState } from '../types';
 import { useController } from '../useController';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
@@ -1141,5 +1142,169 @@ describe('select', () => {
         );
       },
     );
+
+    it('should resolve getFieldState against any supplied formState', () => {
+      const { result } = renderHook(() => {
+        const form = useForm<FormValues>({ defaultValues });
+        const user = form.select('user');
+        const city = form.select('user.address.city');
+
+        form.formState.errors;
+
+        return {
+          form,
+          root: form.formState,
+          user: useFormState({ control: user.control }),
+          address: useFormState({
+            control: form.select('user.address').control,
+          }),
+          items: useFormState({ control: form.select('items').control }),
+          city: useFormState({ control: city.control }),
+        };
+      });
+
+      act(() => {
+        result.current.form.setError('user.address.city', { message: 'city' });
+      });
+
+      const city = result.current.form.select('user.address');
+      const expected = expect.objectContaining({
+        invalid: true,
+        error: expect.objectContaining({ message: 'city' }),
+      });
+
+      expect(city.getFieldState('city', result.current.root)).toEqual(expected);
+      expect(city.getFieldState('city', result.current.address)).toEqual(
+        expected,
+      );
+      expect(city.getFieldState('city', result.current.user)).toEqual(expected);
+      expect(city.getFieldState('city', result.current.items)).toEqual(
+        expected,
+      );
+      expect(
+        result.current.form
+          .select('user.address.city')
+          .control.getFieldState('', result.current.city as never),
+      ).toEqual(expected);
+    });
+
+    it('should read unrelated and leaf scoped formState from its snapshot', () => {
+      const { result } = renderHook(() =>
+        useForm<FormValues>({ defaultValues }),
+      );
+      const control = result.current.control;
+      const snapshot = {
+        ...control._formState,
+        errors: {
+          user: { firstName: { type: 'custom', message: 'snapshot' } },
+        },
+      } as FormState<FormValues>;
+      const expected = expect.objectContaining({
+        invalid: true,
+        error: expect.objectContaining({ message: 'snapshot' }),
+      });
+
+      expect(
+        result.current
+          .select('user')
+          .getFieldState(
+            'firstName',
+            scopeFormState(snapshot, 'items', control),
+          ),
+      ).toEqual(expected);
+      expect(
+        result.current
+          .select('user.firstName')
+          .control.getFieldState(
+            '',
+            scopeFormState(snapshot, 'user.firstName', control) as never,
+          ),
+      ).toEqual(expected);
+      expect(
+        result.current.select('user').getFieldState('firstName').invalid,
+      ).toBe(false);
+    });
+
+    it('should match the root setValues merge semantics for partial nested values', () => {
+      type User = {
+        firstName: string;
+        address: { city: string; postcode: string; country: string };
+      };
+      const user: User = {
+        firstName: 'bill',
+        address: { city: 'sydney', postcode: '2000', country: 'au' },
+      };
+      const update = { address: { city: 'tokyo' } } as Partial<User>;
+
+      const { result } = renderHook(() => ({
+        form: useForm<{ user: User; title: string }>({
+          defaultValues: { user, title: 'title' },
+        }),
+        userForm: useForm<User>({ defaultValues: user }),
+      }));
+
+      act(() => {
+        result.current.form.select('user').setValues(update);
+        result.current.userForm.setValues(update);
+      });
+
+      expect(result.current.form.getValues('user')).toEqual(
+        result.current.userForm.getValues(),
+      );
+      expect(result.current.form.getValues('user')).toEqual({
+        firstName: 'bill',
+        address: { city: 'tokyo' },
+      });
+      expect(result.current.form.getValues('title')).toBe('title');
+    });
+
+    it('should update scoped isDirty while the form is already dirty', () => {
+      const scopedDirty: boolean[] = [];
+
+      const UserDirty = ({
+        control,
+      }: {
+        control: Control<FormValues['user']>;
+      }) => {
+        const { isDirty } = useFormState({ control });
+        scopedDirty.push(isDirty);
+
+        return <p>user: {String(isDirty)}</p>;
+      };
+
+      const App = () => {
+        const form = useForm<FormValues>({ defaultValues });
+
+        return (
+          <>
+            <input {...form.register('title')} />
+            <input {...form.register('user.firstName')} />
+            <p>form: {String(form.formState.isDirty)}</p>
+            <UserDirty control={form.select('user').control} />
+          </>
+        );
+      };
+
+      render(<App />);
+
+      const [title, firstName] = screen.getAllByRole('textbox');
+
+      fireEvent.input(title, { target: { value: 'changed' } });
+
+      expect(screen.getByText('form: true')).toBeVisible();
+      expect(screen.getByText('user: false')).toBeVisible();
+
+      const renders = scopedDirty.length;
+
+      fireEvent.input(firstName, { target: { value: 'kotaro' } });
+
+      expect(screen.getByText('user: true')).toBeVisible();
+
+      fireEvent.input(firstName, { target: { value: 'bill' } });
+
+      expect(screen.getByText('user: false')).toBeVisible();
+      expect(screen.getByText('form: true')).toBeVisible();
+      expect(scopedDirty.slice(renders)).toEqual([true, false]);
+    });
   });
 });
