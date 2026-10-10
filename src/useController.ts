@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { getScope, joinName, scopeFormState } from './logic/createSelect';
 import getEventValue from './logic/getEventValue';
 import getNullAncestorValue from './logic/getNullAncestorValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
@@ -17,6 +18,8 @@ import type {
   FieldPathValue,
   FieldValues,
   InternalFieldName,
+  SelectionLeafControllerProps,
+  SelectionLeafControllerReturn,
   UseControllerProps,
   UseControllerReturn,
 } from './types';
@@ -36,26 +39,58 @@ import { useWatch } from './useWatch';
  * return <input {...field} />;
  * ```
  */
+export function useController<T>(
+  props: SelectionLeafControllerProps<T>,
+): SelectionLeafControllerReturn<T>;
+/**
+ * Hook for controlled inputs. Returns `field`, `fieldState`, and `formState`.
+ * Re-renders are isolated to the hook level.
+ *
+ * @see [API](https://react-hook-form.com/docs/usecontroller)
+ *
+ * @example
+ * ```tsx
+ * const { field, fieldState } = useController({ control, name: "email" });
+ * return <input {...field} />;
+ * ```
+ */
 export function useController<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
   TTransformedValues = TFieldValues,
 >(
   props: UseControllerProps<TFieldValues, TName, TTransformedValues>,
+): UseControllerReturn<TFieldValues, TName>;
+export function useController<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TTransformedValues = TFieldValues,
+>(
+  controllerProps:
+    | UseControllerProps<TFieldValues, TName, TTransformedValues>
+    | SelectionLeafControllerProps<any>,
 ): UseControllerReturn<TFieldValues, TName> {
+  const props = controllerProps as UseControllerProps<
+    TFieldValues,
+    TName,
+    TTransformedValues
+  >;
   const formControl = useFormControlContext<
     TFieldValues,
     unknown,
     TTransformedValues
   >();
   const {
-    name,
+    name: _name,
     disabled,
-    control = formControl,
+    control: _control = formControl,
     shouldUnregister,
     defaultValue,
     exact = true,
   } = props;
+  const scope = getScope(_control);
+  const control = scope ? scope.control : _control;
+  const name = (scope ? joinName(scope.path, _name) : _name) as TName;
   const isArrayField = isNameInFieldArray(control._names.array, name);
 
   const defaultValueMemo = React.useMemo(() => {
@@ -282,9 +317,9 @@ export function useController<
   return React.useMemo(
     () => ({
       field,
-      formState,
+      formState: scope ? scopeFormState(formState, scope.path) : formState,
       fieldState,
     }),
-    [field, formState, fieldState],
+    [field, formState, fieldState, scope],
   );
 }

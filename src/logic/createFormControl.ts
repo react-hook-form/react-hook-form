@@ -88,6 +88,7 @@ import stringToPath from '../utils/stringToPath';
 import unset from '../utils/unset';
 
 import collectDirtyFieldNames from './collectDirtyFieldNames';
+import createSelect from './createSelect';
 import generateWatchOutput from './generateWatchOutput';
 import getDirtyFields from './getDirtyFields';
 import getEventValue from './getEventValue';
@@ -2423,8 +2424,12 @@ export function createFormControl<
     getFieldState,
   };
 
+  const formControl = Object.assign(methods, {
+    select: createSelect<TFieldValues, TContext, TTransformedValues>(methods),
+  });
+
   return {
-    ...methods,
-    formControl: methods,
+    ...formControl,
+    formControl,
   };
 }

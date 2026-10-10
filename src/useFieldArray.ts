@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { getScope, joinName } from './logic/createSelect';
 import generateId from './logic/generateId';
 import getFocusFieldName from './logic/getFocusFieldName';
 import getValidationModes from './logic/getValidationModes';
@@ -40,6 +41,8 @@ import type {
   FormState,
   InternalFieldName,
   RegisterOptions,
+  SelectionLeafFieldArrayProps,
+  SelectionLeafFieldArrayReturn,
   UseFieldArrayProps,
   UseFieldArrayReturn,
 } from './types';
@@ -47,6 +50,21 @@ import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import { useResyncOnReconnect } from './useResyncOnReconnect';
 
+/**
+ * Hook for dynamic field arrays. Provides `fields` and mutation methods:
+ * `append`, `prepend`, `remove`, `insert`, `swap`, `move`, `update`, `replace`.
+ *
+ * @see [API](https://react-hook-form.com/docs/usefieldarray)
+ *
+ * @example
+ * ```tsx
+ * const { fields, append } = useFieldArray({ control, name: "items" });
+ * return fields.map((f, i) => <input key={f.id} {...register(`items.${i}.name`)} />);
+ * ```
+ */
+export function useFieldArray<T, TKeyName extends string = 'id'>(
+  props: SelectionLeafFieldArrayProps<T, TKeyName>,
+): SelectionLeafFieldArrayReturn<T, TKeyName>;
 /**
  * Hook for dynamic field arrays. Provides `fields` and mutation methods:
  * `append`, `prepend`, `remove`, `insert`, `swap`, `move`, `update`, `replace`.
@@ -72,20 +90,45 @@ export function useFieldArray<
     TKeyName,
     TTransformedValues
   >,
+): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName>;
+export function useFieldArray<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldArrayName extends FieldArrayPath<TFieldValues> =
+    FieldArrayPath<TFieldValues>,
+  TKeyName extends string = 'id',
+  TTransformedValues = TFieldValues,
+>(
+  fieldArrayProps:
+    | UseFieldArrayProps<
+        TFieldValues,
+        TFieldArrayName,
+        TKeyName,
+        TTransformedValues
+      >
+    | SelectionLeafFieldArrayProps<any, TKeyName>,
 ): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> {
+  const props = fieldArrayProps as UseFieldArrayProps<
+    TFieldValues,
+    TFieldArrayName,
+    TKeyName,
+    TTransformedValues
+  >;
   const formControl = useFormControlContext<
     TFieldValues,
     unknown,
     TTransformedValues
   >();
   const {
-    control = formControl,
-    name,
+    control: _control = formControl,
+    name: _name,
     keyName = 'id',
     disabled,
     shouldUnregister,
     rules,
   } = props;
+  const scope = getScope(_control);
+  const control = scope ? scope.control : _control;
+  const name = (scope ? joinName(scope.path, _name) : _name) as TFieldArrayName;
   const getCurrentFieldArray = () => control._getFieldArray(name);
 
   const [fields, setFields] = React.useState(getCurrentFieldArray);

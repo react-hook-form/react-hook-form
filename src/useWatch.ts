@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { getScope, scopeDefaultValue, scopeNames } from './logic/createSelect';
 import generateWatchOutput from './logic/generateWatchOutput';
 import cloneObject from './utils/cloneObject';
 import deepEqual from './utils/deepEqual';
@@ -11,12 +12,48 @@ import type {
   FieldPathValues,
   FieldValues,
   InternalFieldName,
+  SelectionLeafControl,
   UseWatchProps,
 } from './types';
 import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import { useResyncOnReconnect } from './useResyncOnReconnect';
 
+/**
+ * Subscribe to the value of a leaf selection.
+ *
+ * @example
+ * ```tsx
+ * const firstName = useWatch({ control: form.select('firstName').control });
+ * ```
+ */
+export function useWatch<T>(props: {
+  control: SelectionLeafControl<T>;
+  name?: '';
+  defaultValue?: T;
+  disabled?: boolean;
+  exact?: boolean;
+  compute?: undefined;
+}): T;
+/**
+ * Subscribe to the computed value of a leaf selection.
+ *
+ * @example
+ * ```tsx
+ * const length = useWatch({
+ *   control: form.select('firstName').control,
+ *   compute: (value) => value.length,
+ * });
+ * ```
+ */
+export function useWatch<T, TComputeValue>(props: {
+  control: SelectionLeafControl<T>;
+  name?: '';
+  defaultValue?: T;
+  disabled?: boolean;
+  exact?: boolean;
+  compute: (value: T) => TComputeValue;
+}): TComputeValue;
 /** Watches the entire form; re-renders when any value changes. */
 export function useWatch<
   TFieldValues extends FieldValues = FieldValues,
@@ -119,17 +156,29 @@ export function useWatch<
  * ```
  */
 export function useWatch<TFieldValues extends FieldValues>(
-  props?: UseWatchProps<TFieldValues>,
+  watchProps?:
+    | UseWatchProps<TFieldValues>
+    | { control: SelectionLeafControl<any>; name?: '' },
 ) {
+  const props = watchProps as UseWatchProps<TFieldValues> | undefined;
   const formControl = useFormControlContext<TFieldValues>();
   const {
-    control = formControl,
-    name,
-    defaultValue,
+    control: _control = formControl,
+    name: _name,
+    defaultValue: _defaultValueProp,
     disabled,
     exact,
     compute,
   } = props || {};
+  const scope = getScope(_control);
+  const control = scope ? scope.control : _control;
+  const name = React.useMemo(
+    () => (scope ? scopeNames(scope.path, _name) : _name),
+    [scope, _name],
+  );
+  const defaultValue = scope
+    ? scopeDefaultValue(scope.path, _name, _defaultValueProp)
+    : _defaultValueProp;
   const _defaultValue = React.useRef(defaultValue);
   const _compute = React.useRef(compute);
 

@@ -4,9 +4,7 @@
 
 ```ts
 
-import { JSXElementConstructor } from 'react';
 import { default as React_2 } from 'react';
-import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 
 // @public (undocumented)
@@ -81,7 +79,10 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
 };
 
 // @public
-export const Controller: <TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>, TTransformedValues = TFieldValues>(props: ControllerProps<TFieldValues, TName, TTransformedValues>) => ReactElement<unknown, string | JSXElementConstructor<any>>;
+export function Controller<T>(props: SelectionLeafControllerRenderProps<T>): React_2.ReactElement;
+
+// @public
+export function Controller<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>, TTransformedValues = TFieldValues>(props: ControllerProps<TFieldValues, TName, TTransformedValues>): React_2.ReactElement;
 
 // @public (undocumented)
 export type ControllerFieldState = {
@@ -209,11 +210,14 @@ export type Field = {
     } & RegisterOptions;
 };
 
-// @public (undocumented)
-export type FieldArray<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = FieldArray_2<TFieldValues, TFieldArrayName>;
+// @public
+export function FieldArray<T, TKeyName extends string = 'id'>(props: SelectionLeafFieldArrayRenderProps<T, TKeyName>): React_2.ReactElement;
 
 // @public
-export const FieldArray: <TFieldValues extends FieldValues = FieldValues, TName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = "id">(props: FieldArrayProps<TFieldValues, TName, TKeyName>) => ReactElement<unknown, string | JSXElementConstructor<any>>;
+export function FieldArray<TFieldValues extends FieldValues = FieldValues, TName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'id'>(props: FieldArrayProps<TFieldValues, TName, TKeyName>): React_2.ReactElement;
+
+// @public (undocumented)
+export type FieldArray<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>> = FieldArray_2<TFieldValues, TFieldArrayName>;
 
 // @public
 export type FieldArrayMethodProps = {
@@ -337,6 +341,9 @@ export type FormProviderProps<TFieldValues extends FieldValues = FieldValues, TC
     children: React_2.ReactNode | React_2.ReactNode[];
 } & UseFormReturn<TFieldValues, TContext, TTransformedValues>;
 
+// @public
+export type FormSelection<T, TContext = any, TTransformedValues = SelectionValues<T>> = IsSelectionLeaf<T> extends true ? LeafSelection<T, TContext> : ObjectSelection<SelectionValues<T>, TContext, TTransformedValues>;
+
 // @public (undocumented)
 export type FormState<TFieldValues extends FieldValues> = FormState_2<TFieldValues>;
 
@@ -450,6 +457,9 @@ export type IsFlatObject<T extends object> = Extract<Exclude<T[keyof T], NestedV
 // @public
 export type IsNever<T> = [T] extends [never] ? true : false;
 
+// @public
+export type IsSelectionLeaf<T> = IsAny<T> extends true ? false : [NonNullable<T>] extends [BrowserNativeObject] ? true : [NonNullable<T>] extends [ReadonlyArray<any>] ? true : [NonNullable<T>] extends [FieldValues] ? false : true;
+
 // @public (undocumented)
 export type KeepStateOptions = Partial<{
     keepDirtyValues: boolean;
@@ -465,6 +475,33 @@ export type KeepStateOptions = Partial<{
     keepSubmitCount: boolean;
     keepFieldsRef: boolean;
 }>;
+
+// @public
+export type LeafSelection<T, TContext = any> = SelectionShared<T, TContext> & {
+    control: SelectionLeafControl<T, TContext>;
+    readonly formState: SelectionLeafFormState<T>;
+    register: (options?: RegisterOptions<SelectionLeafValues<T>, SelectionLeafName<T>>) => UseFormRegisterReturn<string>;
+    unregister: (options?: Parameters<UseFormUnregister<FieldValues>>[1]) => void;
+    watch: {
+        (): T;
+        (callback: (value: T, info: {
+            name?: string;
+            type?: EventType;
+        }) => void): {
+            unsubscribe: () => void;
+        };
+    };
+    getValues: () => T;
+    getErrors: () => FieldErrors<SelectionLeafValues<T>>[''];
+    getFieldState: () => SelectionFieldState;
+    setError: (error: ErrorOption, options?: {
+        shouldFocus: boolean;
+    }) => void;
+    clearErrors: () => void;
+    trigger: (options?: TriggerConfig) => Promise<boolean>;
+    resetField: (options?: ResetFieldConfig<SelectionLeafValues<T>, SelectionLeafName<T>>) => void;
+    setFocus: (options?: SetFocusOptions) => void;
+};
 
 // @public (undocumented)
 export type LiteralUnion<T extends U, U extends Primitive> = T | (U & {
@@ -520,6 +557,26 @@ export type NonUndefined<T> = T extends undefined ? never : T;
 
 // @public (undocumented)
 export type Noop = () => void;
+
+// @public
+export type ObjectSelection<TFieldValues extends FieldValues, TContext = any, TTransformedValues = TFieldValues> = SelectionShared<TFieldValues, TContext> & {
+    control: Control<TFieldValues, TContext, TTransformedValues>;
+    readonly formState: FormState_2<TFieldValues>;
+    register: UseFormRegister<TFieldValues>;
+    unregister: UseFormUnregister<TFieldValues>;
+    watch: UseFormWatch<TFieldValues>;
+    getValues: UseFormGetValues<TFieldValues>;
+    getErrors: UseFormGetErrors<TFieldValues>;
+    getFieldState: UseFormGetFieldState<TFieldValues>;
+    setError: UseFormSetError<TFieldValues>;
+    clearErrors: UseFormClearErrors<TFieldValues>;
+    setValue: UseFormSetValue<TFieldValues>;
+    setValues: UseFormSetValues<TFieldValues>;
+    trigger: UseFormTrigger<TFieldValues>;
+    resetField: UseFormResetField<TFieldValues>;
+    setFocus: UseFormSetFocus<TFieldValues>;
+    subscribe: UseFormSubscribe<TFieldValues>;
+};
 
 // @public
 export type OpaqueType = OpaqueTypes[keyof OpaqueTypes];
@@ -628,6 +685,88 @@ export type ResolverSuccess<TTransformedValues> = {
 };
 
 // @public (undocumented)
+export type SelectionFieldState = {
+    invalid: boolean;
+    isDirty: boolean;
+    isTouched: boolean;
+    isValidating: boolean;
+    error?: FieldError;
+};
+
+// @public (undocumented)
+export type SelectionLeafArrayName<T> = Extract<'', FieldArrayPath<SelectionLeafValues<T>>>;
+
+// @public
+export type SelectionLeafControl<T, TContext = any> = Control<SelectionLeafValues<T>, TContext> & {
+    readonly [SELECTION_LEAF]: T;
+};
+
+// @public (undocumented)
+export type SelectionLeafControllerProps<T> = Omit<UseControllerProps<SelectionLeafValues<T>, SelectionLeafName<T>>, 'name' | 'control'> & {
+    control: SelectionLeafControl<T>;
+    name?: '';
+};
+
+// @public (undocumented)
+export type SelectionLeafControllerRenderProps<T> = SelectionLeafControllerProps<T> & {
+    render: (props: SelectionLeafControllerReturn<T>) => React_2.ReactElement;
+};
+
+// @public (undocumented)
+export type SelectionLeafControllerReturn<T> = {
+    field: Omit<ControllerRenderProps<SelectionLeafValues<T>, SelectionLeafName<T>>, 'name'> & {
+        name: string;
+    };
+    fieldState: ControllerFieldState;
+    formState: SelectionLeafFormState<T>;
+};
+
+// @public (undocumented)
+export type SelectionLeafFieldArrayProps<T, TKeyName extends string = 'id'> = Omit<UseFieldArrayProps<SelectionLeafValues<T>, SelectionLeafArrayName<T>, TKeyName>, 'name' | 'control'> & {
+    control: SelectionLeafControl<T>;
+    name?: '';
+};
+
+// @public (undocumented)
+export type SelectionLeafFieldArrayRenderProps<T, TKeyName extends string = 'id'> = SelectionLeafFieldArrayProps<T, TKeyName> & {
+    render: (fieldArray: SelectionLeafFieldArrayReturn<T, TKeyName>) => React_2.ReactElement;
+};
+
+// @public (undocumented)
+export type SelectionLeafFieldArrayReturn<T, TKeyName extends string = 'id'> = UseFieldArrayReturn<SelectionLeafValues<T>, SelectionLeafArrayName<T>, TKeyName>;
+
+// @public
+export type SelectionLeafFormState<T> = Omit<FormState_2<SelectionLeafValues<T>>, 'errors' | 'dirtyFields' | 'touchedFields' | 'validatingFields' | 'defaultValues'> & {
+    defaultValues?: Readonly<T>;
+};
+
+// @public (undocumented)
+export type SelectionLeafName<T> = Extract<'', FieldPath<SelectionLeafValues<T>>>;
+
+// @public
+export type SelectionLeafValues<T> = {
+    '': T;
+};
+
+// @public (undocumented)
+export type SelectionPath<T> = [NonNullable<T>] extends [ReadonlyArray<any>] ? Path<NonNullable<T>> | number : IsSelectionLeaf<T> extends true ? never : FieldPath<SelectionValues<T>>;
+
+// @public (undocumented)
+export type SelectionPathValue<T, P> = P extends number ? NonNullable<T> extends ReadonlyArray<infer U> ? U : never : P extends Path<NonNullable<T>> ? PathValue<NonNullable<T>, P> : never;
+
+// @public (undocumented)
+export type SelectionSelect<T, TContext> = <P extends SelectionPath<T>>(path: P) => FormSelection<SelectionPathValue<T, P>, TContext>;
+
+// @public (undocumented)
+export type SelectionShared<T, TContext> = {
+    readonly name: string;
+    select: SelectionSelect<T, TContext>;
+};
+
+// @public
+export type SelectionValues<T> = IsSelectionLeaf<T> extends true ? SelectionLeafValues<T> : Extract<NonNullable<T>, FieldValues>;
+
+// @public (undocumented)
 export const set: (object: FieldValues, path: FieldPath<FieldValues>, value?: unknown) => void;
 
 // @public (undocumented)
@@ -668,6 +807,9 @@ export type TriggerConfig = Partial<{
 }>;
 
 // @public
+export function useController<T>(props: SelectionLeafControllerProps<T>): SelectionLeafControllerReturn<T>;
+
+// @public
 export function useController<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>, TTransformedValues = TFieldValues>(props: UseControllerProps<TFieldValues, TName, TTransformedValues>): UseControllerReturn<TFieldValues, TName>;
 
 // @public (undocumented)
@@ -687,6 +829,9 @@ export type UseControllerReturn<TFieldValues extends FieldValues = FieldValues, 
     formState: UseFormStateReturn<TFieldValues>;
     fieldState: ControllerFieldState;
 };
+
+// @public
+export function useFieldArray<T, TKeyName extends string = 'id'>(props: SelectionLeafFieldArrayProps<T, TKeyName>): SelectionLeafFieldArrayReturn<T, TKeyName>;
 
 // @public
 export function useFieldArray<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'id', TTransformedValues = TFieldValues>(props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName, TTransformedValues>): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName>;
@@ -850,6 +995,13 @@ export type UseFormReturn<TFieldValues extends FieldValues = FieldValues, TConte
     register: UseFormRegister<TFieldValues>;
     setFocus: UseFormSetFocus<TFieldValues>;
     subscribe: UseFormSubscribe<TFieldValues>;
+    select: UseFormSelect<TFieldValues, TContext, TTransformedValues>;
+};
+
+// @public (undocumented)
+export type UseFormSelect<TFieldValues extends FieldValues, TContext = any, TTransformedValues = TFieldValues> = {
+    (): ObjectSelection<TFieldValues, TContext, TTransformedValues>;
+    <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName): FormSelection<FieldPathValue<TFieldValues, TFieldName>, TContext>;
 };
 
 // @public
@@ -865,6 +1017,14 @@ export type UseFormSetValue<TFieldValues extends FieldValues> = <TFieldName exte
 
 // @public (undocumented)
 export type UseFormSetValues<TFieldValues extends FieldValues> = (value: Partial<TFieldValues> | ResetAction<TFieldValues>, options?: SetValueConfig) => void;
+
+// @public
+export function useFormState<T>(props: {
+    control: SelectionLeafControl<T>;
+    name?: '';
+    disabled?: boolean;
+    exact?: boolean;
+}): SelectionLeafFormState<T>;
 
 // @public
 export function useFormState<TFieldValues extends FieldValues = FieldValues, TTransformedValues = TFieldValues>(props?: UseFormStateProps<TFieldValues, TTransformedValues>): UseFormStateReturn<TFieldValues>;
@@ -909,6 +1069,26 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
     <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, defaultValue?: FieldPathValue<TFieldValues, TFieldName>): FieldPathValue<TFieldValues, TFieldName>;
     (callback: WatchObserver<TFieldValues>, defaultValues?: DeepPartial<TFieldValues>): Subscription;
 };
+
+// @public
+export function useWatch<T>(props: {
+    control: SelectionLeafControl<T>;
+    name?: '';
+    defaultValue?: T;
+    disabled?: boolean;
+    exact?: boolean;
+    compute?: undefined;
+}): T;
+
+// @public
+export function useWatch<T, TComputeValue>(props: {
+    control: SelectionLeafControl<T>;
+    name?: '';
+    defaultValue?: T;
+    disabled?: boolean;
+    exact?: boolean;
+    compute: (value: T) => TComputeValue;
+}): TComputeValue;
 
 // @public
 export function useWatch<TFieldValues extends FieldValues = FieldValues, TTransformedValues = TFieldValues>(props: {
@@ -1067,8 +1247,8 @@ export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValue
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:584:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:959:3 - (ae-forgotten-export) The symbol "FormState_2" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:585:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:960:3 - (ae-forgotten-export) The symbol "FormState_2" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
