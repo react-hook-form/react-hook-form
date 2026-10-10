@@ -11,6 +11,9 @@ import {
 import { useForm } from '../../useForm';
 
 describe('unregister', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
   it('unregister an registered item', async () => {
     const { result } = renderHook(() => useForm<{ input: string }>());
 

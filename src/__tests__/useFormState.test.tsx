@@ -26,7 +26,7 @@ const Activity = (React as unknown as { Activity?: unknown })
 const itWithActivity = Activity ? it : it.skip;
 
 describe('useFormState', () => {
-  it('render correct form state with isDirty, dirty, touched', () => {
+  it('render correct form state with isDirty, dirty, touched', async () => {
     let count = 0;
     const Test = ({
       control,
@@ -65,18 +65,24 @@ describe('useFormState', () => {
 
     render(<Component />);
 
-    fireEvent.input(screen.getByLabelText('test'), {
-      target: {
-        value: 'test',
-      },
+    await act(async () => {
+      fireEvent.input(screen.getByLabelText('test'), {
+        target: {
+          value: 'test',
+        },
+      });
     });
 
-    expect(screen.getByText('isDirty')).toBeVisible();
-    expect(screen.getByText('dirty field')).toBeVisible();
+    await waitFor(() => {
+      expect(screen.getByText('isDirty')).toBeVisible();
+      expect(screen.getByText('dirty field')).toBeVisible();
+    });
     expect(count).toEqual(2);
 
-    fireEvent.blur(screen.getByLabelText('test'));
-    expect(screen.getByText('isTouched')).toBeVisible();
+    await act(async () => {
+      fireEvent.blur(screen.getByLabelText('test'));
+    });
+    await waitFor(() => expect(screen.getByText('isTouched')).toBeVisible());
     expect(count).toEqual(2);
   });
 
@@ -113,19 +119,22 @@ describe('useFormState', () => {
 
     await waitFor(() => expect(screen.getByText('yes')).toBeVisible());
 
-    fireEvent.input(screen.getByLabelText('test'), {
-      target: {
-        value: 'test',
-      },
+    await act(async () => {
+      fireEvent.input(screen.getByLabelText('test'), {
+        target: {
+          value: 'test',
+        },
+      });
     });
-
     expect(await screen.findByText('error')).toBeVisible();
     expect(screen.getByText('no')).toBeVisible();
 
-    fireEvent.input(screen.getByLabelText('test'), {
-      target: {
-        value: 'testtest',
-      },
+    await act(async () => {
+      fireEvent.input(screen.getByLabelText('test'), {
+        target: {
+          value: 'testtest',
+        },
+      });
     });
 
     expect(await screen.findByText('valid')).toBeVisible();
@@ -779,13 +788,13 @@ describe('useFormState', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    waitFor(() => screen.getByText('Required'));
+    await waitFor(() => screen.getByText('Required'));
 
     fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'data' },
     });
 
-    waitFor(() =>
+    await waitFor(() =>
       expect(screen.queryByText('Required')).not.toBeInTheDocument(),
     );
   });

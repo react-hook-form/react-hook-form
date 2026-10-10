@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
@@ -48,13 +48,17 @@ describe('useFieldArray with a null default value', () => {
     expect(snapshot.fieldCount).toEqual(0);
 
     // touch an unrelated field then revert it
-    snapshot.setValue('name', 'b', { shouldDirty: true });
+    act(() => {
+      snapshot.setValue('name', 'b', { shouldDirty: true });
+    });
 
     await waitFor(() => {
       expect(snapshot.isDirty).toEqual(true);
     });
 
-    snapshot.setValue('name', 'a', { shouldDirty: true });
+    act(() => {
+      snapshot.setValue('name', 'a', { shouldDirty: true });
+    });
 
     await waitFor(() => {
       // user never touched listField: form must be clean again

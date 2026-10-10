@@ -33,6 +33,9 @@ const Activity = (React as unknown as { Activity?: unknown })
 const itWithActivity = Activity ? it : it.skip;
 
 describe('formState', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
   describe('isValid', () => {
     it('return isValid correctly with resolver', async () => {
       let isValidValue = false;
@@ -277,7 +280,7 @@ describe('formState', () => {
 
       expect(screen.getByText('invalid')).toBeVisible();
 
-      act(() => {
+      await act(async () => {
         jest.advanceTimersByTime(2000);
       });
 
@@ -791,9 +794,14 @@ describe('formState', () => {
 
     render(<App />);
 
-    fireEvent.click(screen.getByRole('button'));
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button'));
+    });
 
-    expect(screen.getByText('isNotSubmitSuccessful')).toBeVisible();
+    await waitFor(() => {
+      expect(screen.getByText('isSubmitted')).toBeVisible();
+      expect(screen.getByText('isNotSubmitSuccessful')).toBeVisible();
+    });
   });
 
   it('update isValid even with mode set to onSubmit', async () => {
@@ -1187,7 +1195,7 @@ describe('formState', () => {
     expect(await screen.findByText('dirty')).toBeVisible();
   });
 
-  it('update isDirty with getFieldState at child component', () => {
+  it('update isDirty with getFieldState at child component', async () => {
     type FormValues = {
       test?: string;
     };
@@ -1210,7 +1218,7 @@ describe('formState', () => {
         control,
       });
 
-      return <input {...field} type="text" />;
+      return <input {...field} value={field.value ?? ''} type="text" />;
     };
 
     function App() {
@@ -1235,7 +1243,7 @@ describe('formState', () => {
       },
     });
 
-    waitFor(() => {
+    await waitFor(() => {
       screen.getByText('true');
     });
   });
@@ -1317,11 +1325,11 @@ describe('formState', () => {
 
     render(<App />);
 
-    await screen.getByText('notDirty');
-    await screen.getByText('0');
+    expect(await screen.findByText('notDirty')).toBeVisible();
+    expect(await screen.findByText('0')).toBeVisible();
   });
 
-  it('mark field and form as dirty with setValue shouldDirty when the form is disabled', () => {
+  it('mark field and form as dirty with setValue shouldDirty when the form is disabled', async () => {
     const { result } = renderHook(() =>
       useForm({
         disabled: true,
@@ -1334,7 +1342,7 @@ describe('formState', () => {
     result.current.formState.isDirty;
     result.current.formState.dirtyFields;
 
-    act(() => {
+    await act(async () => {
       result.current.register('test');
       result.current.setValue('test', 'b', { shouldDirty: true });
     });
@@ -1344,7 +1352,7 @@ describe('formState', () => {
     expect(result.current.formState.dirtyFields).toEqual({ test: true });
   });
 
-  it('clear dirty state when setValue restores the default value on a disabled form', () => {
+  it('clear dirty state when setValue restores the default value on a disabled form', async () => {
     const { result } = renderHook(() =>
       useForm({
         disabled: true,
@@ -1357,14 +1365,14 @@ describe('formState', () => {
     result.current.formState.isDirty;
     result.current.formState.dirtyFields;
 
-    act(() => {
+    await act(async () => {
       result.current.register('test');
       result.current.setValue('test', 'b', { shouldDirty: true });
     });
 
     expect(result.current.formState.isDirty).toBe(true);
 
-    act(() => {
+    await act(async () => {
       result.current.setValue('test', 'a', { shouldDirty: true });
     });
 
@@ -1377,7 +1385,6 @@ describe('formState', () => {
 
     it('only show error after 500ms with register', async () => {
       jest.useFakeTimers();
-
       const App = () => {
         const {
           register,
@@ -1411,12 +1418,15 @@ describe('formState', () => {
 
       expect(screen.queryByText(message)).not.toBeInTheDocument();
 
-      jest.advanceTimersByTime(500);
+      await act(async () => {
+        jest.advanceTimersByTime(500);
+      });
 
       expect(await screen.findByText(message)).toBeVisible();
     });
 
     it('only show error after 500ms with Controller', async () => {
+      jest.useFakeTimers();
       const App = () => {
         const {
           control,
@@ -1454,7 +1464,7 @@ describe('formState', () => {
 
       expect(screen.queryByText(message)).not.toBeInTheDocument();
 
-      act(() => {
+      await act(async () => {
         jest.advanceTimersByTime(500);
       });
 
@@ -1566,13 +1576,11 @@ describe('formState', () => {
           });
         });
 
-        await act(async () => {
-          await waitFor(() => screen.getByText('inValid'));
-        });
+        await waitFor(() => screen.getByText('inValid'));
 
         expect(screen.queryByText(message)).toBeNull();
 
-        act(() => {
+        await act(async () => {
           jest.advanceTimersByTime(500);
         });
 
@@ -2018,7 +2026,7 @@ describe('formState', () => {
 
       render(<App />);
 
-      act(() => form.setError(errorName, { type: 'server' }));
+      await act(async () => form.setError(errorName, { type: 'server' }));
       expect(screen.getByTestId('error').textContent).toBe(
         errorName.split('.')[0],
       );
@@ -2090,15 +2098,19 @@ describe('formState', () => {
       render(<App />);
 
       if (hasRootError) {
-        act(() => form.setError('rows.root', { type: 'min', message: 'min' }));
+        await act(async () =>
+          form.setError('rows.root', { type: 'min', message: 'min' }),
+        );
         expect(screen.getByTestId('error').textContent).toBe('min');
       }
 
-      act(() =>
-        hasRootError
-          ? form.fieldArray.append({ value: 'c' })
-          : form.fieldArray.remove(0),
-      );
+      await act(async () => {
+        if (hasRootError) {
+          form.fieldArray.append({ value: 'c' });
+        } else {
+          form.fieldArray.remove(0);
+        }
+      });
 
       await waitFor(() =>
         expect(screen.getByTestId('error').textContent).toBe(expected),

@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 
 import type { Control } from '../../types';
 import { useController } from '../../useController';
@@ -80,7 +80,9 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        fireEvent.click(screen.getByRole('button'));
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button'));
+        });
 
         expect(await screen.findByText('This is required')).toBeVisible();
       });
@@ -113,7 +115,9 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        fireEvent.click(screen.getByRole('button'));
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button'));
+        });
 
         expect(await screen.findByText('error')).toBeVisible();
       });
@@ -243,7 +247,9 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        fireEvent.click(screen.getByRole('button'));
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button'));
+        });
 
         expect(await screen.findByText('This is required')).toBeVisible();
       });
@@ -279,7 +285,9 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        fireEvent.click(screen.getByRole('button'));
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button'));
+        });
 
         expect(await screen.findByText('error')).toBeVisible();
       });
@@ -412,7 +420,9 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        fireEvent.click(screen.getByRole('button'));
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button'));
+        });
 
         expect(await screen.findByText('This is required')).toBeVisible();
       });
@@ -440,7 +450,9 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        fireEvent.click(screen.getByRole('button'));
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button'));
+        });
 
         expect(await screen.findByText('error')).toBeVisible();
       });
@@ -586,7 +598,9 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        fireEvent.click(screen.getByRole('button'));
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button'));
+        });
 
         expect(await screen.findByText('This is required')).toBeVisible();
       });
@@ -618,7 +632,9 @@ describe('getFieldState', () => {
 
         render(<App />);
 
-        fireEvent.click(screen.getByRole('button'));
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button'));
+        });
 
         expect(await screen.findByText('error')).toBeVisible();
       });

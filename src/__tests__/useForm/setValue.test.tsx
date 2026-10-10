@@ -18,7 +18,13 @@ import isFunction from '../../utils/isFunction';
 import noop from '../../utils/noop';
 import sleep from '../../utils/sleep';
 
-jest.useFakeTimers();
+beforeEach(() => {
+  jest.useFakeTimers();
+});
+
+afterEach(() => {
+  jest.useRealTimers();
+});
 
 describe('setValue', () => {
   it('not setValue for unmounted state with shouldUnregister', () => {

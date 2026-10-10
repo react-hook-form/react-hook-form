@@ -9,7 +9,13 @@ import {
 
 import { useForm } from '../../useForm';
 
-jest.useFakeTimers();
+beforeEach(() => {
+  jest.useFakeTimers();
+});
+
+afterEach(() => {
+  jest.useRealTimers();
+});
 
 describe('resetDefaultValues', () => {
   it('update default values and recompute dirtyFields/isDirty without changing form values', async () => {

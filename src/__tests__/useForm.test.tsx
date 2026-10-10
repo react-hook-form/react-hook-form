@@ -36,7 +36,13 @@ import {
   useFormState,
 } from '../';
 
-jest.useFakeTimers();
+beforeEach(() => {
+  jest.useFakeTimers();
+});
+
+afterEach(() => {
+  jest.useRealTimers();
+});
 
 // Activity is a React 19.2+ API. Only run Activity-dependent tests when the
 // installed React actually provides it.

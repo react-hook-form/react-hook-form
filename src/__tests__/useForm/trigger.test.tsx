@@ -26,6 +26,9 @@ import { useFormState } from '../../useFormState';
 import noop from '../../utils/noop';
 
 describe('trigger', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
   it('remove all errors before set new errors when trigger entire form', async () => {
     const Component = () => {
       const [show, setShow] = React.useState(true);

@@ -38,6 +38,10 @@ function Input<TFieldValues extends FieldValues>({
 }
 
 describe('Controller', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('render correctly with as with string', () => {
     const Component = () => {
       const { control } = useForm();
@@ -112,7 +116,10 @@ describe('Controller', () => {
     expect(screen.getByRole('textbox')).toHaveValue('test');
 
     fireEvent.click(screen.getByRole('button', { name: /reset/i }));
-    expect(screen.getByRole('textbox')).toHaveValue('default');
+
+    await waitFor(() =>
+      expect(screen.getByRole('textbox')).toHaveValue('default'),
+    );
   });
 
   it('set defaultValue to value props when input was reset', () => {
@@ -327,7 +334,7 @@ describe('Controller', () => {
 
     fireEvent.blur(screen.getByRole('textbox'));
 
-    expect(touched).toEqual({ test: true });
+    await waitFor(() => expect(touched).toEqual({ test: true }));
   });
 
   it('set field to formState validatingFields and render field isValidating state', async () => {
@@ -374,14 +381,14 @@ describe('Controller', () => {
 
     fireEvent.blur(screen.getByRole('textbox'));
 
-    expect(validatingFields).toEqual({ test: true });
+    await waitFor(() => expect(validatingFields).toEqual({ test: true }));
     expect(screen.getByText('isValidating: true')).toBeVisible();
 
     await actComponent(async () => {
       jest.advanceTimersByTime(1100);
     });
 
-    expect(validatingFields).toEqual({});
+    await waitFor(() => expect(validatingFields).toEqual({}));
     expect(screen.getByText('isValidating: false')).toBeVisible();
   });
 

@@ -13,6 +13,10 @@ import { useForm } from '../../useForm';
 import { useFormState } from '../../useFormState';
 
 describe('clearErrors', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('remove error', () => {
     const { result } = renderHook(() => useForm<{ input: string }>());
     act(() => {

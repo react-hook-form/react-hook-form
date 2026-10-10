@@ -18,7 +18,13 @@ import { useFormState } from '../../useFormState';
 import { useWatch } from '../../useWatch';
 import noop from '../../utils/noop';
 
-jest.useFakeTimers();
+beforeEach(() => {
+  jest.useFakeTimers();
+});
+
+afterEach(() => {
+  jest.useRealTimers();
+});
 
 let i = 0;
 
@@ -29,7 +35,7 @@ describe('remove', () => {
     i = 0;
   });
 
-  it('not copy deleted fields onto a surviving row rendered from useWatch', () => {
+  it('not copy deleted fields onto a surviving row rendered from useWatch', async () => {
     type FormValues = {
       items: {
         id: string;
@@ -73,14 +79,18 @@ describe('remove', () => {
     };
 
     render(<App />);
-    fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+    });
 
-    expect(getValues!()).toEqual({ items: [remaining] });
-    expect(screen.getAllByRole('textbox')).toHaveLength(1);
-    expect(screen.getByRole('textbox')).toHaveValue('A description');
+    await waitFor(() => {
+      expect(getValues!()).toEqual({ items: [remaining] });
+      expect(screen.getAllByRole('textbox')).toHaveLength(1);
+      expect(screen.getByRole('textbox')).toHaveValue('A description');
+    });
   });
 
-  it('update isDirty formState when item removed', () => {
+  it('update isDirty formState when item removed', async () => {
     let formState: any;
     const Component = () => {
       const {
@@ -129,13 +139,17 @@ describe('remove', () => {
 
     expect(formState.isDirty).toBeFalsy();
 
-    fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    });
 
-    expect(formState.isDirty).toBeTruthy();
+    await waitFor(() => expect(formState.isDirty).toBeTruthy());
 
-    fireEvent.click(screen.getAllByRole('button', { name: /remove/i })[1]);
+    await act(async () => {
+      fireEvent.click(screen.getAllByRole('button', { name: /remove/i })[1]);
+    });
 
-    expect(formState.isDirty).toBeFalsy();
+    await waitFor(() => expect(formState.isDirty).toBeFalsy());
   });
 
   it('not mark unrelated fields as dirty when removing from field array', async () => {
@@ -178,7 +192,9 @@ describe('remove', () => {
 
     render(<Component />);
 
-    fireEvent.click(screen.getByRole('button', { name: /remove0/i }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /remove0/i }));
+    });
 
     await waitFor(() => {
       expect(dirtyInputs).not.toHaveProperty('name');
@@ -239,16 +255,20 @@ describe('remove', () => {
 
     render(<Component />);
 
-    fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    });
 
     expect(await screen.findByText('notValid')).toBeVisible();
 
-    fireEvent.click(screen.getAllByRole('button', { name: /remove/i })[1]);
+    await act(async () => {
+      fireEvent.click(screen.getAllByRole('button', { name: /remove/i })[1]);
+    });
 
     expect(await screen.findByText('isValid')).toBeVisible();
   });
 
-  it('remove field according index', () => {
+  it('remove field according index', async () => {
     const { result } = renderHook(() => {
       const { control } = useForm({
         defaultValues: {
@@ -261,24 +281,24 @@ describe('remove', () => {
       });
     });
 
-    act(() => {
+    await act(async () => {
       result.current.append({ value: 'test' });
     });
 
-    act(() => {
+    await act(async () => {
       result.current.remove(1);
     });
 
     expect(result.current.fields).toEqual([{ id: '0', value: 'default' }]);
 
-    act(() => {
+    await act(async () => {
       result.current.remove(0);
     });
 
     expect(result.current.fields).toEqual([]);
   });
 
-  it('remove all field', () => {
+  it('remove all field', async () => {
     const { result } = renderHook(() => {
       const { control } = useForm({
         defaultValues: {
@@ -291,11 +311,11 @@ describe('remove', () => {
       });
     });
 
-    act(() => {
+    await act(async () => {
       result.current.append({ value: 'test' });
     });
 
-    act(() => {
+    await act(async () => {
       result.current.remove();
     });
 
@@ -697,13 +717,17 @@ describe('remove', () => {
     fireEvent.click(screen.getByRole('button', { name: /submit/i }));
     expect(await screen.findByTestId('nested-error')).toBeVisible();
 
-    fireEvent.click(screen.getByRole('button', { name: /nested delete/i }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /nested delete/i }));
+    });
     await waitFor(() =>
       expect(screen.queryByTestId('nested-error')).not.toBeInTheDocument(),
     );
     expect(await screen.findByText('Valid: true')).toBeVisible();
 
-    fireEvent.click(screen.getByRole('button', { name: /nested append/i }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /nested append/i }));
+    });
 
     expect(screen.queryByTestId('nested-error')).not.toBeInTheDocument();
   });

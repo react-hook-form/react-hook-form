@@ -16,6 +16,9 @@ import isFunction from '../../utils/isFunction';
 import noop from '../../utils/noop';
 
 describe('handleSubmit', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
   it('invoke the callback when validation pass', async () => {
     const { result } = renderHook(() => useForm());
     const callback = jest.fn();
@@ -849,7 +852,7 @@ describe('handleSubmit', () => {
     const onInvalid = jest.fn();
 
     let submitPromise: Promise<unknown>;
-    act(() => {
+    await act(async () => {
       submitPromise = result.current.handleSubmit(
         onValid,
         onInvalid,
@@ -859,7 +862,7 @@ describe('handleSubmit', () => {
       } as React.SyntheticEvent);
     });
 
-    act(() => {
+    await act(async () => {
       result.current.reset({ test: 'after' });
     });
 
@@ -934,7 +937,7 @@ describe('handleSubmit', () => {
     const onInvalid = jest.fn();
 
     let submitPromise: Promise<unknown>;
-    act(() => {
+    await act(async () => {
       submitPromise = result.current.handleSubmit(
         onValid,
         onInvalid,
@@ -944,7 +947,7 @@ describe('handleSubmit', () => {
       } as React.SyntheticEvent);
     });
 
-    act(() => {
+    await act(async () => {
       result.current.reset({ test: 'after' });
     });
 
@@ -977,7 +980,7 @@ describe('handleSubmit', () => {
     const onInvalid = jest.fn();
 
     let submitPromise: Promise<unknown>;
-    act(() => {
+    await act(async () => {
       submitPromise = result.current.handleSubmit(
         onValid,
         onInvalid,
@@ -987,7 +990,7 @@ describe('handleSubmit', () => {
       } as React.SyntheticEvent);
     });
 
-    act(() => {
+    await act(async () => {
       result.current.reset({ test: 'after' });
     });
 

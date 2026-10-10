@@ -1209,7 +1209,7 @@ describe('useController', () => {
     });
   });
 
-  it('pass validation with disabled to set to true', () => {
+  it('pass validation with disabled to set to true', async () => {
     const callback = jest.fn();
 
     const App = () => {
@@ -1239,7 +1239,7 @@ describe('useController', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(callback).toHaveBeenCalled();
     });
   });
@@ -1317,7 +1317,7 @@ describe('useController', () => {
     );
   });
 
-  it('subscribe to exact form state update', () => {
+  it('subscribe to exact form state update', async () => {
     type FormValues = {
       test: string;
       test_with_suffix: string;
@@ -1381,35 +1381,39 @@ describe('useController', () => {
     expect(screen.queryByText('test is required')).toBeNull();
     expect(screen.queryByText('test_with_suffix is required')).toBeNull();
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'test' }), {
-      target: {
-        value: '',
-      },
-    });
-
-    fireEvent.blur(screen.getByRole('textbox', { name: 'test' }));
-
-    expect(screen.getByText('test isDirty')).toBeVisible();
-
-    expect(renderCounter).toEqual({ test: 3, test_with_suffix: 2 });
-
-    fireEvent.change(
-      screen.getByRole('textbox', { name: 'test_with_suffix' }),
-      {
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox', { name: 'test' }), {
         target: {
           value: '',
         },
-      },
-    );
+      });
 
-    fireEvent.blur(screen.getByRole('textbox', { name: 'test_with_suffix' }));
+      fireEvent.blur(screen.getByRole('textbox', { name: 'test' }));
+    });
 
-    expect(screen.getByText('test_with_suffix isDirty')).toBeVisible();
+    expect(await screen.findByText('test isDirty')).toBeVisible();
 
-    expect(renderCounter).toEqual({ test: 3, test_with_suffix: 3 });
+    expect(renderCounter).toEqual({ test: 4, test_with_suffix: 2 });
+
+    await act(async () => {
+      fireEvent.change(
+        screen.getByRole('textbox', { name: 'test_with_suffix' }),
+        {
+          target: {
+            value: '',
+          },
+        },
+      );
+
+      fireEvent.blur(screen.getByRole('textbox', { name: 'test_with_suffix' }));
+    });
+
+    expect(await screen.findByText('test_with_suffix isDirty')).toBeVisible();
+
+    expect(renderCounter).toEqual({ test: 4, test_with_suffix: 4 });
   });
 
-  it('listen to similar fields with exact - false', () => {
+  it('listen to similar fields with exact - false', async () => {
     type FormValues = {
       test: string;
       test_with_suffix: string;
@@ -1474,32 +1478,36 @@ describe('useController', () => {
     expect(screen.queryByText('test is required')).toBeNull();
     expect(screen.queryByText('test_with_suffix is required')).toBeNull();
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'test' }), {
-      target: {
-        value: '',
-      },
-    });
-
-    fireEvent.blur(screen.getByRole('textbox', { name: 'test' }));
-
-    expect(screen.getByText('test isDirty')).toBeVisible();
-
-    expect(renderCounter).toEqual({ test: 3, test_with_suffix: 3 });
-
-    fireEvent.change(
-      screen.getByRole('textbox', { name: 'test_with_suffix' }),
-      {
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox', { name: 'test' }), {
         target: {
           value: '',
         },
-      },
-    );
+      });
 
-    fireEvent.blur(screen.getByRole('textbox', { name: 'test_with_suffix' }));
+      fireEvent.blur(screen.getByRole('textbox', { name: 'test' }));
+    });
 
-    expect(screen.getByText('test_with_suffix isDirty')).toBeVisible();
+    expect(await screen.findByText('test isDirty')).toBeVisible();
 
     expect(renderCounter).toEqual({ test: 4, test_with_suffix: 4 });
+
+    await act(async () => {
+      fireEvent.change(
+        screen.getByRole('textbox', { name: 'test_with_suffix' }),
+        {
+          target: {
+            value: '',
+          },
+        },
+      );
+
+      fireEvent.blur(screen.getByRole('textbox', { name: 'test_with_suffix' }));
+    });
+
+    expect(await screen.findByText('test_with_suffix isDirty')).toBeVisible();
+
+    expect(renderCounter).toEqual({ test: 6, test_with_suffix: 6 });
   });
 
   it('prevent value leakage and preserve previous field value when name changes', () => {
@@ -1828,7 +1836,9 @@ describe('useController', () => {
       },
     );
 
-    result.current.field.onChange('form1-typed');
+    await act(async () => {
+      result.current.field.onChange('form1-typed');
+    });
 
     await waitFor(() => {
       expect(form1Result.current.getValues('name')).toBe('form1-typed');
@@ -1840,7 +1850,9 @@ describe('useController', () => {
       expect(result.current.field.value).toBe('');
     });
 
-    result.current.field.onChange('form2-typed');
+    await act(async () => {
+      result.current.field.onChange('form2-typed');
+    });
 
     await waitFor(() => {
       expect(form2Result.current.getValues('name')).toBe('form2-typed');
@@ -1904,19 +1916,25 @@ describe('useController', () => {
       expect(screen.getByText('valid')).toBeVisible();
     });
 
-    fireEvent.click(screen.getByRole('checkbox'));
+    await act(async () => {
+      fireEvent.click(screen.getByRole('checkbox'));
+    });
 
     await waitFor(() => {
       expect(screen.getByText('invalid')).toBeVisible();
     });
 
-    fireEvent.click(screen.getByRole('checkbox'));
+    await act(async () => {
+      fireEvent.click(screen.getByRole('checkbox'));
+    });
 
     await waitFor(() => {
       expect(screen.getByText('valid')).toBeVisible();
     });
 
-    fireEvent.click(screen.getByRole('checkbox'));
+    await act(async () => {
+      fireEvent.click(screen.getByRole('checkbox'));
+    });
 
     await waitFor(() => {
       expect(screen.getByText('invalid')).toBeVisible();

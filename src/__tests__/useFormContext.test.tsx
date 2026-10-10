@@ -123,7 +123,7 @@ describe('FormProvider', () => {
     render(<App />);
   });
 
-  it('be able to access defaultValues within formState', () => {
+  it('be able to access defaultValues within formState', async () => {
     type FormValues = {
       firstName: string;
       lastName: string;
@@ -177,7 +177,7 @@ describe('FormProvider', () => {
           >
             reset
           </button>
-          <p>{JSON.stringify(defaultValues)}</p>
+          <p>{JSON.stringify(methods.formState.defaultValues)}</p>
         </FormProvider>
       );
     };
@@ -191,9 +191,9 @@ describe('FormProvider', () => {
 
     fireEvent.click(screen.getByRole('button'));
 
-    waitFor(() => {
-      expect(screen.getByText('yes')).not.toBeValid();
-      expect(screen.getByText('context-yes')).not.toBeVisible();
+    await waitFor(() => {
+      expect(screen.queryByText('yes')).not.toBeInTheDocument();
+      expect(screen.queryByText('context-yes')).not.toBeInTheDocument();
 
       screen.getByText(
         JSON.stringify({

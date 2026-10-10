@@ -1,5 +1,11 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 
 import { Controller } from '../controller';
 import { FormStateSubscribe } from '../formState';
@@ -11,7 +17,7 @@ import deepEqual from '../utils/deepEqual';
 import noop from '../utils/noop';
 
 describe('FormStateSubscribe', () => {
-  it('render correct form state with isDirty, dirty, touched', () => {
+  it('render correct form state with isDirty, dirty, touched', async () => {
     let count = 0;
 
     const Test = ({ control }: { control: Control<{ test: string }> }) => (
@@ -40,14 +46,18 @@ describe('FormStateSubscribe', () => {
 
     render(<Component />);
 
-    fireEvent.input(screen.getByLabelText('test'), {
-      target: { value: 'test' },
+    await act(async () => {
+      fireEvent.input(screen.getByLabelText('test'), {
+        target: { value: 'test' },
+      });
     });
     expect(screen.getByText('isDirty')).toBeVisible();
     expect(screen.getByText('dirty field')).toBeVisible();
     expect(count).toEqual(2);
 
-    fireEvent.blur(screen.getByLabelText('test'));
+    await act(async () => {
+      fireEvent.blur(screen.getByLabelText('test'));
+    });
     expect(screen.getByText('isTouched')).toBeVisible();
     expect(count).toEqual(2);
   });
@@ -82,14 +92,18 @@ describe('FormStateSubscribe', () => {
 
     await waitFor(() => expect(screen.getByText('yes')).toBeVisible());
 
-    fireEvent.input(screen.getByLabelText('test'), {
-      target: { value: 'test' },
+    await act(async () => {
+      fireEvent.input(screen.getByLabelText('test'), {
+        target: { value: 'test' },
+      });
     });
     expect(await screen.findByText('error')).toBeVisible();
     expect(screen.getByText('no')).toBeVisible();
 
-    fireEvent.input(screen.getByLabelText('test'), {
-      target: { value: 'testtest' },
+    await act(async () => {
+      fireEvent.input(screen.getByLabelText('test'), {
+        target: { value: 'testtest' },
+      });
     });
     expect(await screen.findByText('valid')).toBeVisible();
     expect(screen.getByText('yes')).toBeVisible();
@@ -129,10 +143,16 @@ describe('FormStateSubscribe', () => {
 
     render(<App />);
 
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: '1' } });
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), { target: { value: '1' } });
+    });
     await waitFor(() => expect(screen.getByRole('button')).not.toBeDisabled());
 
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: '12' } });
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '12' },
+      });
+    });
     await waitFor(() => expect(screen.getByRole('button')).not.toBeDisabled());
   });
 

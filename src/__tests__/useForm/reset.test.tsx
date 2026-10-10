@@ -22,7 +22,13 @@ import { useWatch } from '../../useWatch';
 import isEmptyObject from '../../utils/isEmptyObject';
 import noop from '../../utils/noop';
 
-jest.useFakeTimers();
+beforeEach(() => {
+  jest.useFakeTimers();
+});
+
+afterEach(() => {
+  jest.useRealTimers();
+});
 
 describe('reset', () => {
   it('reset the form and re-render the form', async () => {
