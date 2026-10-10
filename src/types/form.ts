@@ -63,6 +63,8 @@ export type ValidationModeFlags = {
 
 export type CriteriaMode = 'firstError' | 'all';
 
+export type ValidationScope = 'field' | 'form';
+
 export type SubmitHandler<T, TResult = unknown> = (
   data: T,
   event?: React.BaseSyntheticEvent,
@@ -133,6 +135,7 @@ export type UseFormProps<
   shouldUseNativeValidation: boolean;
   progressive: boolean;
   criteriaMode: CriteriaMode;
+  validationScope: ValidationScope;
   delayError: number;
   formControl?: Omit<
     UseFormReturn<TFieldValues, TContext, TTransformedValues>,
