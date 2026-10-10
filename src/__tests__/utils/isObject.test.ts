@@ -1,13 +1,13 @@
 import isObject from '../../utils/isObject';
 
 describe('isObject', () => {
-  it('should return true when value is an object', () => {
+  it('return true when value is an object', () => {
     expect(isObject({})).toBeTruthy();
     expect(isObject({ foo: 'bar' })).toBeTruthy();
     expect(isObject(new Blob())).toBeTruthy();
   });
 
-  it('should return false when value is not an object or is null', () => {
+  it('return false when value is not an object or is null', () => {
     expect(isObject(null)).toBeFalsy();
     expect(isObject(undefined)).toBeFalsy();
     expect(isObject(-1)).toBeFalsy();

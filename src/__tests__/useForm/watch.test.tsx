@@ -18,7 +18,7 @@ import isFunction from '../../utils/isFunction';
 import noop from '../../utils/noop';
 
 describe('watch', () => {
-  it('should return undefined when input gets unregister', async () => {
+  it('return undefined when input gets unregister', async () => {
     const Component = () => {
       const { register, watch, unregister } = useForm<{ test: string }>();
       const data = watch('test');
@@ -49,7 +49,7 @@ describe('watch', () => {
     expect(screen.queryByText('test')).not.toBeInTheDocument();
   });
 
-  it('should watch individual input', async () => {
+  it('watch individual input', async () => {
     const { result } = renderHook(() => {
       return useForm<{ test: string }>({
         defaultValues: {
@@ -71,7 +71,7 @@ describe('watch', () => {
     });
   });
 
-  it('should watch input when mode is under onChange', async () => {
+  it('watch input when mode is under onChange', async () => {
     const { result } = renderHook(() => {
       return useForm<{ test: string }>({
         defaultValues: {
@@ -94,7 +94,7 @@ describe('watch', () => {
     });
   });
 
-  it('should watch input when mode is under all', async () => {
+  it('watch input when mode is under all', async () => {
     const { result } = renderHook(() => {
       return useForm<{ test: string }>({
         defaultValues: {
@@ -117,7 +117,7 @@ describe('watch', () => {
     });
   });
 
-  it('should return default value if field is undefined', () => {
+  it('return default value if field is undefined', () => {
     renderHook(() => {
       const { watch } = useForm<{ test: string }>({
         defaultValues: { test: 'test' },
@@ -127,7 +127,7 @@ describe('watch', () => {
     });
   });
 
-  it('should return default value for single input', () => {
+  it('return default value for single input', () => {
     const results: unknown[] = [];
     const App = () => {
       const { watch } = useForm<{ test: string }>();
@@ -142,7 +142,7 @@ describe('watch', () => {
     expect(results).toEqual(['default', 'default']);
   });
 
-  it('should return array of default value for array of inputs', () => {
+  it('return array of default value for array of inputs', () => {
     const results: unknown[] = [];
     const App = () => {
       const { watch } = useForm<{ test: string; test1: string }>();
@@ -165,7 +165,7 @@ describe('watch', () => {
     ]);
   });
 
-  it('should watch array of inputs', () => {
+  it('watch array of inputs', () => {
     const { result } = renderHook(() =>
       useForm<{ test: string; test1: string }>(),
     );
@@ -192,7 +192,7 @@ describe('watch', () => {
     expect(result.current.watch(['test', 'test1'])).toEqual(['data1', 'data2']);
   });
 
-  it('should watch every fields', () => {
+  it('watch every fields', () => {
     const { result } = renderHook(() =>
       useForm<{ test: string; test1: string }>(),
     );
@@ -214,7 +214,7 @@ describe('watch', () => {
     expect(result.current.watch()).toEqual({ test: 'data1', test1: 'data2' });
   });
 
-  it('should watch the entire field array with callback', () => {
+  it('watch the entire field array with callback', () => {
     const output: any[] = [];
 
     const Component = () => {
@@ -271,7 +271,7 @@ describe('watch', () => {
     ]);
   });
 
-  it('should watch correctly with useFieldArray with action and then fallback to onChange', () => {
+  it('watch correctly with useFieldArray with action and then fallback to onChange', () => {
     type FormValues = {
       names: {
         name: string;
@@ -352,7 +352,7 @@ describe('watch', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should have dirty marked when watch is enabled', async () => {
+  it('have dirty marked when watch is enabled', async () => {
     function Component() {
       const {
         register,
@@ -390,7 +390,7 @@ describe('watch', () => {
     expect(await screen.findByText('False')).toBeVisible();
   });
 
-  it('should return deeply nested field values with defaultValues', async () => {
+  it('return deeply nested field values with defaultValues', async () => {
     let data;
 
     function App() {
@@ -429,7 +429,7 @@ describe('watch', () => {
     });
   });
 
-  it('should remove input value after input is unmounted with shouldUnregister: true', () => {
+  it('remove input value after input is unmounted with shouldUnregister: true', () => {
     const watched: unknown[] = [];
     const App = () => {
       const [show, setShow] = React.useState(true);
@@ -490,7 +490,7 @@ describe('watch', () => {
     ]);
   });
 
-  it('should flush additional render for shouldUnregister: true', async () => {
+  it('flush additional render for shouldUnregister: true', async () => {
     const watchedData: unknown[] = [];
 
     const App = () => {
@@ -530,7 +530,7 @@ describe('watch', () => {
     ]);
   });
 
-  it('should flush additional render when shouldUnregister is set on useForm with a formControl', async () => {
+  it('flush additional render when shouldUnregister is set on useForm with a formControl', async () => {
     const { formControl } = createFormControl<{ test: string }>();
 
     const App = () => {
@@ -561,7 +561,7 @@ describe('watch', () => {
     expect(await screen.findByText('{"test":""}')).toBeVisible();
   });
 
-  it('should not be able to overwrite global watch state', () => {
+  it('not be able to overwrite global watch state', () => {
     function Watcher<T extends FieldValues>({
       control,
     }: {
@@ -601,7 +601,7 @@ describe('watch', () => {
     screen.getByText('bill');
   });
 
-  it('should call the callback on every append', () => {
+  it('call the callback on every append', () => {
     interface FormValues {
       names: {
         firstName: string;
@@ -651,7 +651,7 @@ describe('watch', () => {
     expect(mockedFn).toHaveBeenCalledTimes(2);
   });
 
-  it('should remain isReady form state for subscription', () => {
+  it('remain isReady form state for subscription', () => {
     function App() {
       const {
         watch,
@@ -688,7 +688,7 @@ describe('watch', () => {
     screen.getByText('useFormStateReady');
   });
 
-  it('should return updated value immediately after reset() - issue #13088', () => {
+  it('return updated value immediately after reset() - issue #13088', () => {
     const { result } = renderHook(() =>
       useForm<{ name: string }>({
         defaultValues: { name: 'John' },
@@ -718,7 +718,7 @@ describe('watch', () => {
     });
   });
 
-  it('should update state correctly in watch callback with Controller, trigger, and reset - issue #13178', () => {
+  it('update state correctly in watch callback with Controller, trigger, and reset - issue #13178', () => {
     const logSpy = jest.fn();
 
     function TestComponent() {
@@ -799,7 +799,7 @@ describe('watch', () => {
     expect(logs2[logs2.length - 1]).toBe(2); // Last log should be 2
   });
 
-  it('should update nameLength correctly using setValue in watch callback - CodeSandbox scenario', () => {
+  it('update nameLength correctly using setValue in watch callback - CodeSandbox scenario', () => {
     const logSpy = jest.fn();
 
     function TestComponent() {

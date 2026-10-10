@@ -1,7 +1,7 @@
 import getFieldValueAs from '../../logic/getFieldValueAs';
 
 describe('getFieldValueAs', () => {
-  it('should return undefined when value is undefined', () => {
+  it('return undefined when value is undefined', () => {
     expect(
       getFieldValueAs(undefined, {
         ref: {

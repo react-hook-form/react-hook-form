@@ -29,7 +29,7 @@ describe('remove', () => {
     i = 0;
   });
 
-  it('should not copy deleted fields onto a surviving row rendered from useWatch', () => {
+  it('not copy deleted fields onto a surviving row rendered from useWatch', () => {
     type FormValues = {
       items: {
         id: string;
@@ -80,7 +80,7 @@ describe('remove', () => {
     expect(screen.getByRole('textbox')).toHaveValue('A description');
   });
 
-  it('should update isDirty formState when item removed', () => {
+  it('update isDirty formState when item removed', () => {
     let formState: any;
     const Component = () => {
       const {
@@ -138,7 +138,7 @@ describe('remove', () => {
     expect(formState.isDirty).toBeFalsy();
   });
 
-  it('should not mark unrelated fields as dirty when removing from field array', async () => {
+  it('not mark unrelated fields as dirty when removing from field array', async () => {
     let dirtyInputs = {};
     const Component = () => {
       const {
@@ -186,7 +186,7 @@ describe('remove', () => {
     });
   });
 
-  it('should update isValid formState when item removed', async () => {
+  it('update isValid formState when item removed', async () => {
     let formState: any;
     const Component = () => {
       const {
@@ -248,7 +248,7 @@ describe('remove', () => {
     expect(await screen.findByText('isValid')).toBeVisible();
   });
 
-  it('should remove field according index', () => {
+  it('remove field according index', () => {
     const { result } = renderHook(() => {
       const { control } = useForm({
         defaultValues: {
@@ -278,7 +278,7 @@ describe('remove', () => {
     expect(result.current.fields).toEqual([]);
   });
 
-  it('should remove all field', () => {
+  it('remove all field', () => {
     const { result } = renderHook(() => {
       const { control } = useForm({
         defaultValues: {
@@ -302,7 +302,7 @@ describe('remove', () => {
     expect(result.current.fields).toEqual([]);
   });
 
-  it('should remove specific fields when index is array', () => {
+  it('remove specific fields when index is array', () => {
     const { result } = renderHook(() => {
       const { control } = useForm({
         defaultValues: {
@@ -374,7 +374,7 @@ describe('remove', () => {
     },
   );
 
-  it('should remove values from formState.touchedFields', () => {
+  it('remove values from formState.touchedFields', () => {
     let touched: any;
 
     const Component = () => {
@@ -431,7 +431,7 @@ describe('remove', () => {
     expect(touched).toEqual({ test: [] });
   });
 
-  it('should remove specific field if isValid is true', async () => {
+  it('remove specific field if isValid is true', async () => {
     const Component = () => {
       const { register, formState, control } = useForm({
         mode: VALIDATION_MODE.onChange,
@@ -495,7 +495,7 @@ describe('remove', () => {
     expect(await screen.findByText('valid')).toBeVisible();
   });
 
-  it('should remove all field if isValid is true', async () => {
+  it('remove all field if isValid is true', async () => {
     let isValid = false;
     const Component = () => {
       const { register, formState, control } = useForm({
@@ -542,7 +542,7 @@ describe('remove', () => {
     await waitFor(() => expect(isValid).toBe(true));
   });
 
-  it('should remove error', async () => {
+  it('remove error', async () => {
     let errors: any;
     const Component = () => {
       const {
@@ -598,7 +598,7 @@ describe('remove', () => {
     expect(errors.test).toBeUndefined();
   });
 
-  it('should remove nested field array error', async () => {
+  it('remove nested field array error', async () => {
     type FormValues = {
       test: {
         nested: {
@@ -708,7 +708,7 @@ describe('remove', () => {
     expect(screen.queryByTestId('nested-error')).not.toBeInTheDocument();
   });
 
-  it('should trigger reRender when user is watching the all field array', () => {
+  it('trigger reRender when user is watching the all field array', () => {
     const watched: any[] = [];
     const Component = () => {
       const { register, watch, control } = useForm<{
@@ -753,7 +753,7 @@ describe('remove', () => {
     ]);
   });
 
-  it('should return watched value with watch API', async () => {
+  it('return watched value with watch API', async () => {
     const renderedItems: any = [];
     const Component = () => {
       const { watch, register, control } = useForm<{
@@ -819,7 +819,7 @@ describe('remove', () => {
     );
   });
 
-  it('should remove dirtyFields fields with nested field inputs', () => {
+  it('remove dirtyFields fields with nested field inputs', () => {
     const { result } = renderHook(() => {
       const { register, formState, control } = useForm({
         defaultValues: {
@@ -856,7 +856,7 @@ describe('remove', () => {
     expect(result.current.formState.dirtyFields).toEqual({});
   });
 
-  it('should remove Controller by index without error', () => {
+  it('remove Controller by index without error', () => {
     const Component = () => {
       const { control, handleSubmit } = useForm<{
         test: {
@@ -919,7 +919,7 @@ describe('remove', () => {
     fireEvent.click(screen.getAllByRole('button', { name: 'delete' })[0]);
   });
 
-  it("should not reset Controller's value during remove when Field Array name is already registered", async () => {
+  it("not reset Controller's value during remove when Field Array name is already registered", async () => {
     function Component() {
       const { control, handleSubmit } = useForm({
         defaultValues: {
@@ -976,7 +976,7 @@ describe('remove', () => {
     ).toEqual('111');
   });
 
-  it('should drop dirty state for removed rows so a re-added row matching defaults is pristine', async () => {
+  it('drop dirty state for removed rows so a re-added row matching defaults is pristine', async () => {
     type FormValues = {
       items: { value: string }[];
     };
@@ -1034,7 +1034,7 @@ describe('remove', () => {
   });
 
   describe('with resolver', () => {
-    it('should invoke resolver when formState.isValid true', async () => {
+    it('invoke resolver when formState.isValid true', async () => {
       const resolver = jest.fn().mockReturnValue({});
 
       const { result } = renderHook(() => {
@@ -1064,7 +1064,7 @@ describe('remove', () => {
       );
     });
 
-    it('should not invoke resolver when formState.isValid false', () => {
+    it('not invoke resolver when formState.isValid false', () => {
       const resolver = jest.fn().mockReturnValue({});
 
       const { result } = renderHook(() => {
@@ -1086,7 +1086,7 @@ describe('remove', () => {
       expect(resolver).toHaveBeenCalled();
     });
 
-    it('should remove the first index correctly', async () => {
+    it('remove the first index correctly', async () => {
       let output: unknown;
 
       type FormValues = {
@@ -1180,7 +1180,7 @@ describe('remove', () => {
       );
     });
 
-    it('should always place array root validation error under root key after remove', async () => {
+    it('always place array root validation error under root key after remove', async () => {
       const arrayRootError = {
         type: 'min',
         message: 'Need at least 1 item',
@@ -1223,7 +1223,7 @@ describe('remove', () => {
     });
   });
 
-  it('should remove correct value with async reset', async () => {
+  it('remove correct value with async reset', async () => {
     let output = {};
 
     function App() {
@@ -1302,7 +1302,7 @@ describe('remove', () => {
     );
   });
 
-  it('should not omit keyName when provided', async () => {
+  it('not omit keyName when provided', async () => {
     type FormValues = {
       test: {
         test: string;
@@ -1356,7 +1356,7 @@ describe('remove', () => {
     ).toBeVisible();
   });
 
-  it('should not omit keyName when provided and defaultValue is empty', async () => {
+  it('not omit keyName when provided and defaultValue is empty', async () => {
     type FormValues = {
       test: {
         test: string;
@@ -1421,7 +1421,7 @@ describe('remove', () => {
     ).toBeVisible();
   });
 
-  it('should not leave empty objects in watched values when removing from field array with values prop', async () => {
+  it('not leave empty objects in watched values when removing from field array with values prop', async () => {
     type FormValues = {
       items: { name: string; text: string }[];
     };
@@ -1533,7 +1533,7 @@ describe('remove', () => {
     }
   });
 
-  it('should not re-insert removed items when using values prop with keepDirtyValues', async () => {
+  it('not re-insert removed items when using values prop with keepDirtyValues', async () => {
     type FormValues = {
       test: { value?: string }[];
     };
@@ -1614,7 +1614,7 @@ describe('remove', () => {
     expect(screen.getAllByRole('textbox')).toHaveLength(1);
   });
 
-  it('should not resize nested arrays when index-keyed children render the pre-remove arrangement', async () => {
+  it('not resize nested arrays when index-keyed children render the pre-remove arrangement', async () => {
     type NestedFormValues = {
       steps: { approvers: { value: string }[] }[];
     };
@@ -1682,7 +1682,7 @@ describe('remove', () => {
     ).toEqual([2, 1]);
   });
 
-  it('should not resurrect removed items when the list itself renders from useWatch', async () => {
+  it('not resurrect removed items when the list itself renders from useWatch', async () => {
     type NestedFormValues = {
       steps: { approvers: { value: string }[] }[];
     };
@@ -1751,7 +1751,7 @@ describe('remove', () => {
     ).toEqual([2, 1]);
   });
 
-  it('should treat a controlled field staged at a vacated index as the stale arrangement', async () => {
+  it('treat a controlled field staged at a vacated index as the stale arrangement', async () => {
     type FormValues = { test: { value: string }[] };
 
     let getValues: () => unknown = () => ({});
@@ -1861,7 +1861,7 @@ describe('remove', () => {
       });
     };
 
-    it('should move the touched flag onto the remaining row when subscribed', async () => {
+    it('move the touched flag onto the remaining row when subscribed', async () => {
       render(<Component subscribe={true} />);
 
       await touchSecondRowThenRemoveFirst();
@@ -1871,7 +1871,7 @@ describe('remove', () => {
       );
     });
 
-    it('should move the touched flag onto the remaining row when not subscribed', async () => {
+    it('move the touched flag onto the remaining row when not subscribed', async () => {
       render(<Component subscribe={false} />);
 
       await touchSecondRowThenRemoveFirst();
@@ -1882,7 +1882,7 @@ describe('remove', () => {
     });
   });
 
-  it('should ignore duplicated indexes and keep the passed indexes unchanged', () => {
+  it('ignore duplicated indexes and keep the passed indexes unchanged', () => {
     const { result } = renderHook(() => {
       const form = useForm<{ test: { value: string }[] }>({
         defaultValues: {

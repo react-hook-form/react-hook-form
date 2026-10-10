@@ -1,14 +1,14 @@
 import getCheckboxValue from '../../logic/getCheckboxValue';
 
 describe('getCheckboxValue', () => {
-  it('should return default value if not valid or empty options', () => {
+  it('return default value if not valid or empty options', () => {
     expect(getCheckboxValue(undefined)).toEqual({
       value: false,
       isValid: false,
     });
   });
 
-  it('should return checked value if single checkbox is checked', () => {
+  it('return checked value if single checkbox is checked', () => {
     expect(
       getCheckboxValue([
         {
@@ -22,14 +22,14 @@ describe('getCheckboxValue', () => {
     ).toEqual({ value: '3', isValid: true });
   });
 
-  it('should return true if single checkbox is checked and has no value', () => {
+  it('return true if single checkbox is checked and has no value', () => {
     expect(
       // @ts-expect-error this is a mock for html input
       getCheckboxValue([{ name: 'bill', checked: true, attributes: {} }]),
     ).toEqual({ value: true, isValid: true });
   });
 
-  it('should return true if single checkbox is checked and has empty value', () => {
+  it('return true if single checkbox is checked and has empty value', () => {
     expect(
       getCheckboxValue([
         {
@@ -53,7 +53,7 @@ describe('getCheckboxValue', () => {
     ).toEqual({ value: true, isValid: true });
   });
 
-  it('should return false if single checkbox is un-checked', () => {
+  it('return false if single checkbox is un-checked', () => {
     expect(
       getCheckboxValue([
         {
@@ -66,7 +66,7 @@ describe('getCheckboxValue', () => {
     ).toEqual({ value: false, isValid: false });
   });
 
-  it('should return multiple selected values', () => {
+  it('return multiple selected values', () => {
     expect(
       getCheckboxValue([
         {
@@ -87,7 +87,7 @@ describe('getCheckboxValue', () => {
     ).toEqual({ value: ['2', '3'], isValid: true });
   });
 
-  it('should return values for checked boxes only', () => {
+  it('return values for checked boxes only', () => {
     expect(
       getCheckboxValue([
         {
@@ -115,7 +115,7 @@ describe('getCheckboxValue', () => {
     ).toEqual({ value: ['3'], isValid: true });
   });
 
-  it('should return empty array for multi checkbox with no checked box', () => {
+  it('return empty array for multi checkbox with no checked box', () => {
     expect(
       getCheckboxValue([
         {
@@ -136,7 +136,7 @@ describe('getCheckboxValue', () => {
     ).toEqual({ value: [], isValid: false });
   });
 
-  it('should not return error when check box ref is undefined', () => {
+  it('not return error when check box ref is undefined', () => {
     expect(
       getCheckboxValue([
         // @ts-expect-error this is a mock for html input
@@ -152,7 +152,7 @@ describe('getCheckboxValue', () => {
     ).toEqual({ value: [], isValid: false });
   });
 
-  it('should return disabled input result', () => {
+  it('return disabled input result', () => {
     expect(
       getCheckboxValue([
         {

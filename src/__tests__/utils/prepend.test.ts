@@ -1,7 +1,7 @@
 import prepend from '../../utils/prepend';
 
 describe('prepend', () => {
-  it('should prepend value to an array', () => {
+  it('prepend value to an array', () => {
     expect(prepend([2, 3, 4], 1)).toEqual([1, 2, 3, 4]);
     expect(
       prepend(
@@ -52,7 +52,7 @@ describe('prepend', () => {
     ]);
   });
 
-  it('should prepend undefined as value when value to be prepended is falsy', () => {
+  it('prepend undefined as value when value to be prepended is falsy', () => {
     expect(prepend([2, 3, 4], 0)).toEqual([0, 2, 3, 4]);
     expect(prepend([2, 3, 4] as (number | boolean)[], false)).toEqual([
       false,
@@ -69,7 +69,7 @@ describe('prepend', () => {
     expect(prepend([2, 3, 4], undefined)).toEqual([undefined, 2, 3, 4]);
   });
 
-  it('should spread value when it is an array at one deep-level', () => {
+  it('spread value when it is an array at one deep-level', () => {
     expect(prepend([3, 4], [1, 2])).toEqual([1, 2, 3, 4]);
     expect(prepend([3, 4], [[1], 2])).toEqual([[1], 2, 3, 4]);
   });

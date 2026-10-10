@@ -4,7 +4,7 @@ import { renderToString } from 'react-dom/server';
 import { useForm } from '../useForm';
 
 describe('useForm with SSR', () => {
-  it('should not output error', () => {
+  it('not output error', () => {
     const Component = () => {
       const { register } = useForm<{
         test: string;
@@ -25,7 +25,7 @@ describe('useForm with SSR', () => {
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it('should display error with errors prop', () => {
+  it('display error with errors prop', () => {
     const App = () => {
       const {
         register,
@@ -51,7 +51,7 @@ describe('useForm with SSR', () => {
     );
   });
 
-  it('should not pass down constrained API for server side rendering', () => {
+  it('not pass down constrained API for server side rendering', () => {
     const App = () => {
       const { register } = useForm<{
         test: string;
@@ -75,7 +75,7 @@ describe('useForm with SSR', () => {
     expect(renderToString(<App />)).toEqual('<div><input name="test"/></div>');
   });
 
-  it('should pass down constrained API for server side rendering', () => {
+  it('pass down constrained API for server side rendering', () => {
     const App = () => {
       const { register } = useForm<{
         test: string;
@@ -101,7 +101,7 @@ describe('useForm with SSR', () => {
     expect(renderToString(<App />)).toEqual('<div><input name="test"/></div>');
   });
 
-  it('should support progress enhancement for form', () => {
+  it('support progress enhancement for form', () => {
     const App = () => {
       const { register } = useForm<{
         test: string;

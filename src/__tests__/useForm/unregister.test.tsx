@@ -11,7 +11,7 @@ import {
 import { useForm } from '../../useForm';
 
 describe('unregister', () => {
-  it('should unregister an registered item', async () => {
+  it('unregister an registered item', async () => {
     const { result } = renderHook(() => useForm<{ input: string }>());
 
     result.current.register('input');
@@ -23,7 +23,7 @@ describe('unregister', () => {
     expect(result.current.getValues()).toEqual({});
   });
 
-  it('should unregister an registered item with array name', async () => {
+  it('unregister an registered item with array name', async () => {
     const { result } = renderHook(() =>
       useForm<{
         input: string;
@@ -42,7 +42,7 @@ describe('unregister', () => {
     expect(result.current.getValues()).toEqual({});
   });
 
-  it('should unregister all inputs', async () => {
+  it('unregister all inputs', async () => {
     const { result } = renderHook(() =>
       useForm<{
         input: string;
@@ -61,7 +61,7 @@ describe('unregister', () => {
     expect(result.current.getValues()).toEqual({});
   });
 
-  it('should recompute isDirty after a field is unregistered and re-registered back to its default value (#13397)', async () => {
+  it('recompute isDirty after a field is unregistered and re-registered back to its default value (#13397)', async () => {
     let isDirty: boolean | null = null;
 
     const App = () => {
@@ -91,7 +91,7 @@ describe('unregister', () => {
     await waitFor(() => expect(isDirty).toBe(false));
   });
 
-  it('should recompute isDirty when a dirty field is unregistered', async () => {
+  it('recompute isDirty when a dirty field is unregistered', async () => {
     let isDirty: boolean | null = null;
     let dirtyFields: Record<string, unknown> = {};
 
@@ -135,7 +135,7 @@ describe('unregister', () => {
     expect(isDirty).toBe(false);
   });
 
-  it('should preserve isDirty when a dirty field is unregistered with keepDirty', async () => {
+  it('preserve isDirty when a dirty field is unregistered with keepDirty', async () => {
     let isDirty: boolean | null = null;
     let dirtyFields: Record<string, unknown> = {};
 
@@ -179,7 +179,7 @@ describe('unregister', () => {
     expect(isDirty).toBe(true);
   });
 
-  it('should not flip isDirty to true when a field with no defaultValue is registered from useEffect', async () => {
+  it('not flip isDirty to true when a field with no defaultValue is registered from useEffect', async () => {
     let isDirty: boolean | null = null;
 
     const App = () => {
@@ -203,7 +203,7 @@ describe('unregister', () => {
     await waitFor(() => expect(isDirty).toBe(false));
   });
 
-  it('should cancel a pending delayError timer when the field is unregistered', async () => {
+  it('cancel a pending delayError timer when the field is unregistered', async () => {
     jest.useFakeTimers();
 
     const message = 'too long.';
@@ -251,7 +251,7 @@ describe('unregister', () => {
     jest.useRealTimers();
   });
 
-  it('should cancel pending delayError timers for nested fields when their parent is unregistered', async () => {
+  it('cancel pending delayError timers for nested fields when their parent is unregistered', async () => {
     jest.useFakeTimers();
 
     const message = 'too long.';
@@ -297,7 +297,7 @@ describe('unregister', () => {
     jest.useRealTimers();
   });
 
-  it('should keep submitting a value retained by keepValue after a disabled field is unregistered', async () => {
+  it('keep submitting a value retained by keepValue after a disabled field is unregistered', async () => {
     const onSubmit = jest.fn();
 
     const App = () => {
@@ -343,7 +343,7 @@ describe('unregister', () => {
     );
   });
 
-  it('should recompute isValidating after unregistering a field with a pending validation', async () => {
+  it('recompute isValidating after unregistering a field with a pending validation', async () => {
     let resolveValidate: (value: boolean) => void;
 
     const App = () => {
@@ -395,7 +395,7 @@ describe('unregister', () => {
     expect(screen.getByText('validatingFields:')).toBeInTheDocument();
   });
 
-  it('should keep isValidating when unregister is called with keepIsValidating option', async () => {
+  it('keep isValidating when unregister is called with keepIsValidating option', async () => {
     let resolveValidate: (value: boolean) => void;
 
     const App = () => {

@@ -12,7 +12,7 @@ describe('Form', () => {
     jest.restoreAllMocks();
   });
 
-  it('should support render with both form tag and headless', () => {
+  it('support render with both form tag and headless', () => {
     const WithContext = () => (
       <>
         <Form />
@@ -44,7 +44,7 @@ describe('Form', () => {
     render(<App />);
   });
 
-  it('should handle success request callback', async () => {
+  it('handle success request callback', async () => {
     jest.spyOn(global, 'fetch').mockResolvedValueOnce(
       new Response(JSON.stringify({ message: 'ok' }), {
         status: 200,
@@ -100,7 +100,7 @@ describe('Form', () => {
     });
   });
 
-  it('should handle error request callback', async () => {
+  it('handle error request callback', async () => {
     jest
       .spyOn(global, 'fetch')
       .mockResolvedValueOnce(new Response(null, { status: 500 }));
@@ -142,7 +142,7 @@ describe('Form', () => {
     });
   });
 
-  it('should validate custom status code', async () => {
+  it('validate custom status code', async () => {
     jest
       .spyOn(global, 'fetch')
       .mockResolvedValueOnce(new Response(null, { status: 201 }));
@@ -175,7 +175,7 @@ describe('Form', () => {
     });
   });
 
-  it('should support other request type', async () => {
+  it('support other request type', async () => {
     jest
       .spyOn(global, 'fetch')
       .mockResolvedValueOnce(new Response(null, { status: 200 }));
@@ -203,7 +203,7 @@ describe('Form', () => {
     });
   });
 
-  it('should support render props for react native', async () => {
+  it('support render props for react native', async () => {
     jest
       .spyOn(global, 'fetch')
       .mockResolvedValueOnce(new Response(null, { status: 200 }));
@@ -240,7 +240,7 @@ describe('Form', () => {
     });
   });
 
-  it('should support fetcher prop with external request', async () => {
+  it('support fetcher prop with external request', async () => {
     const fetcher = jest.fn().mockResolvedValue({});
     jest
       .spyOn(global, 'fetch')
@@ -276,7 +276,7 @@ describe('Form', () => {
     });
   });
 
-  it('should include application/json header with encType supplied', async () => {
+  it('include application/json header with encType supplied', async () => {
     jest
       .spyOn(global, 'fetch')
       .mockResolvedValueOnce(new Response(null, { status: 200 }));
@@ -311,7 +311,7 @@ describe('Form', () => {
     });
   });
 
-  it('should call a function action with FormData instead of fetching', async () => {
+  it('call a function action with FormData instead of fetching', async () => {
     const fetchSpy = jest.spyOn(global, 'fetch');
     const actionFn = jest.fn<(formData: FormData) => Promise<void>>(
       async () => {},
@@ -343,7 +343,7 @@ describe('Form', () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
-  it('should include file values in the submitted FormData', async () => {
+  it('include file values in the submitted FormData', async () => {
     const actionFn = jest.fn<(formData: FormData) => Promise<void>>(
       async () => {},
     );
@@ -375,7 +375,7 @@ describe('Form', () => {
     expect(formData.get('resume')).toBeInstanceOf(Blob);
   });
 
-  it('should invoke onError when a function action throws', async () => {
+  it('invoke onError when a function action throws', async () => {
     const onError = jest.fn();
     const actionFn = jest.fn(async () => {
       throw new Error('boom');
@@ -403,7 +403,7 @@ describe('Form', () => {
     );
   });
 
-  it('should not render method/encType on the form element when action is a function', () => {
+  it('not render method/encType on the form element when action is a function', () => {
     const App = () => {
       const { control } = useForm();
 
@@ -421,7 +421,7 @@ describe('Form', () => {
     expect(form.hasAttribute('enctype')).toBe(false);
   });
 
-  it('should still render method/encType on the form element when action is a URL string', () => {
+  it('still render method/encType on the form element when action is a URL string', () => {
     const App = () => {
       const { control } = useForm();
 
@@ -439,7 +439,7 @@ describe('Form', () => {
     expect(form.getAttribute('enctype')).toBe('text/plain');
   });
 
-  it('should support explicit "multipart/form-data" encType', async () => {
+  it('support explicit "multipart/form-data" encType', async () => {
     jest
       .spyOn(global, 'fetch')
       .mockResolvedValueOnce(new Response(null, { status: 200 }));

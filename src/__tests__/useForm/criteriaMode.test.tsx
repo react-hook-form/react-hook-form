@@ -4,7 +4,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useForm } from '../../useForm';
 
 describe('criteriaMode', () => {
-  it('should report every error after switching criteriaMode to all at runtime', async () => {
+  it('report every error after switching criteriaMode to all at runtime', async () => {
     let types: string[] = [];
     let message: unknown = undefined;
 
@@ -53,7 +53,7 @@ describe('criteriaMode', () => {
     });
   });
 
-  it('should narrow back to the first error after switching criteriaMode to firstError at runtime', async () => {
+  it('narrow back to the first error after switching criteriaMode to firstError at runtime', async () => {
     let types: string[] = [];
     let message: unknown = undefined;
 

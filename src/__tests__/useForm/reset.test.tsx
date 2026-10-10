@@ -25,7 +25,7 @@ import noop from '../../utils/noop';
 jest.useFakeTimers();
 
 describe('reset', () => {
-  it('should reset the form and re-render the form', async () => {
+  it('reset the form and re-render the form', async () => {
     const { result } = renderHook(() => useForm<{ test: string }>());
 
     result.current.register('test');
@@ -48,7 +48,7 @@ describe('reset', () => {
     expect(result.current.formState.isSubmitted).toBeFalsy();
   });
 
-  it('should reset form value', () => {
+  it('reset form value', () => {
     let methods: any;
     const App = () => {
       methods = useForm<{
@@ -73,7 +73,7 @@ describe('reset', () => {
     });
   });
 
-  it('should reset the form with callback action', () => {
+  it('reset the form with callback action', () => {
     const App = () => {
       const { register, reset } = useForm({
         defaultValues: {
@@ -104,7 +104,7 @@ describe('reset', () => {
     );
   });
 
-  it('should set array value of multiple checkbox inputs correctly', async () => {
+  it('set array value of multiple checkbox inputs correctly', async () => {
     const App = () => {
       const { register } = useForm<{
         test: string[];
@@ -131,7 +131,7 @@ describe('reset', () => {
       );
   });
 
-  it('should reset the form if ref is HTMLElement and parent element is not form', async () => {
+  it('reset the form if ref is HTMLElement and parent element is not form', async () => {
     const mockReset = jest.spyOn(window.HTMLFormElement.prototype, 'reset');
     let methods: UseFormReturn<{
       test: string;
@@ -149,7 +149,7 @@ describe('reset', () => {
     expect(mockReset).not.toHaveBeenCalled();
   });
 
-  it('should set default value if values is specified to first argument', async () => {
+  it('set default value if values is specified to first argument', async () => {
     const { result } = renderHook(() =>
       useForm<{
         test: string;
@@ -165,7 +165,7 @@ describe('reset', () => {
     });
   });
 
-  it('should reset unmountFieldsState value when shouldUnregister set to false', () => {
+  it('reset unmountFieldsState value when shouldUnregister set to false', () => {
     const { result } = renderHook(() =>
       useForm<{
         test: string;
@@ -177,7 +177,7 @@ describe('reset', () => {
     act(() => result.current.reset({ test: 'test' }));
   });
 
-  it('should not reset unmountFieldsState value by default', () => {
+  it('not reset unmountFieldsState value by default', () => {
     const { result } = renderHook(() =>
       useForm<{
         test: string;
@@ -189,7 +189,7 @@ describe('reset', () => {
     act(() => result.current.reset({ test: 'test' }));
   });
 
-  it('should keep dirtyFields in sync with isDirty when reset with keepValues', () => {
+  it('keep dirtyFields in sync with isDirty when reset with keepValues', () => {
     const { result } = renderHook(() => {
       const form = useForm({ defaultValues: { test: 'test1' } });
       form.formState.isDirty;
@@ -211,7 +211,7 @@ describe('reset', () => {
     expect(result.current.formState.dirtyFields).toEqual({ test: true });
   });
 
-  it('should not reset form values when keepValues is specified', () => {
+  it('not reset form values when keepValues is specified', () => {
     const App = () => {
       const { register, reset } = useForm();
 
@@ -247,7 +247,7 @@ describe('reset', () => {
     );
   });
 
-  it('should not reset form defaultValues when keepDefaultValues is specified', async () => {
+  it('not reset form defaultValues when keepDefaultValues is specified', async () => {
     const App = () => {
       const {
         register,
@@ -308,7 +308,7 @@ describe('reset', () => {
     expect(screen.queryByText('dirty')).not.toBeInTheDocument();
   });
 
-  it('should update dirty and dirtyFields when keepDefaultValues and updatedValues is provided', async () => {
+  it('update dirty and dirtyFields when keepDefaultValues and updatedValues is provided', async () => {
     function App() {
       const {
         register,
@@ -353,7 +353,7 @@ describe('reset', () => {
     expect(screen.getByText('{"firstName":true}')).toBeVisible();
   });
 
-  it('should not be dirty after reset without values when keepDefaultValues is set', async () => {
+  it('not be dirty after reset without values when keepDefaultValues is set', async () => {
     function App() {
       const {
         register,
@@ -396,7 +396,7 @@ describe('reset', () => {
     expect(screen.getByRole('textbox')).toHaveValue('test');
   });
 
-  it('should not reset if keepStateOption is specified', async () => {
+  it('not reset if keepStateOption is specified', async () => {
     let formState = {};
     const onSubmit = jest.fn();
 
@@ -474,7 +474,7 @@ describe('reset', () => {
     });
   });
 
-  it('should reset field array fine with empty value', async () => {
+  it('reset field array fine with empty value', async () => {
     let data: unknown;
     const App = () => {
       const { control, register, reset, handleSubmit } = useForm<{
@@ -544,7 +544,7 @@ describe('reset', () => {
     );
   });
 
-  it('should return reset nested value', () => {
+  it('return reset nested value', () => {
     const getValuesResult: unknown[] = [];
 
     function App() {
@@ -608,7 +608,7 @@ describe('reset', () => {
     ]);
   });
 
-  it('should keep defaultValues after reset with shouldKeepDefaultValues', async () => {
+  it('keep defaultValues after reset with shouldKeepDefaultValues', async () => {
     type FormValues = { test: string; test1: string };
     const ControlledInput = ({ control }: { control: Control<FormValues> }) => {
       const { field } = useController({
@@ -711,7 +711,7 @@ describe('reset', () => {
         );
       }
 
-      it('should only update new reset values', async () => {
+      it('only update new reset values', async () => {
         render(<App />);
 
         await waitFor(() =>
@@ -743,7 +743,7 @@ describe('reset', () => {
         );
       });
 
-      it('should treat previously-undirty fields as dirty when keepDefaultValues is set', async () => {
+      it('treat previously-undirty fields as dirty when keepDefaultValues is set', async () => {
         let updatedDirtyFields: Record<string, boolean> = {};
         let updatedDirty = false;
 
@@ -892,7 +892,7 @@ describe('reset', () => {
         );
       }
 
-      it('should only update new reset values', async () => {
+      it('only update new reset values', async () => {
         render(<App />);
 
         await waitFor(() =>
@@ -924,7 +924,7 @@ describe('reset', () => {
         );
       });
 
-      it('should only update none dirty fields and keep other values updated', async () => {
+      it('only update none dirty fields and keep other values updated', async () => {
         render(<App />);
 
         fireEvent.change(screen.getByPlaceholderText('First Name'), {
@@ -974,7 +974,7 @@ describe('reset', () => {
       });
     });
 
-    it('should merge nested object at leaf granularity, keeping only the dirty leaf and updating a clean sibling that is not bound to an input (#13627)', async () => {
+    it('merge nested object at leaf granularity, keeping only the dirty leaf and updating a clean sibling that is not bound to an input (#13627)', async () => {
       type FormValues = {
         user: { name: string; email: string };
       };
@@ -1031,7 +1031,7 @@ describe('reset', () => {
     });
   });
 
-  it('should allow resetting unmounted field array', () => {
+  it('allow resetting unmounted field array', () => {
     type FormValues = {
       test: { name: string }[];
     };
@@ -1110,7 +1110,7 @@ describe('reset', () => {
     expect(screen.getAllByRole('textbox').length).toEqual(1);
   });
 
-  it('should only return register input when reset is invoked with shouldUnregister:true', async () => {
+  it('only return register input when reset is invoked with shouldUnregister:true', async () => {
     let submittedData = {};
 
     const App = () => {
@@ -1155,7 +1155,7 @@ describe('reset', () => {
     expect(submittedData).toEqual({});
   });
 
-  it('should update controlled input correctly with shouldUnregister set to true', () => {
+  it('update controlled input correctly with shouldUnregister set to true', () => {
     function App() {
       const { register, reset, control } = useForm({
         defaultValues: { uncontrolled: '', control: '' },
@@ -1201,7 +1201,7 @@ describe('reset', () => {
     ).toEqual('control');
   });
 
-  it('should keep reset value for conditionally mounted controlled fields with shouldUnregister', async () => {
+  it('keep reset value for conditionally mounted controlled fields with shouldUnregister', async () => {
     let submittedData = {};
 
     const App = () => {
@@ -1278,7 +1278,7 @@ describe('reset', () => {
     );
   });
 
-  it('should keep input values when keepValues is set to true', () => {
+  it('keep input values when keepValues is set to true', () => {
     function App() {
       const { register, handleSubmit, reset } = useForm();
       const [show, setShow] = React.useState(true);
@@ -1325,7 +1325,7 @@ describe('reset', () => {
     ).toEqual('test');
   });
 
-  it('should not update isMounted when isValid is subscribed', async () => {
+  it('not update isMounted when isValid is subscribed', async () => {
     const mounted: unknown[] = [];
 
     const App = () => {
@@ -1345,7 +1345,7 @@ describe('reset', () => {
     expect(mounted).toEqual([false, true]);
   });
 
-  it('should update isMounted when isValid is subscribed', async () => {
+  it('update isMounted when isValid is subscribed', async () => {
     const mounted: unknown[] = [];
     let tempControl: Control = {} as Control;
 
@@ -1381,7 +1381,7 @@ describe('reset', () => {
     expect(tempControl._state.mount).toBeTruthy();
   });
 
-  it('should reset values but keep defaultValues', async () => {
+  it('reset values but keep defaultValues', async () => {
     const App = () => {
       const { register, control, reset } = useForm({
         defaultValues: {
@@ -1431,7 +1431,7 @@ describe('reset', () => {
     ).toEqual('changed2');
   });
 
-  it('should reset field array async', () => {
+  it('reset field array async', () => {
     let tempFields: unknown[] = [];
 
     function App() {
@@ -1501,7 +1501,7 @@ describe('reset', () => {
     expect(tempFields).toEqual([]);
   });
 
-  it('should reset the form after submitted', async () => {
+  it('reset the form after submitted', async () => {
     function App() {
       const {
         register,
@@ -1588,7 +1588,7 @@ describe('reset', () => {
     ).toEqual('3');
   });
 
-  it('should keep isSubmitted and isSubmitSuccessful value when flags are set', async () => {
+  it('keep isSubmitted and isSubmitSuccessful value when flags are set', async () => {
     const { result } = renderHook(() => useForm<{ test: string }>());
 
     expect(result.current.formState.isSubmitted).toBeFalsy();
@@ -1631,7 +1631,7 @@ describe('reset', () => {
     expect(result.current.formState.isSubmitSuccessful).toBeTruthy();
   });
 
-  it('should keep track on updated defaultValues', async () => {
+  it('keep track on updated defaultValues', async () => {
     function App() {
       const {
         handleSubmit,
@@ -1664,7 +1664,7 @@ describe('reset', () => {
     });
   });
 
-  it('should reset to empty values in useWatch and watch when calling reset with empty object', async () => {
+  it('reset to empty values in useWatch and watch when calling reset with empty object', async () => {
     const defaultValues = {
       something: 'anything',
     };
@@ -1711,7 +1711,7 @@ describe('reset', () => {
     expect(screen.getByText('useWatch:')).toBeVisible();
   });
 
-  it('should use values passed to reset({}) as new defaultValues on submit', async () => {
+  it('use values passed to reset({}) as new defaultValues on submit', async () => {
     let submittedData: unknown;
 
     function App() {
@@ -1751,7 +1751,7 @@ describe('reset', () => {
     await waitFor(() => expect(submittedData).toEqual({}));
   });
 
-  it('should set _formValues to empty object after reset({})', () => {
+  it('set _formValues to empty object after reset({})', () => {
     const { result } = renderHook(() =>
       useForm({
         defaultValues: {
@@ -1769,7 +1769,7 @@ describe('reset', () => {
     expect(result.current.control._defaultValues).toEqual({});
   });
 
-  it('should keep mounted value after reset with keep dirty values', async () => {
+  it('keep mounted value after reset with keep dirty values', async () => {
     function App() {
       const {
         getValues,
@@ -1809,7 +1809,7 @@ describe('reset', () => {
     });
   });
 
-  it('should keep dirty array value after reset with keepDirtyValues', async () => {
+  it('keep dirty array value after reset with keepDirtyValues', async () => {
     function App() {
       const {
         getValues,
@@ -1868,7 +1868,7 @@ describe('reset', () => {
     });
   });
 
-  it('should keep dirty fields for dynamic controller name when keepDirty and keepDirtyValues are true', async () => {
+  it('keep dirty fields for dynamic controller name when keepDirty and keepDirtyValues are true', async () => {
     type FormValues = {
       name_es: string;
       name_en: string;
@@ -1931,7 +1931,7 @@ describe('reset', () => {
     );
   });
 
-  it('should not mutate data outside of library', () => {
+  it('not mutate data outside of library', () => {
     const defaultValues = {
       test: 'ok',
     };
@@ -1963,7 +1963,7 @@ describe('reset', () => {
     expect(defaultValues.test).toBe('ok');
   });
 
-  it('should not reset value to undefined with onSubmit data', async () => {
+  it('not reset value to undefined with onSubmit data', async () => {
     const onSubmit = jest.fn();
     const App = () => {
       const { handleSubmit, reset, register } = useForm({
@@ -2006,7 +2006,7 @@ describe('reset', () => {
     );
   });
 
-  it('should clear validation errors after reset to prevent false errors on subsequent submissions (Next.js 16 Server Actions fix)', async () => {
+  it('clear validation errors after reset to prevent false errors on subsequent submissions (Next.js 16 Server Actions fix)', async () => {
     const resolver = jest.fn(
       async (data: { name: string; description?: string }) => {
         const errors: FieldErrors<{ name: string; description?: string }> = {};
@@ -2120,7 +2120,7 @@ describe('reset', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('should keep isValid value when reset is called with keepIsValid option', async () => {
+  it('keep isValid value when reset is called with keepIsValid option', async () => {
     let formState: { isValid: boolean } = { isValid: false };
 
     const App = () => {
@@ -2208,7 +2208,7 @@ describe('reset', () => {
     expect(formState).toEqual({ isValid: false });
   });
 
-  it('should keep isValid value when form has resetOptions.keepIsValid configured', async () => {
+  it('keep isValid value when form has resetOptions.keepIsValid configured', async () => {
     let formState: { isValid: boolean } = { isValid: false };
 
     const App = () => {
@@ -2270,7 +2270,7 @@ describe('reset', () => {
     expect(formState).toEqual({ isValid: true });
   });
 
-  it('should cancel a pending delayError timer so the reset error does not come back', async () => {
+  it('cancel a pending delayError timer so the reset error does not come back', async () => {
     jest.useFakeTimers();
 
     const message = 'too long.';
@@ -2332,7 +2332,7 @@ describe('reset', () => {
     jest.useRealTimers();
   });
 
-  it('should clear isValidating when reset is called while a validation is pending', async () => {
+  it('clear isValidating when reset is called while a validation is pending', async () => {
     let resolveResolver: (() => void) | undefined;
 
     const App = () => {
@@ -2403,7 +2403,7 @@ describe('reset', () => {
     expect(screen.getByText(/^tracked:/).textContent).toEqual('tracked:');
   });
 
-  it('should keep isValidating when reset is called with keepIsValidating option', async () => {
+  it('keep isValidating when reset is called with keepIsValidating option', async () => {
     let resolveResolver: (() => void) | undefined;
 
     const App = () => {
@@ -2469,7 +2469,7 @@ describe('reset', () => {
   // clean values, executeSchemaAndUpdateState() still writes its (stale)
   // result into `_formState.errors`, resurrecting an error that belongs to
   // input the user no longer has on screen.
-  it('should not resurrect a resolver error that settles after reset() clears the field', async () => {
+  it('not resurrect a resolver error that settles after reset() clears the field', async () => {
     let resolveResolver:
       | ((result: { values: unknown; errors: unknown }) => void)
       | undefined;
@@ -2544,7 +2544,7 @@ describe('reset', () => {
 
   // Control for the regression above: without an intervening reset(), the
   // same delayed resolver result must still be applied as usual.
-  it('should apply a delayed resolver error normally when reset() is not called', async () => {
+  it('apply a delayed resolver error normally when reset() is not called', async () => {
     let resolveResolver:
       | ((result: { values: unknown; errors: unknown }) => void)
       | undefined;
@@ -2601,7 +2601,7 @@ describe('reset', () => {
 
   // A stale resolver settling after reset() must not clear validatingFields
   // for a field that a newer, still-pending trigger() call is validating.
-  it('should keep a newer trigger validation marked as validating when a stale resolver from before reset settles', async () => {
+  it('keep a newer trigger validation marked as validating when a stale resolver from before reset settles', async () => {
     const resolveCalls: Array<
       (result: { values: unknown; errors: unknown }) => void
     > = [];
@@ -2664,7 +2664,7 @@ describe('reset', () => {
   // overwrite the isValid value that keepIsValid deliberately preserved:
   // an empty `errors` object from a discarded validation pass is not the
   // same thing as the form actually being valid.
-  it('should not overwrite a keepIsValid-preserved isValid when a stale resolver settles after reset', async () => {
+  it('not overwrite a keepIsValid-preserved isValid when a stale resolver settles after reset', async () => {
     const invalidResult = {
       values: {},
       errors: { test: { type: 'manual', message: 'invalid' } },
@@ -2721,7 +2721,7 @@ describe('reset', () => {
     unsubscribe();
   });
 
-  it('should keep isValidating true after keepIsValidating reset even once the stale resolver settles', async () => {
+  it('keep isValidating true after keepIsValidating reset even once the stale resolver settles', async () => {
     // keepIsValidating intentionally skips the reset-time clear; nothing
     // re-derives isValidating from a resolver call discarded by reset(), so
     // it stays true until a fresh trigger()/validation for the field runs.
@@ -2769,7 +2769,7 @@ describe('reset', () => {
     expect(result.current.formState.isValidating).toBe(false);
   });
 
-  it('should return the discarded validation result without touching or focusing reset fields', async () => {
+  it('return the discarded validation result without touching or focusing reset fields', async () => {
     const invalid = {
       values: {},
       errors: { test: { type: 'manual', message: 'old error' } },
@@ -2808,7 +2808,7 @@ describe('reset', () => {
     expect(focus).not.toHaveBeenCalled();
   });
 
-  it('should not delay a current error when a pre-reset trigger settles', async () => {
+  it('not delay a current error when a pre-reset trigger settles', async () => {
     jest.useFakeTimers();
 
     type Result = {
@@ -2861,7 +2861,7 @@ describe('reset', () => {
   // this by bailing when the in-flight value no longer matches the current
   // one, which is why a reset that keeps or restores the same value is needed
   // to see it.
-  it('should not resurrect an onChange resolver error that settles after reset({ keepValues: true })', async () => {
+  it('not resurrect an onChange resolver error that settles after reset({ keepValues: true })', async () => {
     let resolveResolver:
       | ((result: { values: unknown; errors: unknown }) => void)
       | undefined;
@@ -2922,7 +2922,7 @@ describe('reset', () => {
     expect(screen.getByText(/^error:/).textContent).toEqual('error:none');
   });
 
-  it('should not resurrect an onChange resolver error when reset() restores the same value', async () => {
+  it('not resurrect an onChange resolver error when reset() restores the same value', async () => {
     let resolveResolver:
       | ((result: { values: unknown; errors: unknown }) => void)
       | undefined;
@@ -2976,7 +2976,7 @@ describe('reset', () => {
 
   // The discarded call must not clear validatingFields either, or a newer
   // keystroke that is still waiting on the resolver reports itself as done.
-  it('should keep a newer onChange validation marked as validating when a stale resolver from before reset settles', async () => {
+  it('keep a newer onChange validation marked as validating when a stale resolver from before reset settles', async () => {
     const resolveCalls: Array<
       (result: { values: unknown; errors: unknown }) => void
     > = [];
@@ -3060,7 +3060,7 @@ describe('reset', () => {
 
   // Control: with no intervening reset(), a slow onChange resolver result is
   // still applied as usual.
-  it('should apply a delayed onChange resolver error when reset() is not called', async () => {
+  it('apply a delayed onChange resolver error when reset() is not called', async () => {
     let resolveResolver:
       | ((result: { values: unknown; errors: unknown }) => void)
       | undefined;
@@ -3109,7 +3109,7 @@ describe('reset', () => {
   // validation branch runs the same shape of async work and was left
   // unguarded, so a `validate` promise that settles after reset() still
   // writes its result into the cleaned form state.
-  it('should not resurrect an onChange validate error that settles after reset', async () => {
+  it('not resurrect an onChange validate error that settles after reset', async () => {
     let resolveValidate: ((result: string | boolean) => void) | undefined;
 
     const App = () => {
@@ -3170,7 +3170,7 @@ describe('reset', () => {
 
   // The isValid pass that follows an error-free field validation is a second
   // suspension point, so a reset() landing there must discard its result too.
-  it('should not apply a stale isValid computed by an onChange validation that spans reset', async () => {
+  it('not apply a stale isValid computed by an onChange validation that spans reset', async () => {
     const resolvers: Array<(result: string | boolean) => void> = [];
 
     const App = () => {
@@ -3240,7 +3240,7 @@ describe('reset', () => {
 
   // Control: with no intervening reset(), a slow built-in validate result is
   // still applied as usual.
-  it('should apply a delayed onChange validate error when reset() is not called', async () => {
+  it('apply a delayed onChange validate error when reset() is not called', async () => {
     let resolveValidate: ((result: string | boolean) => void) | undefined;
 
     const App = () => {
@@ -3287,7 +3287,7 @@ describe('reset', () => {
   // #13744 and #13745 guarded the resolver and per-field validation branches,
   // but the form level `validate` option runs its own await inside
   // validateForm() and still writes errors.form after reset() has cleaned up.
-  it('should not resurrect a form level validate error that settles after reset', async () => {
+  it('not resurrect a form level validate error that settles after reset', async () => {
     let resolveValidate: ((result: string | boolean) => void) | undefined;
 
     const App = () => {
@@ -3343,7 +3343,7 @@ describe('reset', () => {
     expect(screen.getByText(/^error:/).textContent).toEqual('error:none');
   });
 
-  it('should not resurrect a form level validate error from trigger() that settles after reset', async () => {
+  it('not resurrect a form level validate error from trigger() that settles after reset', async () => {
     const resolvers: Array<(result: string | boolean) => void> = [];
 
     const App = () => {
@@ -3407,7 +3407,7 @@ describe('reset', () => {
 
   // A stale form level validate that passes must not wipe an error the form
   // picked up after reset() either.
-  it('should not clear a current form level error when a stale validate settles after reset', async () => {
+  it('not clear a current form level error when a stale validate settles after reset', async () => {
     const resolvers: Array<(result: string | boolean) => void> = [];
 
     const App = () => {
@@ -3472,7 +3472,7 @@ describe('reset', () => {
 
   // Control: with no intervening reset(), a slow form level validate result is
   // still applied as usual.
-  it('should apply a delayed form level validate error when reset() is not called', async () => {
+  it('apply a delayed form level validate error when reset() is not called', async () => {
     let resolveValidate: ((result: string | boolean) => void) | undefined;
 
     const App = () => {

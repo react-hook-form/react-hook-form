@@ -32,7 +32,7 @@ describe('useForm with null values (issue #12815)', () => {
     );
   }
 
-  it('should submit null value when field is empty and untouched with useForm({ values })', async () => {
+  it('submit null value when field is empty and untouched with useForm({ values })', async () => {
     let submittedData: any;
 
     function App() {
@@ -61,7 +61,7 @@ describe('useForm with null values (issue #12815)', () => {
     });
   });
 
-  it('should submit null value after user clears the input', async () => {
+  it('submit null value after user clears the input', async () => {
     let submittedData: any;
 
     function App() {
@@ -95,7 +95,7 @@ describe('useForm with null values (issue #12815)', () => {
     });
   });
 
-  it('should work with defaultValues (not affected by the bug)', async () => {
+  it('work with defaultValues (not affected by the bug)', async () => {
     let submittedData: any;
 
     function App() {
@@ -124,7 +124,7 @@ describe('useForm with null values (issue #12815)', () => {
     });
   });
 
-  it('should handle multiple fields with null values', async () => {
+  it('handle multiple fields with null values', async () => {
     let submittedData: any;
 
     function App() {
@@ -166,7 +166,7 @@ describe('useForm with null values (issue #12815)', () => {
     });
   });
 
-  it('should prioritize values over defaultValues when both are set', async () => {
+  it('prioritize values over defaultValues when both are set', async () => {
     let submittedData: any;
 
     function App() {
@@ -200,7 +200,7 @@ describe('useForm with null values (issue #12815)', () => {
     });
   });
 
-  it('should work with nested null values', async () => {
+  it('work with nested null values', async () => {
     let submittedData: any;
 
     function App() {

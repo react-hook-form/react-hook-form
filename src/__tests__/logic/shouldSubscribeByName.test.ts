@@ -1,7 +1,7 @@
 import shouldSubscribeByName from '../../logic/shouldSubscribeByName';
 
 describe('shouldSubscribeByName', () => {
-  it('should return correct response for subscription name coverage', () => {
+  it('return correct response for subscription name coverage', () => {
     expect(shouldSubscribeByName(undefined, 'test')).toBeTruthy();
     expect(shouldSubscribeByName('test', undefined)).toBeTruthy();
     expect(shouldSubscribeByName(['test'], undefined)).toBeTruthy();
@@ -15,7 +15,7 @@ describe('shouldSubscribeByName', () => {
     expect(shouldSubscribeByName(['testXXX'], 'data')).toBeFalsy();
   });
 
-  it('should notify exact subscribers when an ancestor path changes', () => {
+  it('notify exact subscribers when an ancestor path changes', () => {
     // A field subscribed exactly to `data.type` must still be notified when
     // its parent object `data` is replaced (e.g. set to null), because that
     // change affects the nested value.

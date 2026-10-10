@@ -73,7 +73,7 @@ describe('setError', () => {
     expect(result.current.formState.isValid).toBeFalsy();
   });
 
-  it('should update isValid with setError', async () => {
+  it('update isValid with setError', async () => {
     const App = () => {
       const {
         formState: { isValid },
@@ -106,7 +106,7 @@ describe('setError', () => {
     expect(await screen.findByText('no')).toBeVisible();
   });
 
-  it('should allow setting global error', async () => {
+  it('allow setting global error', async () => {
     const onSubmit = jest.fn();
 
     type Errors = {
@@ -179,7 +179,7 @@ describe('setError', () => {
     });
   });
 
-  it('should allow sequential calls to set with child after ancestor', async () => {
+  it('allow sequential calls to set with child after ancestor', async () => {
     const { result } = renderHook(() =>
       useForm<{ input: { first: string; last: string } }>(),
     );
@@ -221,7 +221,7 @@ describe('setError', () => {
     });
   });
 
-  it('should allow sequential calls to set with ancestor after child', async () => {
+  it('allow sequential calls to set with ancestor after child', async () => {
     const { result } = renderHook(() =>
       useForm<{ input: { first: string; last: string } }>(),
     );
@@ -266,7 +266,7 @@ describe('setError', () => {
     });
   });
 
-  it('should cancel pending delayError timers for nested fields when setError is called on the parent', async () => {
+  it('cancel pending delayError timers for nested fields when setError is called on the parent', async () => {
     jest.useFakeTimers();
 
     const App = () => {
@@ -322,7 +322,7 @@ describe('setError', () => {
     jest.useRealTimers();
   });
 
-  it('should replace types from a previous validation when overwriting an error', async () => {
+  it('replace types from a previous validation when overwriting an error', async () => {
     type FormValues = { password: string };
 
     let currentErrors: FieldErrors<FormValues> = {};
@@ -372,7 +372,7 @@ describe('setError', () => {
   });
 });
 
-it('should update error state in FormProvider when setError is called in useEffect', async () => {
+it('update error state in FormProvider when setError is called in useEffect', async () => {
   type FormValues = {
     firstname: string;
     lastname: string;

@@ -26,7 +26,7 @@ import { useFormState } from '../../useFormState';
 import noop from '../../utils/noop';
 
 describe('trigger', () => {
-  it('should remove all errors before set new errors when trigger entire form', async () => {
+  it('remove all errors before set new errors when trigger entire form', async () => {
     const Component = () => {
       const [show, setShow] = React.useState(true);
       const {
@@ -73,7 +73,7 @@ describe('trigger', () => {
     );
   });
 
-  it('should return empty errors when field is found and validation pass', async () => {
+  it('return empty errors when field is found and validation pass', async () => {
     const { result } = renderHook(() => useForm<{ test: string }>());
     const { errors } = result.current.formState;
 
@@ -88,7 +88,7 @@ describe('trigger', () => {
     });
   });
 
-  it('should update value when value is supplied', async () => {
+  it('update value when value is supplied', async () => {
     const { result } = renderHook(() => useForm<{ test: string }>());
 
     const { errors } = result.current.formState;
@@ -104,7 +104,7 @@ describe('trigger', () => {
     expect(errors).toEqual({});
   });
 
-  it('should trigger multiple fields validation', async () => {
+  it('trigger multiple fields validation', async () => {
     const { result } = renderHook(() =>
       useForm<{ test: string; test1: string }>({
         mode: VALIDATION_MODE.onChange,
@@ -125,7 +125,7 @@ describe('trigger', () => {
   });
 
   describe('with schema', () => {
-    it('should return the error with single field validation', async () => {
+    it('return the error with single field validation', async () => {
       const resolver = async (data: any) => {
         return {
           values: data,
@@ -156,7 +156,7 @@ describe('trigger', () => {
       });
     });
 
-    it('should return the status of the requested field with single field validation', async () => {
+    it('return the status of the requested field with single field validation', async () => {
       const resolver = async (data: any) => {
         return {
           values: data,
@@ -191,7 +191,7 @@ describe('trigger', () => {
       });
     });
 
-    it('should not trigger any error when schema validation result not found', async () => {
+    it('not trigger any error when schema validation result not found', async () => {
       const { result } = renderHook(() =>
         useForm<{ test: string; test1: string }>({
           mode: VALIDATION_MODE.onChange,
@@ -217,7 +217,7 @@ describe('trigger', () => {
       expect(result.current.formState.errors).toEqual({});
     });
 
-    it('should support array of fields for schema validation', async () => {
+    it('support array of fields for schema validation', async () => {
       const resolver = async (data: any) => {
         return {
           values: data,
@@ -257,7 +257,7 @@ describe('trigger', () => {
       });
     });
 
-    it('should return the status of the requested fields with array of fields for validation', async () => {
+    it('return the status of the requested fields with array of fields for validation', async () => {
       const { result } = renderHook(() =>
         useForm<{ test1: string; test2: string; test3: string }>({
           mode: VALIDATION_MODE.onChange,
@@ -301,7 +301,7 @@ describe('trigger', () => {
       });
     });
 
-    it('should validate all fields when pass with undefined', async () => {
+    it('validate all fields when pass with undefined', async () => {
       const resolver = async (data: any) => {
         return {
           values: data,
@@ -342,7 +342,7 @@ describe('trigger', () => {
       });
     });
 
-    it('should update isValid with validation result at form level', async () => {
+    it('update isValid with validation result at form level', async () => {
       const App = () => {
         const {
           register,
@@ -418,7 +418,7 @@ describe('trigger', () => {
       expect(await screen.findByText('yes')).toBeVisible();
     });
 
-    it('should update isValid for the entire useForm scope', async () => {
+    it('update isValid for the entire useForm scope', async () => {
       const InputA = () => {
         const { isValid } = useFormState({ name: 'name' });
 
@@ -499,7 +499,7 @@ describe('trigger', () => {
     });
   });
 
-  it('should return the status of the requested fields with array of fields for validation', async () => {
+  it('return the status of the requested fields with array of fields for validation', async () => {
     const { result } = renderHook(() =>
       useForm<{ test1: string; test2: string; test3: string }>({
         mode: VALIDATION_MODE.onChange,
@@ -535,7 +535,7 @@ describe('trigger', () => {
     await act(async () => expect(await result.current.trigger()).toBeFalsy());
   });
 
-  it('should return true when field is found and validation pass', async () => {
+  it('return true when field is found and validation pass', async () => {
     const App = () => {
       const {
         register,
@@ -568,7 +568,7 @@ describe('trigger', () => {
     expect(await screen.findByText('yes')).toBeVisible();
   });
 
-  it('should remove all errors before set new errors when trigger entire form', async () => {
+  it('remove all errors before set new errors when trigger entire form', async () => {
     const Component = () => {
       const [show, setShow] = React.useState(true);
       const {
@@ -610,7 +610,7 @@ describe('trigger', () => {
     );
   });
 
-  it('should focus on errored input with build in validation', async () => {
+  it('focus on errored input with build in validation', async () => {
     const Component = () => {
       const { register, trigger } = useForm<{
         test: string;
@@ -640,7 +640,7 @@ describe('trigger', () => {
     });
   });
 
-  it('should focus on errored input with schema validation', async () => {
+  it('focus on errored input with schema validation', async () => {
     const Component = () => {
       const { register, trigger } = useForm<{
         test: string;
@@ -676,7 +676,7 @@ describe('trigger', () => {
     });
   });
 
-  it('should focus on first errored input', async () => {
+  it('focus on first errored input', async () => {
     const Component = () => {
       const { register, trigger } = useForm<{
         test: string;
@@ -711,7 +711,7 @@ describe('trigger', () => {
     });
   });
 
-  it('should mark the targeted field as touched when shouldTouch is true', async () => {
+  it('mark the targeted field as touched when shouldTouch is true', async () => {
     const { result } = renderHook(() =>
       useForm<{ test: string }>({ defaultValues: { test: '' } }),
     );
@@ -727,7 +727,7 @@ describe('trigger', () => {
     expect(result.current.formState.touchedFields.test).toEqual(true);
   });
 
-  it('should mark all triggered fields as touched when shouldTouch is true with an array of names', async () => {
+  it('mark all triggered fields as touched when shouldTouch is true with an array of names', async () => {
     const { result } = renderHook(() =>
       useForm<{ test1: string; test2: string; test3: string }>({
         defaultValues: { test1: '', test2: '', test3: '' },
@@ -748,7 +748,7 @@ describe('trigger', () => {
     expect(result.current.formState.touchedFields.test3).toBeUndefined();
   });
 
-  it('should mark every mounted field as touched when shouldTouch is true and no name is provided', async () => {
+  it('mark every mounted field as touched when shouldTouch is true and no name is provided', async () => {
     const { result } = renderHook(() =>
       useForm<{ test1: string; test2: string }>({
         defaultValues: { test1: '', test2: '' },
@@ -767,7 +767,7 @@ describe('trigger', () => {
     expect(result.current.formState.touchedFields.test2).toEqual(true);
   });
 
-  it('should mark the field as touched when shouldTouch is true with schema validation', async () => {
+  it('mark the field as touched when shouldTouch is true with schema validation', async () => {
     const { result } = renderHook(() =>
       useForm<{ test: string }>({
         defaultValues: { test: '' },
@@ -785,7 +785,7 @@ describe('trigger', () => {
     expect(result.current.formState.touchedFields.test).toEqual(true);
   });
 
-  it('should not overwrite a field array touchedFields entry with true when shouldTouch is true and no name is given', async () => {
+  it('not overwrite a field array touchedFields entry with true when shouldTouch is true and no name is given', async () => {
     type FormValues = { test: { value: string }[] };
 
     // An empty array means `_names.mount` only holds the array's own name
@@ -814,7 +814,7 @@ describe('trigger', () => {
     expect(result.current.form.formState.touchedFields.test).not.toBe(true);
   });
 
-  it('should mark each field array item as touched when shouldTouch is true and no name is given', async () => {
+  it('mark each field array item as touched when shouldTouch is true and no name is given', async () => {
     type FormValues = { test: { value: string }[] };
 
     const { result } = renderHook(() => {
@@ -846,7 +846,7 @@ describe('trigger', () => {
     );
   });
 
-  it('should not overwrite a field array touchedFields entry with true when shouldTouch is true and the array name is passed directly', async () => {
+  it('not overwrite a field array touchedFields entry with true when shouldTouch is true and the array name is passed directly', async () => {
     type FormValues = { test: { value: string }[] };
 
     const { result } = renderHook(() => {
@@ -871,7 +871,7 @@ describe('trigger', () => {
     expect(result.current.form.formState.touchedFields.test).not.toBe(true);
   });
 
-  it('should not mark the field as touched when shouldTouch is not supplied', async () => {
+  it('not mark the field as touched when shouldTouch is not supplied', async () => {
     const { result } = renderHook(() =>
       useForm<{ test: string }>({ defaultValues: { test: '' } }),
     );
@@ -885,7 +885,7 @@ describe('trigger', () => {
     expect(result.current.formState.touchedFields.test).toBeUndefined();
   });
 
-  it('should return isValid for the entire form', async () => {
+  it('return isValid for the entire form', async () => {
     const App = () => {
       const [isValid, setIsValid] = React.useState(true);
       const { register, trigger, formState } = useForm();
@@ -936,7 +936,7 @@ describe('trigger', () => {
     expect(await screen.findByText('true')).toBeVisible();
   });
 
-  it('should return correct valid state when trigger the entire form with build in validation', async () => {
+  it('return correct valid state when trigger the entire form with build in validation', async () => {
     let isValid;
 
     function App() {
@@ -969,7 +969,7 @@ describe('trigger', () => {
     expect(isValid).toBeFalsy();
   });
 
-  it('should be able to trigger an object of fields', async () => {
+  it('be able to trigger an object of fields', async () => {
     let isValid;
 
     function App() {
@@ -1019,7 +1019,7 @@ describe('trigger', () => {
     expect(screen.getByText('lastName')).toBeVisible();
   });
 
-  it('should only trigger render on targeted input', async () => {
+  it('only trigger render on targeted input', async () => {
     type FormValue = {
       x: string;
       y: string;
@@ -1076,7 +1076,7 @@ describe('trigger', () => {
     expect(screen.getByText('3')).toBeVisible();
   });
 
-  it('should skip additional validation when input validation already failed', async () => {
+  it('skip additional validation when input validation already failed', async () => {
     let count = 0;
 
     const App = () => {
@@ -1116,7 +1116,7 @@ describe('trigger', () => {
     expect(count).toEqual(2);
   });
 
-  it('should update validatingFields form states correctly when trigger() called', async () => {
+  it('update validatingFields form states correctly when trigger() called', async () => {
     jest.useFakeTimers();
 
     let formState = {} as FormState<FieldValues>;
@@ -1209,7 +1209,7 @@ describe('trigger', () => {
     });
   });
 
-  it('should put resolver field-array root errors under root - issue #13104', async () => {
+  it('put resolver field-array root errors under root - issue #13104', async () => {
     type FormValues = { items: { name: string }[] };
 
     const resolver: Resolver<FormValues> = async (values) => {
@@ -1261,7 +1261,7 @@ describe('trigger', () => {
     });
   });
 
-  it('should preserve resolver nested field-array item errors on trigger', async () => {
+  it('preserve resolver nested field-array item errors on trigger', async () => {
     type FormValues = { items: { name: string }[] };
 
     const nestedItemErrors: FieldErrors<FormValues> = {
@@ -1314,7 +1314,7 @@ describe('trigger', () => {
     });
   });
 
-  it('should not set a parent error when only nested resolver errors exist', async () => {
+  it('not set a parent error when only nested resolver errors exist', async () => {
     type FormValues = {
       test: string;
     };
@@ -1357,7 +1357,7 @@ describe('trigger', () => {
     });
   });
 
-  it('should not set a parent error when trigger targets a field with only nested resolver errors', async () => {
+  it('not set a parent error when trigger targets a field with only nested resolver errors', async () => {
     type FormValues = {
       test: string;
     };
@@ -1406,7 +1406,7 @@ describe('trigger', () => {
     });
   });
 
-  it('should keep registered nested resolver errors when trigger targets their parent', async () => {
+  it('keep registered nested resolver errors when trigger targets their parent', async () => {
     type FormValues = {
       address: {
         street: string;
@@ -1465,7 +1465,7 @@ describe('trigger', () => {
     expect(triggerErrors?.address?.street?.message).toBe('street_required');
   });
 
-  it('should not resurrect a nested delayed error after trigger() validates the parent clean', async () => {
+  it('not resurrect a nested delayed error after trigger() validates the parent clean', async () => {
     jest.useFakeTimers();
 
     let resolverErrors: Record<string, unknown> = {};

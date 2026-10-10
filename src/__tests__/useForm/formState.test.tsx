@@ -34,7 +34,7 @@ const itWithActivity = Activity ? it : it.skip;
 
 describe('formState', () => {
   describe('isValid', () => {
-    it('should return isValid correctly with resolver', async () => {
+    it('return isValid correctly with resolver', async () => {
       let isValidValue = false;
 
       const Component = () => {
@@ -75,7 +75,7 @@ describe('formState', () => {
       await waitFor(() => expect(isValidValue).toBeTruthy());
     });
 
-    it('should return true for onBlur mode by default', async () => {
+    it('return true for onBlur mode by default', async () => {
       const App = () => {
         const {
           formState: { isValid },
@@ -91,7 +91,7 @@ describe('formState', () => {
       expect(await screen.findByText('valid')).toBeVisible();
     });
 
-    it('should return true for onChange mode by default', async () => {
+    it('return true for onChange mode by default', async () => {
       const App = () => {
         const {
           formState: { isValid },
@@ -107,7 +107,7 @@ describe('formState', () => {
       expect(await screen.findByText('valid')).toBeVisible();
     });
 
-    it('should return true for all mode by default', async () => {
+    it('return true for all mode by default', async () => {
       const App = () => {
         const {
           formState: { isValid },
@@ -123,7 +123,7 @@ describe('formState', () => {
       expect(await screen.findByText('valid')).toBeVisible();
     });
 
-    it('should return false when default value is not valid value', async () => {
+    it('return false when default value is not valid value', async () => {
       const { result } = renderHook(() => {
         const methods = useForm<{ input: string; issue: string }>({
           mode: VALIDATION_MODE.onChange,
@@ -142,7 +142,7 @@ describe('formState', () => {
       expect(result.current.formState.isValid).toBeFalsy();
     });
 
-    it('should return false when custom register with validation', async () => {
+    it('return false when custom register with validation', async () => {
       const { result } = renderHook(() =>
         useForm<{ input: string; issue: string }>({
           mode: VALIDATION_MODE.onChange,
@@ -158,7 +158,7 @@ describe('formState', () => {
       expect(result.current.formState.isValid).toBeFalsy();
     });
 
-    it('should update valid when toggle Controller', async () => {
+    it('update valid when toggle Controller', async () => {
       const App = () => {
         const {
           control,
@@ -243,7 +243,7 @@ describe('formState', () => {
       expect(await screen.findByText('invalid')).toBeVisible();
     });
 
-    it('should set isValid to true after async values provide valid data', async () => {
+    it('set isValid to true after async values provide valid data', async () => {
       jest.useFakeTimers();
 
       const App = () => {
@@ -285,7 +285,7 @@ describe('formState', () => {
       jest.useRealTimers();
     });
 
-    it('should not let a stale whole-form validity check overwrite a newer one', async () => {
+    it('not let a stale whole-form validity check overwrite a newer one', async () => {
       type FormValues = {
         username: string;
         bio: string;
@@ -350,7 +350,7 @@ describe('formState', () => {
       expect(screen.getByText('valid')).toBeVisible();
     });
 
-    it('should not let a stale resolver pass report isValidating as false while a newer one is pending', async () => {
+    it('not let a stale resolver pass report isValidating as false while a newer one is pending', async () => {
       type FormValues = {
         username: string;
       };
@@ -404,20 +404,20 @@ describe('formState', () => {
     });
   });
 
-  it('should be a proxy object that returns undefined for unknown properties', () => {
+  it('be a proxy object that returns undefined for unknown properties', () => {
     const { result } = renderHook(() => useForm());
 
     // @ts-expect-error it's expected for an undefined property to be a typescript error
     expect(result.current.formState.nonExistentProperty).toBeUndefined();
   });
 
-  it('should be a proxy object that properly implements the has trap', () => {
+  it('be a proxy object that properly implements the has trap', () => {
     const { result } = renderHook(() => useForm());
 
     expect('nonExistentProperty' in result.current.formState).toBeFalsy();
   });
 
-  it('should be a proxy object that hasOwnProperty works on', () => {
+  it('be a proxy object that hasOwnProperty works on', () => {
     const { result } = renderHook(() => useForm());
 
     expect(result.current.formState).toHaveProperty('hasOwnProperty');
@@ -429,7 +429,7 @@ describe('formState', () => {
       foo1: string;
     };
 
-    it('should render isValid as true with reset at useEffect with valid data', async () => {
+    it('render isValid as true with reset at useEffect with valid data', async () => {
       function Component() {
         const {
           register,
@@ -465,7 +465,7 @@ describe('formState', () => {
       expect(await screen.findByText('valid')).toBeVisible();
     });
 
-    it('should render isValid as false with reset at useEffect with valid data', async () => {
+    it('render isValid as false with reset at useEffect with valid data', async () => {
       function Component() {
         const {
           register,
@@ -506,7 +506,7 @@ describe('formState', () => {
     // recompute triggered by the root's own re-render (queued when
     // _state.mount is reset) clobber isValid with a value computed against
     // the just-reset, now-empty fields.
-    it('should end with isValid: true after reset() (matches e2e test baseline expectation)', async () => {
+    it('end with isValid: true after reset() (matches e2e test baseline expectation)', async () => {
       let renderCounter = 0;
 
       type FormInputs = {
@@ -758,7 +758,7 @@ describe('formState', () => {
     });
   });
 
-  it('should not update form state when there is a promise reject', async () => {
+  it('not update form state when there is a promise reject', async () => {
     const rejectPromiseFn = jest
       .fn()
       .mockRejectedValue(new Error('this is an error'));
@@ -796,7 +796,7 @@ describe('formState', () => {
     expect(screen.getByText('isNotSubmitSuccessful')).toBeVisible();
   });
 
-  it('should update isValid even with mode set to onSubmit', async () => {
+  it('update isValid even with mode set to onSubmit', async () => {
     const App = () => {
       const {
         register,
@@ -852,7 +852,7 @@ describe('formState', () => {
     );
   });
 
-  it('should update correct isValid formState with dynamic fields', async () => {
+  it('update correct isValid formState with dynamic fields', async () => {
     const Component = () => {
       const {
         register,
@@ -986,7 +986,7 @@ describe('formState', () => {
     expect(await screen.findByText('valid')).toBeVisible();
   });
 
-  it('should remind isSubmitting when form is invalid', async () => {
+  it('remind isSubmitting when form is invalid', async () => {
     const submittingState: boolean[] = [];
 
     function App() {
@@ -1019,7 +1019,7 @@ describe('formState', () => {
   });
 
   describe('when defaultValue supplied', () => {
-    it('should update isValid to true for validation with inline defaultValue', async () => {
+    it('update isValid to true for validation with inline defaultValue', async () => {
       function App() {
         const {
           register,
@@ -1044,7 +1044,7 @@ describe('formState', () => {
       expect(await screen.findByText('isValid = true')).toBeVisible();
     });
 
-    it('should update isValid to true for Controller validation', async () => {
+    it('update isValid to true for Controller validation', async () => {
       function App() {
         const {
           control,
@@ -1073,7 +1073,7 @@ describe('formState', () => {
     });
   });
 
-  it('should not update dirty fields during blur event', async () => {
+  it('not update dirty fields during blur event', async () => {
     let dirtyFieldsState = {};
 
     const App = () => {
@@ -1102,7 +1102,7 @@ describe('formState', () => {
     expect(dirtyFieldsState).toEqual({});
   });
 
-  it('should mark an array-valued registered field dirty as a boolean rather than diffing its elements (#13584)', async () => {
+  it('mark an array-valued registered field dirty as a boolean rather than diffing its elements (#13584)', async () => {
     function App() {
       const {
         register,
@@ -1136,7 +1136,7 @@ describe('formState', () => {
     expect(screen.getByText(JSON.stringify({ fruits: true }))).toBeVisible();
   });
 
-  it('should mark the form dirty when a field named `ref` changes', async () => {
+  it('mark the form dirty when a field named `ref` changes', async () => {
     const App = () => {
       const {
         register,
@@ -1160,7 +1160,7 @@ describe('formState', () => {
     expect(await screen.findByText('dirty')).toBeVisible();
   });
 
-  it('should update isDirty with getFieldState at child component', () => {
+  it('update isDirty with getFieldState at child component', () => {
     type FormValues = {
       test?: string;
     };
@@ -1213,7 +1213,7 @@ describe('formState', () => {
     });
   });
 
-  it('should recompute isDirty after toggling disabled', async () => {
+  it('recompute isDirty after toggling disabled', async () => {
     let isDirty: null | boolean = null;
 
     const App = () => {
@@ -1245,7 +1245,7 @@ describe('formState', () => {
     expect(isDirty).toBe(false);
   });
 
-  it('should prevent dirty from updating when the form is disabled', async () => {
+  it('prevent dirty from updating when the form is disabled', async () => {
     function App() {
       const {
         register,
@@ -1294,7 +1294,7 @@ describe('formState', () => {
     await screen.getByText('0');
   });
 
-  it('should mark field and form as dirty with setValue shouldDirty when the form is disabled', () => {
+  it('mark field and form as dirty with setValue shouldDirty when the form is disabled', () => {
     const { result } = renderHook(() =>
       useForm({
         disabled: true,
@@ -1317,7 +1317,7 @@ describe('formState', () => {
     expect(result.current.formState.dirtyFields).toEqual({ test: true });
   });
 
-  it('should clear dirty state when setValue restores the default value on a disabled form', () => {
+  it('clear dirty state when setValue restores the default value on a disabled form', () => {
     const { result } = renderHook(() =>
       useForm({
         disabled: true,
@@ -1348,7 +1348,7 @@ describe('formState', () => {
   describe('when delay config is set', () => {
     const message = 'required.';
 
-    it('should only show error after 500ms with register', async () => {
+    it('only show error after 500ms with register', async () => {
       jest.useFakeTimers();
 
       const App = () => {
@@ -1389,7 +1389,7 @@ describe('formState', () => {
       expect(await screen.findByText(message)).toBeVisible();
     });
 
-    it('should only show error after 500ms with Controller', async () => {
+    it('only show error after 500ms with Controller', async () => {
       const App = () => {
         const {
           control,
@@ -1434,7 +1434,7 @@ describe('formState', () => {
       expect(await screen.findByText(message)).toBeVisible();
     });
 
-    it('should prevent error from showing once input is validated', async () => {
+    it('prevent error from showing once input is validated', async () => {
       jest.useFakeTimers();
 
       const App = () => {
@@ -1489,7 +1489,7 @@ describe('formState', () => {
     });
 
     describe('when delayError is provided', () => {
-      it('should only show error after 500ms with register and render formState instantly', async () => {
+      it('only show error after 500ms with register and render formState instantly', async () => {
         jest.useFakeTimers();
 
         const message = 'required.';
@@ -1552,7 +1552,7 @@ describe('formState', () => {
         expect(await screen.findByText(message)).toBeVisible();
       });
 
-      it('should delay, show immediately, or cancel error via setValue depending on delayError option', async () => {
+      it('delay, show immediately, or cancel error via setValue depending on delayError option', async () => {
         jest.useFakeTimers();
 
         const message = 'required.';
@@ -1631,7 +1631,7 @@ describe('formState', () => {
         jest.useRealTimers();
       });
 
-      it('should show error immediately when form-level delayError is not configured', async () => {
+      it('show error immediately when form-level delayError is not configured', async () => {
         jest.useFakeTimers();
 
         const message = 'required.';
@@ -1672,7 +1672,7 @@ describe('formState', () => {
     });
   });
 
-  it('should return updated value with NaN data type', async () => {
+  it('return updated value with NaN data type', async () => {
     function App() {
       const { register, formState } = useForm({
         mode: 'onChange',
@@ -1708,7 +1708,7 @@ describe('formState', () => {
     });
   });
 
-  it('should only trigger validation on blur', async () => {
+  it('only trigger validation on blur', async () => {
     function App() {
       const { register, formState } = useForm({
         mode: 'onBlur',
@@ -1754,7 +1754,7 @@ describe('formState', () => {
     });
   });
 
-  it('should report isDirty as false on mount when defaultValues contain numeric string keys (issue #13346)', async () => {
+  it('report isDirty as false on mount when defaultValues contain numeric string keys (issue #13346)', async () => {
     function App() {
       const {
         register,
@@ -1784,7 +1784,7 @@ describe('formState', () => {
     });
   });
 
-  it('should not update valid with onBlur mode', async () => {
+  it('not update valid with onBlur mode', async () => {
     function App() {
       const {
         formState: { isValid },
@@ -1812,7 +1812,7 @@ describe('formState', () => {
     });
   });
 
-  it('should produce a new errors reference on each mutation so memoized child components re-render', async () => {
+  it('produce a new errors reference on each mutation so memoized child components re-render', async () => {
     type FormValues = { test: string };
     const errorRefs: object[] = [];
 
@@ -1873,7 +1873,7 @@ describe('formState', () => {
     expect(refAfterCleared).not.toBe(refAfterSecondError);
   });
 
-  it('should produce a new errors reference on setError and clearErrors so memoized child components re-render', async () => {
+  it('produce a new errors reference on setError and clearErrors so memoized child components re-render', async () => {
     type FormValues = { test: string };
     const errorRefs: object[] = [];
 

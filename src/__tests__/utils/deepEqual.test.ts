@@ -1,7 +1,7 @@
 import deepEqual from '../../utils/deepEqual';
 
 describe('deepEqual', () => {
-  it('should return false when two sets not match', () => {
+  it('return false when two sets not match', () => {
     expect(
       deepEqual([{ test: '123' }, { test: '455' }, { test: '455' }], []),
     ).toBeFalsy();
@@ -34,14 +34,14 @@ describe('deepEqual', () => {
     ).toBeFalsy();
   });
 
-  it('should return false when either type is primitive', () => {
+  it('return false when either type is primitive', () => {
     expect(deepEqual(null, [])).toBeFalsy();
     expect(deepEqual([], null)).toBeFalsy();
     expect(deepEqual({}, undefined)).toBeFalsy();
     expect(deepEqual(undefined, {})).toBeFalsy();
   });
 
-  it('should return true when two sets matches', () => {
+  it('return true when two sets matches', () => {
     expect(
       deepEqual([{ name: 'useFieldArray' }], [{ name: 'useFieldArray' }]),
     ).toBeTruthy();
@@ -90,7 +90,7 @@ describe('deepEqual', () => {
     ).toBeTruthy();
   });
 
-  it('should return true when comparing sparse array against plain object with numeric string keys (issue #13346)', () => {
+  it('return true when comparing sparse array against plain object with numeric string keys (issue #13346)', () => {
     const sparseArray: any[] = [];
     sparseArray[123] = { name: 'Alice' };
     sparseArray[456] = { name: 'Bob' };
@@ -111,17 +111,17 @@ describe('deepEqual', () => {
     ).toBeTruthy();
   });
 
-  it('should compare date time object valueOf', () => {
+  it('compare date time object valueOf', () => {
     expect(
       deepEqual({ test: new Date('1990') }, { test: new Date('1990') }),
     ).toBeTruthy();
   });
 
-  it('should return true when comparing invalid Date objects', () => {
+  it('return true when comparing invalid Date objects', () => {
     expect(deepEqual(new Date('invalid'), new Date('abc'))).toBeTruthy();
   });
 
-  it('should be capable of comparing objects with circular references', () => {
+  it('be capable of comparing objects with circular references', () => {
     const a: any = { test: '123' };
     const b: any = { test: '123' };
     a.self = a;
@@ -146,7 +146,7 @@ describe('deepEqual', () => {
     expect(deepEqual(a, b)).toBeFalsy();
   });
 
-  it('should not treat different values as equal when one side reuses an object reference', () => {
+  it('not treat different values as equal when one side reuses an object reference', () => {
     const shared = { value: 1 };
 
     expect(
@@ -175,7 +175,7 @@ describe('deepEqual', () => {
     ).toBeTruthy();
   });
 
-  it('should return true when comparing NaN values', () => {
+  it('return true when comparing NaN values', () => {
     expect(deepEqual(NaN, NaN)).toBeTruthy();
 
     // Object NaN
@@ -198,7 +198,7 @@ describe('deepEqual', () => {
     ).toBeTruthy();
   });
 
-  it('should return false when comparing NaN with other values', () => {
+  it('return false when comparing NaN with other values', () => {
     expect(deepEqual({ value: NaN }, { value: 0 })).toBeFalsy();
     expect(deepEqual({ value: NaN }, { value: undefined })).toBeFalsy();
     expect(deepEqual({ value: NaN }, { value: null })).toBeFalsy();
@@ -206,7 +206,7 @@ describe('deepEqual', () => {
     expect(deepEqual([NaN], [0])).toBeFalsy();
   });
 
-  it('should compare empty non-plain objects by reference', () => {
+  it('compare empty non-plain objects by reference', () => {
     class EmptyObject {}
 
     const file = new File(['a'], 'a.svg', { type: 'image/svg+xml' });
@@ -224,14 +224,14 @@ describe('deepEqual', () => {
     expect(deepEqual(new EmptyObject(), new EmptyObject())).toBeFalsy();
   });
 
-  it('should return false when comparing an empty array with an empty plain object', () => {
+  it('return false when comparing an empty array with an empty plain object', () => {
     expect(deepEqual([], {})).toBeFalsy();
     expect(deepEqual({}, [])).toBeFalsy();
     expect(deepEqual({ items: [] }, { items: {} })).toBeFalsy();
     expect(deepEqual({ items: {} }, { items: [] })).toBeFalsy();
   });
 
-  it('should compare values stored under a `ref` key', () => {
+  it('compare values stored under a `ref` key', () => {
     expect(deepEqual({ ref: 'A-100' }, { ref: 'B-200' })).toBeFalsy();
     expect(
       deepEqual({ order: { ref: 'A-100' } }, { order: { ref: 'B-200' } }),
@@ -239,7 +239,7 @@ describe('deepEqual', () => {
     expect(deepEqual([{ ref: 'A-100' }], [{ ref: 'A-100' }])).toBeTruthy();
   });
 
-  it('should ignore the `ref` key when comparing field errors', () => {
+  it('ignore the `ref` key when comparing field errors', () => {
     const input1 = document.createElement('input');
     const input2 = document.createElement('input');
 

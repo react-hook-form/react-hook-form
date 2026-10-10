@@ -21,14 +21,14 @@ import sleep from '../../utils/sleep';
 jest.useFakeTimers();
 
 describe('setValue', () => {
-  it('should not setValue for unmounted state with shouldUnregister', () => {
+  it('not setValue for unmounted state with shouldUnregister', () => {
     const { result } = renderHook(() => useForm<{ test1: string }>());
 
     result.current.register('test1');
     result.current.setValue('test1', 'data');
   });
 
-  it('should empty string when value is null or undefined when registered field is HTMLElement', () => {
+  it('empty string when value is null or undefined when registered field is HTMLElement', () => {
     const { result } = renderHook(() =>
       useForm<{ test?: string | null }>({
         defaultValues: {
@@ -54,7 +54,7 @@ describe('setValue', () => {
     expect(elm).not.toHaveValue();
   });
 
-  it('should set value of radio input correctly', async () => {
+  it('set value of radio input correctly', async () => {
     const { result } = renderHook(() => useForm<{ test: string }>());
 
     result.current.register('test');
@@ -73,7 +73,7 @@ describe('setValue', () => {
     });
   });
 
-  it('should set value of file input correctly if value is FileList', async () => {
+  it('set value of file input correctly if value is FileList', async () => {
     const { result } = renderHook(() => useForm<{ test: FileList }>());
 
     result.current.register('test');
@@ -99,7 +99,7 @@ describe('setValue', () => {
     });
   });
 
-  it('should overwrite File values for unregistered fields', () => {
+  it('overwrite File values for unregistered fields', () => {
     const { result } = renderHook(() => useForm<{ avatar: File }>());
     const fileA = new File(['a'], 'a.svg', { type: 'image/svg+xml' });
     const fileB = new File(['b'], 'b.jpg', { type: 'image/jpeg' });
@@ -110,7 +110,7 @@ describe('setValue', () => {
     expect(result.current.getValues('avatar')).toBe(fileB);
   });
 
-  it('should set value of multiple checkbox input correctly', async () => {
+  it('set value of multiple checkbox input correctly', async () => {
     const { result } = renderHook(() => useForm<{ test: string[] }>());
 
     const { ref } = result.current.register('test');
@@ -148,7 +148,7 @@ describe('setValue', () => {
     });
   });
 
-  it('should set value of single checkbox input correctly', async () => {
+  it('set value of single checkbox input correctly', async () => {
     const { result } = renderHook(() => useForm<{ test: string }>());
 
     result.current.register('test');
@@ -167,7 +167,7 @@ describe('setValue', () => {
     });
   });
 
-  it('should set value of multiple checkbox input correctly as a child', async () => {
+  it('set value of multiple checkbox input correctly as a child', async () => {
     const { result } = renderHook(() =>
       useForm<{ parent: { test: string[] } }>(),
     );
@@ -210,7 +210,7 @@ describe('setValue', () => {
     });
   });
 
-  it('should set value of single checkbox input correctly as a child', async () => {
+  it('set value of single checkbox input correctly as a child', async () => {
     const { result } = renderHook(() =>
       useForm<{ parent: { test: string } }>(),
     );
@@ -242,7 +242,7 @@ describe('setValue', () => {
     });
   });
 
-  it('should set value of multiple select correctly', async () => {
+  it('set value of multiple select correctly', async () => {
     const { result } = renderHook(() => useForm<{ test: string[] }>());
     const { ref } = result.current.register('test');
 
@@ -266,7 +266,7 @@ describe('setValue', () => {
     });
   });
 
-  it('should update nested controlled input', () => {
+  it('update nested controlled input', () => {
     function App() {
       const { setValue, control } = useForm({
         defaultValues: {
@@ -309,7 +309,7 @@ describe('setValue', () => {
     );
   });
 
-  it('should set object array value', () => {
+  it('set object array value', () => {
     const { result } = renderHook(() =>
       useForm<{
         test: {
@@ -345,7 +345,7 @@ describe('setValue', () => {
     });
   });
 
-  it('should set unmountFieldsState value when shouldUnregister is set to false', async () => {
+  it('set unmountFieldsState value when shouldUnregister is set to false', async () => {
     const { result } = renderHook(() =>
       useForm<{
         test: string;
@@ -365,7 +365,7 @@ describe('setValue', () => {
     });
   });
 
-  it('should set nested value correctly ', () => {
+  it('set nested value correctly ', () => {
     const { result } = renderHook(() =>
       useForm<{
         test1: string[];
@@ -422,7 +422,7 @@ describe('setValue', () => {
     });
   });
 
-  it('should work with array fields', () => {
+  it('work with array fields', () => {
     const { result } = renderHook(() =>
       useForm<{
         test: string[];
@@ -462,7 +462,7 @@ describe('setValue', () => {
     });
   });
 
-  it('should worked with nested array fields with object', () => {
+  it('worked with nested array fields with object', () => {
     const { result } = renderHook(() =>
       useForm<{
         test: {
@@ -506,7 +506,7 @@ describe('setValue', () => {
     });
   });
 
-  it('should work with object fields', () => {
+  it('work with object fields', () => {
     const { result } = renderHook(() =>
       useForm<{
         test1: {
@@ -551,7 +551,7 @@ describe('setValue', () => {
     });
   });
 
-  it('should apply every own property and skip only an inherited one', () => {
+  it('apply every own property and skip only an inherited one', () => {
     const { result } = renderHook(() =>
       useForm<{
         test: {
@@ -577,7 +577,7 @@ describe('setValue', () => {
     });
   });
 
-  it('should work for nested fields which are not registered', () => {
+  it('work for nested fields which are not registered', () => {
     const { result } = renderHook(() => useForm());
 
     result.current.register('test.test');
@@ -605,7 +605,7 @@ describe('setValue', () => {
     });
   });
 
-  it('should update an object value that contains a `ref` key', () => {
+  it('update an object value that contains a `ref` key', () => {
     const { result } = renderHook(() =>
       useForm({
         defaultValues: { order: { ref: 'A-100', quantity: 1 } },
@@ -623,7 +623,7 @@ describe('setValue', () => {
   });
 
   describe('with watch', () => {
-    it('should get watched value', () => {
+    it('get watched value', () => {
       const { result } = renderHook(() => {
         const { register, watch, setValue } = useForm<{ test: string }>();
 
@@ -639,7 +639,7 @@ describe('setValue', () => {
       expect(result.current).toBe('abc');
     });
 
-    it('should track field names', () => {
+    it('track field names', () => {
       type FormValues = {
         enabled: boolean;
         child: {
@@ -693,7 +693,7 @@ describe('setValue', () => {
   });
 
   describe('with validation', () => {
-    it('should be called trigger method if shouldValidate variable is true', async () => {
+    it('be called trigger method if shouldValidate variable is true', async () => {
       const { result } = renderHook(() =>
         useForm<{
           test: string;
@@ -719,7 +719,7 @@ describe('setValue', () => {
       expect(result.current.formState.errors?.test?.message).toBe('min');
     });
 
-    it('should validate input correctly with existing error', async () => {
+    it('validate input correctly with existing error', async () => {
       const Component = () => {
         const {
           register,
@@ -769,7 +769,7 @@ describe('setValue', () => {
       );
     });
 
-    it('should not be called trigger method if options is empty', async () => {
+    it('not be called trigger method if options is empty', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
       result.current.register('test', {
@@ -784,7 +784,7 @@ describe('setValue', () => {
       expect(result.current.formState.errors?.test).toBeUndefined();
     });
 
-    it('should be called trigger method if shouldValidate variable is true and field value is array', async () => {
+    it('be called trigger method if shouldValidate variable is true and field value is array', async () => {
       const { result } = renderHook(() =>
         useForm<{
           test: string[];
@@ -815,7 +815,7 @@ describe('setValue', () => {
       expect(result.current.formState.errors?.test?.[2]?.message).toBe('min');
     });
 
-    it('should not be called trigger method if options is empty and field value is array', async () => {
+    it('not be called trigger method if options is empty and field value is array', async () => {
       const { result } = renderHook(() =>
         useForm<{
           test: string[];
@@ -972,7 +972,7 @@ describe('setValue', () => {
   });
 
   describe('with value transforms', () => {
-    it('should not mark field dirty when setValueAs output equals the default value', () => {
+    it('not mark field dirty when setValueAs output equals the default value', () => {
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
           defaultValues: { test: 'default' },
@@ -994,7 +994,7 @@ describe('setValue', () => {
       expect(result.current.formState.dirtyFields).toEqual({});
     });
 
-    it('should mark field dirty when setValueAs output differs from the default value', () => {
+    it('mark field dirty when setValueAs output differs from the default value', () => {
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
           defaultValues: { test: 'default' },
@@ -1013,7 +1013,7 @@ describe('setValue', () => {
       expect(result.current.formState.dirtyFields.test).toBeTruthy();
     });
 
-    it('should not mark field dirty when valueAsNumber output equals the default value', () => {
+    it('not mark field dirty when valueAsNumber output equals the default value', () => {
       const { result } = renderHook(() =>
         useForm<{ test: number }>({
           defaultValues: { test: 25 },
@@ -1034,7 +1034,7 @@ describe('setValue', () => {
   });
 
   describe('with touched', () => {
-    it('should update touched with shouldTouched config', () => {
+    it('update touched with shouldTouched config', () => {
       const App = () => {
         const {
           setValue,
@@ -1065,7 +1065,7 @@ describe('setValue', () => {
   });
 
   describe('with strict mode', () => {
-    it('should be able to set input value async', async () => {
+    it('be able to set input value async', async () => {
       function App() {
         const { control, setValue } = useForm();
 
@@ -1103,7 +1103,7 @@ describe('setValue', () => {
     });
   });
 
-  it('should set hidden input value correctly and reflect on the submission data', async () => {
+  it('set hidden input value correctly and reflect on the submission data', async () => {
     let submitData: Record<string, string> | undefined = undefined;
 
     const Component = () => {
@@ -1145,7 +1145,7 @@ describe('setValue', () => {
     );
   });
 
-  it('should validate the input and return correct isValid formState', async () => {
+  it('validate the input and return correct isValid formState', async () => {
     const { result } = renderHook(() =>
       useForm<{ test: { data: string; data1: string } }>({
         mode: VALIDATION_MODE.onChange,
@@ -1178,7 +1178,7 @@ describe('setValue', () => {
     expect(result.current.formState.isValid).toBeTruthy();
   });
 
-  it('should setValue with valueAs', async () => {
+  it('setValue with valueAs', async () => {
     let result: Record<string, string>;
 
     function App() {
@@ -1214,7 +1214,7 @@ describe('setValue', () => {
     );
   });
 
-  it('should set value for field array name correctly', () => {
+  it('set value for field array name correctly', () => {
     const inputId = 'name';
 
     const App = () => {
@@ -1256,7 +1256,7 @@ describe('setValue', () => {
     expect(screen.getByTestId(inputId)).toHaveValue('updated value');
   });
 
-  it('should notify a Controller registered on a field array item root when setValue targets a nested leaf', async () => {
+  it('notify a Controller registered on a field array item root when setValue targets a nested leaf', async () => {
     const App = () => {
       const { control, setValue } = useForm<{
         items: { note: number }[];
@@ -1297,7 +1297,7 @@ describe('setValue', () => {
     );
   });
 
-  it('should set field array correctly without affect the parent field array', async () => {
+  it('set field array correctly without affect the parent field array', async () => {
     const fieldsValue: unknown[] = [];
     type FormValues = {
       test: { name: string; nestedArray: { name: string }[] }[];
@@ -1358,7 +1358,7 @@ describe('setValue', () => {
     expect(fieldsValue.length).toEqual(2);
   });
 
-  it('should not register deeply nested inputs', () => {
+  it('not register deeply nested inputs', () => {
     let fields: unknown;
     let data: unknown;
 
@@ -1421,7 +1421,7 @@ describe('setValue', () => {
   });
 
   describe('when set field to null', () => {
-    it('should be able to set correctly with register', () => {
+    it('be able to set correctly with register', () => {
       let result: unknown;
 
       type FormData = {
@@ -1459,7 +1459,7 @@ describe('setValue', () => {
       });
     });
 
-    it('should be able to set correctly without register', () => {
+    it('be able to set correctly without register', () => {
       let result: unknown;
 
       type FormData = {
@@ -1496,7 +1496,7 @@ describe('setValue', () => {
     });
   });
 
-  it('should only be able to update value of array which is not registered', async () => {
+  it('only be able to update value of array which is not registered', async () => {
     const App = () => {
       const { setValue, watch } = useForm({
         defaultValues: {
@@ -1518,7 +1518,7 @@ describe('setValue', () => {
     expect(await screen.findByText('["2","2"]')).toBeVisible();
   });
 
-  it('should only be able to update value of object which is not registered', async () => {
+  it('only be able to update value of object which is not registered', async () => {
     const App = () => {
       const { setValue, watch } = useForm<{
         test: {
@@ -1555,7 +1555,7 @@ describe('setValue', () => {
     ).toBeVisible();
   });
 
-  it('should update nested object which contain date object without register', () => {
+  it('update nested object which contain date object without register', () => {
     const watchedValue: unknown[] = [];
     const defaultValues = {
       userData: {
@@ -1609,7 +1609,7 @@ describe('setValue', () => {
     ]);
   });
 
-  it('should update isDirty even input is not registered', async () => {
+  it('update isDirty even input is not registered', async () => {
     const App = () => {
       const {
         setValue,
@@ -1632,7 +1632,7 @@ describe('setValue', () => {
     expect(await screen.findByText('dirty')).toBeVisible();
   });
 
-  it('should update both dirty and touched state', () => {
+  it('update both dirty and touched state', () => {
     const App = () => {
       const {
         register,
@@ -1675,7 +1675,7 @@ describe('setValue', () => {
     expect(screen.getByText('touched')).toBeVisible();
   });
 
-  it('should notify observers exactly once when field is watched', async () => {
+  it('notify observers exactly once when field is watched', async () => {
     const { result } = renderHook(() => useForm());
     const control = result.current.control as any;
 
@@ -1690,7 +1690,7 @@ describe('setValue', () => {
     expect(nextSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('should not notify subscribers when setValue is called with an unchanged value', async () => {
+  it('not notify subscribers when setValue is called with an unchanged value', async () => {
     const { result } = renderHook(() =>
       useForm<{ test: string }>({ defaultValues: { test: 'initial' } }),
     );
@@ -1718,7 +1718,7 @@ describe('setValue', () => {
     expect(valueNotifications).toHaveLength(0);
   });
 
-  it('should mark field as dirty when updating array of objects with shouldDirty true', () => {
+  it('mark field as dirty when updating array of objects with shouldDirty true', () => {
     type IData = {
       data: { id: number; name: string }[];
     };
@@ -1747,7 +1747,7 @@ describe('setValue', () => {
     });
   });
 
-  it('should trigger field array root rules when shouldValidate is true', async () => {
+  it('trigger field array root rules when shouldValidate is true', async () => {
     const { result } = renderHook(() => {
       const { control, formState, setValue } = useForm<{
         test: { value: string }[];

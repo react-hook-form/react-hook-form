@@ -18,7 +18,7 @@ import isBoolean from '../utils/isBoolean';
 import noop from '../utils/noop';
 
 describe('useController', () => {
-  it('should render input correctly', () => {
+  it('render input correctly', () => {
     const Component = () => {
       const { control } = useForm<{
         test: string;
@@ -37,7 +37,7 @@ describe('useController', () => {
     render(<Component />);
   });
 
-  it('should return a promise-like value from field.onChange', async () => {
+  it('return a promise-like value from field.onChange', async () => {
     let onChangeResult: any;
 
     const Component = () => {
@@ -140,7 +140,7 @@ describe('useController', () => {
     expect(input.value).toBe('jane');
   });
 
-  it('should only subscribe to formState at each useController level', async () => {
+  it('only subscribe to formState at each useController level', async () => {
     const renderCounter = [0, 0];
     type FormValues = {
       test: string;
@@ -224,7 +224,7 @@ describe('useController', () => {
   });
 
   describe('checkbox', () => {
-    it('should work for checkbox by spread the field object', async () => {
+    it('work for checkbox by spread the field object', async () => {
       const watchResult: unknown[] = [];
       const Component = () => {
         const { control, watch } = useForm<{
@@ -260,7 +260,7 @@ describe('useController', () => {
       ]);
     });
 
-    it('should work for checkbox by assign checked', async () => {
+    it('work for checkbox by assign checked', async () => {
       const watchResult: unknown[] = [];
       const Component = () => {
         const { control, watch } = useForm<{
@@ -302,7 +302,7 @@ describe('useController', () => {
       ]);
     });
 
-    it('should work for checkbox by assign value manually', async () => {
+    it('work for checkbox by assign value manually', async () => {
       const watchResult: unknown[] = [];
       const Component = () => {
         const { control, watch } = useForm<{
@@ -348,7 +348,7 @@ describe('useController', () => {
     });
   });
 
-  it('should subscribe to formState update with trigger re-render at root', () => {
+  it('subscribe to formState update with trigger re-render at root', () => {
     type FormValues = {
       test: string;
     };
@@ -396,7 +396,7 @@ describe('useController', () => {
     expect(screen.getByText('touched')).toBeVisible();
   });
 
-  it('should not overwrite defaultValues with defaultValue', () => {
+  it('not overwrite defaultValues with defaultValue', () => {
     const App = () => {
       const { control } = useForm({
         defaultValues: {
@@ -423,7 +423,7 @@ describe('useController', () => {
     );
   });
 
-  it('should be able to update input value without ref', () => {
+  it('be able to update input value without ref', () => {
     const App = () => {
       const { control, setValue } = useForm();
       const { field } = useController({
@@ -455,7 +455,7 @@ describe('useController', () => {
     );
   });
 
-  it('should not change reference for onChange and onBlur on input value change', () => {
+  it('not change reference for onChange and onBlur on input value change', () => {
     let counter = 0;
 
     const App = () => {
@@ -513,7 +513,7 @@ describe('useController', () => {
     expect(counter).toEqual(1);
   });
 
-  it('should be able to setValue after reset', async () => {
+  it('be able to setValue after reset', async () => {
     let renderCount = 0;
 
     type FormValues = {
@@ -558,7 +558,7 @@ describe('useController', () => {
     expect(renderCount).toEqual(3);
   });
 
-  it('should invoke native validation with Controller', async () => {
+  it('invoke native validation with Controller', async () => {
     const setCustomValidity = jest.fn();
     const reportValidity = jest.fn();
     const focus = jest.fn();
@@ -627,7 +627,7 @@ describe('useController', () => {
     expect(reportValidity).toHaveBeenCalledTimes(3);
   });
 
-  it('should update with inline defaultValue', async () => {
+  it('update with inline defaultValue', async () => {
     const onSubmit = jest.fn();
     const App = () => {
       const { control, handleSubmit } = useForm();
@@ -655,7 +655,7 @@ describe('useController', () => {
     );
   });
 
-  it('should return defaultValues when component is not yet mounted', async () => {
+  it('return defaultValues when component is not yet mounted', async () => {
     const defaultValues = {
       test: {
         deep: [
@@ -698,7 +698,7 @@ describe('useController', () => {
     ).toBeVisible();
   });
 
-  it('should trigger extra re-render and update latest value when setValue called during mount', async () => {
+  it('trigger extra re-render and update latest value when setValue called during mount', async () => {
     const Child = () => {
       const { setValue } = useFormContext();
       const {
@@ -736,7 +736,7 @@ describe('useController', () => {
     expect(await screen.findByText('expected value')).toBeVisible();
   });
 
-  it('should remount with input with current formValue', () => {
+  it('remount with input with current formValue', () => {
     let data: unknown;
 
     function Input<T extends FieldValues>({
@@ -788,7 +788,7 @@ describe('useController', () => {
     expect(data).toBeUndefined();
   });
 
-  it('should always get the latest value for onBlur event', async () => {
+  it('always get the latest value for onBlur event', async () => {
     const watchResults: unknown[] = [];
 
     const App = () => {
@@ -832,7 +832,7 @@ describe('useController', () => {
     ]);
   });
 
-  it('should focus and select the input text', async () => {
+  it('focus and select the input text', async () => {
     const select = jest.fn();
     const focus = jest.fn();
 
@@ -867,7 +867,7 @@ describe('useController', () => {
     });
   });
 
-  it('should update isValid correctly with strict mode', async () => {
+  it('update isValid correctly with strict mode', async () => {
     const App = () => {
       const form = useForm({
         mode: 'onChange',
@@ -900,7 +900,7 @@ describe('useController', () => {
     });
   });
 
-  it('should restore defaultValue from Controller with react strict mode double useEffect', async () => {
+  it('restore defaultValue from Controller with react strict mode double useEffect', async () => {
     const onSubmit = jest.fn();
 
     function App() {
@@ -937,7 +937,7 @@ describe('useController', () => {
     });
   });
 
-  it('should restore defaultValues with react strict mode double useEffect', () => {
+  it('restore defaultValues with react strict mode double useEffect', () => {
     function Form() {
       return (
         <Controller
@@ -987,7 +987,7 @@ describe('useController', () => {
     screen.getByText('pristine');
   });
 
-  it('should preserve ref proxy methods on error when shouldUnregister is true in StrictMode', async () => {
+  it('preserve ref proxy methods on error when shouldUnregister is true in StrictMode', async () => {
     let capturedError: any;
 
     function Input() {
@@ -1029,7 +1029,7 @@ describe('useController', () => {
     expect(typeof capturedError.ref.setCustomValidity).toBe('function');
   });
 
-  it('should validate a controlled value independently of the attached input value', async () => {
+  it('validate a controlled value independently of the attached input value', async () => {
     type FormValues = {
       tags: string[];
     };
@@ -1074,7 +1074,7 @@ describe('useController', () => {
     expect(onInvalid).not.toHaveBeenCalled();
   });
 
-  it('should disable the controller input', async () => {
+  it('disable the controller input', async () => {
     function Form() {
       const { field } = useController({
         name: 'lastName',
@@ -1103,7 +1103,7 @@ describe('useController', () => {
     });
   });
 
-  it('should disable form input with disabled prop', async () => {
+  it('disable form input with disabled prop', async () => {
     const App = () => {
       const [disabled, setDisabled] = React.useState(false);
       const { control, watch } = useForm({
@@ -1147,7 +1147,7 @@ describe('useController', () => {
     await waitFor(() => screen.getByText('disable'));
   });
 
-  it('should disable form input field with disabled prop', async () => {
+  it('disable form input field with disabled prop', async () => {
     const App = () => {
       const { control } = useForm();
       const {
@@ -1178,7 +1178,7 @@ describe('useController', () => {
     });
   });
 
-  it('should not disable form input field with disabled=false', async () => {
+  it('not disable form input field with disabled=false', async () => {
     const App = () => {
       const { control } = useForm();
       const {
@@ -1209,7 +1209,7 @@ describe('useController', () => {
     });
   });
 
-  it('should pass validation with disabled to set to true', () => {
+  it('pass validation with disabled to set to true', () => {
     const callback = jest.fn();
 
     const App = () => {
@@ -1244,7 +1244,7 @@ describe('useController', () => {
     });
   });
 
-  it('should not omit form value when disabled is not been presented', async () => {
+  it('not omit form value when disabled is not been presented', async () => {
     const onSubmit = jest.fn();
 
     const App = () => {
@@ -1317,7 +1317,7 @@ describe('useController', () => {
     );
   });
 
-  it('should subscribe to exact form state update', () => {
+  it('subscribe to exact form state update', () => {
     type FormValues = {
       test: string;
       test_with_suffix: string;
@@ -1409,7 +1409,7 @@ describe('useController', () => {
     expect(renderCounter).toEqual({ test: 3, test_with_suffix: 3 });
   });
 
-  it('should listen to similar fields with exact - false', () => {
+  it('listen to similar fields with exact - false', () => {
     type FormValues = {
       test: string;
       test_with_suffix: string;
@@ -1502,7 +1502,7 @@ describe('useController', () => {
     expect(renderCounter).toEqual({ test: 4, test_with_suffix: 4 });
   });
 
-  it('should prevent value leakage and preserve previous field value when name changes', () => {
+  it('prevent value leakage and preserve previous field value when name changes', () => {
     type FormValues = {
       type: 'personal' | 'business';
       personalName: string;
@@ -1563,7 +1563,7 @@ describe('useController', () => {
     );
   });
 
-  it('should react to changing field name', () => {
+  it('react to changing field name', () => {
     type FormValues = {
       field1: string;
       field2: string;
@@ -1601,7 +1601,7 @@ describe('useController', () => {
     expect(result.current.field.value).toBe('value1');
   });
 
-  it('should keep nested array values when useController and watch APIs switch dynamic names', async () => {
+  it('keep nested array values when useController and watch APIs switch dynamic names', async () => {
     type FormValues = {
       content: {
         children: {
@@ -1755,7 +1755,7 @@ describe('useController', () => {
     );
   });
 
-  it('should react to changing control', () => {
+  it('react to changing control', () => {
     type FormValues = {
       name: string;
     };
@@ -1796,7 +1796,7 @@ describe('useController', () => {
     expect(result.current.field.value).toBe('form1-value');
   });
 
-  it('should write onChange updates to the newly-passed control (#13163)', async () => {
+  it('write onChange updates to the newly-passed control (#13163)', async () => {
     type FormValues = {
       name: string;
     };
@@ -1849,7 +1849,7 @@ describe('useController', () => {
     expect(form1Result.current.getValues('name')).toBe('form1-typed');
   });
 
-  it('should update isValid when Controller with required rule re-mounts via checkbox toggle', async () => {
+  it('update isValid when Controller with required rule re-mounts via checkbox toggle', async () => {
     type FormValues = {
       items: { checked: boolean; input: string }[];
     };
@@ -1946,7 +1946,7 @@ describe('useController', () => {
     render(<Component />);
   });
 
-  it('should update the field value when a parent object is cleared with setValue', async () => {
+  it('update the field value when a parent object is cleared with setValue', async () => {
     function App() {
       const { control, setValue } = useForm<{
         data: { type: string };
@@ -1989,7 +1989,7 @@ describe('useController', () => {
     expect(screen.getByText('watch:undefined')).toBeVisible();
   });
 
-  it('should not mutate an externally-owned object passed to a parent field.onChange when a nested field later changes', async () => {
+  it('not mutate an externally-owned object passed to a parent field.onChange when a nested field later changes', async () => {
     const preset = { first: 'x' };
 
     function App() {
@@ -2024,7 +2024,7 @@ describe('useController', () => {
     expect(preset.first).toBe('x');
   });
 
-  it('should submit null instead of undefined for a nested Controller field under a null parent default value (#13674)', async () => {
+  it('submit null instead of undefined for a nested Controller field under a null parent default value (#13674)', async () => {
     const onSubmit = jest.fn();
 
     function App() {
