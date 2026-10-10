@@ -1,11 +1,8 @@
 import type {
   Control,
-  ErrorOption,
   FieldValues,
   FormState,
   GetValuesConfig,
-  RegisterOptions,
-  SetFocusOptions,
   SetValueConfig,
   TriggerConfig,
   UseFormReturn,
@@ -25,12 +22,16 @@ import getFormStateSnapshot from './getFormStateSnapshot';
 import getProxyFormState from './getProxyFormState';
 import shouldSubscribeByName from './shouldSubscribeByName';
 
-export type Template = string | { [key: string]: Template } | Template[];
+type Template = string | { [key: string]: Template } | Template[];
+
+type Entries = [string, string][];
 
 export type Scope = {
   control: Control<any, any, any>;
   path: string;
   template?: Template;
+  entries?: Entries;
+  isItem?: boolean;
 };
 
 type Names = string | readonly string[] | undefined;
@@ -59,94 +60,12 @@ const splitName = (name: string): [string, string] => {
   return index < 0 ? [name, ''] : [name.slice(0, index), name.slice(index + 1)];
 };
 
-export const joinName = (path: string, name?: string | number) =>
+const joinName = (path: string, name?: string | number) =>
   isUndefined(name) || name === ''
     ? path
     : path
       ? `${path}.${name}`
       : String(name);
-
-const mapName = (template: Template | undefined, name: string): string => {
-  if (isString(template)) {
-    return joinName(template, name);
-  }
-
-  const [key, rest] = splitName(name);
-
-  if (Array.isArray(template)) {
-    return joinName(key, mapName(template[0], rest));
-  }
-
-  const target = template && (template as Record<string, Template>)[key];
-
-  return isUndefined(target) ? name : mapName(target, rest);
-};
-
-const getTemplateEntries = (
-  template: Template,
-  key = '',
-): [string, string][] =>
-  isString(template) || Array.isArray(template)
-    ? [[key, isString(template) ? template : '']]
-    : Object.entries(template).flatMap(([childKey, value]) =>
-        getTemplateEntries(value, joinName(key, childKey)),
-      );
-
-export const pickTemplate = (value: any, template?: Template): any => {
-  if (!template) {
-    return value;
-  }
-
-  if (isString(template)) {
-    return template ? get(value, template) : value;
-  }
-
-  if (Array.isArray(template)) {
-    return Array.isArray(value)
-      ? value.map((item) => pickTemplate(item, template[0]))
-      : value;
-  }
-
-  const result: Record<string, unknown> = {};
-
-  for (const key in template) {
-    const picked = pickTemplate(value, template[key]);
-
-    isUndefined(picked) ||
-      (isObject(template[key]) && isEmptyObject(picked)) ||
-      (result[key] = picked);
-  }
-
-  return result;
-};
-
-export const unpickTemplate = (
-  value: any,
-  template?: Template,
-  isItem?: boolean,
-): any => {
-  if (!template) {
-    return value;
-  }
-
-  if (Array.isArray(template)) {
-    return Array.isArray(value)
-      ? value.map((item) => unpickTemplate(item, template[0]))
-      : isItem
-        ? unpickTemplate(value, template[0])
-        : value;
-  }
-
-  let result: any = {};
-
-  for (const [key, name] of getTemplateEntries(template)) {
-    const item = key ? get(value, key) : value;
-
-    isUndefined(item) || (name ? set(result, name, item) : (result = item));
-  }
-
-  return result;
-};
 
 const stripName = (prefix: string, name?: string) =>
   !prefix
@@ -157,76 +76,102 @@ const stripName = (prefix: string, name?: string) =>
         ? name.slice(prefix.length + 1)
         : undefined;
 
-const unmapName = (template: Template, name: string): string | undefined => {
-  if (Array.isArray(template)) {
-    const [index, rest] = splitName(name);
-    const itemName = rest ? unmapName(template[0], rest) : '';
+const getEntries = (template: Template, key = ''): Entries =>
+  isString(template)
+    ? [[key, template]]
+    : Object.entries(template).flatMap(([childKey, value]) =>
+        getEntries(value, joinName(key, childKey)),
+      );
 
-    return isUndefined(itemName) ? itemName : joinName(index, itemName);
-  }
+const remap = (entries: Entries, name: string, isReverse?: boolean) => {
+  for (const entry of entries) {
+    const rest = stripName(entry[isReverse ? 1 : 0], name);
 
-  for (const [key, target] of getTemplateEntries(template)) {
-    const relative = stripName(target, name);
-
-    if (!isUndefined(relative)) {
-      return joinName(key, relative);
+    if (!isUndefined(rest)) {
+      return joinName(entry[isReverse ? 0 : 1], rest);
     }
   }
 
-  return undefined;
+  return isReverse ? undefined : name;
 };
 
-const relativeName = ({ path, template }: Scope, name?: string) => {
+const move = (value: any, entries: Entries, isReverse?: boolean) => {
+  let result: any = {};
+
+  for (const [key, target] of entries) {
+    const [from, to] = isReverse ? [key, target] : [target, key];
+    const item = from ? get(value, from) : value;
+
+    isUndefined(item) || (to ? set(result, to, item) : (result = item));
+  }
+
+  return result;
+};
+
+export const mapItems = (
+  scope: Scope | undefined,
+  value: any,
+  isReverse?: boolean,
+) =>
+  scope && scope.isItem
+    ? Array.isArray(value)
+      ? value.map((item) => move(item, scope.entries!, isReverse))
+      : move(value, scope.entries!, isReverse)
+    : value;
+
+const resolveName = (
+  { path, entries, isItem }: Scope,
+  name?: string | number,
+) => {
+  if (isUndefined(name) || !entries) {
+    return joinName(path, name);
+  }
+
+  const [index, rest] = splitName(String(name));
+
+  return joinName(
+    path,
+    isItem
+      ? joinName(index, remap(entries, rest))
+      : remap(entries, String(name)),
+  );
+};
+
+const relativeName = ({ path, entries, isItem }: Scope, name?: string) => {
   const relative = stripName(path, name);
 
-  return isUndefined(relative) || !template
-    ? relative
-    : unmapName(template, relative);
+  if (isUndefined(relative) || !entries) {
+    return relative;
+  }
+
+  if (!isItem) {
+    return remap(entries, relative, true);
+  }
+
+  const [index, rest] = splitName(relative);
+  const itemName = rest && remap(entries, rest, true);
+
+  return isUndefined(itemName) ? itemName : joinName(index, itemName);
 };
 
-const resolveName = ({ path, template }: Scope, name?: string | number) =>
-  joinName(
-    path,
-    isUndefined(name) || !template ? name : mapName(template, String(name)),
-  );
-
-const getScopePaths = ({ path, template }: Scope) =>
-  template && !Array.isArray(template)
-    ? getTemplateEntries(template).map(([, name]) => joinName(path, name))
+const getScopeNames = ({ path, entries, isItem }: Scope) =>
+  entries && !isItem
+    ? entries.map(([, name]) => joinName(path, name))
     : path || undefined;
 
 export const scopeNames = <T extends Names>(scope: Scope, names: T): T =>
   (isUndefined(names)
-    ? getScopePaths(scope)
+    ? getScopeNames(scope)
     : Array.isArray(names)
       ? names.map((name) => resolveName(scope, name))
       : resolveName(scope, names as string)) as T;
 
-export const pick = ({ path, template }: Scope, value: unknown) =>
-  pickTemplate(path ? get(value, path) : value, template);
+export const pick = (scope: Scope, value: unknown) => {
+  const scopedValue = scope.path ? get(value, scope.path) : value;
 
-export const pickOutput = (
-  scope: Scope,
-  names: Names,
-  output: unknown,
-): any => {
-  if (!scope.template || !isUndefined(names)) {
-    return output;
-  }
-
-  const scopeNames = getScopePaths(scope);
-
-  if (!Array.isArray(scopeNames)) {
-    return pickTemplate(output, scope.template);
-  }
-
-  const values = {};
-
-  scopeNames.forEach((name, index) =>
-    set(values, name, (output as unknown[])[index]),
-  );
-
-  return pick(scope, values);
+  return scope.entries && !scope.isItem
+    ? move(scopedValue, scope.entries)
+    : mapItems(scope, scopedValue);
 };
 
 export const resolveScope = <TControl, TName extends Names>(
@@ -247,43 +192,27 @@ export const scopeDefaultValue = (
 ) =>
   scope &&
   !isUndefined(defaultValue) &&
-  (Array.isArray(names) || (isUndefined(names) && isObject(scope.template)))
-    ? unpickTemplate(
+  (Array.isArray(names) || (!names && scope.entries && !scope.isItem))
+    ? move(
         defaultValue,
         Array.isArray(names)
-          ? Object.fromEntries(
-              names.map((name) => [name, resolveName(scope, name)]),
-            )
-          : rebaseTemplate(scope.template as Template, scope.path),
+          ? names.map((name) => [name, resolveName(scope, name)])
+          : scope.entries!.map(([key, name]) => [
+              key,
+              joinName(scope.path, name),
+            ]),
+        true,
       )
     : defaultValue;
 
-const rebaseTemplate = (
-  template: Template,
-  parent: Template | undefined,
-): Template =>
-  isString(template)
-    ? mapName(parent, template)
-    : Array.isArray(template)
-      ? [
-          rebaseTemplate(
-            template[0],
-            Array.isArray(parent) ? parent[0] : parent,
-          ),
-        ]
-      : Object.fromEntries(
-          Object.entries(template).map(([key, value]) => [
-            key,
-            rebaseTemplate(value, parent),
-          ]),
-        );
+const isValidating = (value: unknown) => !!value && !isEmptyObject(value);
 
 export const scopeFormState = <T extends Record<string, any>>(
   formState: T,
   scope: Scope | undefined,
   control: Pick<Control, '_state' | '_formValues' | '_defaultValues'>,
 ): T => {
-  if (!scope || (!scope.path && !scope.template)) {
+  if (!scope || (!scope.path && !scope.entries)) {
     return formState;
   }
 
@@ -323,7 +252,17 @@ export const scopeFormState = <T extends Record<string, any>>(
   return result;
 };
 
-const isValidating = (value: unknown) => !!value && !isEmptyObject(value);
+const rebaseTemplate = (template: Template, entries?: Entries): Template =>
+  !entries
+    ? template
+    : Array.isArray(template)
+      ? [rebaseTemplate(template[0], entries)]
+      : Object.fromEntries(
+          getEntries(template).map(([key, name]) => [
+            key,
+            remap(entries, name) as string,
+          ]),
+        );
 
 const getFormState = (control: Control<any, any, any>) =>
   getProxyFormState(getFormStateSnapshot(control), control);
@@ -342,31 +281,37 @@ export default <TFieldValues extends FieldValues, TContext, TTransformedValues>(
     const key = template ? path + JSON.stringify(template) : path;
 
     if (!cache.has(key)) {
-      cache.set(key, createSelection({ control, path, template }));
+      const isItem = Array.isArray(template);
+
+      cache.set(
+        key,
+        createSelection({
+          control,
+          path,
+          template,
+          entries: template
+            ? getEntries(isItem ? template[0] : template)
+            : undefined,
+          isItem,
+        }),
+      );
     }
 
     return cache.get(key);
   };
 
   const createSelection = (scope: Scope) => {
-    const { path, template } = scope;
+    const { path, template, entries, isItem } = scope;
     const resolve = (name: unknown) =>
       scopeNames(scope, isName(name) ? name : undefined);
     const withOptionalName =
-      <T>(method: (name: string, options?: T) => unknown) =>
-      (name?: unknown, options?: T) =>
+      (method: Method) =>
+      (name?: unknown, ...args: unknown[]) =>
         isString(name)
-          ? method(resolveName(scope, name), options)
-          : method(path, name as T);
-    const register = withOptionalName<RegisterOptions>(methods.register);
-    const setError = (name: unknown, error?: unknown, options?: unknown) =>
-      isString(name)
-        ? methods.setError(
-            resolveName(scope, name),
-            error as ErrorOption,
-            options as never,
-          )
-        : methods.setError(path, name as ErrorOption, error as never);
+          ? method(resolveName(scope, name), ...args)
+          : method(path, name, ...args);
+    const register = withOptionalName(methods.register);
+    const setError = withOptionalName(methods.setError);
     const getFieldState = (
       name?: unknown,
       formState?: FormState<FieldValues>,
@@ -385,7 +330,7 @@ export default <TFieldValues extends FieldValues, TContext, TTransformedValues>(
             name as never,
           );
     const scopedControl =
-      path || template
+      path || entries
         ? Object.assign(Object.create(control), {
             register,
             unregister,
@@ -397,13 +342,36 @@ export default <TFieldValues extends FieldValues, TContext, TTransformedValues>(
 
     scopedControl !== control && scopes.set(scopedControl, scope);
 
+    const selectName = (name: string) => {
+      const [index, rest] = splitName(name);
+      const prefix = name + '.';
+      const group =
+        entries && !isItem
+          ? entries.filter(([key]) => key.startsWith(prefix))
+          : [];
+
+      return isItem && !rest
+        ? getSelection(joinName(path, index), (template as Template[])[0])
+        : group.length
+          ? getSelection(
+              path,
+              Object.fromEntries(
+                group.map(([key, target]) => [
+                  key.slice(prefix.length),
+                  target,
+                ]),
+              ),
+            )
+          : getSelection(resolveName(scope, name));
+    };
+
     const selection = {
       name: path,
       select: (name?: unknown) =>
         isUndefined(name)
           ? selection
           : isObject(name) || Array.isArray(name)
-            ? getSelection(path, rebaseTemplate(name as Template, template))
+            ? getSelection(path, rebaseTemplate(name as Template, entries))
             : selectName(String(name)),
       control: scopedControl,
       get formState() {
@@ -427,8 +395,8 @@ export default <TFieldValues extends FieldValues, TContext, TTransformedValues>(
           resolve(name),
           isName(name) ? options : (name as TriggerConfig),
         ),
-      resetField: withOptionalName<object>(methods.resetField),
-      setFocus: withOptionalName<SetFocusOptions>(methods.setFocus),
+      resetField: withOptionalName(methods.resetField),
+      setFocus: withOptionalName(methods.setFocus),
       setValue: (name: string, value: unknown, options?: SetValueConfig) =>
         methods.setValue(resolveName(scope, name), value, options),
       setValues: (
@@ -441,30 +409,28 @@ export default <TFieldValues extends FieldValues, TContext, TTransformedValues>(
           const merged = isObject(current) ? { ...current, ...next } : next;
           const updatedFormValues: FieldValues = {};
 
-          if (!path && !template) {
+          if (!path && !entries) {
             return merged;
           }
 
-          for (const [key, name] of isObject(template)
-            ? getTemplateEntries(template)
-            : [['', '']]) {
-            const fieldName = joinName(path, name);
-            const [rootKey] = splitName(fieldName);
+          for (const [name, value] of entries && !isItem
+            ? entries.map(([key, target]) => [
+                joinName(path, target),
+                key ? get(merged, key) : merged,
+              ])
+            : [[path, mapItems(scope, merged, true)]]) {
+            const [key] = splitName(name);
 
-            rootKey in updatedFormValues ||
-              (updatedFormValues[rootKey] = cloneObject(formValues[rootKey]));
-            set(
-              updatedFormValues,
-              fieldName,
-              key ? get(merged, key) : unpickTemplate(merged, template),
-            );
+            key in updatedFormValues ||
+              (updatedFormValues[key] = cloneObject(formValues[key]));
+            set(updatedFormValues, name, value);
           }
 
           return updatedFormValues;
         }, options),
       watch: (name?: unknown, defaultValue?: unknown) => {
         if (isFunction(name)) {
-          const names = getScopePaths(scope);
+          const names = getScopeNames(scope);
 
           return methods.watch(
             (values, info) =>
@@ -476,20 +442,18 @@ export default <TFieldValues extends FieldValues, TContext, TTransformedValues>(
           );
         }
 
-        const names = resolve(name);
-
-        return pickOutput(
-          scope,
-          isName(name) ? name : undefined,
-          (methods.watch as Method)(
-            names,
-            scopeDefaultValue(
-              scope,
-              isName(name) ? name : undefined,
-              defaultValue,
-            ),
+        const value = (methods.watch as Method)(
+          resolve(name),
+          scopeDefaultValue(
+            scope,
+            isName(name) ? name : undefined,
+            defaultValue,
           ),
         );
+
+        return entries && !isName(name)
+          ? pick(scope, methods.getValues())
+          : value;
       },
       subscribe: (props: Parameters<UseFormReturn['subscribe']>[0]) =>
         methods.subscribe({
@@ -515,22 +479,6 @@ export default <TFieldValues extends FieldValues, TContext, TTransformedValues>(
       assert: self,
       defined: self,
       cast: self,
-    };
-
-    const selectName = (name: string) => {
-      const [key, rest] = splitName(name);
-      const target = Array.isArray(template)
-        ? template[0]
-        : isObject<Record<string, Template>>(template)
-          ? template[key]
-          : undefined;
-
-      return target && !isString(target) && !rest
-        ? getSelection(
-            Array.isArray(template) ? joinName(path, key) : path,
-            target,
-          )
-        : getSelection(resolveName(scope, name));
     };
 
     return selection;

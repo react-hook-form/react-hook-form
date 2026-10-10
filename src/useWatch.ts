@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { pickOutput, scopeDefaultValue } from './logic/createSelect';
+import { pick, scopeDefaultValue } from './logic/createSelect';
 import generateWatchOutput from './logic/generateWatchOutput';
 import cloneObject from './utils/cloneObject';
 import deepEqual from './utils/deepEqual';
@@ -177,9 +177,12 @@ export function useWatch<TFieldValues extends FieldValues>(
   const _prevName = React.useRef(name);
 
   _compute.current =
-    scope && scope.template && !_name
-      ? (value: unknown) => {
-          const output = pickOutput(scope, _name, value);
+    scope && scope.entries && !_name
+      ? () => {
+          const output = pick(
+            scope,
+            control._getWatch(undefined, _defaultValue.current),
+          );
           return compute ? compute(output) : output;
         }
       : compute;

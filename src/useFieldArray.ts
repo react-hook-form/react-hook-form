@@ -1,7 +1,6 @@
 import React from 'react';
 
-import type { Template } from './logic/createSelect';
-import { pickTemplate, unpickTemplate } from './logic/createSelect';
+import { mapItems } from './logic/createSelect';
 import generateId from './logic/generateId';
 import getFocusFieldName from './logic/getFocusFieldName';
 import getValidationModes from './logic/getValidationModes';
@@ -126,7 +125,6 @@ export function useFieldArray<
     rules,
   } = props;
   const [control, name, scope] = useScope(_control, _name);
-  const template = scope && (scope.template as Template[] | undefined);
   const getCurrentFieldArray = () => control._getFieldArray(name);
 
   const [fields, setFields] = React.useState(getCurrentFieldArray);
@@ -226,7 +224,7 @@ export function useFieldArray<
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
-    value = unpickTemplate(value, template, true);
+    value = mapItems(scope, value, true);
     if (disabled) {
       return;
     }
@@ -255,7 +253,7 @@ export function useFieldArray<
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
-    value = unpickTemplate(value, template, true);
+    value = mapItems(scope, value, true);
     if (disabled) {
       return;
     }
@@ -299,7 +297,7 @@ export function useFieldArray<
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
     options?: FieldArrayMethodProps,
   ) => {
-    value = unpickTemplate(value, template, true);
+    value = mapItems(scope, value, true);
     if (disabled) {
       return;
     }
@@ -368,7 +366,7 @@ export function useFieldArray<
     index: number,
     value: FieldArray<TFieldValues, TFieldArrayName>,
   ) => {
-    value = unpickTemplate(value, template, true);
+    value = mapItems(scope, value, true);
     if (disabled) {
       return;
     }
@@ -397,7 +395,7 @@ export function useFieldArray<
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>
       | Partial<FieldArray<TFieldValues, TFieldArrayName>>[],
   ) => {
-    value = unpickTemplate(value, template, true);
+    value = mapItems(scope, value, true);
     if (disabled) {
       return;
     }
@@ -593,14 +591,14 @@ export function useFieldArray<
       name,
       control,
       disabled,
-      template,
+      scope,
     ]),
     append: React.useCallback(append, [
       updateValues,
       name,
       control,
       disabled,
-      template,
+      scope,
     ]),
     remove: React.useCallback(remove, [updateValues, name, control, disabled]),
     insert: React.useCallback(insert, [
@@ -608,30 +606,30 @@ export function useFieldArray<
       name,
       control,
       disabled,
-      template,
+      scope,
     ]),
     update: React.useCallback(update, [
       updateValues,
       name,
       control,
       disabled,
-      template,
+      scope,
     ]),
     replace: React.useCallback(replace, [
       updateValues,
       name,
       control,
       disabled,
-      template,
+      scope,
     ]),
     fields: React.useMemo(
       () =>
         fields.map((field, index) => ({
-          ...pickTemplate(field, template && template[0]),
+          ...mapItems(scope, field),
           ...(isBoolean(disabled) ? { disabled } : {}),
           [keyName]: ids.current[index] || generateId(),
         })) as FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[],
-      [fields, keyName, disabled, template],
+      [fields, keyName, disabled, scope],
     ),
   };
 }
