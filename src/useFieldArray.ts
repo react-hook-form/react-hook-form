@@ -529,7 +529,13 @@ export function useFieldArray<
         });
       }
 
-      if (!shouldKeepFieldArrayValues && control._state.action) {
+      if (
+        !shouldKeepFieldArrayValues &&
+        control._state.action &&
+        [...control._state.actionArrayLengths.keys()].some((arrayName) =>
+          name.startsWith(arrayName + '.'),
+        )
+      ) {
         return;
       }
 

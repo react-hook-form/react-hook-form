@@ -1439,6 +1439,71 @@ describe('useFieldArray', () => {
         items: [{ name: 'b', nested: [{ value: 'b0' }] }],
       });
     });
+
+    it('remove the field array values on unmount after its own remove in the same event', () => {
+      type FormValues = {
+        items: { name: string }[];
+      };
+
+      let getValues: UseFormReturn<FormValues>['getValues'];
+
+      const FieldArray = ({
+        control,
+        onDone,
+      }: {
+        control: Control<FormValues>;
+        onDone: () => void;
+      }) => {
+        const { fields, remove } = useFieldArray({ control, name: 'items' });
+
+        return (
+          <div>
+            {fields.map((field, index) => (
+              <input
+                key={field.id}
+                {...control.register(`items.${index}.name` as const)}
+              />
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                remove(1);
+                onDone();
+              }}
+            >
+              done
+            </button>
+          </div>
+        );
+      };
+
+      const App = () => {
+        const [show, setShow] = React.useState(true);
+        const { control, getValues: tempGetValues } = useForm<FormValues>({
+          shouldUnregister: true,
+          defaultValues: {
+            items: [{ name: 'a' }, { name: 'b' }],
+          },
+        });
+
+        getValues = tempGetValues;
+
+        return (
+          <div>
+            {show && (
+              <FieldArray control={control} onDone={() => setShow(false)} />
+            )}
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'done' }));
+
+      expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+      expect(getValues()).toEqual({});
+    });
   });
 
   describe('setError', () => {
