@@ -5877,6 +5877,39 @@ it('not modify form values when disabled methods are called', () => {
   expect(result.current.form.getValues('items')).toEqual([]);
 });
 
+it('not modify existing items when disabled remove, swap, move, update and replace are called', () => {
+  type FormValues = { items: { value: string }[] };
+
+  const { result } = renderHook(() => {
+    const form = useForm<FormValues>({
+      defaultValues: { items: [{ value: 'a' }, { value: 'b' }] },
+    });
+    const fieldArray = useFieldArray({
+      control: form.control,
+      name: 'items',
+      disabled: true,
+    });
+    return { form, fieldArray };
+  });
+
+  act(() => {
+    result.current.fieldArray.remove(0);
+    result.current.fieldArray.swap(0, 1);
+    result.current.fieldArray.move(0, 1);
+    result.current.fieldArray.update(0, { value: 'x' });
+    result.current.fieldArray.replace([{ value: 'z' }]);
+  });
+
+  expect(result.current.fieldArray.fields.map((field) => field.value)).toEqual([
+    'a',
+    'b',
+  ]);
+  expect(result.current.form.getValues('items')).toEqual([
+    { value: 'a' },
+    { value: 'b' },
+  ]);
+});
+
 it('propagate disabled to field objects when disabled is set', () => {
   type FormValues = { items: { value: string }[] };
 
