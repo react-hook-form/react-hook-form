@@ -17,6 +17,7 @@ import type {
   FieldPathValue,
   FieldValues,
   InternalFieldName,
+  Ref,
   UseControllerProps,
   UseControllerReturn,
 } from './types';
@@ -84,7 +85,7 @@ export function useController<
   });
 
   const _props = React.useRef(props);
-  const _proxyRef = React.useRef<any>(null);
+  const _proxyRef = React.useRef<Ref | null>(null);
 
   const _registerProps = React.useRef(
     control.register(name, {
@@ -133,7 +134,7 @@ export function useController<
       if (!get(control._fields, name)) {
         _registerProps.current = control.register(name, {
           ..._props.current.rules,
-          value,
+          value: value as FieldPathValue<TFieldValues, TName>,
         });
       }
 
@@ -168,7 +169,7 @@ export function useController<
   }, [name, control]);
 
   const ref = React.useCallback(
-    (elm: any) => {
+    (elm: Partial<HTMLInputElement> | null) => {
       if (elm) {
         _proxyRef.current = {
           focus: () => isFunction(elm.focus) && elm.focus(),
@@ -177,7 +178,7 @@ export function useController<
             isFunction(elm.setCustomValidity) && elm.setCustomValidity(message),
           reportValidity: () =>
             isFunction(elm.reportValidity) && elm.reportValidity(),
-        };
+        } as Ref;
       }
 
       const field = get(control._fields, name);

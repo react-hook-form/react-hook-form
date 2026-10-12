@@ -20,8 +20,10 @@ export default <T>(
     return defaultValue;
   }
 
-  const result = paths.reduce<any>((result, key) => {
-    return isNullOrUndefined(result) ? undefined : result[key];
+  const result = paths.reduce<unknown>((result, key) => {
+    return isNullOrUndefined(result)
+      ? undefined
+      : (result as Record<string, unknown>)[key];
   }, object);
 
   return isUndefined(result) || result === object

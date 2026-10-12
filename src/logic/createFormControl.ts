@@ -34,6 +34,8 @@ import type {
   SetFieldValue,
   SetValueConfig,
   Subjects,
+  SubmitErrorHandler,
+  SubmitHandler,
   TriggerConfig,
   UseFormClearErrors,
   UseFormGetErrors,
@@ -310,7 +312,7 @@ export function createFormControl<
       _formValues,
       undefined,
       _fields,
-    );
+    ) as FieldNamesMarkedBoolean<TFieldValues>;
   };
 
   const _setFieldArray: BatchFieldArrayUpdate = (
@@ -1976,8 +1978,14 @@ export function createFormControl<
   };
 
   const handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues> =
-    (onValid, onInvalid) => async (e) => {
-      let result: any = undefined;
+    <TResult>(
+      onValid: SubmitHandler<TTransformedValues, TResult>,
+      onInvalid?: SubmitErrorHandler<TFieldValues>,
+    ) =>
+    async (
+      e?: React.BaseSyntheticEvent,
+    ): Promise<Awaited<TResult> | undefined> => {
+      let result: Awaited<TResult> | undefined = undefined;
       let onValidError = undefined;
       if (e) {
         e.preventDefault && e.preventDefault();
@@ -2235,7 +2243,7 @@ export function createFormControl<
       isSubmitted: keepStateOptions.keepIsSubmitted
         ? _formState.isSubmitted
         : false,
-      dirtyFields: isEmptyResetValues
+      dirtyFields: (isEmptyResetValues
         ? {}
         : keepStateOptions.keepDirtyValues
           ? keepStateOptions.keepDefaultValues && _formValues
@@ -2252,7 +2260,7 @@ export function createFormControl<
                     undefined,
                     fieldRefs,
                   )
-                : {},
+                : {}) as Partial<FieldNamesMarkedBoolean<TFieldValues>>,
       touchedFields: keepStateOptions.keepTouched
         ? _formState.touchedFields
         : {},

@@ -8,7 +8,7 @@ import isString from './isString';
 import isUndefined from './isUndefined';
 import stringToPath from './stringToPath';
 
-function baseGet(object: any, updatePath: (string | number)[]) {
+function baseGet(object: unknown, updatePath: (string | number)[]) {
   const length = updatePath.length - 1;
   let index = 0;
 
@@ -17,7 +17,7 @@ function baseGet(object: any, updatePath: (string | number)[]) {
       object = undefined;
       break;
     }
-    object = object[updatePath[index]];
+    object = (object as Record<string | number, unknown>)[updatePath[index]];
     index++;
   }
 
@@ -33,9 +33,12 @@ function isEmptyArray(obj: unknown[]) {
   return true;
 }
 
-export default function unset(object: any, path: string | (string | number)[]) {
+export default function unset<T>(
+  object: T,
+  path: string | (string | number)[],
+) {
   if (isString(path) && Object.prototype.hasOwnProperty.call(object, path)) {
-    delete object[path];
+    delete (object as Record<string, unknown>)[path];
     return object;
   }
 
@@ -47,7 +50,9 @@ export default function unset(object: any, path: string | (string | number)[]) {
   if (paths.some((segment) => PROTOTYPE_KEYWORDS.includes(String(segment)))) {
     return object;
   }
-  const childObject = paths.length === 1 ? object : baseGet(object, paths);
+  const childObject = (paths.length === 1 ? object : baseGet(object, paths)) as
+    | Record<string | number, unknown>
+    | undefined;
 
   const index = paths.length - 1;
   const key = paths[index];
