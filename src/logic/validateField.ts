@@ -195,7 +195,7 @@ export default async <T extends FieldValues>(
   }
 
   if (
-    (maxLength || minLength) &&
+    (!isNullOrUndefined(maxLength) || !isNullOrUndefined(minLength)) &&
     !isEmpty &&
     (isString(inputValue) || (isFieldArray && Array.isArray(inputValue)))
   ) {
