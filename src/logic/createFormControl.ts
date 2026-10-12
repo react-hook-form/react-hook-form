@@ -477,6 +477,19 @@ export function createFormControl<
     return false;
   };
 
+  const isPastArrayEnd = (name: InternalFieldName): boolean => {
+    let node: unknown = _formValues;
+
+    for (const key of isKey(name) ? [name] : stringToPath(name)) {
+      if (Array.isArray(node) && +key >= node.length) {
+        return true;
+      }
+      node = (node as Record<string, unknown> | undefined)?.[key];
+    }
+
+    return false;
+  };
+
   const updateValidAndValue = (
     name: InternalFieldName,
     shouldSkipSetValueAs: boolean,
@@ -508,6 +521,10 @@ export function createFormControl<
         const fieldValue = shouldSkipSetValueAs
           ? defaultValue
           : getFieldValue(field._f);
+
+        if (isUndefined(fieldValue) && isPastArrayEnd(name)) {
+          return;
+        }
 
         if (
           _isTracked('dirtyFields') &&
@@ -574,8 +591,6 @@ export function createFormControl<
       name,
     };
 
-    // an explicit programmatic update (e.g. setValue with shouldDirty: true)
-    // opts into dirty tracking even when the form is disabled
     if (!_options.disabled || shouldDirty === true) {
       if (!isBlurEvent || shouldDirty) {
         const isCurrentFieldPristine = deepEqual(
