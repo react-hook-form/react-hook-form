@@ -1439,6 +1439,248 @@ describe('useFieldArray', () => {
         items: [{ name: 'b', nested: [{ value: 'b0' }] }],
       });
     });
+
+    it('remove the field array values on unmount after its own remove in the same event', () => {
+      type FormValues = {
+        items: { name: string }[];
+      };
+
+      let getValues: UseFormReturn<FormValues>['getValues'];
+
+      const FieldArray = ({
+        control,
+        onDone,
+      }: {
+        control: Control<FormValues>;
+        onDone: () => void;
+      }) => {
+        const { fields, remove } = useFieldArray({ control, name: 'items' });
+
+        return (
+          <div>
+            {fields.map((field, index) => (
+              <input
+                key={field.id}
+                {...control.register(`items.${index}.name` as const)}
+              />
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                remove(1);
+                onDone();
+              }}
+            >
+              done
+            </button>
+          </div>
+        );
+      };
+
+      const App = () => {
+        const [show, setShow] = React.useState(true);
+        const { control, getValues: tempGetValues } = useForm<FormValues>({
+          shouldUnregister: true,
+          defaultValues: {
+            items: [{ name: 'a' }, { name: 'b' }],
+          },
+        });
+
+        getValues = tempGetValues;
+
+        return (
+          <div>
+            {show && (
+              <FieldArray control={control} onDone={() => setShow(false)} />
+            )}
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'done' }));
+
+      expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+      expect(getValues()).toEqual({});
+    });
+
+    it('unregister other fields after a field array unmounts in the same event as its own remove', async () => {
+      type FormValues = {
+        items: { name: string }[];
+        tags: { value: string }[];
+        title: string;
+      };
+
+      let getValues: UseFormReturn<FormValues>['getValues'];
+
+      const Items = ({
+        control,
+        onDone,
+      }: {
+        control: Control<FormValues>;
+        onDone: () => void;
+      }) => {
+        const { fields, remove } = useFieldArray({ control, name: 'items' });
+
+        return (
+          <div>
+            {fields.map((field, index) => (
+              <input
+                key={field.id}
+                {...control.register(`items.${index}.name` as const)}
+              />
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                remove(1);
+                onDone();
+              }}
+            >
+              done
+            </button>
+          </div>
+        );
+      };
+
+      const Tags = ({ control }: { control: Control<FormValues> }) => {
+        const { fields } = useFieldArray({ control, name: 'tags' });
+
+        return (
+          <div>
+            {fields.map((field, index) => (
+              <Controller
+                key={field.id}
+                control={control}
+                name={`tags.${index}.value`}
+                render={({ field }) => <input {...field} />}
+              />
+            ))}
+          </div>
+        );
+      };
+
+      const App = () => {
+        const [showItems, setShowItems] = React.useState(true);
+        const [showTags, setShowTags] = React.useState(true);
+        const [showTitle, setShowTitle] = React.useState(false);
+        const {
+          control,
+          register,
+          formState: { isValid },
+          getValues: tempGetValues,
+        } = useForm<FormValues>({
+          mode: 'onChange',
+          shouldUnregister: true,
+          defaultValues: {
+            items: [{ name: 'a' }, { name: 'b' }],
+            tags: [{ value: 't0' }],
+          },
+        });
+
+        getValues = tempGetValues;
+
+        return (
+          <div>
+            {showItems && (
+              <Items control={control} onDone={() => setShowItems(false)} />
+            )}
+            {showTags && <Tags control={control} />}
+            {showTitle && <input {...register('title', { required: true })} />}
+            <button type="button" onClick={() => setShowTags(false)}>
+              hide tags
+            </button>
+            <button type="button" onClick={() => setShowTitle(true)}>
+              show title
+            </button>
+            <p>{isValid ? 'valid' : 'invalid'}</p>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'done' }));
+
+      expect(getValues()).toEqual({ tags: [{ value: 't0' }] });
+
+      fireEvent.click(screen.getByRole('button', { name: 'hide tags' }));
+
+      expect(getValues()).toEqual({});
+
+      expect(await screen.findByText('valid')).toBeVisible();
+
+      fireEvent.click(screen.getByRole('button', { name: 'show title' }));
+
+      expect(await screen.findByText('invalid')).toBeVisible();
+    });
+
+    it('unregister a sibling field array that unmounts in the same event as another array op', () => {
+      type FormValues = {
+        items: { name: string }[];
+        itemsExtra: { name: string }[];
+      };
+
+      let getValues: UseFormReturn<FormValues>['getValues'];
+
+      const ItemsExtra = ({ control }: { control: Control<FormValues> }) => {
+        const { fields } = useFieldArray({ control, name: 'itemsExtra' });
+
+        return (
+          <div>
+            {fields.map((field, index) => (
+              <input
+                key={field.id}
+                {...control.register(`itemsExtra.${index}.name` as const)}
+              />
+            ))}
+          </div>
+        );
+      };
+
+      const App = () => {
+        const [showExtra, setShowExtra] = React.useState(true);
+        const { control, getValues: tempGetValues } = useForm<FormValues>({
+          shouldUnregister: true,
+          defaultValues: {
+            items: [{ name: 'a' }, { name: 'b' }],
+            itemsExtra: [{ name: 'x' }],
+          },
+        });
+        const { fields, remove } = useFieldArray({ control, name: 'items' });
+
+        getValues = tempGetValues;
+
+        return (
+          <div>
+            {fields.map((field, index) => (
+              <input
+                key={field.id}
+                {...control.register(`items.${index}.name` as const)}
+              />
+            ))}
+            {showExtra && <ItemsExtra control={control} />}
+            <button
+              type="button"
+              onClick={() => {
+                remove(1);
+                setShowExtra(false);
+              }}
+            >
+              done
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'done' }));
+
+      expect(screen.getAllByRole('textbox')).toHaveLength(1);
+      expect(getValues()).toEqual({ items: [{ name: 'a' }] });
+    });
   });
 
   describe('setError', () => {

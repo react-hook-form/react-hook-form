@@ -1531,6 +1531,7 @@ export function createFormControl<
     name,
     options: TriggerConfig & { delayError?: boolean } = {},
   ) => {
+    _state.keepIsValid = false;
     let isValid;
     let validationResult;
     const fieldNames = convertToArrayPayload(name) as InternalFieldName[];

@@ -507,6 +507,7 @@ export function useFieldArray<
 
     return () => {
       control._state.actionArrayLengths.delete(name);
+      control._state.actionArrayLengths.size || (control._state.action = false);
 
       if (disabled) {
         return;
@@ -529,7 +530,13 @@ export function useFieldArray<
         });
       }
 
-      if (!shouldKeepFieldArrayValues && control._state.action) {
+      if (
+        !shouldKeepFieldArrayValues &&
+        control._state.action &&
+        [...control._state.actionArrayLengths.keys()].some((arrayName) =>
+          name.startsWith(arrayName + '.'),
+        )
+      ) {
         return;
       }
 
