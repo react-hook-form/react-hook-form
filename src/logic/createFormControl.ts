@@ -2037,7 +2037,11 @@ export function createFormControl<
         }
       } else {
         if (onInvalid) {
-          await onInvalid({ ..._formState.errors }, e);
+          try {
+            await onInvalid({ ..._formState.errors }, e);
+          } catch (error) {
+            onValidError = error;
+          }
         }
 
         _focusError();

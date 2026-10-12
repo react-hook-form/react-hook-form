@@ -534,6 +534,57 @@ describe('handleSubmit', () => {
     expect(await screen.findByText('isSubmitSuccessful : false')).toBeVisible();
   });
 
+  it.each([
+    ['rejects', () => Promise.reject(new Error('onInvalid failed'))],
+    [
+      'throws',
+      () => {
+        throw new Error('onInvalid failed');
+      },
+    ],
+  ])(
+    'bubble the error up and settle formState when onInvalid %s',
+    async (_, onInvalid) => {
+      const App = () => {
+        const [error, setError] = React.useState('');
+        const {
+          register,
+          handleSubmit,
+          formState: { isSubmitting, isSubmitted, submitCount },
+        } = useForm<{ test: string }>();
+
+        return (
+          <form>
+            <input {...register('test', { required: true })} />
+            <p>{error}</p>
+            <p>isSubmitting : {isSubmitting ? 'true' : 'false'}</p>
+            <p>isSubmitted : {isSubmitted ? 'true' : 'false'}</p>
+            <p>submitCount : {submitCount}</p>
+            <button
+              type={'button'}
+              onClick={() =>
+                handleSubmit(noop, onInvalid)().catch((err) =>
+                  setError(err.message),
+                )
+              }
+            >
+              Submit
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      expect(await screen.findByText('onInvalid failed')).toBeVisible();
+      expect(await screen.findByText('isSubmitting : false')).toBeVisible();
+      expect(await screen.findByText('isSubmitted : true')).toBeVisible();
+      expect(await screen.findByText('submitCount : 1')).toBeVisible();
+    },
+  );
+
   describe('with validationSchema', () => {
     it('invoke callback when error not found', async () => {
       const resolver = async (data: any) => {
