@@ -20,6 +20,7 @@ import type {
   UseFormRegister,
   UseFormReturn,
 } from '../../types';
+import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
 import isFunction from '../../utils/isFunction';
@@ -2353,6 +2354,84 @@ describe('register', () => {
 
       expect(input.value).toBe('reset');
       expect(methods!.getValues('test')).toBe('reset');
+    });
+  });
+
+  describe('when registering past the end of an array', () => {
+    it('should not add a row to a plain array when registered without a value', () => {
+      const { result } = renderHook(() =>
+        useForm<{ items: { name: string }[] }>({
+          defaultValues: { items: [] },
+        }),
+      );
+
+      result.current.register('items.0.name');
+
+      expect(result.current.getValues('items')).toEqual([]);
+    });
+
+    it('should not add a row to a plain array from a Controller without a value', () => {
+      let getValues: () => unknown;
+
+      const Component = () => {
+        const { control, getValues: _getValues } = useForm<{
+          items: { name: string }[];
+        }>({
+          defaultValues: { items: [] },
+        });
+        getValues = () => _getValues('items');
+
+        return (
+          <Controller
+            control={control}
+            name="items.0.name"
+            render={({ field }) => (
+              <input {...field} value={field.value ?? ''} />
+            )}
+          />
+        );
+      };
+
+      render(<Component />);
+
+      expect(getValues!()).toEqual([]);
+    });
+
+    it('should not add a field array row but still update isValid', async () => {
+      const Component = () => {
+        const {
+          control,
+          register,
+          getValues,
+          formState: { isValid },
+        } = useForm<{ test: { value: string }[] }>({
+          mode: 'onChange',
+          defaultValues: { test: [] },
+        });
+        useFieldArray({ control, name: 'test' });
+
+        return (
+          <>
+            <button
+              type="button"
+              onClick={() => register('test.0.value', { required: true })}
+            >
+              Register
+            </button>
+            <p>{JSON.stringify(getValues('test'))}</p>
+            <p>{isValid ? 'valid' : 'invalid'}</p>
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      expect(await screen.findByText('valid')).toBeVisible();
+
+      fireEvent.click(screen.getByRole('button', { name: 'Register' }));
+
+      expect(await screen.findByText('invalid')).toBeVisible();
+      expect(screen.getByText('[]')).toBeVisible();
     });
   });
 });

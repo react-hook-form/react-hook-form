@@ -6276,18 +6276,13 @@ describe('useFieldArray with Activity', () => {
   itWithActivity(
     'should not bring back a removed row when hidden controlled rows reconnect after reset',
     () => {
-      let getValues: UseFormReturn<FormValues>['getValues'];
-
       const Component = () => {
-        const form = useForm<FormValues>({
+        const { control, reset, watch } = useForm<FormValues>({
           defaultValues: { test: [] },
         });
-        const { control, reset } = form;
-        getValues = form.getValues;
         const { fields, append } = useFieldArray({ control, name: 'test' });
         const [open, setOpen] = useState(false);
 
-        // Like a modal that resets the form each time it opens.
         React.useEffect(() => {
           if (open) {
             reset({ test: [] });
@@ -6296,6 +6291,7 @@ describe('useFieldArray with Activity', () => {
 
         return (
           <>
+            <p data-testid="values">{JSON.stringify(watch('test'))}</p>
             <button type="button" onClick={() => setOpen(true)}>
               Open
             </button>
@@ -6330,11 +6326,11 @@ describe('useFieldArray with Activity', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
       fireEvent.click(screen.getByRole('button', { name: 'Open' }));
 
-      expect(getValues!('test')).toEqual([]);
+      expect(screen.getByTestId('values')).toHaveTextContent('[]');
 
       fireEvent.click(screen.getByRole('button', { name: 'Append' }));
 
-      expect(getValues!('test')).toEqual([{ value: '' }]);
+      expect(screen.getByTestId('values')).toHaveTextContent('[{"value":""}]');
       expect(screen.getAllByRole('textbox')).toHaveLength(1);
     },
   );
