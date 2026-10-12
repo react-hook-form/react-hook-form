@@ -477,6 +477,23 @@ export function createFormControl<
     return false;
   };
 
+  const isPastArrayEnd = (name: InternalFieldName): boolean => {
+    const segments = isKey(name) ? [name] : stringToPath(name);
+    let node: unknown = _formValues;
+
+    for (const key of segments) {
+      if (isNullOrUndefined(node)) {
+        return false;
+      }
+      if (Array.isArray(node) && +key >= node.length) {
+        return true;
+      }
+      node = (node as Record<string, unknown>)[key];
+    }
+
+    return false;
+  };
+
   const updateValidAndValue = (
     name: InternalFieldName,
     shouldSkipSetValueAs: boolean,
@@ -508,6 +525,12 @@ export function createFormControl<
         const fieldValue = shouldSkipSetValueAs
           ? defaultValue
           : getFieldValue(field._f);
+
+        // A field registered without a value must not add a row to an array,
+        // e.g. a hidden field-array row whose effects run again after reset().
+        if (isUndefined(fieldValue) && isPastArrayEnd(name)) {
+          return;
+        }
 
         if (
           _isTracked('dirtyFields') &&

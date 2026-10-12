@@ -6272,4 +6272,70 @@ describe('useFieldArray with Activity', () => {
       expect(screen.getByTestId('field-array')).toHaveTextContent('b,c');
     },
   );
+
+  itWithActivity(
+    'should not bring back a removed row when hidden controlled rows reconnect after reset',
+    () => {
+      let getValues: UseFormReturn<FormValues>['getValues'];
+
+      const Component = () => {
+        const form = useForm<FormValues>({
+          defaultValues: { test: [] },
+        });
+        const { control, reset } = form;
+        getValues = form.getValues;
+        const { fields, append } = useFieldArray({ control, name: 'test' });
+        const [open, setOpen] = useState(false);
+
+        // Like a modal that resets the form each time it opens.
+        React.useEffect(() => {
+          if (open) {
+            reset({ test: [] });
+          }
+        }, [open, reset]);
+
+        return (
+          <>
+            <button type="button" onClick={() => setOpen(true)}>
+              Open
+            </button>
+            <Activity mode={open ? 'visible' : 'hidden'}>
+              {fields.map((field, index) => (
+                <Controller
+                  key={field.id}
+                  control={control}
+                  name={`test.${index}.value`}
+                  render={({ field }) => <input {...field} />}
+                />
+              ))}
+              <button type="button" onClick={() => append({ value: '' })}>
+                Append
+              </button>
+              <button type="button" onClick={() => setOpen(false)}>
+                Cancel
+              </button>
+            </Activity>
+          </>
+        );
+      };
+
+      render(
+        <React.StrictMode>
+          <Component />
+        </React.StrictMode>,
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: 'Open' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Append' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Open' }));
+
+      expect(getValues!('test')).toEqual([]);
+
+      fireEvent.click(screen.getByRole('button', { name: 'Append' }));
+
+      expect(getValues!('test')).toEqual([{ value: '' }]);
+      expect(screen.getAllByRole('textbox')).toHaveLength(1);
+    },
+  );
 });
