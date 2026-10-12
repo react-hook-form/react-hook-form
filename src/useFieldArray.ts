@@ -507,6 +507,7 @@ export function useFieldArray<
 
     return () => {
       control._state.actionArrayLengths.delete(name);
+      control._state.actionArrayLengths.size || (control._state.action = false);
 
       if (disabled) {
         return;
