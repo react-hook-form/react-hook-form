@@ -5,9 +5,11 @@ import {
   render,
   renderHook,
   screen,
+  waitFor,
 } from '@testing-library/react';
 
 import { Controller } from '../../controller';
+import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
 describe('setValues', () => {
@@ -698,5 +700,124 @@ describe('setValues', () => {
     expect(result.current.getValues().firstName).toBe('John');
     // isValid might still be false because validation wasn't re-run
     expect(result.current.formState.isValid).toBe(false);
+  });
+
+  it('render the rows of a field array grown by setValues', async () => {
+    const App = () => {
+      const { register, control, setValues } = useForm<{
+        items: { name: string }[];
+      }>({
+        defaultValues: { items: [{ name: 'a' }] },
+      });
+      const { fields } = useFieldArray({ control, name: 'items' });
+
+      return (
+        <form>
+          {fields.map((field, index) => (
+            <input key={field.id} {...register(`items.${index}.name`)} />
+          ))}
+          <button
+            type="button"
+            onClick={() => setValues({ items: [{ name: 'x' }, { name: 'y' }] })}
+          >
+            load
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(await screen.findAllByRole('textbox')).toHaveLength(2);
+    expect(screen.getAllByRole('textbox')[1]).toHaveValue('y');
+  });
+
+  it('remove the rows of a field array shrunk by setValues', async () => {
+    const onSubmit = jest.fn();
+    const App = () => {
+      const { register, control, setValues, handleSubmit } = useForm<{
+        items: { name: string }[];
+      }>({
+        defaultValues: { items: [{ name: 'a' }, { name: 'b' }] },
+      });
+      const { fields } = useFieldArray({ control, name: 'items' });
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {fields.map((field, index) => (
+            <input key={field.id} {...register(`items.${index}.name`)} />
+          ))}
+          <button
+            type="button"
+            onClick={() => setValues({ items: [{ name: 'x' }] })}
+          >
+            load
+          </button>
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'load' }));
+
+    expect(screen.getAllByRole('textbox')).toHaveLength(1);
+
+    fireEvent.input(screen.getByRole('textbox'), {
+      target: { value: 'typed' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(
+        { items: [{ name: 'typed' }] },
+        expect.anything(),
+      ),
+    );
+  });
+
+  it('validate a field array with rules once when setValues resizes it', async () => {
+    const validate = jest.fn(() => true);
+    const App = () => {
+      const { register, control, setValues } = useForm<{
+        items: { name: string }[];
+      }>({
+        defaultValues: { items: [{ name: 'a' }] },
+      });
+      const { fields } = useFieldArray({
+        control,
+        name: 'items',
+        rules: { validate },
+      });
+
+      return (
+        <form>
+          {fields.map((field, index) => (
+            <input key={field.id} {...register(`items.${index}.name`)} />
+          ))}
+          <button
+            type="button"
+            onClick={() =>
+              setValues(
+                { items: [{ name: 'x' }, { name: 'y' }] },
+                { shouldValidate: true },
+              )
+            }
+          >
+            load
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(await screen.findAllByRole('textbox')).toHaveLength(2);
+    await waitFor(() => expect(validate).toHaveBeenCalledTimes(1));
   });
 });

@@ -1288,7 +1288,7 @@ export function createFormControl<
         ...updatedFormValues,
       };
 
-      for (const fieldName of _names.mount) {
+      for (const fieldName of new Set([..._names.mount, ..._names.array])) {
         if (has(updatedFormValues, fieldName)) {
           _setValue(
             fieldName as FieldPath<TFieldValues>,
