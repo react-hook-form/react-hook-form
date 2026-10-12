@@ -19,6 +19,20 @@ jest.mock('../../logic/getDirtyFields', () => {
 });
 
 describe('createFormControl', () => {
+  it('rejects text with maxLength zero and accepts an empty value', async () => {
+    const { register, trigger, setValue, getFieldState } = createFormControl({
+      defaultValues: { text: 'x' },
+    });
+    register('text', { maxLength: 0 });
+
+    expect(await trigger('text')).toBe(false);
+    expect(getFieldState('text').error?.type).toBe('maxLength');
+
+    setValue('text', '');
+    expect(await trigger('text')).toBe(true);
+    expect(getFieldState('text').error).toBeUndefined();
+  });
+
   it('keep dirtyFields reference stable when dirty fields do not change', () => {
     const { control, setValue, subscribe } = createFormControl<{
       a: string;
