@@ -311,6 +311,51 @@ describe('Form', () => {
     });
   });
 
+  it.each([
+    ['Content-Type', 'application/json', true],
+    ['content-type', 'application/json', true],
+    ['CoNtEnT-TyPe', 'application/json', true],
+    ['content-type', 'text/plain', false],
+    ['X-Response-Format', 'application/json', false],
+  ] as const)(
+    'choose the submission body for header %s: %s',
+    async (headerName, headerValue, isJSON) => {
+      const fetchSpy = jest
+        .spyOn(global, 'fetch')
+        .mockResolvedValueOnce(new Response(null, { status: 200 }));
+      const headers = { [headerName]: headerValue };
+
+      const App = () => {
+        const { register, control } = useForm({
+          defaultValues: { name: 'bill' },
+        });
+
+        return (
+          <Form action="/json" control={control} headers={headers}>
+            <input {...register('name')} />
+            <button>Submit</button>
+          </Form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      await waitFor(() => {
+        expect(fetchSpy).toHaveBeenCalledWith(
+          '/json',
+          expect.objectContaining({
+            headers,
+            body: isJSON
+              ? JSON.stringify({ name: 'bill' })
+              : expect.any(FormData),
+          }),
+        );
+      });
+    },
+  );
+
   it('call a function action with FormData instead of fetching', async () => {
     const fetchSpy = jest.spyOn(global, 'fetch');
     const actionFn = jest.fn<(formData: FormData) => Promise<void>>(
