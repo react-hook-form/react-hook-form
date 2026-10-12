@@ -94,6 +94,16 @@ export function useFieldArray<
   );
 
   const _actioned = React.useRef(false);
+  const _subscribed = React.useRef(false);
+
+  // Resync before restored children can register cached values from deleted rows.
+  if (!disabled && !_subscribed.current) {
+    const fieldValues = getCurrentFieldArray();
+    if (!deepEqual(fields, fieldValues)) {
+      setFields(fieldValues);
+      ids.current = fieldValues.map(generateId);
+    }
+  }
 
   const { resyncIfNeeded, snapshot } =
     useResyncOnReconnect(getCurrentFieldArray);
@@ -120,6 +130,8 @@ export function useFieldArray<
     if (disabled) {
       return;
     }
+
+    _subscribed.current = true;
 
     if (_prevControl.current === control && _prevName.current === name) {
       resyncIfNeeded(true, getCurrentFieldArray, (fieldValues) => {
@@ -160,6 +172,7 @@ export function useFieldArray<
     }).unsubscribe;
 
     return () => {
+      _subscribed.current = false;
       unsubscribe();
       snapshot(true, getCurrentFieldArray);
     };

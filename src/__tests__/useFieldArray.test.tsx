@@ -6272,4 +6272,137 @@ describe('useFieldArray with Activity', () => {
       expect(screen.getByTestId('field-array')).toHaveTextContent('b,c');
     },
   );
+  itWithActivity.each([
+    {
+      label: 'empty reset',
+      resetValues: [],
+      resetOptions: {},
+      expected: [],
+      expectedDirty: false,
+      edit: false,
+    },
+    {
+      label: 'replacement values',
+      resetValues: [{ value: 'new' }],
+      resetOptions: {},
+      expected: [{ value: 'new' }],
+      expectedDirty: false,
+      edit: false,
+    },
+    {
+      label: 'keepValues',
+      resetValues: [],
+      resetOptions: { keepValues: true },
+      expected: [{ value: 'old' }],
+      expectedDirty: true,
+      edit: false,
+    },
+    {
+      label: 'keepDefaultValues',
+      resetValues: [],
+      resetOptions: { keepDefaultValues: true },
+      expected: [],
+      expectedDirty: true,
+      edit: false,
+    },
+    {
+      label: 'keepDirtyValues',
+      resetValues: [{ value: 'new' }, { value: 'second' }],
+      resetOptions: { keepDirtyValues: true },
+      expected: [{ value: 'edited' }, { value: 'second' }],
+      expectedDirty: true,
+      edit: true,
+    },
+  ])(
+    'should restore controlled rows from current values after $label while hidden',
+    ({ resetValues, resetOptions, expected, expectedDirty, edit }) => {
+      let getValues: UseFormReturn<FormValues>['getValues'];
+
+      const ControlledRows = ({
+        control,
+      }: {
+        control: Control<FormValues>;
+      }) => {
+        const { fields, append } = useFieldArray({ control, name: 'test' });
+        return (
+          <>
+            <button type="button" onClick={() => append({ value: 'appended' })}>
+              Append
+            </button>
+            {fields.map((field, index) => (
+              <Controller
+                key={field.id}
+                control={control}
+                name={`test.${index}.value`}
+                render={({ field, fieldState: { error } }) => (
+                  <input {...field} aria-invalid={!!error} />
+                )}
+              />
+            ))}
+          </>
+        );
+      };
+
+      const Component = () => {
+        const {
+          control,
+          reset,
+          getValues: getCurrentValues,
+          formState: { isDirty },
+        } = useForm<FormValues>({
+          defaultValues: { test: [{ value: 'old' }] },
+        });
+        getValues = getCurrentValues;
+        const [mode, setMode] = useState<'hidden' | 'visible'>('visible');
+        return (
+          <>
+            <button type="button" onClick={() => setMode('hidden')}>
+              Hide
+            </button>
+            <button
+              type="button"
+              onClick={() => reset({ test: resetValues }, resetOptions)}
+            >
+              Reset
+            </button>
+            <button type="button" onClick={() => setMode('visible')}>
+              Show
+            </button>
+            <span data-testid="dirty">{String(isDirty)}</span>
+            <Activity mode={mode}>
+              <ControlledRows control={control} />
+            </Activity>
+          </>
+        );
+      };
+
+      render(
+        <React.StrictMode>
+          <Component />
+        </React.StrictMode>,
+      );
+      if (edit) {
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'edited' },
+        });
+      }
+      fireEvent.click(screen.getByRole('button', { name: 'Hide' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+      expect(
+        screen
+          .queryAllByRole('textbox')
+          .map((input) => (input as HTMLInputElement).value),
+      ).toEqual(expected.map((row) => row.value));
+      expect(getValues('test')).toEqual(expected);
+      expect(screen.getByTestId('dirty')).toHaveTextContent(
+        String(expectedDirty),
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: 'Append' }));
+      expect(getValues('test')).toEqual([...expected, { value: 'appended' }]);
+      expect(screen.getAllByRole('textbox')).toHaveLength(expected.length + 1);
+    },
+  );
 });
