@@ -478,17 +478,13 @@ export function createFormControl<
   };
 
   const isPastArrayEnd = (name: InternalFieldName): boolean => {
-    const segments = isKey(name) ? [name] : stringToPath(name);
     let node: unknown = _formValues;
 
-    for (const key of segments) {
-      if (isNullOrUndefined(node)) {
-        return false;
-      }
+    for (const key of isKey(name) ? [name] : stringToPath(name)) {
       if (Array.isArray(node) && +key >= node.length) {
         return true;
       }
-      node = (node as Record<string, unknown>)[key];
+      node = (node as Record<string, unknown> | undefined)?.[key];
     }
 
     return false;
@@ -526,8 +522,6 @@ export function createFormControl<
           ? defaultValue
           : getFieldValue(field._f);
 
-        // A field registered without a value must not add a row to an array,
-        // e.g. a hidden field-array row whose effects run again after reset().
         if (isUndefined(fieldValue) && isPastArrayEnd(name)) {
           return;
         }
@@ -597,8 +591,6 @@ export function createFormControl<
       name,
     };
 
-    // an explicit programmatic update (e.g. setValue with shouldDirty: true)
-    // opts into dirty tracking even when the form is disabled
     if (!_options.disabled || shouldDirty === true) {
       if (!isBlurEvent || shouldDirty) {
         const isCurrentFieldPristine = deepEqual(
