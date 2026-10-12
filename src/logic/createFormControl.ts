@@ -408,8 +408,11 @@ export function createFormControl<
     !hasErrors && _state.mount && _setValid();
   };
 
+  const toPath = (name: InternalFieldName) =>
+    isKey(name) ? [name] : stringToPath(name);
+
   const hasExplicitNullIntermediate = (name: InternalFieldName) => {
-    const segments = isKey(name) ? [name] : stringToPath(name);
+    const segments = toPath(name);
     let formValues = _formValues;
     let defaultValues = _defaultValues;
 
@@ -435,7 +438,7 @@ export function createFormControl<
       return false;
     }
 
-    const segments = isKey(name) ? [name] : stringToPath(name);
+    const segments = toPath(name);
     let node: unknown = _formValues;
     let path = '';
     let ownerDepth = -1;
@@ -480,7 +483,7 @@ export function createFormControl<
   const isPastArrayEnd = (name: InternalFieldName): boolean => {
     let node: unknown = _formValues;
 
-    for (const key of isKey(name) ? [name] : stringToPath(name)) {
+    for (const key of toPath(name)) {
       if (Array.isArray(node) && +key >= node.length) {
         return true;
       }
@@ -522,21 +525,19 @@ export function createFormControl<
           ? defaultValue
           : getFieldValue(field._f);
 
-        if (isUndefined(fieldValue) && isPastArrayEnd(name)) {
-          return;
-        }
+        if (!isUndefined(fieldValue) || !isPastArrayEnd(name)) {
+          if (
+            _isTracked('dirtyFields') &&
+            !deepEqual(get(_formValues, name), fieldValue)
+          ) {
+            _dirtyFieldsStale = true;
+          }
 
-        if (
-          _isTracked('dirtyFields') &&
-          !deepEqual(get(_formValues, name), fieldValue)
-        ) {
-          _dirtyFieldsStale = true;
-        }
+          set(_formValues, name, fieldValue);
 
-        set(_formValues, name, fieldValue);
-
-        if (isEditedBeforeReady) {
-          updateTouchAndDirty(name, fieldValue);
+          if (isEditedBeforeReady) {
+            updateTouchAndDirty(name, fieldValue);
+          }
         }
       } else {
         setFieldValue(name, defaultValue);
