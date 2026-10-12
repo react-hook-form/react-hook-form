@@ -2214,6 +2214,73 @@ describe('reset', () => {
     expect(formState).toEqual({ isValid: false });
   });
 
+  it.each([
+    {
+      initialValue: '',
+      resetValue: 'value',
+      otherValue: 'value',
+      expectedTrigger: true,
+      expectedValid: true,
+    },
+    {
+      initialValue: 'value',
+      resetValue: '',
+      otherValue: 'value',
+      expectedTrigger: false,
+      expectedValid: false,
+    },
+    {
+      initialValue: 'value',
+      resetValue: 'value',
+      otherValue: '',
+      expectedTrigger: true,
+      expectedValid: false,
+    },
+  ])(
+    'recompute preserved isValid after triggering a field ($expectedTrigger, $expectedValid)',
+    async ({
+      initialValue,
+      resetValue,
+      otherValue,
+      expectedTrigger,
+      expectedValid,
+    }) => {
+      const { result } = renderHook(() => {
+        const methods = useForm({
+          defaultValues: { test: initialValue, other: 'value' },
+          mode: 'onChange',
+        });
+
+        methods.register('test', { required: true });
+        methods.register('other', { required: true });
+        methods.formState.isValid;
+
+        return methods;
+      });
+
+      await waitFor(() =>
+        expect(result.current.formState.isValid).toBe(!expectedValid),
+      );
+
+      act(() => {
+        result.current.reset(
+          { test: resetValue, other: otherValue },
+          { keepIsValid: true },
+        );
+      });
+
+      expect(result.current.formState.isValid).toBe(!expectedValid);
+
+      await act(async () => {
+        expect(await result.current.trigger('test')).toBe(expectedTrigger);
+      });
+
+      await waitFor(() =>
+        expect(result.current.formState.isValid).toBe(expectedValid),
+      );
+    },
+  );
+
   it('keep isValid value when form has resetOptions.keepIsValid configured', async () => {
     let formState: { isValid: boolean } = { isValid: false };
 

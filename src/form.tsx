@@ -68,8 +68,11 @@ export function Form<
         try {
           const shouldStringifySubmissionData =
             (headers &&
-              headers['Content-Type'] &&
-              headers['Content-Type'].includes('json')) ||
+              Object.entries(headers).some(
+                ([name, value]) =>
+                  name.toLowerCase() === 'content-type' &&
+                  value.includes('json'),
+              )) ||
             (encType && encType.includes('json'));
 
           const response = await fetch(action, {
