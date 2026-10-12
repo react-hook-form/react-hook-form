@@ -6405,4 +6405,79 @@ describe('useFieldArray with Activity', () => {
       expect(screen.getAllByRole('textbox')).toHaveLength(expected.length + 1);
     },
   );
+
+  itWithActivity(
+    'should retain row local state after a value-only Activity reconnect',
+    () => {
+      const Row = ({
+        control,
+        index,
+      }: {
+        control: Control<FormValues>;
+        index: number;
+      }) => {
+        const [count, setCount] = useState(0);
+        return (
+          <>
+            <button type="button" onClick={() => setCount(count + 1)}>
+              Count {count}
+            </button>
+            <Controller
+              control={control}
+              name={`test.${index}.value`}
+              render={({ field }) => <input {...field} />}
+            />
+          </>
+        );
+      };
+      const Rows = ({ control }: { control: Control<FormValues> }) => {
+        const { fields } = useFieldArray({ control, name: 'test' });
+        return (
+          <>
+            {fields.map((field, index) => (
+              <Row key={field.id} control={control} index={index} />
+            ))}
+          </>
+        );
+      };
+      const Component = () => {
+        const { control, setValue } = useForm<FormValues>({
+          defaultValues: { test: [{ value: 'old' }] },
+        });
+        const [mode, setMode] = useState<'visible' | 'hidden'>('visible');
+        return (
+          <>
+            <button type="button" onClick={() => setMode('hidden')}>
+              Hide
+            </button>
+            <button
+              type="button"
+              onClick={() => setValue('test', [{ value: 'new' }])}
+            >
+              Update
+            </button>
+            <button type="button" onClick={() => setMode('visible')}>
+              Show
+            </button>
+            <Activity mode={mode}>
+              <Rows control={control} />
+            </Activity>
+          </>
+        );
+      };
+      render(
+        <React.StrictMode>
+          <Component />
+        </React.StrictMode>,
+      );
+      fireEvent.click(screen.getByRole('button', { name: 'Count 0' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Hide' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+      expect(
+        screen.getByRole('button', { name: 'Count 1' }),
+      ).toBeInTheDocument();
+      expect(screen.getByRole('textbox')).toHaveValue('new');
+    },
+  );
 });
