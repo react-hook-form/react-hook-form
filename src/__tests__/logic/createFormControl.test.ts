@@ -248,4 +248,18 @@ describe('createFormControl', () => {
     expect(defaultValues.name).toBe('');
     expect(control._getDirty()).toBe(true);
   });
+
+  it('not stay dirty when defaultValues holds an empty null prototype object', () => {
+    const { control, register, setValue } = createFormControl({
+      defaultValues: { name: '', filters: Object.create(null) },
+    });
+
+    register('name');
+    control._state.mount = true;
+
+    setValue('name', 'changed');
+    setValue('name', '');
+
+    expect(control._getDirty()).toBe(false);
+  });
 });

@@ -4,7 +4,10 @@ import isPlainObject from './isPlainObject';
 import isPrimitive from './isPrimitive';
 
 const isEmptyObjectWithCustomPrototype = (object: object, keys: string[]) =>
-  keys.length === 0 && !Array.isArray(object) && !isPlainObject(object);
+  keys.length === 0 &&
+  !Array.isArray(object) &&
+  Object.getPrototypeOf(object) !== null &&
+  !isPlainObject(object);
 
 export default function deepEqual(
   object1: unknown,
