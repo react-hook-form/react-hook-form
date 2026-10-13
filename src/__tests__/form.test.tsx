@@ -356,6 +356,46 @@ describe('Form', () => {
     },
   );
 
+  it.each([
+    ['encType', { encType: 'application/x-www-form-urlencoded' }],
+    [
+      'headers',
+      { headers: { 'content-type': 'application/x-www-form-urlencoded' } },
+    ],
+  ] as const)(
+    'send a url-encoded body when %s sets a url-encoded content type',
+    async (_, props) => {
+      const fetchSpy = jest
+        .spyOn(global, 'fetch')
+        .mockResolvedValueOnce(new Response(null, { status: 200 }));
+      const resume = new Blob(['content'], { type: 'text/plain' });
+
+      const App = () => {
+        const { register, control } = useForm({
+          defaultValues: { name: 'bill', city: 'New York', resume },
+        });
+
+        return (
+          <Form action="/api" control={control} {...props}>
+            <input {...register('name')} />
+            <input {...register('city')} />
+            <button>Submit</button>
+          </Form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+
+      expect(String(fetchSpy.mock.calls[0][1]?.body)).toBe(
+        'name=bill&city=New+York&resume=blob',
+      );
+    },
+  );
+
   it('call a function action with FormData instead of fetching', async () => {
     const fetchSpy = jest.spyOn(global, 'fetch');
     const actionFn = jest.fn<(formData: FormData) => Promise<void>>(
