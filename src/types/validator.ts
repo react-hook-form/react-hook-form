@@ -26,7 +26,7 @@ export type FormValidateResult<T> =
         keyof T,
         {
           message: Message | Message[] | boolean | undefined;
-          type: string;
+          type?: string;
         }
       >
     >

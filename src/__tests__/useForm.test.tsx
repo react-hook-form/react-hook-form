@@ -3296,6 +3296,25 @@ describe('useForm', () => {
       },
     );
 
+    it('use the default validation type for a form-level field error', async () => {
+      const { result } = renderHook(() =>
+        useForm<{ firstName: string }>({
+          validate: () => ({
+            firstName: { message: 'First name is invalid' },
+          }),
+        }),
+      );
+
+      await act(async () => {
+        expect(await result.current.trigger()).toBe(false);
+      });
+
+      expect(result.current.getErrors('form.firstName')).toMatchObject({
+        type: 'validate',
+        message: 'First name is invalid',
+      });
+    });
+
     it('treat an empty form-level error object as valid', async () => {
       const { result } = renderHook(() =>
         useForm<{ name: string }>({
