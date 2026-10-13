@@ -122,7 +122,7 @@ declare module '../types/utils' {
           bar?: Merge<FieldError, { baz?: FieldError }>;
         } & {
           root?: Record<string, GlobalError> & GlobalError;
-          form?: GlobalError;
+          form?: Record<string, GlobalError> & GlobalError;
         }
       >
     >;
