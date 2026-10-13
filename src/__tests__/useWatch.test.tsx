@@ -1037,6 +1037,51 @@ describe('useWatch', () => {
       expect(result.current).toBe('value1');
     });
 
+    it('return the defaultValue passed with the new name or control', () => {
+      type FormValues = {
+        field1: string;
+        field2: string;
+      };
+
+      const { result: form1Result } = renderHook(() => useForm<FormValues>());
+      const { result: form2Result } = renderHook(() => useForm<FormValues>());
+
+      const { result, rerender } = renderHook(
+        ({
+          control,
+          name,
+          defaultValue,
+        }: {
+          control: Control<FormValues>;
+          name: 'field1' | 'field2';
+          defaultValue: string;
+        }) => useWatch({ control, name, defaultValue }),
+        {
+          initialProps: {
+            control: form1Result.current.control,
+            name: 'field1',
+            defaultValue: 'field1 default',
+          },
+        },
+      );
+
+      expect(result.current).toBe('field1 default');
+
+      rerender({
+        control: form1Result.current.control,
+        name: 'field2',
+        defaultValue: 'field2 default',
+      });
+      expect(result.current).toBe('field2 default');
+
+      rerender({
+        control: form2Result.current.control,
+        name: 'field2',
+        defaultValue: 'form2 default',
+      });
+      expect(result.current).toBe('form2 default');
+    });
+
     it('return the new field value synchronously on the same render even when that value is null', () => {
       type FormValues = {
         a: string;

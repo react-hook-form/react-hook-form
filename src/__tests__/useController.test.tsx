@@ -1609,6 +1609,51 @@ describe('useController', () => {
     expect(result.current.field.value).toBe('value1');
   });
 
+  it('not copy the previous field value into a new field name', async () => {
+    const onSubmit = jest.fn();
+
+    const Component = () => {
+      const [name, setName] = React.useState<'field1' | 'field2'>('field1');
+      const { control, handleSubmit } = useForm<{
+        field1?: string;
+        field2?: string;
+      }>({
+        defaultValues: { field1: 'value1' },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Controller
+            control={control}
+            name={name}
+            render={({ field }) => (
+              <input {...field} value={field.value ?? ''} />
+            )}
+          />
+          <button type="button" onClick={() => setName('field2')}>
+            switch
+          </button>
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'switch' }));
+
+    expect((screen.getByRole('textbox') as HTMLInputElement).value).toBe('');
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(
+        { field1: 'value1' },
+        expect.anything(),
+      ),
+    );
+  });
+
   it('keep nested array values when useController and watch APIs switch dynamic names', async () => {
     type FormValues = {
       content: {

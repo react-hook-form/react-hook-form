@@ -246,6 +246,10 @@ export function useWatch<TFieldValues extends FieldValues>(
   const controlChanged = _prevControl.current !== control;
   const prevName = _prevName.current;
 
+  if (controlChanged || !deepEqual(prevName, name)) {
+    _defaultValue.current = defaultValue;
+  }
+
   // `null`/`undefined` are valid watched values, so a boolean flag (rather
   // than a sentinel return value) decides whether to return the freshly
   // computed output instead of the possibly-stale state value.
