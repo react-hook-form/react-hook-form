@@ -316,6 +316,7 @@ describe('Form', () => {
     ['content-type', 'application/json', true],
     ['CoNtEnT-TyPe', 'application/json', true],
     ['content-type', 'text/plain', false],
+    ['content-type', 'application/x-www-form-urlencodedfoo', false],
     ['X-Response-Format', 'application/json', false],
   ] as const)(
     'choose the submission body for header %s: %s',
@@ -357,14 +358,28 @@ describe('Form', () => {
   );
 
   it.each([
-    ['encType', { encType: 'application/x-www-form-urlencoded' }],
+    [
+      'encType',
+      'application/x-www-form-urlencoded',
+      { encType: 'application/x-www-form-urlencoded' },
+    ],
     [
       'headers',
+      'application/x-www-form-urlencoded',
       { headers: { 'content-type': 'application/x-www-form-urlencoded' } },
     ],
+    [
+      'headers',
+      'application/x-www-form-urlencoded; charset=UTF-8',
+      {
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        },
+      },
+    ],
   ] as const)(
-    'send a url-encoded body when %s sets a url-encoded content type',
-    async (_, props) => {
+    'send a url-encoded body when %s sets %s',
+    async (_, contentType, props) => {
       const fetchSpy = jest
         .spyOn(global, 'fetch')
         .mockResolvedValueOnce(new Response(null, { status: 200 }));
@@ -390,9 +405,10 @@ describe('Form', () => {
 
       await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
 
-      expect(String(fetchSpy.mock.calls[0][1]?.body)).toBe(
-        'name=bill&city=New+York&resume=blob',
-      );
+      const init = fetchSpy.mock.calls[0][1];
+
+      expect(new Headers(init?.headers).get('content-type')).toBe(contentType);
+      expect(String(init?.body)).toBe('name=bill&city=New+York&resume=blob');
     },
   );
 
