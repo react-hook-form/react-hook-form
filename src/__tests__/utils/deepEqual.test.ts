@@ -224,6 +224,16 @@ describe('deepEqual', () => {
     expect(deepEqual(new EmptyObject(), new EmptyObject())).toBeFalsy();
   });
 
+  it('compare empty null prototype objects by content', () => {
+    expect(deepEqual(Object.create(null), Object.create(null))).toBeTruthy();
+    expect(
+      deepEqual(
+        { filters: Object.create(null) },
+        { filters: Object.create(null) },
+      ),
+    ).toBeTruthy();
+  });
+
   it('return false when comparing an empty array with an empty plain object', () => {
     expect(deepEqual([], {})).toBeFalsy();
     expect(deepEqual({}, [])).toBeFalsy();
