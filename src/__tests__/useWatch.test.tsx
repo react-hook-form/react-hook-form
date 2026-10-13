@@ -1082,6 +1082,59 @@ describe('useWatch', () => {
       expect(result.current).toBe('form2 default');
     });
 
+    it('return the new name defaultValue when re-enabled after the name changed while disabled', () => {
+      type FormValues = {
+        field1: string;
+        field2: string;
+      };
+
+      const { result: formResult } = renderHook(() => useForm<FormValues>());
+
+      const { result, rerender } = renderHook(
+        ({
+          name,
+          defaultValue,
+          disabled,
+        }: {
+          name: 'field1' | 'field2';
+          defaultValue: string;
+          disabled: boolean;
+        }) =>
+          useWatch({
+            control: formResult.current.control,
+            name,
+            defaultValue,
+            disabled,
+          }),
+        {
+          initialProps: {
+            name: 'field1',
+            defaultValue: 'field1 default',
+            disabled: false,
+          },
+        },
+      );
+
+      expect(result.current).toBe('field1 default');
+
+      rerender({
+        name: 'field1',
+        defaultValue: 'field1 default',
+        disabled: true,
+      });
+      rerender({
+        name: 'field2',
+        defaultValue: 'field2 default',
+        disabled: true,
+      });
+      rerender({
+        name: 'field2',
+        defaultValue: 'field2 default',
+        disabled: false,
+      });
+      expect(result.current).toBe('field2 default');
+    });
+
     it('return the new field value synchronously on the same render even when that value is null', () => {
       type FormValues = {
         a: string;
