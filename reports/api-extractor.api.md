@@ -386,7 +386,7 @@ export type FormSubmitHandler<TTransformedValues> = (payload: {
 // @public (undocumented)
 export type FormValidateResult<T> = Partial<Record<keyof T, {
     message: Message | Message[] | boolean | undefined;
-    type: string;
+    type?: string;
 }>> | string | boolean;
 
 // @public (undocumented)
