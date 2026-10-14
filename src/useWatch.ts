@@ -245,22 +245,19 @@ export function useWatch<TFieldValues extends FieldValues>(
   // Optimize: Check control reference first before expensive deepEqual
   const controlChanged = _prevControl.current !== control;
   const prevName = _prevName.current;
+  const nameChanged = React.useMemo(
+    () => !controlChanged && !deepEqual(prevName, name),
+    [controlChanged, name, prevName],
+  );
 
-  if (controlChanged || !deepEqual(prevName, name)) {
+  if (controlChanged || nameChanged) {
     _defaultValue.current = defaultValue;
   }
 
   // `null`/`undefined` are valid watched values, so a boolean flag (rather
   // than a sentinel return value) decides whether to return the freshly
   // computed output instead of the possibly-stale state value.
-  const shouldReturnImmediate = React.useMemo(() => {
-    if (disabled) {
-      return false;
-    }
-
-    const nameChanged = !controlChanged && !deepEqual(prevName, name);
-    return controlChanged || nameChanged;
-  }, [disabled, controlChanged, name, prevName]);
+  const shouldReturnImmediate = !disabled && (controlChanged || nameChanged);
 
   return shouldReturnImmediate ? getCurrentOutput() : value;
 }
