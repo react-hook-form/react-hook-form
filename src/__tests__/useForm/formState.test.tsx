@@ -1525,6 +1525,68 @@ describe('formState', () => {
       expect(screen.queryByText(message)).not.toBeInTheDocument();
     });
 
+    it.each(['onChange', 'onTouched', 'all'] as const)(
+      'show the pending error as soon as the field is blurred in %s mode',
+      async (mode) => {
+        jest.useFakeTimers();
+
+        const App = () => {
+          const {
+            register,
+            formState: { errors },
+          } = useForm<{
+            test: string;
+          }>({
+            delayError: 500,
+            mode,
+          });
+
+          return (
+            <div>
+              <input
+                {...register('test', {
+                  maxLength: 4,
+                })}
+              />
+              {errors.test && <p>{message}</p>}
+            </div>
+          );
+        };
+
+        render(<App />);
+
+        const input = screen.getByRole('textbox');
+
+        // touch the field first, so onTouched validates on change as well
+        await act(async () => {
+          fireEvent.blur(input);
+        });
+
+        fireEvent.change(input, {
+          target: {
+            value: '123456',
+          },
+        });
+
+        await act(async () => {
+          jest.advanceTimersByTime(100);
+        });
+
+        expect(screen.queryByText(message)).not.toBeInTheDocument();
+
+        fireEvent.blur(input);
+
+        // let the blur validation settle before any timer runs, as in a browser
+        await act(async () => {});
+
+        await act(async () => {
+          jest.advanceTimersByTime(1);
+        });
+
+        expect(screen.getByText(message)).toBeVisible();
+      },
+    );
+
     describe('when delayError is provided', () => {
       it('only show error after 500ms with register and render formState instantly', async () => {
         jest.useFakeTimers();

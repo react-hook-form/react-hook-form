@@ -686,6 +686,7 @@ export function createFormControl<
       isDirty?: boolean;
       touched?: FieldNamesMarkedBoolean<TFieldValues>;
     },
+    shouldFlushError?: boolean,
   ) => {
     const previousFieldError = get(_formState.errors, name);
     const shouldUpdateValid =
@@ -697,7 +698,7 @@ export function createFormControl<
       delayErrorCallbacks[name] = debounce(name, () =>
         updateErrors(name, error),
       );
-      delayErrorCallbacks[name](_options.delayError);
+      delayErrorCallbacks[name](shouldFlushError ? 0 : _options.delayError);
     } else {
       cancelDelayedError(name);
       error
@@ -1308,6 +1309,7 @@ export function createFormControl<
     if (field) {
       let error;
       let isValid;
+      let shouldFlushError = false;
       const fieldValue = target.type
         ? getFieldValue(field._f)
         : getEventValue(event);
@@ -1336,6 +1338,7 @@ export function createFormControl<
         if (!target || !target.readOnly) {
           field._f.onBlur && field._f.onBlur(event);
           if (Object.prototype.hasOwnProperty.call(delayErrorCallbacks, name)) {
+            shouldFlushError = true;
             delayErrorCallbacks[name]!(0);
           }
         }
@@ -1464,7 +1467,7 @@ export function createFormControl<
               | FieldPath<TFieldValues>
               | FieldPath<TFieldValues>[],
           );
-        shouldRenderByError(name, isValid, error, fieldState);
+        shouldRenderByError(name, isValid, error, fieldState, shouldFlushError);
       }
     }
   };
