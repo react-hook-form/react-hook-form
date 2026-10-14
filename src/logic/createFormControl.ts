@@ -1467,7 +1467,6 @@ export function createFormControl<
               | FieldPath<TFieldValues>[],
           );
         shouldRenderByError(name, isValid, error, fieldState);
-        // show an error pending at blur now instead of restarting its delay
         shouldFlushError &&
           Object.prototype.hasOwnProperty.call(delayErrorCallbacks, name) &&
           delayErrorCallbacks[name]!(0);
