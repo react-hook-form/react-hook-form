@@ -1666,6 +1666,140 @@ describe('formState', () => {
       },
     );
 
+    it.each([
+      ['onTouched', 'blur'],
+      ['onTouched', 'change'],
+      ['all', 'blur'],
+      ['all', 'change'],
+    ] as const)(
+      'not show a stale error when the value is corrected during async blur validation in %s mode and the %s validation finishes first',
+      async (mode, finishesFirst) => {
+        jest.useFakeTimers();
+
+        let errorsState = {};
+
+        // an invalid value takes 1000ms to validate, a valid one takes 100ms
+        // when the validation of the corrected value should finish first
+        const validValueDelay = finishesFirst === 'change' ? 100 : 1000;
+
+        const App = () => {
+          const {
+            register,
+            formState: { errors },
+          } = useForm<{
+            test: string;
+          }>({
+            delayError: 500,
+            mode,
+          });
+
+          errorsState = errors;
+
+          return (
+            <div>
+              <input
+                {...register('test', {
+                  validate: (value) =>
+                    new Promise<true | string>((resolve) => {
+                      const isValid = value.length <= 4;
+
+                      setTimeout(
+                        () => resolve(isValid || message),
+                        isValid ? validValueDelay : 1000,
+                      );
+                    }),
+                })}
+              />
+              {errors.test && <p>{message}</p>}
+            </div>
+          );
+        };
+
+        render(<App />);
+
+        const input = screen.getByRole('textbox');
+
+        // touch the field first, so onTouched validates on change as well
+        await act(async () => {
+          fireEvent.blur(input);
+        });
+
+        await act(async () => {
+          jest.advanceTimersByTime(1000);
+        });
+
+        await act(async () => {
+          fireEvent.change(input, {
+            target: {
+              value: '123456',
+            },
+          });
+        });
+
+        // the change validation finishes and its error waits for delayError
+        await act(async () => {
+          jest.advanceTimersByTime(1000);
+        });
+
+        expect(screen.queryByText(message)).not.toBeInTheDocument();
+
+        // blur shows the pending error while the blur validation keeps running
+        await act(async () => {
+          fireEvent.blur(input);
+        });
+
+        await act(async () => {
+          jest.advanceTimersByTime(100);
+        });
+
+        expect(screen.getByText(message)).toBeVisible();
+
+        // correct the value 900ms before the blur validation finishes
+        await act(async () => {
+          fireEvent.change(input, {
+            target: {
+              value: '123',
+            },
+          });
+        });
+
+        if (finishesFirst === 'change') {
+          // the corrected value is validated first
+          await act(async () => {
+            jest.advanceTimersByTime(100);
+          });
+
+          expect(screen.queryByText(message)).not.toBeInTheDocument();
+          expect(errorsState).toEqual({});
+
+          // then the blur validation of the old value finishes with an error
+          await act(async () => {
+            jest.advanceTimersByTime(800);
+          });
+        } else {
+          // the blur validation of the old value finishes first with an error
+          await act(async () => {
+            jest.advanceTimersByTime(900);
+          });
+
+          // then the corrected value is validated
+          await act(async () => {
+            jest.advanceTimersByTime(100);
+          });
+        }
+
+        expect(screen.queryByText(message)).not.toBeInTheDocument();
+        expect(errorsState).toEqual({});
+
+        await act(async () => {
+          jest.runAllTimers();
+        });
+
+        expect(screen.queryByText(message)).not.toBeInTheDocument();
+        expect(errorsState).toEqual({});
+      },
+    );
+
     describe('when delayError is provided', () => {
       it('only show error after 500ms with register and render formState instantly', async () => {
         jest.useFakeTimers();
