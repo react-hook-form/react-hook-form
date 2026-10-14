@@ -5,6 +5,7 @@ import {
   render,
   renderHook,
   screen,
+  waitFor,
 } from '@testing-library/react';
 
 import type { UseFormReturn } from '../types';
@@ -12,6 +13,15 @@ import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
 
 type FormValues = { test: string };
+
+// Activity is a React 19.2+ API. Only run Activity-dependent tests when the
+// installed React actually provides it.
+const Activity = (React as unknown as { Activity?: unknown })
+  .Activity as React.ComponentType<{
+  mode: 'hidden' | 'visible';
+  children?: React.ReactNode;
+}>;
+const itWithActivity = Activity ? it : it.skip;
 
 function ChildWithMethods({
   watch,
@@ -120,6 +130,145 @@ describe('React Compiler compatibility', () => {
     expect(result.current.watch.name).toBe('bound watch');
     expect(result.current.getValues.name).toBe('bound getValues');
   });
+
+  it('should update useFormContext formState when the provider parent is memoized', async () => {
+    const Child = () => {
+      const {
+        formState: { errors },
+        register,
+        handleSubmit,
+      } = useFormContext<FormValues>();
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <input {...register('test', { required: 'required' })} />
+          <p>{errors.test?.message}</p>
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    const Form = () => {
+      const methods = useForm<FormValues>();
+
+      return (
+        <FormProvider {...methods}>
+          <Child />
+        </FormProvider>
+      );
+    };
+
+    render(<Form />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(await screen.findByText('required')).toBeVisible();
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'value' },
+    });
+
+    await waitFor(() =>
+      expect(screen.queryByText('required')).not.toBeInTheDocument(),
+    );
+  });
+
+  it('should keep useFormContext formState fresh when a descendant layout effect updates the form during a provider re-render', () => {
+    const LayoutChild = ({ step }: { step: number }) => {
+      const { setError } = useFormContext<FormValues>();
+
+      React.useLayoutEffect(() => {
+        if (step === 1) {
+          setError('test', { message: 'from layout effect' });
+        }
+      }, [step, setError]);
+
+      return null;
+    };
+
+    const Errors = () => {
+      const { formState } = useFormContext<FormValues>();
+
+      return <p>context: {formState.errors.test?.message ?? 'none'}</p>;
+    };
+
+    const Form = () => {
+      const methods = useForm<FormValues>();
+      const [step, setStep] = React.useState(0);
+
+      return (
+        <>
+          <button
+            onClick={() => {
+              methods.setError('test', { message: 'from click' });
+              setStep(1);
+            }}
+          >
+            go
+          </button>
+          <p>root: {methods.formState.errors.test?.message ?? 'none'}</p>
+          <FormProvider {...methods}>
+            <LayoutChild step={step} />
+            <Errors />
+          </FormProvider>
+        </>
+      );
+    };
+
+    render(<Form />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'go' }));
+
+    expect(screen.getByText('root: from layout effect')).toBeVisible();
+    expect(screen.getByText('context: from layout effect')).toBeVisible();
+  });
+
+  itWithActivity(
+    'should resync useFormContext formState after a hidden Activity subtree becomes visible',
+    async () => {
+      const Child = () => {
+        const {
+          formState: { errors },
+        } = useFormContext<FormValues>();
+
+        return <p>error: {errors.test?.message}</p>;
+      };
+
+      const Form = () => {
+        const methods = useForm<FormValues>();
+        const [mode, setMode] = React.useState<'hidden' | 'visible'>('visible');
+
+        return (
+          <>
+            <button onClick={() => setMode('hidden')}>hide</button>
+            <button
+              onClick={() =>
+                methods.setError('test', { message: 'set while hidden' })
+              }
+            >
+              set error
+            </button>
+            <button onClick={() => setMode('visible')}>show</button>
+            <Activity mode={mode}>
+              <FormProvider {...methods}>
+                <Child />
+              </FormProvider>
+            </Activity>
+          </>
+        );
+      };
+
+      render(<Form />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'hide' }));
+      fireEvent.click(screen.getByRole('button', { name: 'set error' }));
+      fireEvent.click(screen.getByRole('button', { name: 'show' }));
+
+      expect(
+        await screen.findByText('error: set while hidden'),
+      ).toBeInTheDocument();
+    },
+  );
 
   it('should not loop when the methods object is an effect dependency', async () => {
     const onReset = jest.fn();
