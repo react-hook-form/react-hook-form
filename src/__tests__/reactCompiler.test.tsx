@@ -292,6 +292,32 @@ describe('React Compiler compatibility', () => {
     },
   );
 
+  // Known failure, skipped in jest-react-compiler.config.js: the useForm return
+  // value keeps its identity, so the compiler memoizes method calls on it.
+  it('should refresh read methods called on the useForm return value', async () => {
+    const Form = () => {
+      const methods = useForm<FormValues>({ defaultValues: { test: '' } });
+      const { isDirty } = methods.formState;
+
+      return (
+        <>
+          <input {...methods.register('test')} placeholder="test" />
+          <p>form dirty: {String(isDirty)}</p>
+          <p>field dirty: {String(methods.getFieldState('test').isDirty)}</p>
+        </>
+      );
+    };
+
+    render(<Form />);
+
+    fireEvent.change(screen.getByPlaceholderText('test'), {
+      target: { value: 'test' },
+    });
+
+    expect(await screen.findByText('form dirty: true')).toBeVisible();
+    expect(screen.getByText('field dirty: true')).toBeVisible();
+  });
+
   it('should not loop when the methods object is an effect dependency', async () => {
     const onReset = jest.fn();
 
