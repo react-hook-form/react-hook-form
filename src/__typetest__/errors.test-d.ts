@@ -10,6 +10,20 @@ import type { Equal, Expect } from './__fixtures__';
 import { _ } from './__fixtures__';
 
 /** {@link FieldErrors} */ {
+  /** it should expose field errors returned by form-level validation */
+  {
+    const actual = _ as FieldErrors<{ firstName: string; lastName: string }>;
+    const fieldMessage = actual.form?.firstName?.message;
+    const fieldType = actual.form?.firstName?.type;
+    const formMessage = actual.form?.message;
+    const formType = actual.form?.type;
+
+    type _t1 = Expect<Equal<typeof fieldMessage, string | undefined>>;
+    type _t2 = Expect<Equal<typeof fieldType, string | number | undefined>>;
+    type _t3 = Expect<Equal<typeof formMessage, string | undefined>>;
+    type _t4 = Expect<Equal<typeof formType, string | number | undefined>>;
+  }
+
   /** it should support optional record fields */
   {
     const actual = _ as FieldErrors<{
@@ -35,7 +49,7 @@ import { _ } from './__fixtures__';
           >;
         } & {
           root?: Record<string, GlobalError> & GlobalError;
-          form?: GlobalError;
+          form?: Record<string, GlobalError> & GlobalError;
         }
       >
     >;
@@ -66,7 +80,7 @@ import { _ } from './__fixtures__';
           >;
         } & {
           root?: Record<string, GlobalError> & GlobalError;
-          form?: GlobalError;
+          form?: Record<string, GlobalError> & GlobalError;
         }
       >
     >;

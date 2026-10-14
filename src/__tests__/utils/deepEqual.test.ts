@@ -90,6 +90,10 @@ describe('deepEqual', () => {
     ).toBeTruthy();
   });
 
+  it('return false when comparing sparse arrays with different lengths', () => {
+    expect(deepEqual(new Array(2), new Array(3))).toBeFalsy();
+  });
+
   it('return true when comparing sparse array against plain object with numeric string keys (issue #13346)', () => {
     const sparseArray: any[] = [];
     sparseArray[123] = { name: 'Alice' };

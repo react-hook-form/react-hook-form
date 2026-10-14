@@ -7,10 +7,22 @@ import type {
   FieldValues,
   Resolver,
   UseFormGetFieldState,
+  ValidateForm,
 } from '../types';
 import { useForm } from '../useForm';
 
 import type { Equal, Expect } from './__fixtures__';
+
+/** {@link ValidateForm} */ {
+  /** it should allow errors that use the default validation type */ {
+    const validate: ValidateForm<{ firstName: string }> = () => ({
+      firstName: { message: 'First name is invalid' },
+    });
+    const validateAsync: ValidateForm<{ firstName: string }> = async () => ({
+      firstName: { message: 'First name is invalid' },
+    });
+  }
+}
 
 /** {@link UseFormHandleSubmit} */ {
   /** it should infer the correct defaultValues from useForm */ {

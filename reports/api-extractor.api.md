@@ -256,7 +256,7 @@ export type FieldError = {
 // @public (undocumented)
 export type FieldErrors<T extends FieldValues = FieldValues> = Partial<FieldErrorsImpl<DeepRequired<T>>> & {
     root?: Record<string, GlobalError> & GlobalError;
-    form?: GlobalError;
+    form?: Record<string, GlobalError> & GlobalError;
 };
 
 // @public (undocumented)
@@ -386,7 +386,7 @@ export type FormSubmitHandler<TTransformedValues> = (payload: {
 // @public (undocumented)
 export type FormValidateResult<T> = Partial<Record<keyof T, {
     message: Message | Message[] | boolean | undefined;
-    type: string;
+    type?: string;
 }>> | string | boolean;
 
 // @public (undocumented)
