@@ -402,6 +402,22 @@ describe('getDirtyFields', () => {
     });
   });
 
+  it.each([null, undefined])(
+    'mark every default leaf as dirty when form values are %s',
+    (formValues) => {
+      expect(
+        getDirtyFields<Record<string, unknown> | null | undefined>(
+          { type: 'static', value: 100, nested: { name: 'bill' } },
+          formValues,
+        ),
+      ).toEqual({ type: true, value: true, nested: { name: true } });
+
+      expect(
+        getDirtyFields<string[] | null | undefined>(['a', 'b'], formValues),
+      ).toEqual([true, true]);
+    },
+  );
+
   it('mark an array-valued registered field as dirty with a boolean rather than diffing elements (#13584)', () => {
     const fieldRefs = {
       fruits: { _f: { name: 'fruits', ref: {} } },

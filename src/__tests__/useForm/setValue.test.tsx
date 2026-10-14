@@ -1539,6 +1539,35 @@ describe('setValue', () => {
         user: null,
       });
     });
+
+    it.each([
+      ['an object', { name: 'John Doe' }, { name: true }],
+      ['an array', ['a', 'b'], [true, true]],
+    ])(
+      'be able to set %s default to null or undefined with shouldDirty without register',
+      (_, defaultValue, expectedDirtyFields) => {
+        for (const value of [null, undefined]) {
+          const { result } = renderHook(() =>
+            useForm<{ user: unknown }>({
+              defaultValues: { user: defaultValue },
+            }),
+          );
+
+          result.current.formState.isDirty;
+          result.current.formState.dirtyFields;
+
+          act(() =>
+            result.current.setValue('user', value, { shouldDirty: true }),
+          );
+
+          expect(result.current.getValues('user')).toBe(value);
+          expect(result.current.formState.isDirty).toBe(true);
+          expect(result.current.formState.dirtyFields).toEqual({
+            user: expectedDirtyFields,
+          });
+        }
+      },
+    );
   });
 
   it('only be able to update value of array which is not registered', async () => {
