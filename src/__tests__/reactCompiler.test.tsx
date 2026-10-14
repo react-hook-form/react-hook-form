@@ -223,6 +223,28 @@ describe('React Compiler compatibility', () => {
     expect(screen.getByText('context: from layout effect')).toBeVisible();
   });
 
+  it('should expose isReady through useFormContext when the provider parent is memoized', async () => {
+    const Child = () => {
+      const { formState } = useFormContext<FormValues>();
+
+      return <p>ready: {String(formState.isReady)}</p>;
+    };
+
+    const Form = () => {
+      const methods = useForm<FormValues>();
+
+      return (
+        <FormProvider {...methods}>
+          <Child />
+        </FormProvider>
+      );
+    };
+
+    render(<Form />);
+
+    expect(await screen.findByText('ready: true')).toBeVisible();
+  });
+
   itWithActivity(
     'should resync useFormContext formState after a hidden Activity subtree becomes visible',
     async () => {

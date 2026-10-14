@@ -1,6 +1,8 @@
 import React from 'react';
 
 import { DEFAULT_FORM_STATE, defaultOptions } from './logic/createFormControl';
+import type { FormStateOwner } from './logic/formStateOwners';
+import { formStateOwners } from './logic/formStateOwners';
 import getProxyFormState from './logic/getProxyFormState';
 import cloneObject from './utils/cloneObject';
 import deepEqual from './utils/deepEqual';
@@ -59,6 +61,9 @@ export function useForm<
   const _values = React.useRef<typeof props.values>(undefined);
   const _formControlProp = React.useRef(props.formControl);
   const _hadValidate = React.useRef(!!props.validate);
+  const [_formStateOwner] = React.useState<FormStateOwner>(() => ({
+    listeners: new Set(),
+  }));
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>(
     () => ({
       ...cloneObject(DEFAULT_FORM_STATE),
@@ -217,6 +222,11 @@ export function useForm<
     }
   }, [control, props.values]);
 
+  // Lets a FormProvider skipped by a memoized parent catch up.
+  useIsomorphicLayoutEffect(() => {
+    _formStateOwner.listeners.forEach((listener) => listener());
+  }, [_formStateOwner, formState]);
+
   React.useEffect(() => {
     if (!control._state.mount) {
       control._setValid();
@@ -247,7 +257,9 @@ export function useForm<
       >,
     );
     methods.formState = getProxyFormState(formState, control);
+    _formStateOwner.formState = methods.formState;
+    formStateOwners.set(methods.formState, _formStateOwner);
 
     return methods;
-  }, [formState, control]);
+  }, [formState, control, _formStateOwner]);
 }
