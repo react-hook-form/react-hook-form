@@ -686,7 +686,6 @@ export function createFormControl<
       isDirty?: boolean;
       touched?: FieldNamesMarkedBoolean<TFieldValues>;
     },
-    shouldFlushError?: boolean,
   ) => {
     const previousFieldError = get(_formState.errors, name);
     const shouldUpdateValid =
@@ -698,7 +697,7 @@ export function createFormControl<
       delayErrorCallbacks[name] = debounce(name, () =>
         updateErrors(name, error),
       );
-      delayErrorCallbacks[name](shouldFlushError ? 0 : _options.delayError);
+      delayErrorCallbacks[name](_options.delayError);
     } else {
       cancelDelayedError(name);
       error
@@ -1467,7 +1466,11 @@ export function createFormControl<
               | FieldPath<TFieldValues>
               | FieldPath<TFieldValues>[],
           );
-        shouldRenderByError(name, isValid, error, fieldState, shouldFlushError);
+        shouldRenderByError(name, isValid, error, fieldState);
+        // show an error pending at blur now instead of restarting its delay
+        shouldFlushError &&
+          Object.prototype.hasOwnProperty.call(delayErrorCallbacks, name) &&
+          delayErrorCallbacks[name]!(0);
       }
     }
   };
