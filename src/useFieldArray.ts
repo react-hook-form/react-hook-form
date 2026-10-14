@@ -386,12 +386,14 @@ export function useFieldArray<
       } as FormState<TFieldValues>);
 
     const validationModes = getValidationModes(control._options.mode);
+    const reValidateModes = getValidationModes(control._options.reValidateMode);
 
     if (
       _actioned.current &&
       (!validationModes.isOnSubmit || control._formState.isSubmitted) &&
-      !getValidationModes(control._options.reValidateMode).isOnSubmit &&
-      !validationModes.isOnBlur
+      !reValidateModes.isOnSubmit &&
+      (!validationModes.isOnBlur ||
+        (control._formState.isSubmitted && reValidateModes.isOnChange))
     ) {
       if (control._options.resolver) {
         control._runSchema([name]).then((result) => {
