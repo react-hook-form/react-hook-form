@@ -1181,12 +1181,13 @@ export function createFormControl<
 
       if (_isTracked('isDirty', 'dirtyFields') && options.shouldDirty) {
         _updateDirtyFields();
+        _formState.isDirty = _getDirty(name, cloneValue);
 
         if (!skipStateEmit) {
           _subjects.state.next({
             name,
             dirtyFields: _formState.dirtyFields,
-            isDirty: _getDirty(name, cloneValue),
+            isDirty: _formState.isDirty,
           });
         }
       }
