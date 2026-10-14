@@ -3,12 +3,6 @@ const config = require('./jest.config');
 
 // Tests that still fail with React Compiler. Remove an entry once it passes.
 const knownFailures = [
-  'FormProvider should expose resetDefaultValues from useFormContext',
-  'FormProvider should expose setValues from useFormContext',
-  'FormProvider should not do unnecessary rerenders by useFormContext',
-  'FormProvider should report errors correctly',
-  'FormProvider should report errors correctly with useFieldArray Controller',
-  'should update error state in FormProvider when setError is called in useEffect',
   'FormStateSubscribe should not re-render when a non-subscribed field changes',
   'FormStateSubscribe should not re-render when subscribed field name is not included',
   'React Compiler compatibility should refresh read methods called on the useForm return value',
