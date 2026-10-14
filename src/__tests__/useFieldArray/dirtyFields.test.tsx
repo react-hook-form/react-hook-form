@@ -4,15 +4,13 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
-// babel-plugin-jest-hoist (React Compiler run) only allows `mock`-prefixed
-// variables inside jest.mock factories.
-let mockId = 0;
+let i = 0;
 
-jest.mock('../../logic/generateId', () => () => String(mockId++));
+jest.mock('../../logic/generateId', () => () => String(i++));
 
 describe('useFieldArray dirtyFields isolation', () => {
   beforeEach(() => {
-    mockId = 0;
+    i = 0;
   });
 
   it('should only mark items dirty when only items field array is appended', async () => {
