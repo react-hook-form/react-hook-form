@@ -1308,6 +1308,7 @@ export function createFormControl<
     if (field) {
       let error;
       let isValid;
+      let shouldFlushError = false;
       const fieldValue = target.type
         ? getFieldValue(field._f)
         : getEventValue(event);
@@ -1336,6 +1337,7 @@ export function createFormControl<
         if (!target || !target.readOnly) {
           field._f.onBlur && field._f.onBlur(event);
           if (Object.prototype.hasOwnProperty.call(delayErrorCallbacks, name)) {
+            shouldFlushError = true;
             delayErrorCallbacks[name]!(0);
           }
         }
@@ -1465,6 +1467,9 @@ export function createFormControl<
               | FieldPath<TFieldValues>[],
           );
         shouldRenderByError(name, isValid, error, fieldState);
+        shouldFlushError &&
+          Object.prototype.hasOwnProperty.call(delayErrorCallbacks, name) &&
+          delayErrorCallbacks[name]!(0);
       }
     }
   };
