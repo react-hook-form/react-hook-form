@@ -67,7 +67,9 @@ export default function getDirtyFields<T>(
   if (!dirtyFieldsFromValues) {
     dirtyFieldsFromValues = markFieldsDirty(
       formValues,
-      Array.isArray(formValues) ? [] : {},
+      Array.isArray(isNullOrUndefined(formValues) ? data : formValues)
+        ? []
+        : {},
       fieldRefs,
     );
   }
@@ -98,7 +100,12 @@ export default function getDirtyFields<T>(
       if (isEmptyDirtyContainer(dirtyFieldsFromValues[key])) {
         clearDirtyField(dirtyFieldsFromValues, key);
       }
-    } else if (deepEqual(value, formValues[key])) {
+    } else if (
+      deepEqual(
+        value,
+        isNullOrUndefined(formValues) ? undefined : formValues[key],
+      )
+    ) {
       clearDirtyField(dirtyFieldsFromValues, key);
     } else {
       dirtyFieldsFromValues[key] = true;
