@@ -14,7 +14,6 @@ import type {
   ControllerFieldState,
   Field,
   FieldPath,
-  FieldPathValue,
   FieldValues,
   InternalFieldName,
   UseControllerProps,
@@ -75,7 +74,7 @@ export function useController<
     name,
     defaultValue: defaultValueMemo,
     exact,
-  }) as FieldPathValue<TFieldValues, TName>;
+  });
 
   const formState = useFormState({
     control,
@@ -140,7 +139,7 @@ export function useController<
       return _registerProps.current.onChange({
         target: {
           value: getEventValue(event),
-          name: name as InternalFieldName,
+          name,
         },
         type: EVENTS.CHANGE,
       });
@@ -161,7 +160,7 @@ export function useController<
     return _registerProps.current.onBlur({
       target: {
         value,
-        name: name as InternalFieldName,
+        name,
       },
       type: EVENTS.BLUR,
     });

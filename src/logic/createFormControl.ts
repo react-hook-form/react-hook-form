@@ -637,14 +637,11 @@ export function createFormControl<
             _formValues,
             undefined,
             _fields,
-          ) as Record<string, unknown>;
+          );
 
           if (!deepEqual(_formState.dirtyFields, nextDirtyFields)) {
             didResyncDirtyFields = true;
-            replaceDirtyFieldsInPlace(
-              _formState.dirtyFields as Record<string, unknown>,
-              nextDirtyFields,
-            );
+            replaceDirtyFieldsInPlace(_formState.dirtyFields, nextDirtyFields);
           }
         }
 
@@ -727,7 +724,7 @@ export function createFormControl<
   const _runSchema = async (name?: InternalFieldName[]) => {
     _updateIsValidating(name, true);
     return await _options.resolver!(
-      _formValues as TFieldValues,
+      _formValues,
       _options.context,
       getResolverOptions(
         name || _names.mount,
@@ -1193,12 +1190,9 @@ export function createFormControl<
       }
 
       options.shouldValidate &&
-        trigger(
-          name as Path<TFieldValues>,
-          {
-            delayError: options.delayError,
-          } as TriggerConfig & { delayError?: boolean },
-        );
+        trigger(name, {
+          delayError: options.delayError,
+        } as TriggerConfig & { delayError?: boolean });
     } else {
       const isEmpty =
         (Array.isArray(cloneValue) && !cloneValue.length) ||
@@ -1259,7 +1253,7 @@ export function createFormControl<
     options = {},
   ) => {
     const updatedFormValues = isFunction(formValues)
-      ? (formValues as Function)(_formValues as TFieldValues)
+      ? formValues(_formValues)
       : formValues;
 
     if (!deepEqual(_formValues, updatedFormValues)) {
@@ -1730,8 +1724,7 @@ export function createFormControl<
             props.reRenderRoot,
           )
         ) {
-          const values =
-            formState.values || ({ ..._formValues } as TFieldValues);
+          const values = formState.values || { ..._formValues };
 
           props.callback({
             ..._formState,
@@ -1987,8 +1980,7 @@ export function createFormControl<
       let onValidError = undefined;
       if (e) {
         e.preventDefault && e.preventDefault();
-        (e as React.BaseSyntheticEvent).persist &&
-          (e as React.BaseSyntheticEvent).persist();
+        e.persist && e.persist();
       }
       let fieldValues:
         | TFieldValues
@@ -2070,10 +2062,7 @@ export function createFormControl<
       if (isUndefined(options.defaultValue)) {
         setValue(name, cloneObject(get(_defaultValues, name)));
       } else {
-        setValue(
-          name,
-          options.defaultValue as Parameters<typeof setValue<typeof name>>[1],
-        );
+        setValue(name, options.defaultValue);
         set(_defaultValues, name, cloneObject(options.defaultValue));
       }
 
@@ -2276,12 +2265,10 @@ export function createFormControl<
   };
 
   const reset: UseFormReset<TFieldValues> = (formValues, keepStateOptions) =>
-    _reset(
-      isFunction(formValues)
-        ? (formValues as Function)(_formValues as TFieldValues)
-        : formValues,
-      { ..._options.resetOptions, ...keepStateOptions },
-    );
+    _reset(isFunction(formValues) ? formValues(_formValues) : formValues, {
+      ..._options.resetOptions,
+      ...keepStateOptions,
+    });
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name, options = {}) => {
     const field = get(_fields, name);
@@ -2329,7 +2316,7 @@ export function createFormControl<
 
   const _resetDefaultValues = () =>
     isFunction(_options.defaultValues) &&
-    (_options.defaultValues as Function)().then((values: TFieldValues) => {
+    _options.defaultValues().then((values: TFieldValues) => {
       reset(values, _options.resetOptions);
       _subjects.state.next({
         isLoading: false,
@@ -2340,7 +2327,7 @@ export function createFormControl<
     values,
     options = {},
   ) => {
-    _defaultValues = cloneObject(values) as Partial<typeof _defaultValues>;
+    _defaultValues = cloneObject(values);
 
     if (!options.keepDirty) {
       const newDirtyFields = getDirtyFields(
