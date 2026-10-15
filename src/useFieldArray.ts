@@ -33,7 +33,6 @@ import type {
   FieldArrayPath,
   FieldArrayWithId,
   FieldError,
-  FieldErrors,
   FieldPath,
   FieldValues,
   InternalFieldName,
@@ -415,7 +414,7 @@ export function useFieldArray<
               isObject(error) &&
               !Object.keys(error).some((key) => !Number.isNaN(+key))
                 ? updateFieldArrayRootError(
-                    control._formState.errors as FieldErrors<TFieldValues>,
+                    control._formState.errors,
                     { [name]: error } as Partial<Record<string, FieldError>>,
                     name,
                   )
@@ -425,7 +424,7 @@ export function useFieldArray<
             }
             control._formState.errors = { ...control._formState.errors };
             control._subjects.state.next({
-              errors: control._formState.errors as FieldErrors<TFieldValues>,
+              errors: control._formState.errors,
             });
           }
         });
@@ -441,14 +440,10 @@ export function useFieldArray<
             true,
           ).then((error) => {
             if (!isEmptyObject(error)) {
-              updateFieldArrayRootError(
-                control._formState.errors as FieldErrors<TFieldValues>,
-                error,
-                name,
-              );
+              updateFieldArrayRootError(control._formState.errors, error, name);
               control._formState.errors = { ...control._formState.errors };
               control._subjects.state.next({
-                errors: control._formState.errors as FieldErrors<TFieldValues>,
+                errors: control._formState.errors,
               });
             } else {
               const existingError = get(control._formState.errors, name);
@@ -457,8 +452,7 @@ export function useFieldArray<
                 unset(control._formState.errors, `${name}.${ROOT_ERROR_TYPE}`);
                 control._formState.errors = { ...control._formState.errors };
                 control._subjects.state.next({
-                  errors: control._formState
-                    .errors as FieldErrors<TFieldValues>,
+                  errors: control._formState.errors,
                 });
               }
             }
