@@ -253,6 +253,15 @@ describe('deepEqual', () => {
     expect(deepEqual([{ ref: 'A-100' }], [{ ref: 'A-100' }])).toBeTruthy();
   });
 
+  it('return false when a key only matches via the prototype chain', () => {
+    expect(
+      deepEqual({ toString: Object.prototype.toString }, { x: 1 }),
+    ).toBeFalsy();
+    expect(
+      deepEqual({ x: 1 }, { toString: Object.prototype.toString }),
+    ).toBeFalsy();
+  });
+
   it('ignore the `ref` key when comparing field errors', () => {
     const input1 = document.createElement('input');
     const input2 = document.createElement('input');
