@@ -70,7 +70,7 @@ export default function deepEqual(
   for (const key of keys1) {
     const val1 = (object1 as Record<string, unknown>)[key];
 
-    if (!(key in (object2 as object))) {
+    if (!Object.prototype.hasOwnProperty.call(object2, key)) {
       return false;
     }
 
