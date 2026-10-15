@@ -14,7 +14,6 @@ import type {
   ControllerFieldState,
   Field,
   FieldPath,
-  FieldPathValue,
   FieldValues,
   InternalFieldName,
   UseControllerProps,
@@ -75,7 +74,7 @@ export function useController<
     name,
     defaultValue: defaultValueMemo,
     exact,
-  }) as FieldPathValue<TFieldValues, TName>;
+  });
 
   const formState = useFormState({
     control,
