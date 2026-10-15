@@ -2062,10 +2062,7 @@ export function createFormControl<
       if (isUndefined(options.defaultValue)) {
         setValue(name, cloneObject(get(_defaultValues, name)));
       } else {
-        setValue(
-          name,
-          options.defaultValue as Parameters<typeof setValue<typeof name>>[1],
-        );
+        setValue(name, options.defaultValue);
         set(_defaultValues, name, cloneObject(options.defaultValue));
       }
 
