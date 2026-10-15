@@ -27,6 +27,14 @@ export default function deepEqual(
     return Object.is(object1.getTime(), object2.getTime());
   }
 
+  if (
+    Array.isArray(object1) &&
+    Array.isArray(object2) &&
+    object1.length !== object2.length
+  ) {
+    return false;
+  }
+
   const keys1 = Object.keys(object1);
   const keys2 = Object.keys(object2);
 

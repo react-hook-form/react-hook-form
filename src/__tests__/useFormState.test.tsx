@@ -1116,4 +1116,22 @@ describe('useFormState', () => {
       },
     );
   });
+
+  it('should report isReady once the form has mounted', () => {
+    const Child = ({ control }: { control: Control<{ test: string }> }) => {
+      const { isReady } = useFormState({ control });
+
+      return <p>{isReady ? 'ready' : 'not ready'}</p>;
+    };
+
+    const App = () => {
+      const { control } = useForm<{ test: string }>();
+
+      return <Child control={control} />;
+    };
+
+    render(<App />);
+
+    expect(screen.getByText('ready')).toBeVisible();
+  });
 });

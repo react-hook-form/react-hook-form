@@ -137,6 +137,7 @@ export function useForm<
     }));
 
     control._formState.isReady = true;
+    control._subjects.state.next({ isReady: true });
 
     return () => {
       unsubscribe();

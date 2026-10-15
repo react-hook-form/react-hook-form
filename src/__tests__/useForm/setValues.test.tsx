@@ -820,4 +820,28 @@ describe('setValues', () => {
     expect(await screen.findAllByRole('textbox')).toHaveLength(2);
     await waitFor(() => expect(validate).toHaveBeenCalledTimes(1));
   });
+
+  it('mark the form dirty when shouldDirty fills an empty field array', async () => {
+    const { result } = renderHook(() => {
+      const methods = useForm<{ items: { name: string }[] }>({
+        defaultValues: { items: [] },
+      });
+      useFieldArray({ control: methods.control, name: 'items' });
+      methods.formState.isDirty;
+      methods.formState.dirtyFields;
+      return methods;
+    });
+
+    await act(async () => {
+      result.current.setValues(
+        { items: [{ name: 'x' }] },
+        { shouldDirty: true },
+      );
+    });
+
+    expect(result.current.formState.dirtyFields).toEqual({
+      items: [{ name: true }],
+    });
+    expect(result.current.formState.isDirty).toBe(true);
+  });
 });

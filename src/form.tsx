@@ -66,14 +66,13 @@ export function Form<
 
       if (isString(action)) {
         try {
-          const shouldStringifySubmissionData =
+          const hasContentType = (type: RegExp) =>
             (headers &&
               Object.entries(headers).some(
                 ([name, value]) =>
-                  name.toLowerCase() === 'content-type' &&
-                  value.includes('json'),
+                  name.toLowerCase() === 'content-type' && type.test(value),
               )) ||
-            (encType && encType.includes('json'));
+            (encType && type.test(encType));
 
           const response = await fetch(action, {
             method,
@@ -84,7 +83,18 @@ export function Form<
                   'Content-Type': encType,
                 }),
             },
-            body: shouldStringifySubmissionData ? formDataJson : formData,
+            body: hasContentType(/json/)
+              ? formDataJson
+              : hasContentType(
+                    /^\s*application\/x-www-form-urlencoded\s*(;|$)/i,
+                  )
+                ? new URLSearchParams(
+                    Array.from(formData, ([name, value]) => [
+                      name,
+                      isString(value) ? value : value.name,
+                    ]),
+                  )
+                : formData,
           });
 
           if (response && !validateStatus(response.status)) {

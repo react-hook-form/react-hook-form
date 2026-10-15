@@ -5840,6 +5840,73 @@ describe('useFieldArray with checkbox', () => {
 
     expect(screen.queryByTestId('error')).not.toBeInTheDocument();
   });
+
+  it.each([
+    { reValidateMode: 'onChange', errorAfterAppend: undefined },
+    { reValidateMode: 'onBlur', errorAfterAppend: 'Add an item' },
+  ] as const)(
+    'follow reValidateMode $reValidateMode for field array operations after submit when mode is onBlur',
+    async ({ reValidateMode, errorAfterAppend }) => {
+      const App = () => {
+        const {
+          control,
+          handleSubmit,
+          formState: { errors },
+        } = useForm({
+          mode: 'onBlur',
+          reValidateMode,
+          defaultValues: {
+            test: [{ name: 'a' }],
+          },
+        });
+
+        const { fields, append, remove } = useFieldArray({
+          control,
+          name: 'test',
+          rules: { required: 'Add an item' },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            {errors.test?.root?.message && (
+              <p data-testid="error">{errors.test.root.message}</p>
+            )}
+            <p>rows: {fields.length}</p>
+
+            <button type="button" onClick={() => append({ name: 'b' })}>
+              append
+            </button>
+            <button type="button" onClick={() => remove(0)}>
+              remove
+            </button>
+            <button type="submit">submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+      });
+
+      screen.getByText('rows: 0');
+      expect(screen.queryByTestId('error')).not.toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      expect(screen.getByTestId('error')).toHaveTextContent('Add an item');
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      screen.getByText('rows: 1');
+      expect(screen.queryByTestId('error')?.textContent).toBe(errorAfterAppend);
+    },
+  );
 });
 
 it('not lose defaultValues when useFieldArray and watch are used together', async () => {
