@@ -724,7 +724,7 @@ export function createFormControl<
   const _runSchema = async (name?: InternalFieldName[]) => {
     _updateIsValidating(name, true);
     return await _options.resolver!(
-      _formValues as TFieldValues,
+      _formValues,
       _options.context,
       getResolverOptions(
         name || _names.mount,
@@ -1256,7 +1256,7 @@ export function createFormControl<
     options = {},
   ) => {
     const updatedFormValues = isFunction(formValues)
-      ? (formValues as Function)(_formValues as TFieldValues)
+      ? (formValues as Function)(_formValues)
       : formValues;
 
     if (!deepEqual(_formValues, updatedFormValues)) {
@@ -1727,8 +1727,7 @@ export function createFormControl<
             props.reRenderRoot,
           )
         ) {
-          const values =
-            formState.values || ({ ..._formValues } as TFieldValues);
+          const values = formState.values || { ..._formValues };
 
           props.callback({
             ..._formState,
@@ -2275,7 +2274,7 @@ export function createFormControl<
   const reset: UseFormReset<TFieldValues> = (formValues, keepStateOptions) =>
     _reset(
       isFunction(formValues)
-        ? (formValues as Function)(_formValues as TFieldValues)
+        ? (formValues as Function)(_formValues)
         : formValues,
       { ..._options.resetOptions, ...keepStateOptions },
     );
