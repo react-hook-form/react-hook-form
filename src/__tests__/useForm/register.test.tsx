@@ -2338,6 +2338,107 @@ describe('register', () => {
       expect(methods!.getValues('test')).toBe(true);
     });
 
+    it('keep the selected options as the field values', async () => {
+      let methods: UseFormReturn<{ single: string; multiple: string[] }>;
+
+      function App() {
+        methods = useForm({
+          defaultValues: { single: 'a', multiple: ['a'] },
+        });
+        return (
+          <>
+            <select {...methods.register('single')}>
+              <option value="a">A</option>
+              <option value="b">B</option>
+              <option value="c">C</option>
+            </select>
+            <select multiple {...methods.register('multiple')}>
+              <option value="a">A</option>
+              <option value="b">B</option>
+              <option value="c">C</option>
+            </select>
+          </>
+        );
+      }
+
+      const container = document.createElement('div');
+      container.innerHTML = renderToString(<App />);
+      const [single, multiple] = container.querySelectorAll('select');
+      single.value = 'c';
+      multiple.options[1].selected = true;
+      multiple.options[2].selected = true;
+
+      await act(async () => {
+        hydrateRoot(container, <App />);
+      });
+
+      expect(single.value).toBe('c');
+      expect(methods!.getValues()).toEqual({
+        single: 'c',
+        multiple: ['b', 'c'],
+      });
+      expect(methods!.getFieldState('single').isDirty).toBe(true);
+      expect(methods!.getFieldState('multiple').isDirty).toBe(true);
+    });
+
+    it('still set the default values into selects nobody changed', async () => {
+      let methods: UseFormReturn<{
+        single: string;
+        multiple: string[];
+        listbox: string;
+        placeholder: string;
+      }>;
+
+      function App() {
+        methods = useForm({
+          defaultValues: {
+            single: 'b',
+            multiple: ['b'],
+            listbox: 'b',
+            placeholder: 'b',
+          },
+        });
+        return (
+          <>
+            <select {...methods.register('single')}>
+              <option value="a">A</option>
+              <option value="b">B</option>
+            </select>
+            <select multiple {...methods.register('multiple')}>
+              <option value="a">A</option>
+              <option value="b">B</option>
+            </select>
+            <select size={3} {...methods.register('listbox')}>
+              <option value="a">A</option>
+              <option value="b">B</option>
+            </select>
+            <select {...methods.register('placeholder')}>
+              <option value="" disabled>
+                Pick one
+              </option>
+              <option value="a">A</option>
+              <option value="b">B</option>
+            </select>
+          </>
+        );
+      }
+
+      const container = document.createElement('div');
+      container.innerHTML = renderToString(<App />);
+
+      await act(async () => {
+        hydrateRoot(container, <App />);
+      });
+
+      expect(methods!.getValues()).toEqual({
+        single: 'b',
+        multiple: ['b'],
+        listbox: 'b',
+        placeholder: 'b',
+      });
+      expect(methods!.formState.dirtyFields).toEqual({});
+    });
+
     it('still set a reset value into an input edited after the form is ready', async () => {
       let methods: UseFormReturn<{ test: string }>;
 
