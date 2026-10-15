@@ -637,7 +637,7 @@ export function createFormControl<
             _formValues,
             undefined,
             _fields,
-          ) as Record<string, unknown>;
+          );
 
           if (!deepEqual(_formState.dirtyFields, nextDirtyFields)) {
             didResyncDirtyFields = true;
