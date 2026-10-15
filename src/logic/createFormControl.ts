@@ -289,6 +289,8 @@ export function createFormControl<
 
   const _updateIsValidating = (names?: string[], isValidating?: boolean) => {
     if (!_options.disabled && _isTracked('isValidating', 'validatingFields')) {
+      _formState.validatingFields = cloneObject(_formState.validatingFields);
+
       (names || _names.mount).forEach((name) => {
         if (name) {
           isValidating
@@ -1729,6 +1731,9 @@ export function createFormControl<
           props.callback({
             ..._formState,
             ...formState,
+            // A subscriber may have published a newer update during this notification.
+            validatingFields: _formState.validatingFields,
+            isValidating: _formState.isValidating,
             values,
             defaultValues:
               _defaultValues as FormState<TFieldValues>['defaultValues'],
@@ -1772,6 +1777,10 @@ export function createFormControl<
   };
 
   const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) => {
+    if (!options.keepIsValidating) {
+      _formState.validatingFields = cloneObject(_formState.validatingFields);
+    }
+
     for (const fieldName of name ? convertToArrayPayload(name) : _names.mount) {
       _names.mount.delete(fieldName);
       _names.array.delete(fieldName);
@@ -2057,6 +2066,7 @@ export function createFormControl<
 
   const resetField: UseFormResetField<TFieldValues> = (name, options = {}) => {
     if (get(_fields, name)) {
+      _formState.validatingFields = cloneObject(_formState.validatingFields);
       unset(_formState.validatingFields, name);
 
       if (isUndefined(options.defaultValue)) {
