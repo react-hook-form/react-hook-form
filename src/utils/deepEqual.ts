@@ -1,3 +1,4 @@
+
 import isDateObject from './isDateObject';
 import isObject from './isObject';
 import isPlainObject from './isPlainObject';
@@ -45,7 +46,6 @@ export default function deepEqual(
     return false;
   }
 
-  const keys2Set = new Set(keys2);
   const visitedPairs = visited.get(object1);
 
   if (visitedPairs && visitedPairs.has(object2)) {
@@ -63,7 +63,7 @@ export default function deepEqual(
   for (const key of keys1) {
     const val1 = (object1 as Record<string, unknown>)[key];
 
-    if (!keys2Set.has(key)) {
+    if (!Object.prototype.hasOwnProperty.call(object2, key)) {
       return false;
     }
 
