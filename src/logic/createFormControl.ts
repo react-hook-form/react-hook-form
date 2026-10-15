@@ -2327,7 +2327,7 @@ export function createFormControl<
     values,
     options = {},
   ) => {
-    _defaultValues = cloneObject(values) as Partial<typeof _defaultValues>;
+    _defaultValues = cloneObject(values);
 
     if (!options.keepDirty) {
       const newDirtyFields = getDirtyFields(
