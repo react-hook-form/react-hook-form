@@ -139,7 +139,7 @@ export function useController<
       return _registerProps.current.onChange({
         target: {
           value: getEventValue(event),
-          name: name as InternalFieldName,
+          name,
         },
         type: EVENTS.CHANGE,
       });
@@ -160,7 +160,7 @@ export function useController<
     return _registerProps.current.onBlur({
       target: {
         value,
-        name: name as InternalFieldName,
+        name,
       },
       type: EVENTS.BLUR,
     });
