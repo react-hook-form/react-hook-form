@@ -641,10 +641,7 @@ export function createFormControl<
 
           if (!deepEqual(_formState.dirtyFields, nextDirtyFields)) {
             didResyncDirtyFields = true;
-            replaceDirtyFieldsInPlace(
-              _formState.dirtyFields as Record<string, unknown>,
-              nextDirtyFields,
-            );
+            replaceDirtyFieldsInPlace(_formState.dirtyFields, nextDirtyFields);
           }
         }
 
