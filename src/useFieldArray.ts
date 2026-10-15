@@ -39,7 +39,6 @@ import type {
   FieldValues,
   FormState,
   InternalFieldName,
-  RegisterOptions,
   UseFieldArrayProps,
   UseFieldArrayReturn,
 } from './types';
@@ -111,7 +110,7 @@ export function useFieldArray<
       fields.length >= 0 &&
       (control as Control<TFieldValues, unknown, TTransformedValues>).register(
         name as FieldPath<TFieldValues>,
-        rules as RegisterOptions<TFieldValues>,
+        rules,
       ),
     [control, name, fields.length, rules, disabled],
   );
