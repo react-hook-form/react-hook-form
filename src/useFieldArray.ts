@@ -27,7 +27,6 @@ import unset from './utils/unset';
 import updateAt from './utils/update';
 import { ROOT_ERROR_TYPE, VALIDATION_MODE } from './constants';
 import type {
-  Control,
   Field,
   FieldArray,
   FieldArrayMethodProps,
@@ -37,7 +36,6 @@ import type {
   FieldErrors,
   FieldPath,
   FieldValues,
-  FormState,
   InternalFieldName,
   UseFieldArrayProps,
   UseFieldArrayReturn,
@@ -108,10 +106,7 @@ export function useFieldArray<
       !disabled &&
       rules &&
       fields.length >= 0 &&
-      (control as Control<TFieldValues, unknown, TTransformedValues>).register(
-        name as FieldPath<TFieldValues>,
-        rules,
-      ),
+      control.register(name as FieldPath<TFieldValues>, rules),
     [control, name, fields.length, rules, disabled],
   );
 
@@ -382,7 +377,7 @@ export function useFieldArray<
     isWatched(name, control._names) &&
       control._subjects.state.next({
         ...control._formState,
-      } as FormState<TFieldValues>);
+      });
 
     const validationModes = getValidationModes(control._options.mode);
     const reValidateModes = getValidationModes(control._options.reValidateMode);
