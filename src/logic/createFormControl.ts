@@ -1980,8 +1980,7 @@ export function createFormControl<
       let onValidError = undefined;
       if (e) {
         e.preventDefault && e.preventDefault();
-        (e as React.BaseSyntheticEvent).persist &&
-          (e as React.BaseSyntheticEvent).persist();
+        e.persist && e.persist();
       }
       let fieldValues:
         | TFieldValues
