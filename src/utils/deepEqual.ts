@@ -1,4 +1,3 @@
-
 import isDateObject from './isDateObject';
 import isObject from './isObject';
 import isPlainObject from './isPlainObject';
