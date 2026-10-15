@@ -25,6 +25,7 @@ import type {
   FieldPathValues,
 } from './path';
 import type { Resolver } from './resolvers';
+import type { UseFormSelect } from './select';
 import type {
   DeepMap,
   DeepPartial,
@@ -1020,6 +1021,7 @@ export type UseFormReturn<
   register: UseFormRegister<TFieldValues>;
   setFocus: UseFormSetFocus<TFieldValues>;
   subscribe: UseFormSubscribe<TFieldValues>;
+  select: UseFormSelect<TFieldValues, TContext, TTransformedValues>;
 };
 
 export type UseFormStateProps<

@@ -71,6 +71,7 @@ export const FormProvider = <
   register,
   setFocus,
   subscribe,
+  select,
 }: FormProviderProps<TFieldValues, TContext, TTransformedValues>) => {
   const memoizedValue = React.useMemo<
     UseFormReturn<TFieldValues, TContext, TTransformedValues>
@@ -95,6 +96,7 @@ export const FormProvider = <
       register,
       setFocus,
       subscribe,
+      select,
     }),
     [
       clearErrors,
@@ -108,6 +110,7 @@ export const FormProvider = <
       reset,
       resetDefaultValues,
       resetField,
+      select,
       setError,
       setFocus,
       setValue,

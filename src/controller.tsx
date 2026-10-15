@@ -1,6 +1,24 @@
-import type { ControllerProps, FieldPath, FieldValues } from './types';
+import type React from 'react';
+
+import type {
+  ControllerProps,
+  FieldPath,
+  FieldValues,
+  SelectionLeafControllerRenderProps,
+} from './types';
 import { useController } from './useController';
 
+/**
+ * Controller for a leaf selection, `name` is optional.
+ *
+ * @example
+ * ```tsx
+ * <Controller control={email.control} render={({ field }) => <input {...field} />} />
+ * ```
+ */
+export function Controller<T>(
+  props: SelectionLeafControllerRenderProps<T>,
+): React.ReactElement;
 /**
  * Component wrapper around `useController` for controlled inputs.
  *
@@ -15,11 +33,25 @@ import { useController } from './useController';
  * />
  * ```
  */
-export const Controller = <
+export function Controller<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
   TTransformedValues = TFieldValues,
 >(
   props: ControllerProps<TFieldValues, TName, TTransformedValues>,
-) =>
-  props.render(useController<TFieldValues, TName, TTransformedValues>(props));
+): React.ReactElement;
+export function Controller<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TTransformedValues = TFieldValues,
+>(
+  props:
+    | ControllerProps<TFieldValues, TName, TTransformedValues>
+    | SelectionLeafControllerRenderProps<any>,
+) {
+  return props.render(
+    useController<TFieldValues, TName, TTransformedValues>(
+      props as ControllerProps<TFieldValues, TName, TTransformedValues>,
+    ),
+  );
+}
