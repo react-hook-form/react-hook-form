@@ -1253,7 +1253,7 @@ export function createFormControl<
     options = {},
   ) => {
     const updatedFormValues = isFunction(formValues)
-      ? (formValues as Function)(_formValues)
+      ? formValues(_formValues)
       : formValues;
 
     if (!deepEqual(_formValues, updatedFormValues)) {
