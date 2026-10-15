@@ -28,7 +28,7 @@ const iterateFieldsByAction = (
           }
         }
       } else if (isObject(field) || Array.isArray(field)) {
-        if (iterateFieldsByAction(field as FieldRefs, action)) {
+        if (iterateFieldsByAction(field, action)) {
           return true;
         }
       }
