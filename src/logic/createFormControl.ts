@@ -323,7 +323,9 @@ export function createFormControl<
   ) => {
     if (args && method && !_options.disabled) {
       _state.action = true;
-      const fields = get(_fields, name);
+      const field = get(_fields, name);
+      const rootField = field && field._f;
+      const fields = rootField ? Object.assign([], field) : field;
       if (!_state.actionArrayLengths.has(name)) {
         _state.actionArrayLengths.set(
           name,
@@ -331,8 +333,10 @@ export function createFormControl<
         );
       }
       if (shouldUpdateFieldsAndState && Array.isArray(fields)) {
-        const fieldValues = method(fields, args.argA, args.argB);
-        shouldSetValues && set(_fields, name, fieldValues);
+        const fieldValues = method(fields, args.argA, args.argB) || fields;
+        rootField
+          ? set(_fields, name, { ...fieldValues, _f: rootField })
+          : shouldSetValues && set(_fields, name, fieldValues);
       }
 
       const fieldArrayErrors:

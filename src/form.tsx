@@ -83,7 +83,7 @@ export function Form<
                   'Content-Type': encType,
                 }),
             },
-            body: hasContentType(/json/)
+            body: hasContentType(/json/i)
               ? formDataJson
               : hasContentType(
                     /^\s*application\/x-www-form-urlencoded\s*(;|$)/i,
