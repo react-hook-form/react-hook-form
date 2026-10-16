@@ -355,7 +355,7 @@ export function createFormControl<
   ) => {
     if (args && method && !_options.disabled) {
       _state.action = true;
-      const field = get(_fields, name);
+      const field: FieldRefs | undefined = get(_fields, name);
       const rootField = field && field._f;
       const fields = rootField ? Object.assign([], field) : field;
       if (!_state.actionArrayLengths.has(name)) {
