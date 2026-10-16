@@ -5131,6 +5131,283 @@ describe('useFieldArray', () => {
       );
       screen.getByText('Row value is required');
     });
+
+    it.each([false, true])(
+      'keep row checkboxes at their new indexes after swap and prepend (rules: %s)',
+      async (withRules) => {
+        const onSubmit = jest.fn();
+
+        const App = () => {
+          const { control, register, handleSubmit } = useForm<{
+            items: { tags?: string[] }[];
+          }>({
+            defaultValues: { items: [{ tags: ['a'] }, { tags: ['b'] }] },
+          });
+          const { fields, prepend, swap } = useFieldArray({
+            control,
+            name: 'items',
+            ...(withRules ? { rules: { minLength: 1 } } : {}),
+          });
+
+          return (
+            <form onSubmit={handleSubmit(onSubmit)}>
+              {fields.map((field, index) => (
+                <div key={field.id}>
+                  {['a', 'b', 'c'].map((value) => (
+                    <input
+                      key={value}
+                      type="checkbox"
+                      value={value}
+                      aria-label={`row ${index} ${value}`}
+                      {...register(`items.${index}.tags`, { required: true })}
+                    />
+                  ))}
+                </div>
+              ))}
+              <button type="button" onClick={() => swap(0, 1)}>
+                swap
+              </button>
+              <button type="button" onClick={() => prepend({})}>
+                prepend
+              </button>
+              <button>submit</button>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'swap' }));
+        fireEvent.click(screen.getByLabelText('row 0 c'));
+
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+        });
+
+        expect(onSubmit.mock.calls[0][0]).toEqual({
+          items: [{ tags: ['b', 'c'] }, { tags: ['a'] }],
+        });
+
+        fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
+
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+        });
+
+        expect(onSubmit).toHaveBeenCalledTimes(1);
+      },
+    );
+
+    it('keep the array rules after replace', async () => {
+      const rules = {
+        validate: (items: { value: string }[]) =>
+          items.every(({ value }) => value),
+      };
+      const onSubmit = jest.fn();
+
+      const App = () => {
+        const { control, register, handleSubmit } = useForm<{
+          items: { value: string }[];
+        }>({
+          defaultValues: { items: [{ value: 'a' }] },
+        });
+        const { fields, replace } = useFieldArray({
+          control,
+          name: 'items',
+          rules,
+        });
+
+        return (
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {fields.map((field, index) => (
+              <input key={field.id} {...register(`items.${index}.value`)} />
+            ))}
+            <button type="button" onClick={() => replace([{ value: '' }])}>
+              replace
+            </button>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'replace' }));
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      expect(onSubmit).not.toHaveBeenCalled();
+    });
+
+    it.each([false, true])(
+      'keep no stale row checkboxes or radios after replace changes the length (rules: %s)',
+      async (withRules) => {
+        const onSubmit = jest.fn();
+
+        const App = () => {
+          const { control, register, handleSubmit } = useForm<{
+            items: { tags: string[]; size: string }[];
+          }>({
+            defaultValues: {
+              items: [
+                { tags: ['a'], size: 's' },
+                { tags: ['b'], size: 'm' },
+                { tags: ['a', 'b'], size: 'l' },
+              ],
+            },
+          });
+          const { fields, replace } = useFieldArray({
+            control,
+            name: 'items',
+            ...(withRules ? { rules: { minLength: 1 } } : {}),
+          });
+
+          return (
+            <form onSubmit={handleSubmit(onSubmit)}>
+              {fields.map((field, index) => (
+                <div key={field.id}>
+                  {['a', 'b'].map((value) => (
+                    <input
+                      key={value}
+                      type="checkbox"
+                      value={value}
+                      aria-label={`row ${index} ${value}`}
+                      {...register(`items.${index}.tags`)}
+                    />
+                  ))}
+                  {['s', 'm', 'l'].map((value) => (
+                    <input
+                      key={value}
+                      type="radio"
+                      value={value}
+                      aria-label={`row ${index} ${value}`}
+                      {...register(`items.${index}.size`)}
+                    />
+                  ))}
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => replace([{ tags: ['b'], size: 'l' }])}
+              >
+                shrink
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  replace([
+                    { tags: [], size: 'm' },
+                    { tags: ['a'], size: 's' },
+                  ])
+                }
+              >
+                grow
+              </button>
+              <button>submit</button>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'shrink' }));
+
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+        });
+
+        expect(onSubmit.mock.calls[0][0]).toEqual({
+          items: [{ tags: ['b'], size: 'l' }],
+        });
+
+        fireEvent.click(screen.getByRole('button', { name: 'grow' }));
+        fireEvent.click(screen.getByLabelText('row 1 b'));
+
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+        });
+
+        expect(onSubmit.mock.calls[1][0]).toEqual({
+          items: [
+            { tags: [], size: 'm' },
+            { tags: ['a', 'b'], size: 's' },
+          ],
+        });
+      },
+    );
+
+    it.each([false, true])(
+      'keep row checkboxes and errors at their new indexes after move (rules: %s)',
+      async (withRules) => {
+        const onSubmit = jest.fn();
+
+        const App = () => {
+          const {
+            control,
+            register,
+            handleSubmit,
+            formState: { errors },
+          } = useForm<{ items: { tags: string[] }[] }>({
+            defaultValues: {
+              items: [{ tags: ['a'] }, { tags: ['b'] }, { tags: [] }],
+            },
+          });
+          const { fields, move } = useFieldArray({
+            control,
+            name: 'items',
+            ...(withRules ? { rules: { minLength: 1 } } : {}),
+          });
+
+          return (
+            <form onSubmit={handleSubmit(onSubmit)}>
+              {fields.map((field, index) => (
+                <div key={field.id}>
+                  {['a', 'b', 'c'].map((value) => (
+                    <input
+                      key={value}
+                      type="checkbox"
+                      value={value}
+                      aria-label={`row ${index} ${value}`}
+                      {...register(`items.${index}.tags`, { required: true })}
+                    />
+                  ))}
+                  {errors.items?.[index]?.tags && (
+                    <p>row {index} is required</p>
+                  )}
+                </div>
+              ))}
+              <button type="button" onClick={() => move(2, 0)}>
+                move
+              </button>
+              <button>submit</button>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'move' }));
+
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+        });
+
+        screen.getByText('row 0 is required');
+        expect(onSubmit).not.toHaveBeenCalled();
+
+        fireEvent.click(screen.getByLabelText('row 0 c'));
+
+        await act(async () => {
+          fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+        });
+
+        expect(onSubmit.mock.calls[0][0]).toEqual({
+          items: [{ tags: ['c'] }, { tags: ['a'] }, { tags: ['b'] }],
+        });
+      },
+    );
   });
 
   describe('with nested field array ', () => {
