@@ -55,6 +55,7 @@ export function useForm<
   const _values = React.useRef<typeof props.values>(undefined);
   const _formControlProp = React.useRef(props.formControl);
   const _hadValidate = React.useRef(!!props.validate);
+  const _hadErrors = React.useRef(!!props.errors);
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>(
     () => ({
       ...cloneObject(DEFAULT_FORM_STATE),
@@ -163,7 +164,10 @@ export function useForm<
     if (props.errors) {
       control._setErrors(props.errors);
       control._focusError();
+    } else if (_hadErrors.current) {
+      control._setErrors({});
     }
+    _hadErrors.current = !!props.errors;
   }, [control, props.errors]);
 
   React.useEffect(() => {

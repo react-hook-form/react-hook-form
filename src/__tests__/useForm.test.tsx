@@ -702,6 +702,39 @@ describe('useForm', () => {
       await waitFor(() => expect(screen.getByText('valid')).toBeVisible());
     });
 
+    it('recompute isValid when the errors prop is set to undefined', async () => {
+      type FormValues = { test1: string };
+
+      const Form = ({ errors }: { errors?: FieldErrors<FormValues> }) => {
+        const {
+          register,
+          formState: { isValid },
+        } = useForm<FormValues>({
+          mode: 'onChange',
+          defaultValues: { test1: 'value' },
+          errors,
+          shouldFocusError: false,
+        });
+
+        return (
+          <div>
+            <input {...register('test1', { required: true })} type="text" />
+            <p>{isValid ? 'valid' : 'invalid'}</p>
+          </div>
+        );
+      };
+
+      const { rerender } = render(
+        <Form errors={{ test1: { type: 'server', message: 'taken' } }} />,
+      );
+
+      await waitFor(() => expect(screen.getByText('invalid')).toBeVisible());
+
+      rerender(<Form errors={undefined} />);
+
+      await waitFor(() => expect(screen.getByText('valid')).toBeVisible());
+    });
+
     it('keep isValid false while the errors prop holds an error', async () => {
       type FormValues = { test1: string };
 
