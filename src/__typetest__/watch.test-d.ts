@@ -15,7 +15,19 @@ type FormData = {
 };
 
 /** {@link Watch} */ {
-  /** it should have correct types for render function parameter when names is passed as array */ {
+  /** it should reject the removed names prop */ {
+    /* eslint-disable react-hooks/rules-of-hooks */
+    const { control } = useForm<FormData>();
+
+    void Watch({
+      control,
+      // @ts-expect-error names was replaced by name
+      names: ['foo', 'bar'],
+      render: () => null,
+    });
+  }
+
+  /** it should have correct types for render function parameter when name is passed as array */ {
     /* eslint-disable react-hooks/rules-of-hooks */
     const { control } = useForm<FormData>();
 
@@ -31,7 +43,7 @@ type FormData = {
     });
   }
 
-  /** it should have correct types for render function parameter when names is passed as string */ {
+  /** it should have correct types for render function parameter when name is passed as string */ {
     /* eslint-disable react-hooks/rules-of-hooks */
     const { control } = useForm<FormData>();
 
@@ -45,7 +57,7 @@ type FormData = {
     });
   }
 
-  /** it should have correct types for render function parameter when names omitted */ {
+  /** it should have correct types for render function parameter when name omitted */ {
     /* eslint-disable react-hooks/rules-of-hooks */
     const { control } = useForm<FormData>();
 
@@ -73,7 +85,7 @@ type FormData = {
     });
   }
 
-  /** it should have correct types for compute function parameter when names is passed as string */ {
+  /** it should have correct types for compute function parameter when name is passed as string */ {
     /* eslint-disable react-hooks/rules-of-hooks */
     const { control } = useForm<FormData>();
 
@@ -88,7 +100,7 @@ type FormData = {
     });
   }
 
-  /** it should have correct types for compute function parameter when names is passed as array */ {
+  /** it should have correct types for compute function parameter when name is passed as array */ {
     /* eslint-disable react-hooks/rules-of-hooks */
     const { control } = useForm<FormData>();
 

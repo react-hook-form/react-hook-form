@@ -1048,7 +1048,6 @@ export type WatchName<TFieldValues extends FieldValues> = FieldPath<TFieldValues
 // @public (undocumented)
 export type WatchProps<TFieldName extends WatchName<TFieldValues>, TFieldValues extends FieldValues = FieldValues, TContext = any, TTransformedValues = TFieldValues, TComputeValue = undefined> = {
     control?: Control<TFieldValues, TContext, TTransformedValues>;
-    names?: TFieldName;
     name?: TFieldName;
     disabled?: boolean;
     exact?: boolean;

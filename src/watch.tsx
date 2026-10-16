@@ -15,7 +15,7 @@ import { useWatch } from './useWatch';
  * ```tsx
  * <Watch
  *   control={control}
- *   names={["foo", "bar"]}
+ *   name={["foo", "bar"]}
  *   render={([foo, bar]) => <span>{foo} {bar}</span>}
  * />
  * ```
