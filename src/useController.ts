@@ -150,7 +150,7 @@ export function useController<
   );
 
   const onBlur = React.useCallback(() => {
-    const value = get<FieldPathValue<TFieldValues, TName>>(
+    const value: FieldPathValue<TFieldValues, TName> = get(
       control._formValues,
       name,
     );
@@ -186,7 +186,7 @@ export function useController<
         } as Ref;
       }
 
-      const field = get<Field | undefined>(control._fields, name);
+      const field: Field | undefined = get(control._fields, name);
 
       if (field && field._f && elm) {
         field._f.ref = _proxyRef.current as Ref;

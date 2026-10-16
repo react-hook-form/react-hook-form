@@ -6,7 +6,7 @@ import isObject from './isObject';
 import isUndefined from './isUndefined';
 import stringToPath from './stringToPath';
 
-export default <TResult = unknown, T = unknown>(
+export default <T, TResult = unknown>(
   object: T,
   path?: string | null,
   defaultValue?: unknown,

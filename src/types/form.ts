@@ -103,8 +103,8 @@ export type ResetFieldConfig<
 }>;
 
 export type ChangeHandler = (event: {
-  target: unknown;
-  type?: unknown;
+  target: any;
+  type?: any;
 }) => Promise<void | boolean>;
 
 export type DelayCallback = (wait: number) => void;
@@ -198,7 +198,7 @@ export type KeepStateOptions = Partial<{
 export type SetFieldValue<TFieldValues extends FieldValues> =
   FieldValue<TFieldValues>;
 
-export type RefCallBack = (instance: unknown) => void;
+export type RefCallBack = (instance: any) => void;
 
 export type UseFormRegisterReturn<
   TFieldName extends InternalFieldName = InternalFieldName,

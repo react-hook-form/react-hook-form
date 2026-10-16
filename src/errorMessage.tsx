@@ -47,7 +47,7 @@ export const ErrorMessage = <TFieldValues extends FieldValues = FieldValues>({
     name: name as FieldPath<TFieldValues>,
   });
 
-  const error = get<FieldError | undefined>(errors, name);
+  const error: FieldError | undefined = get(errors, name);
 
   if (!error) {
     return null;

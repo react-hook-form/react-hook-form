@@ -1,3 +1,4 @@
+import isUndefined from './utils/isUndefined';
 import type {
   FieldPath,
   FieldValues,
@@ -39,10 +40,19 @@ export const Watch = <
     TTransformedValues,
     TComputeValue
   >,
-) =>
-  props.render(
-    useWatch({ name: props.names, ...props } as Pick<
-      typeof props,
-      'control'
-    >) as WatchRenderValue<TFieldName, TFieldValues, TComputeValue>,
+) => {
+  const watch = useWatch as (
+    options: Omit<typeof props, 'names' | 'render'>,
+  ) => WatchRenderValue<TFieldName, TFieldValues, TComputeValue>;
+
+  return props.render(
+    watch({
+      control: props.control,
+      name: isUndefined(props.name) ? props.names : props.name,
+      disabled: props.disabled,
+      exact: props.exact,
+      defaultValue: props.defaultValue,
+      compute: props.compute,
+    }),
   );
+};

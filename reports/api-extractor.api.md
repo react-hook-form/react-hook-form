@@ -33,8 +33,8 @@ export type BrowserNativeObject = Date | FileList_2 | File_2;
 
 // @public (undocumented)
 export type ChangeHandler = (event: {
-    target: unknown;
-    type?: unknown;
+    target: any;
+    type?: any;
 }) => Promise<void | boolean>;
 
 // @public (undocumented)
@@ -103,7 +103,7 @@ export type ControllerProps<TFieldValues extends FieldValues = FieldValues, TNam
 
 // @public (undocumented)
 export type ControllerRenderProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = {
-    onChange: (...event: unknown[]) => void;
+    onChange: (...event: any[]) => void;
     onBlur: Noop;
     value: FieldPathValue<TFieldValues, TName>;
     disabled?: boolean;
@@ -123,7 +123,7 @@ export type CriteriaMode = 'firstError' | 'all';
 export type CustomElement<TFieldValues extends FieldValues> = Partial<HTMLElement> & {
     name: FieldName<TFieldValues>;
     type?: string;
-    value?: unknown;
+    value?: any;
     disabled?: boolean;
     checked?: boolean;
     options?: HTMLOptionsCollection;
@@ -402,7 +402,7 @@ export type FromSubscribe<TFieldValues extends FieldValues> = <TFieldNames exten
 }) => () => void;
 
 // @public (undocumented)
-export const get: <TResult = unknown, T = unknown>(object: T, path?: string | null, defaultValue?: unknown) => TResult;
+export const get: <T, TResult = unknown>(object: T, path?: string | null, defaultValue?: unknown) => TResult;
 
 // @public
 export type GetErrorsResult<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues> | ErrorNamespacePath> = TName extends 'root' ? (Record<string, GlobalError> & GlobalError) | undefined : TName extends ErrorNamespacePath ? GlobalError | undefined : TName extends FieldPath<TFieldValues> ? FieldPathError<TFieldValues, TName> | undefined : never;
@@ -558,7 +558,7 @@ export type ReadFormState = {
 export type Ref = FieldElement;
 
 // @public (undocumented)
-export type RefCallBack = (instance: unknown) => void;
+export type RefCallBack = (instance: any) => void;
 
 // @public (undocumented)
 export type RegisterOptions<TFieldValues extends FieldValues = FieldValues, TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>> = Partial<{

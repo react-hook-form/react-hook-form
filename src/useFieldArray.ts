@@ -391,10 +391,10 @@ export function useFieldArray<
       if (control._options.resolver) {
         control._runSchema([name]).then((result) => {
           control._updateIsValidating([name]);
-          const error = get<FieldError | undefined>(result.errors, name);
-          const existingError = get<
-            (FieldError & { root?: FieldError }) | undefined
-          >(control._formState.errors, name);
+          const error: FieldError | undefined = get(result.errors, name);
+          const existingError:
+            | (FieldError & { root?: FieldError })
+            | undefined = get(control._formState.errors, name);
           const existingErrorType =
             existingError &&
             (existingError.type ||
@@ -448,9 +448,9 @@ export function useFieldArray<
                 errors: control._formState.errors,
               });
             } else {
-              const existingError = get<
-                (FieldError & { root?: FieldError }) | undefined
-              >(control._formState.errors, name);
+              const existingError:
+                | (FieldError & { root?: FieldError })
+                | undefined = get(control._formState.errors, name);
 
               if (existingError && existingError[ROOT_ERROR_TYPE]) {
                 unset(control._formState.errors, `${name}.${ROOT_ERROR_TYPE}`);
