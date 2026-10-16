@@ -24,7 +24,7 @@ export type ControllerRenderProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
-  onChange: (...event: any[]) => void;
+  onChange: (...event: unknown[]) => void;
   onBlur: Noop;
   value: FieldPathValue<TFieldValues, TName>;
   disabled?: boolean;

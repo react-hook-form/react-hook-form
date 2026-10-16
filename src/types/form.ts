@@ -12,7 +12,6 @@ import type {
 import type { EventType } from './events';
 import type { FieldArray } from './fieldArray';
 import type {
-  FieldName,
   FieldRefs,
   FieldValue,
   FieldValues,
@@ -104,8 +103,8 @@ export type ResetFieldConfig<
 }>;
 
 export type ChangeHandler = (event: {
-  target: any;
-  type?: any;
+  target: unknown;
+  type?: unknown;
 }) => Promise<void | boolean>;
 
 export type DelayCallback = (wait: number) => void;
@@ -199,7 +198,7 @@ export type KeepStateOptions = Partial<{
 export type SetFieldValue<TFieldValues extends FieldValues> =
   FieldValue<TFieldValues>;
 
-export type RefCallBack = (instance: any) => void;
+export type RefCallBack = (instance: unknown) => void;
 
 export type UseFormRegisterReturn<
   TFieldName extends InternalFieldName = InternalFieldName,
@@ -970,7 +969,7 @@ export type Control<
   _setErrors: (errors: FieldErrors<TFieldValues>) => void;
   _setDisabledField: (props: {
     disabled?: boolean;
-    name: FieldName<any>;
+    name: InternalFieldName;
   }) => void;
   _runSchema: (names: InternalFieldName[]) => Promise<{ errors: FieldErrors }>;
   _updateIsValidating: (

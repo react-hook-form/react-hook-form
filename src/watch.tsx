@@ -41,9 +41,8 @@ export const Watch = <
   >,
 ) =>
   props.render(
-    useWatch({ name: props.names, ...(props as any) }) as WatchRenderValue<
-      TFieldName,
-      TFieldValues,
-      TComputeValue
-    >,
+    useWatch({ name: props.names, ...props } as Pick<
+      typeof props,
+      'control'
+    >) as WatchRenderValue<TFieldName, TFieldValues, TComputeValue>,
   );

@@ -3,9 +3,9 @@ import get from '../utils/get';
 import unset from '../utils/unset';
 
 export default <T>(ref: T, name: string) => {
-  const array = get(ref, name);
+  const array = get<unknown[] | undefined>(ref, name);
 
-  !compact(array).length &&
+  !compact(array || []).length &&
     !(array && (array as { root?: unknown }).root) &&
     unset(ref, name);
 };

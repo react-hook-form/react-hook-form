@@ -14,15 +14,20 @@ function isRegisteredLeaf(fieldRef: unknown): boolean {
   return !!(fieldRef && '_f' in (fieldRef as object));
 }
 
-function isEmptyDirtyContainer(value: Record<string, any>): boolean {
+type DirtyFieldsTree = Record<string, unknown>;
+
+const createDirtyContainer = (value: unknown) =>
+  (Array.isArray(value) ? [] : {}) as DirtyFieldsTree;
+
+function isEmptyDirtyContainer(value: unknown): boolean {
   return Array.isArray(value)
     ? !value.some((item) => !isUndefined(item))
-    : !Object.keys(value).length;
+    : !Object.keys(value as DirtyFieldsTree).length;
 }
 
-function clearDirtyField(container: Record<string, any>, key: string) {
+function clearDirtyField(container: DirtyFieldsTree, key: string) {
   if (Array.isArray(container)) {
-    (container as any)[key] = undefined;
+    container[key] = undefined;
   } else {
     delete container[key];
   }
@@ -30,19 +35,19 @@ function clearDirtyField(container: Record<string, any>, key: string) {
 
 function markFieldsDirty<T>(
   data: T,
-  fields: Record<string, any> = {},
-  fieldRefs?: Record<string, any>,
-) {
+  fields: DirtyFieldsTree = {},
+  fieldRefs?: FieldRefs,
+): DirtyFieldsTree {
   for (const key in data) {
     const value = data[key];
-    const fieldRef = fieldRefs && fieldRefs[key];
+    const fieldRef = fieldRefs && (fieldRefs[key] as FieldRefs | undefined);
 
     if (
       isTraversable(value) &&
       (!Array.isArray(value) || !isRegisteredLeaf(fieldRef))
     ) {
-      fields[key] = Array.isArray(value) ? [] : {};
-      markFieldsDirty(value, fields[key], fieldRef);
+      fields[key] = createDirtyContainer(value);
+      markFieldsDirty(value, fields[key] as DirtyFieldsTree, fieldRef);
 
       if (isEmptyDirtyContainer(fields[key])) {
         clearDirtyField(fields, key);
@@ -58,47 +63,42 @@ function markFieldsDirty<T>(
 export default function getDirtyFields<T>(
   data: T,
   formValues: T,
-  dirtyFieldsFromValues?: Record<
-    Extract<keyof T, string>,
-    ReturnType<typeof markFieldsDirty> | boolean
-  >,
+  dirtyFieldsFromValues?: DirtyFieldsTree,
   fieldRefs?: FieldRefs,
-) {
-  if (!dirtyFieldsFromValues) {
-    dirtyFieldsFromValues = markFieldsDirty(
+): DirtyFieldsTree {
+  const dirtyFields =
+    dirtyFieldsFromValues ||
+    markFieldsDirty(
       formValues,
-      Array.isArray(isNullOrUndefined(formValues) ? data : formValues)
-        ? []
-        : {},
+      createDirtyContainer(isNullOrUndefined(formValues) ? data : formValues),
       fieldRefs,
     );
-  }
 
   for (const key in data) {
     const value = data[key];
-    const fieldRef = fieldRefs && (fieldRefs as Record<string, any>)[key];
+    const fieldRef = fieldRefs && (fieldRefs[key] as FieldRefs | undefined);
 
     if (
       isTraversable(value) &&
       (!Array.isArray(value) || !isRegisteredLeaf(fieldRef))
     ) {
-      if (isUndefined(formValues) || isPrimitive(dirtyFieldsFromValues[key])) {
-        dirtyFieldsFromValues[key] = markFieldsDirty(
+      if (isUndefined(formValues) || isPrimitive(dirtyFields[key])) {
+        dirtyFields[key] = markFieldsDirty(
           value,
-          Array.isArray(value) ? [] : {},
+          createDirtyContainer(value),
           fieldRef,
         );
       } else {
         getDirtyFields(
           value,
           isNullOrUndefined(formValues) ? {} : formValues[key],
-          dirtyFieldsFromValues[key],
+          dirtyFields[key] as DirtyFieldsTree,
           fieldRef,
         );
       }
 
-      if (isEmptyDirtyContainer(dirtyFieldsFromValues[key])) {
-        clearDirtyField(dirtyFieldsFromValues, key);
+      if (isEmptyDirtyContainer(dirtyFields[key])) {
+        clearDirtyField(dirtyFields, key);
       }
     } else if (
       deepEqual(
@@ -106,11 +106,11 @@ export default function getDirtyFields<T>(
         isNullOrUndefined(formValues) ? undefined : formValues[key],
       )
     ) {
-      clearDirtyField(dirtyFieldsFromValues, key);
+      clearDirtyField(dirtyFields, key);
     } else {
-      dirtyFieldsFromValues[key] = true;
+      dirtyFields[key] = true;
     }
   }
 
-  return dirtyFieldsFromValues;
+  return dirtyFields;
 }
