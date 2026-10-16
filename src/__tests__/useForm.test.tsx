@@ -794,6 +794,111 @@ describe('useForm', () => {
 
       await waitFor(() => expect(screen.getByText('invalid')).toBeVisible());
     });
+
+    it('keep isValid false when the errors prop is set to undefined but the rules still fail', async () => {
+      type FormValues = { test1: string };
+
+      const Form = ({ errors }: { errors?: FieldErrors<FormValues> }) => {
+        const {
+          register,
+          formState: { isValid },
+        } = useForm<FormValues>({
+          mode: 'onChange',
+          defaultValues: { test1: '' },
+          errors,
+          shouldFocusError: false,
+        });
+
+        return (
+          <div>
+            <input {...register('test1', { required: true })} type="text" />
+            <p>{isValid ? 'valid' : 'invalid'}</p>
+          </div>
+        );
+      };
+
+      const { rerender } = render(
+        <Form errors={{ test1: { type: 'server', message: 'taken' } }} />,
+      );
+
+      await waitFor(() => expect(screen.getByText('invalid')).toBeVisible());
+
+      rerender(<Form errors={undefined} />);
+
+      await waitFor(() => expect(screen.getByText('invalid')).toBeVisible());
+    });
+
+    it('handle external errors alongside client-side validation errors when errors prop is removed', async () => {
+      type FormValues = {
+        test1: string;
+        test2: string;
+      };
+
+      const Form = ({ errors }: { errors?: FieldErrors<FormValues> }) => {
+        const {
+          register,
+          formState: { errors: formErrors, isValid },
+        } = useForm<FormValues>({
+          mode: 'onChange',
+          defaultValues: { test1: 'valid', test2: '' },
+          errors,
+          shouldFocusError: false,
+        });
+
+        return (
+          <div>
+            <input {...register('test1')} type="text" />
+            {formErrors.test1 && <p>{formErrors.test1.message}</p>}
+            <input
+              {...register('test2', { required: 'test2 is required' })}
+              type="text"
+            />
+            {formErrors.test2 && <p>{formErrors.test2.message}</p>}
+            <p>{isValid ? 'valid' : 'invalid'}</p>
+          </div>
+        );
+      };
+
+      const { rerender } = render(
+        <Form errors={{ test1: { type: 'server', message: 'taken' } }} />,
+      );
+
+      await waitFor(() => expect(screen.getByText('invalid')).toBeVisible());
+      expect(screen.getByText('taken')).toBeVisible();
+
+      // Trigger client-side validation on test2
+      fireEvent.change(screen.getAllByRole('textbox')[1], {
+        target: { value: 'a' },
+      });
+      fireEvent.change(screen.getAllByRole('textbox')[1], {
+        target: { value: '' },
+      });
+
+      await waitFor(() =>
+        expect(screen.getByText('test2 is required')).toBeVisible(),
+      );
+      expect(screen.getByText('taken')).toBeVisible();
+      expect(screen.getByText('invalid')).toBeVisible();
+
+      // Clear external error by setting errors prop to undefined
+      rerender(<Form errors={undefined} />);
+
+      // External error is cleared
+      await waitFor(() =>
+        expect(screen.queryByText('taken')).not.toBeInTheDocument(),
+      );
+
+      // Form remains invalid because test2 fails client-side validation rules
+      expect(screen.getByText('invalid')).toBeVisible();
+
+      // Once test2 satisfies client-side rules, form recomputes to valid
+      fireEvent.change(screen.getAllByRole('textbox')[1], {
+        target: { value: 'valid-input' },
+      });
+
+      await waitFor(() => expect(screen.getByText('valid')).toBeVisible());
+      expect(screen.queryByText('test2 is required')).not.toBeInTheDocument();
+    });
   });
 
   describe('handleChangeRef', () => {

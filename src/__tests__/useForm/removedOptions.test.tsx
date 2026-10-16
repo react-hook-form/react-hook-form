@@ -109,4 +109,46 @@ describe('useForm options removed on re-render', () => {
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
+
+  it('should maintain form invalidity when errors option is removed but client-side validation fails', async () => {
+    let setErrors: (
+      errors?: FieldErrors<{ test1: string; test2: string }>,
+    ) => void = () => {};
+
+    const App = () => {
+      const [errors, setState] = React.useState<
+        FieldErrors<{ test1: string; test2: string }> | undefined
+      >({
+        test1: { type: 'server', message: 'server error' },
+      });
+      setErrors = setState;
+      const {
+        register,
+        formState: { errors: formErrors, isValid },
+      } = useForm<{ test1: string; test2: string }>({
+        mode: 'onChange',
+        defaultValues: { test1: 'value', test2: '' },
+        ...(errors ? { errors } : {}),
+      });
+
+      return (
+        <div>
+          <input {...register('test1')} />
+          {formErrors.test1 && <p role="alert">{formErrors.test1.message}</p>}
+          <input {...register('test2', { required: true })} />
+          <p>{isValid ? 'valid' : 'invalid'}</p>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByRole('alert')).toHaveTextContent('server error');
+    expect(screen.getByText('invalid')).toBeVisible();
+
+    act(() => setErrors(undefined));
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.getByText('invalid')).toBeVisible();
+  });
 });
