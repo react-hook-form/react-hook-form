@@ -287,15 +287,42 @@ export function createFormControl<
     }
   };
 
+  const _updateValidatingFields = (
+    names: Iterable<string>,
+    isValidating?: boolean,
+  ) => {
+    const fieldNames = [...names];
+
+    if (
+      !fieldNames.some(
+        (name) =>
+          name &&
+          (isValidating
+            ? get(_formState.validatingFields, name) !== true
+            : has(_formState.validatingFields, name)),
+      )
+    ) {
+      return;
+    }
+
+    const validatingFields = cloneObject(_formState.validatingFields);
+
+    for (const name of fieldNames) {
+      if (name) {
+        isValidating
+          ? set(validatingFields, name, true)
+          : unset(validatingFields, name);
+      }
+    }
+
+    if (!deepEqual(_formState.validatingFields, validatingFields)) {
+      _formState.validatingFields = validatingFields;
+    }
+  };
+
   const _updateIsValidating = (names?: string[], isValidating?: boolean) => {
     if (!_options.disabled && _isTracked('isValidating', 'validatingFields')) {
-      (names || _names.mount).forEach((name) => {
-        if (name) {
-          isValidating
-            ? set(_formState.validatingFields, name, isValidating)
-            : unset(_formState.validatingFields, name);
-        }
-      });
+      _updateValidatingFields(names || _names.mount, isValidating);
 
       _subjects.state.next({
         validatingFields: _formState.validatingFields,
@@ -1733,6 +1760,8 @@ export function createFormControl<
           props.callback({
             ..._formState,
             ...formState,
+            validatingFields: _formState.validatingFields,
+            isValidating: _formState.isValidating,
             values,
             defaultValues:
               _defaultValues as FormState<TFieldValues>['defaultValues'],
@@ -1776,7 +1805,15 @@ export function createFormControl<
   };
 
   const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) => {
-    for (const fieldName of name ? convertToArrayPayload(name) : _names.mount) {
+    const fieldNames = name
+      ? (convertToArrayPayload(name) as InternalFieldName[])
+      : _names.mount;
+
+    if (!options.keepIsValidating) {
+      _updateValidatingFields(fieldNames);
+    }
+
+    for (const fieldName of fieldNames) {
       _names.mount.delete(fieldName);
       _names.array.delete(fieldName);
       _names.disabled.delete(fieldName);
@@ -1792,8 +1829,6 @@ export function createFormControl<
       }
       !options.keepDirty && unset(_formState.dirtyFields, fieldName);
       !options.keepTouched && unset(_formState.touchedFields, fieldName);
-      !options.keepIsValidating &&
-        unset(_formState.validatingFields, fieldName);
       !_options.shouldUnregister &&
         !options.keepDefaultValue &&
         unset(_defaultValues, fieldName);
@@ -2061,7 +2096,7 @@ export function createFormControl<
 
   const resetField: UseFormResetField<TFieldValues> = (name, options = {}) => {
     if (get(_fields, name)) {
-      unset(_formState.validatingFields, name);
+      _updateValidatingFields([name]);
 
       if (isUndefined(options.defaultValue)) {
         setValue(name, cloneObject(get(_defaultValues, name)));
