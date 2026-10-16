@@ -313,6 +313,7 @@ describe('Form', () => {
 
   it.each([
     ['Content-Type', 'application/json', true],
+    ['Content-Type', 'application/JSON', true],
     ['content-type', 'application/json', true],
     ['CoNtEnT-TyPe', 'application/json', true],
     ['content-type', 'text/plain', false],
