@@ -10,6 +10,7 @@ import {
 
 import { VALIDATION_MODE } from '../../constants';
 import { Controller } from '../../controller';
+import { createFormControl } from '../../logic/createFormControl';
 import type {
   Control,
   FormState,
@@ -2252,6 +2253,293 @@ describe('formState', () => {
 
     expect(refAfterFirstError).not.toBe(refAfterSecondError);
     expect(refAfterSecondError).not.toBe(refAfterCleared);
+  });
+
+  it.each(['validation completes', 'resetField', 'unregister'] as const)(
+    'should produce a new validatingFields reference after %s so memoized child components re-render',
+    async (action) => {
+      type FormValues = { test: string };
+      let resolveValidate = noop;
+      const validation = new Promise<void>((resolve) => {
+        resolveValidate = resolve;
+      });
+      const PendingFields = React.memo(function PendingFields({
+        validatingFields,
+      }: {
+        validatingFields: FormState<FormValues>['validatingFields'];
+      }) {
+        return (
+          <p data-testid="pending">
+            {Object.keys(validatingFields).join(',') || 'none'}
+          </p>
+        );
+      });
+
+      function App() {
+        const {
+          register,
+          trigger,
+          resetField,
+          unregister,
+          formState: { validatingFields, isValidating },
+        } = useForm<FormValues>({ defaultValues: { test: '' } });
+
+        return (
+          <>
+            <input
+              {...register('test', {
+                validate: async () => {
+                  await validation;
+                  return true;
+                },
+              })}
+            />
+            <PendingFields validatingFields={validatingFields} />
+            <p>{isValidating ? 'validating' : 'idle'}</p>
+            <button type="button" onClick={() => trigger('test')}>
+              validate
+            </button>
+            <button type="button" onClick={() => resetField('test')}>
+              resetField
+            </button>
+            <button type="button" onClick={() => unregister('test')}>
+              unregister
+            </button>
+          </>
+        );
+      }
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'validate' }));
+      expect(await screen.findByText('validating')).toBeVisible();
+      expect(screen.getByTestId('pending')).toHaveTextContent('test');
+
+      try {
+        if (action === 'validation completes') {
+          await act(async () => resolveValidate());
+        } else {
+          fireEvent.click(screen.getByRole('button', { name: action }));
+        }
+
+        expect(await screen.findByText('idle')).toBeVisible();
+        expect(screen.getByTestId('pending')).toHaveTextContent('none');
+      } finally {
+        await act(async () => resolveValidate());
+      }
+    },
+  );
+
+  it('should keep the validatingFields reference when the pending state does not change', async () => {
+    const form = createFormControl({ defaultValues: { test: '', other: '' } });
+    let resolveValidate = noop;
+    const validation = new Promise<void>((resolve) => {
+      resolveValidate = resolve;
+    });
+    const callback = jest.fn();
+
+    form.register('test', {
+      validate: async () => {
+        await validation;
+        return true;
+      },
+    });
+    form.register('other');
+    const unsubscribe = form.subscribe({
+      formState: { validatingFields: true, isValidating: true },
+      callback,
+    });
+    const pending = form.trigger('test');
+    const validatingFields = callback.mock.calls.at(-1)![0].validatingFields;
+    const repeated = form.trigger('test');
+
+    try {
+      expect(callback.mock.calls.at(-1)![0].validatingFields).toBe(
+        validatingFields,
+      );
+      form.resetField('other');
+      expect(callback.mock.calls.at(-1)![0].validatingFields).toBe(
+        validatingFields,
+      );
+      form.unregister('other');
+      expect(callback.mock.calls.at(-1)![0].validatingFields).toBe(
+        validatingFields,
+      );
+
+      form.resetField('test');
+      const cleared = callback.mock.calls.at(-1)![0].validatingFields;
+      resolveValidate();
+      await Promise.all([pending, repeated]);
+      expect(callback.mock.calls.at(-1)![0].validatingFields).toBe(cleared);
+    } finally {
+      unsubscribe();
+      resolveValidate();
+      await Promise.all([pending, repeated]);
+    }
+  });
+
+  it('should preserve validatingFields when subscribers start more validations', async () => {
+    const names = ['one', 'two', 'three'];
+    const form = createFormControl();
+    const complete: (() => void)[] = [];
+    const pending: Promise<boolean>[] = [];
+    const started = new Set<string>();
+    const callback = jest.fn();
+
+    for (const name of names) {
+      form.register(name, {
+        validate: async () => {
+          await new Promise<void>((resolve) => complete.push(resolve));
+          return true;
+        },
+      });
+    }
+
+    const unsubscribe = form.subscribe({
+      formState: { validatingFields: true, isValidating: true },
+      callback: ({ validatingFields }) => {
+        const name = names.find((name) => !started.has(name));
+
+        if (validatingFields.one && name) {
+          started.add(name);
+          pending.push(form.trigger(name));
+        }
+      },
+    });
+    const unsubscribeLast = form.subscribe({
+      formState: { validatingFields: true, isValidating: true },
+      callback,
+    });
+
+    started.add('one');
+    pending.push(form.trigger('one'));
+
+    try {
+      expect(callback).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          validatingFields: { one: true, two: true, three: true },
+          isValidating: true,
+        }),
+      );
+    } finally {
+      unsubscribe();
+      unsubscribeLast();
+      complete.forEach((resolve) => resolve());
+      await Promise.all(pending);
+    }
+  });
+
+  it('should deliver current validatingFields and isValidating when completion starts another validation', async () => {
+    const form = createFormControl();
+    const complete: (() => void)[] = [];
+    const pending: Promise<boolean>[] = [];
+    const callback = jest.fn();
+    let startNext = false;
+
+    for (const name of ['one', 'two']) {
+      form.register(name, {
+        validate: async () => {
+          await new Promise<void>((resolve) => complete.push(resolve));
+          return true;
+        },
+      });
+    }
+
+    const unsubscribe = form.subscribe({
+      formState: { validatingFields: true, isValidating: true },
+      callback: ({ isValidating }) => {
+        if (startNext && !isValidating) {
+          startNext = false;
+          pending.push(form.trigger('two'));
+        }
+      },
+    });
+    const unsubscribeLast = form.subscribe({
+      formState: { validatingFields: true, isValidating: true },
+      callback,
+    });
+    pending.push(form.trigger('one'));
+
+    try {
+      expect(callback).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          validatingFields: { one: true },
+          isValidating: true,
+        }),
+      );
+      startNext = true;
+      complete[0]();
+      await pending[0];
+
+      expect(callback).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          validatingFields: { two: true },
+          isValidating: true,
+        }),
+      );
+
+      complete[1]();
+      await pending[1];
+      for (const [{ validatingFields, isValidating }] of callback.mock.calls) {
+        expect(isValidating).toBe(Object.keys(validatingFields).length > 0);
+      }
+      expect(callback).toHaveBeenLastCalledWith(
+        expect.objectContaining({ validatingFields: {}, isValidating: false }),
+      );
+    } finally {
+      unsubscribe();
+      unsubscribeLast();
+      complete.forEach((resolve) => resolve());
+      await Promise.all(pending);
+    }
+  });
+
+  it('should deliver current form state when a validatingFields subscriber clears another pending field', async () => {
+    const form = createFormControl({ defaultValues: { one: '', two: '' } });
+    const complete: (() => void)[] = [];
+    const callback = jest.fn();
+    let shouldClear = false;
+
+    for (const name of ['one', 'two'] as const) {
+      form.register(name, {
+        validate: async () => {
+          await new Promise<void>((resolve) => complete.push(resolve));
+          return true;
+        },
+      });
+    }
+
+    const unsubscribe = form.subscribe({
+      formState: { validatingFields: true, isValidating: true },
+      callback: ({ validatingFields }) => {
+        if (shouldClear && validatingFields.two) {
+          shouldClear = false;
+          form.resetField('two');
+        }
+      },
+    });
+    const unsubscribeLast = form.subscribe({
+      formState: { validatingFields: true, isValidating: true },
+      callback,
+    });
+    const pending = [form.trigger('one'), form.trigger('two')];
+
+    try {
+      shouldClear = true;
+      form.unregister('one');
+
+      expect(callback).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          validatingFields: {},
+          isValidating: false,
+        }),
+      );
+    } finally {
+      unsubscribe();
+      unsubscribeLast();
+      complete.forEach((resolve) => resolve());
+      await Promise.all(pending);
+    }
   });
 
   type FormValues = { test: string; other: string; rows: { value: string }[] };
