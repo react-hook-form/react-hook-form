@@ -2194,7 +2194,12 @@ export function createFormControl<
       unMount: new Set(),
       array: new Set(),
       registerName: new Set(),
-      disabled: new Set(),
+      disabled:
+        keepStateOptions.keepValues ||
+        keepStateOptions.keepDirtyValues ||
+        keepStateOptions.keepFieldsRef
+          ? _names.disabled
+          : new Set(),
       watch: new Set(),
       watchAll: false,
       focus: '',

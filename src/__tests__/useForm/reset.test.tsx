@@ -9,6 +9,7 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../../controller';
+import { createFormControl } from '../../logic/createFormControl';
 import type {
   Control,
   FieldErrors,
@@ -31,6 +32,34 @@ afterEach(() => {
 });
 
 describe('reset', () => {
+  it.each([
+    { keepValues: true },
+    { keepFieldsRef: true },
+    { keepDirtyValues: true },
+  ])('omit retained disabled fields after reset with %j', async (options) => {
+    const { register, subscribe, reset, getValues, handleSubmit } =
+      createFormControl({
+        defaultValues: { title: 'kept', enabled: 'yes' },
+      });
+    subscribe({ formState: { dirtyFields: true }, callback: () => {} });
+    register('title');
+    register('title', { disabled: true });
+    register('enabled');
+
+    const submit = () => handleSubmit((data) => data)();
+
+    expect(await submit()).toEqual({ enabled: 'yes' });
+
+    reset(undefined, options);
+
+    expect(getValues()).toEqual({ title: 'kept', enabled: 'yes' });
+    expect(await submit()).toEqual({ enabled: 'yes' });
+
+    register('title', { disabled: false });
+
+    expect(await submit()).toEqual({ title: 'kept', enabled: 'yes' });
+  });
+
   it('reset the form and re-render the form', async () => {
     const { result } = renderHook(() => useForm<{ test: string }>());
 
