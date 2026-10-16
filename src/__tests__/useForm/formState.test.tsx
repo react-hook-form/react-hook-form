@@ -2330,6 +2330,54 @@ describe('formState', () => {
     },
   );
 
+  it('should keep the validatingFields reference when the pending state does not change', async () => {
+    const form = createFormControl({ defaultValues: { test: '', other: '' } });
+    let resolveValidate = noop;
+    const validation = new Promise<void>((resolve) => {
+      resolveValidate = resolve;
+    });
+    const callback = jest.fn();
+
+    form.register('test', {
+      validate: async () => {
+        await validation;
+        return true;
+      },
+    });
+    form.register('other');
+    const unsubscribe = form.subscribe({
+      formState: { validatingFields: true, isValidating: true },
+      callback,
+    });
+    const pending = form.trigger('test');
+    const validatingFields = callback.mock.calls.at(-1)![0].validatingFields;
+    const repeated = form.trigger('test');
+
+    try {
+      expect(callback.mock.calls.at(-1)![0].validatingFields).toBe(
+        validatingFields,
+      );
+      form.resetField('other');
+      expect(callback.mock.calls.at(-1)![0].validatingFields).toBe(
+        validatingFields,
+      );
+      form.unregister('other');
+      expect(callback.mock.calls.at(-1)![0].validatingFields).toBe(
+        validatingFields,
+      );
+
+      form.resetField('test');
+      const cleared = callback.mock.calls.at(-1)![0].validatingFields;
+      resolveValidate();
+      await Promise.all([pending, repeated]);
+      expect(callback.mock.calls.at(-1)![0].validatingFields).toBe(cleared);
+    } finally {
+      unsubscribe();
+      resolveValidate();
+      await Promise.all([pending, repeated]);
+    }
+  });
+
   it('should preserve validatingFields when subscribers start more validations', async () => {
     const names = ['one', 'two', 'three'];
     const form = createFormControl();
@@ -2372,6 +2420,71 @@ describe('formState', () => {
           validatingFields: { one: true, two: true, three: true },
           isValidating: true,
         }),
+      );
+    } finally {
+      unsubscribe();
+      unsubscribeLast();
+      complete.forEach((resolve) => resolve());
+      await Promise.all(pending);
+    }
+  });
+
+  it('should deliver current validatingFields and isValidating when completion starts another validation', async () => {
+    const form = createFormControl();
+    const complete: (() => void)[] = [];
+    const pending: Promise<boolean>[] = [];
+    const callback = jest.fn();
+    let startNext = false;
+
+    for (const name of ['one', 'two']) {
+      form.register(name, {
+        validate: async () => {
+          await new Promise<void>((resolve) => complete.push(resolve));
+          return true;
+        },
+      });
+    }
+
+    const unsubscribe = form.subscribe({
+      formState: { validatingFields: true, isValidating: true },
+      callback: ({ isValidating }) => {
+        if (startNext && !isValidating) {
+          startNext = false;
+          pending.push(form.trigger('two'));
+        }
+      },
+    });
+    const unsubscribeLast = form.subscribe({
+      formState: { validatingFields: true, isValidating: true },
+      callback,
+    });
+    pending.push(form.trigger('one'));
+
+    try {
+      expect(callback).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          validatingFields: { one: true },
+          isValidating: true,
+        }),
+      );
+      startNext = true;
+      complete[0]();
+      await pending[0];
+
+      expect(callback).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          validatingFields: { two: true },
+          isValidating: true,
+        }),
+      );
+
+      complete[1]();
+      await pending[1];
+      for (const [{ validatingFields, isValidating }] of callback.mock.calls) {
+        expect(isValidating).toBe(Object.keys(validatingFields).length > 0);
+      }
+      expect(callback).toHaveBeenLastCalledWith(
+        expect.objectContaining({ validatingFields: {}, isValidating: false }),
       );
     } finally {
       unsubscribe();
