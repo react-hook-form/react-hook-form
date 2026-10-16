@@ -43,6 +43,91 @@ describe('useFieldArray', () => {
     mockId = 0;
   });
 
+  it.each([
+    { type: 'text', value: '', other: 'test' },
+    { type: 'number', value: 0, other: 1 },
+    { type: 'checkbox', value: false, other: true },
+  ])(
+    'should preserve falsy primitive values in $type field arrays',
+    async ({ type, value, other }) => {
+      const onRead = jest.fn();
+      const onSubmit = jest.fn();
+      const Component = () => {
+        const { control, register, getValues, handleSubmit } = useForm<{
+          test: (string | number | boolean)[];
+        }>({
+          defaultValues: { test: [value, other] },
+        });
+        const { fields, append, remove, update } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return (
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {fields.map((field, index) => (
+              <input
+                key={field.key}
+                type={type}
+                data-testid="row"
+                {...register(`test.${index}`, {
+                  valueAsNumber: type === 'number',
+                })}
+              />
+            ))}
+            <button type="button" onClick={() => onRead(getValues())}>
+              read
+            </button>
+            <button type="button" onClick={() => append(value)}>
+              append
+            </button>
+            <button type="button" onClick={() => remove(1)}>
+              remove
+            </button>
+            <button type="button" onClick={() => update(1, other)}>
+              update
+            </button>
+            <button>submit</button>
+          </form>
+        );
+      };
+      const expectValues = (test: (string | number | boolean)[]) => {
+        fireEvent.click(screen.getByRole('button', { name: 'read' }));
+        expect(onRead).toHaveBeenLastCalledWith({ test });
+        expect(screen.getAllByTestId('row')).toHaveLength(test.length);
+      };
+
+      render(<Component />);
+
+      expectValues([value, other]);
+
+      fireEvent.click(screen.getByRole('button', { name: 'append' }));
+
+      expectValues([value, other, value]);
+
+      fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+
+      expectValues([value, value]);
+
+      const [untouchedRow, updatedRow] = screen.getAllByTestId('row');
+
+      fireEvent.click(screen.getByRole('button', { name: 'update' }));
+
+      expectValues([value, other]);
+      expect(screen.getAllByTestId('row')[0]).toBe(untouchedRow);
+      expect(screen.getAllByTestId('row')[1]).not.toBe(updatedRow);
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() =>
+        expect(onSubmit).toHaveBeenCalledWith(
+          { test: [value, other] },
+          expect.anything(),
+        ),
+      );
+    },
+  );
+
   describe('initialize', () => {
     it('should return default fields value', () => {
       const { result } = renderHook(() => {
