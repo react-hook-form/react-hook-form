@@ -172,9 +172,7 @@ export function useController<
   }, [name, control]);
 
   const ref = React.useCallback(
-    (instance: unknown) => {
-      const elm = instance as Partial<HTMLInputElement> | null;
-
+    (elm: Partial<HTMLInputElement> | null) => {
       if (elm) {
         _proxyRef.current = {
           focus: () => isFunction(elm.focus) && elm.focus(),

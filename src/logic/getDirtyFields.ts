@@ -16,9 +16,6 @@ function isRegisteredLeaf(fieldRef: unknown): boolean {
 
 type DirtyFieldsTree = Record<string, unknown>;
 
-const createDirtyContainer = (value: unknown) =>
-  (Array.isArray(value) ? [] : {}) as DirtyFieldsTree;
-
 function isEmptyDirtyContainer(value: unknown): boolean {
   return Array.isArray(value)
     ? !value.some((item) => !isUndefined(item))
@@ -46,7 +43,7 @@ function markFieldsDirty<T>(
       isTraversable(value) &&
       (!Array.isArray(value) || !isRegisteredLeaf(fieldRef))
     ) {
-      fields[key] = createDirtyContainer(value);
+      fields[key] = Array.isArray(value) ? [] : {};
       markFieldsDirty(value, fields[key] as DirtyFieldsTree, fieldRef);
 
       if (isEmptyDirtyContainer(fields[key])) {
@@ -66,13 +63,15 @@ export default function getDirtyFields<T>(
   dirtyFieldsFromValues?: DirtyFieldsTree,
   fieldRefs?: FieldRefs,
 ): DirtyFieldsTree {
-  const dirtyFields =
-    dirtyFieldsFromValues ||
-    markFieldsDirty(
+  if (!dirtyFieldsFromValues) {
+    dirtyFieldsFromValues = markFieldsDirty(
       formValues,
-      createDirtyContainer(isNullOrUndefined(formValues) ? data : formValues),
+      (Array.isArray(isNullOrUndefined(formValues) ? data : formValues)
+        ? []
+        : {}) as DirtyFieldsTree,
       fieldRefs,
     );
+  }
 
   for (const key in data) {
     const value = data[key];
@@ -82,23 +81,23 @@ export default function getDirtyFields<T>(
       isTraversable(value) &&
       (!Array.isArray(value) || !isRegisteredLeaf(fieldRef))
     ) {
-      if (isUndefined(formValues) || isPrimitive(dirtyFields[key])) {
-        dirtyFields[key] = markFieldsDirty(
+      if (isUndefined(formValues) || isPrimitive(dirtyFieldsFromValues[key])) {
+        dirtyFieldsFromValues[key] = markFieldsDirty(
           value,
-          createDirtyContainer(value),
+          (Array.isArray(value) ? [] : {}) as DirtyFieldsTree,
           fieldRef,
         );
       } else {
         getDirtyFields(
           value,
           isNullOrUndefined(formValues) ? {} : formValues[key],
-          dirtyFields[key] as DirtyFieldsTree,
+          dirtyFieldsFromValues[key] as DirtyFieldsTree,
           fieldRef,
         );
       }
 
-      if (isEmptyDirtyContainer(dirtyFields[key])) {
-        clearDirtyField(dirtyFields, key);
+      if (isEmptyDirtyContainer(dirtyFieldsFromValues[key])) {
+        clearDirtyField(dirtyFieldsFromValues, key);
       }
     } else if (
       deepEqual(
@@ -106,11 +105,11 @@ export default function getDirtyFields<T>(
         isNullOrUndefined(formValues) ? undefined : formValues[key],
       )
     ) {
-      clearDirtyField(dirtyFields, key);
+      clearDirtyField(dirtyFieldsFromValues, key);
     } else {
-      dirtyFields[key] = true;
+      dirtyFieldsFromValues[key] = true;
     }
   }
 
-  return dirtyFields;
+  return dirtyFieldsFromValues;
 }

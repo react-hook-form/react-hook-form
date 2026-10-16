@@ -1325,7 +1325,7 @@ export function createFormControl<
 
   const onChange: ChangeHandler = async (event) => {
     _state.mount = true;
-    const target = event.target as HTMLInputElement;
+    const target = event.target;
     let name: string = target.name;
     let isFieldValueUpdated = true;
     const field: Field = get(_fields, name);
@@ -1383,7 +1383,7 @@ export function createFormControl<
       !isBlurEvent &&
         _subjects.state.next({
           name,
-          type: event.type as EventType,
+          type: event.type,
           ...(_hasValuesSubscriber(name)
             ? { values: cloneObject(_formValues) }
             : {}),
@@ -1412,7 +1412,7 @@ export function createFormControl<
       if (!_options.resolver && _options.validate) {
         await validateForm({
           name: name as FieldPath<TFieldValues>,
-          eventType: event.type as ValidateFormEventType,
+          eventType: event.type,
         });
       }
 
@@ -1479,7 +1479,7 @@ export function createFormControl<
               fields: _fields,
               onlyCheckValid: true,
               name: name as FieldPath<TFieldValues>,
-              eventType: event.type as ValidateFormEventType,
+              eventType: event.type,
             });
 
             if (resetCallId !== _resetCallId) {
@@ -1539,9 +1539,9 @@ export function createFormControl<
       validationResult = (
         await Promise.all(
           fieldNames.map(async (fieldName) => {
-            const field: FieldRefs | undefined = get(_fields, fieldName);
+            const field: FieldRefs = get(_fields, fieldName);
             return await executeBuiltInValidation({
-              fields: field && field._f ? { [fieldName]: field } : field || {},
+              fields: field && field._f ? { [fieldName]: field } : field,
               eventType: EVENTS.TRIGGER,
             });
           }),
@@ -1940,9 +1940,7 @@ export function createFormControl<
       name,
       onChange,
       onBlur: onChange,
-      ref: (instance: unknown): void => {
-        const ref = instance as HTMLInputElement | null;
-
+      ref: (ref: HTMLInputElement | null): void => {
         if (ref) {
           _names.registerName.add(name);
           register(name, options);
