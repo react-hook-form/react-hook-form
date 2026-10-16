@@ -70,9 +70,9 @@ We’re incredibly grateful to these kind and generous sponsors for their suppor
 
 ## Supporting Sponsors
 
-| Thanks.dev | Kinsta | Niche | Principal | Hygraph |
-|---|---|---|---|---|
-| <a href="https://thanks.dev/"><img src="https://avatars.githubusercontent.com/u/72539280?s=200&v=4" width="60"/></a> | <a href="https://kinsta.com/"><img src="https://images.opencollective.com/kinsta/55912d7/logo/256.png?height=256" width="60"/></a> | <a href="https://niche.com"><img src="https://avatars.githubusercontent.com/u/8988784?s=200&v=4" width="60"/></a> | <a href="https://principal.com/about-us"><img src="https://images.opencollective.com/principal/431e690/logo/256.png?height=256" width="60"/></a> | <a href="https://hygraph.com"><img src="https://avatars.githubusercontent.com/u/31031438" width="60"/></a> |
+| Pennylane | Thanks.dev | Kinsta | Niche | Principal | Hygraph |
+|---|---|---|---|---|---|
+| <a href="https://github.com/pennylane-hq"><img src="https://github.com/pennylane-hq.png" width="60"/></a> | <a href="https://thanks.dev/"><img src="https://avatars.githubusercontent.com/u/72539280?s=200&v=4" width="60"/></a> | <a href="https://kinsta.com/"><img src="https://images.opencollective.com/kinsta/55912d7/logo/256.png?height=256" width="60"/></a> | <a href="https://niche.com"><img src="https://avatars.githubusercontent.com/u/8988784?s=200&v=4" width="60"/></a> | <a href="https://principal.com/about-us"><img src="https://images.opencollective.com/principal/431e690/logo/256.png?height=256" width="60"/></a> | <a href="https://hygraph.com"><img src="https://avatars.githubusercontent.com/u/31031438" width="60"/></a> |
 
 ### Past Sponsors
 
