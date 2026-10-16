@@ -63,7 +63,6 @@ import type {
   WatchInternal,
 } from '../types';
 import cloneObject from '../utils/cloneObject';
-import compact from '../utils/compact';
 import convertToArrayPayload from '../utils/convertToArrayPayload';
 import createSubject from '../utils/createSubject';
 import deepEqual from '../utils/deepEqual';
@@ -1021,14 +1020,17 @@ export function createFormControl<
 
   const _getFieldArray = <TFieldArrayValues>(
     name: InternalFieldName,
-  ): Partial<TFieldArrayValues>[] =>
-    compact(
-      get(
-        _state.mount ? _formValues : _defaultValues,
-        name,
-        _options.shouldUnregister ? get(_defaultValues, name, []) : [],
-      ),
+  ): Partial<TFieldArrayValues>[] => {
+    const values = get(
+      _state.mount ? _formValues : _defaultValues,
+      name,
+      _options.shouldUnregister ? get(_defaultValues, name, []) : [],
     );
+
+    return Array.isArray(values)
+      ? values.filter((value) => !isNullOrUndefined(value))
+      : [];
+  };
 
   const setFieldValue = (
     name: InternalFieldName,
