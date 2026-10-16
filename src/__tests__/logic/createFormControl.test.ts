@@ -262,4 +262,27 @@ describe('createFormControl', () => {
 
     expect(control._getDirty()).toBe(false);
   });
+
+  it('not share a defaultValues object that has a constructor key with form values', () => {
+    const defaultValues = {
+      team: { constructor: 'Ferrari', name: 'Scuderia' },
+    };
+    const { control, register, setValue, getValues, reset } = createFormControl(
+      { defaultValues },
+    );
+
+    register('team.name');
+    control._state.mount = true;
+
+    setValue('team.name', 'Maranello');
+
+    expect(getValues('team.name')).toBe('Maranello');
+    expect(control._defaultValues.team.name).toBe('Scuderia');
+    expect(defaultValues.team.name).toBe('Scuderia');
+    expect(control._getDirty()).toBe(true);
+
+    reset();
+
+    expect(getValues('team.name')).toBe('Scuderia');
+  });
 });
