@@ -160,7 +160,9 @@ export function useWatch<TFieldValues extends FieldValues>(
         _defaultValue.current,
       );
 
-      return _compute.current ? _compute.current(formValues) : formValues;
+      return _compute.current
+        ? _compute.current(formValues as TFieldValues)
+        : formValues;
     },
     [control._formValues, control._names, name],
   );
@@ -177,7 +179,9 @@ export function useWatch<TFieldValues extends FieldValues>(
         );
 
         if (_compute.current) {
-          const computedFormValues = _compute.current(formValues);
+          const computedFormValues = _compute.current(
+            formValues as TFieldValues,
+          );
 
           if (!deepEqual(computedFormValues, _computeFormValues.current)) {
             updateValue(computedFormValues);
