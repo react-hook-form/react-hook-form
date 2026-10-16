@@ -32,7 +32,6 @@ import type {
   FieldArray,
   FieldArrayMethodProps,
   FieldArrayPath,
-  FieldArrayWithId,
   FieldError,
   FieldPath,
   FieldValues,
@@ -47,6 +46,8 @@ import { useResyncOnReconnect } from './useResyncOnReconnect';
 /**
  * Hook for dynamic field arrays. Provides `fields` and mutation methods:
  * `append`, `prepend`, `remove`, `insert`, `swap`, `move`, `update`, `replace`.
+ * Primitive rows are exposed as `{ value, key }`; object and function rows
+ * keep their spread properties with an added `key`.
  *
  * @see [API](https://react-hook-form.com/docs/usefieldarray)
  *
@@ -153,7 +154,7 @@ export function useFieldArray<
   }, [control, name, disabled, resyncIfNeeded, snapshot]);
 
   const updateValues = React.useCallback(
-    <T extends Partial<FieldArrayWithId<TFieldValues, TFieldArrayName>>[]>(
+    <T extends Partial<FieldArray<TFieldValues, TFieldArrayName>>[]>(
       updatedFieldArrayValues: T,
     ) => {
       _actioned.current = true;
@@ -220,7 +221,7 @@ export function useFieldArray<
     }
 
     const updatedFieldArrayValues: Partial<
-      FieldArrayWithId<TFieldValues, TFieldArrayName>
+      FieldArray<TFieldValues, TFieldArrayName>
     >[] = removeArrayAt(control._getFieldArray(name), index);
     ids.current = removeArrayAt(ids.current, index);
     updateValues(updatedFieldArrayValues);
@@ -313,11 +314,9 @@ export function useFieldArray<
 
     const updateValue = cloneObject(value);
     const updatedFieldArrayValues = updateAt(
-      control._getFieldArray<FieldArrayWithId<TFieldValues, TFieldArrayName>>(
-        name,
-      ),
+      control._getFieldArray<FieldArray<TFieldValues, TFieldArrayName>>(name),
       index,
-      updateValue as FieldArrayWithId<TFieldValues, TFieldArrayName>,
+      updateValue,
     );
     ids.current = [...updatedFieldArrayValues].map((item, i) =>
       isNullOrUndefined(item) || i === index ? generateId() : ids.current[i],
@@ -559,10 +558,12 @@ export function useFieldArray<
     fields: React.useMemo(
       () =>
         fields.map((field, index) => ({
-          ...field,
+          ...(typeof field === 'object' || typeof field === 'function'
+            ? field
+            : { value: field }),
           ...(isBoolean(disabled) ? { disabled } : {}),
           key: ids.current[index] || generateId(),
-        })) as FieldArrayWithId<TFieldValues, TFieldArrayName>[],
+        })) as UseFieldArrayReturn<TFieldValues, TFieldArrayName>['fields'],
       [fields, disabled],
     ),
   };

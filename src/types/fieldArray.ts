@@ -1,6 +1,7 @@
 import type { FieldValues } from './fields';
 import type { Control } from './form';
 import type { FieldArrayPath, FieldArrayPathValue } from './path';
+import type { Primitive } from './utils';
 import type { RegisterOptions, Validate } from './validator';
 
 export type UseFieldArrayProps<
@@ -27,14 +28,23 @@ export type UseFieldArrayProps<
 };
 
 /**
- * `useFieldArray` returned `fields` with unique id
+ * `useFieldArray` returned `fields` with unique keys. Primitive rows are
+ * wrapped in `value`; object and function rows keep their spread properties.
  */
 export type FieldArrayWithId<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> =
     FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'key',
-> = FieldArray<TFieldValues, TFieldArrayName> & Record<TKeyName, string>;
+> = (Exclude<
+  FieldArray<TFieldValues, TFieldArrayName>,
+  null | undefined
+> extends infer TRow
+  ? TRow extends Primitive
+    ? { value: TRow }
+    : TRow
+  : never) &
+  Record<TKeyName, string>;
 
 export type FieldArray<
   TFieldValues extends FieldValues = FieldValues,

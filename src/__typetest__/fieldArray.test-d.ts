@@ -1,6 +1,6 @@
-import { FieldArray, useFieldArray } from '../index';
+import { FieldArray, type FieldArrayWithId, useFieldArray } from '../index';
 
-import type { Expect, NotEqual } from './__fixtures__';
+import type { Equal, Expect, NotEqual } from './__fixtures__';
 
 /**
  * regression test for https://github.com/react-hook-form/react-hook-form/issues/13618
@@ -23,4 +23,58 @@ import type { Expect, NotEqual } from './__fixtures__';
   const save = (value: unknown) => update(0, value as ArrayItem);
 
   const Component: typeof FieldArray = FieldArray;
+}
+
+/** {@link FieldArrayWithId} row shapes */ {
+  type Row = string | number | boolean;
+  type FormValues = {
+    items: (Row | { a: string })[];
+    objects: { a: string; value?: number }[];
+  };
+
+  type _mixed = Expect<
+    Equal<
+      FieldArrayWithId<FormValues, 'items'>,
+      (
+        | { value: string }
+        | { value: number }
+        | { value: false }
+        | { value: true }
+        | { a: string }
+      ) & { key: string }
+    >
+  >;
+  type _customKey = Expect<
+    Equal<
+      FieldArrayWithId<{ items: string[] }, 'items', 'id'>,
+      { value: string } & { id: string }
+    >
+  >;
+  type BrandedString = string & { readonly brand: 'id' };
+  type _branded = Expect<
+    Equal<
+      FieldArrayWithId<{ items: BrandedString[] }>,
+      { value: BrandedString } & { key: string }
+    >
+  >;
+  type _unknown = Expect<
+    Equal<FieldArrayWithId<{ items: unknown[] }>, { key: string }>
+  >;
+  type _any = Expect<Equal<FieldArrayWithId<{ items: any[] }>, any>>;
+  type _default = Expect<Equal<FieldArrayWithId, { key: string }>>;
+  type _object = Expect<
+    Equal<
+      FieldArrayWithId<FormValues, 'objects', 'id'>,
+      { a: string; value?: number } & { id: string }
+    >
+  >;
+
+  const customKey: FieldArrayWithId<{ items: string[] }, 'items', 'id'> = {
+    value: '',
+    id: 'row',
+  };
+  // @ts-expect-error Only the requested key name is added.
+  customKey.key;
+  // @ts-expect-error Primitive rows require a value property.
+  const missingValue: FieldArrayWithId<{ items: string[] }> = { key: 'row' };
 }

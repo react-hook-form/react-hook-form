@@ -244,7 +244,9 @@ export type FieldArrayProps<TFieldValues extends FieldValues = FieldValues, TFie
 } & UseFieldArrayProps<TFieldValues, TFieldArrayName>;
 
 // @public
-export type FieldArrayWithId<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'key'> = FieldArray_2<TFieldValues, TFieldArrayName> & Record<TKeyName, string>;
+export type FieldArrayWithId<TFieldValues extends FieldValues = FieldValues, TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>, TKeyName extends string = 'key'> = (Exclude<FieldArray_2<TFieldValues, TFieldArrayName>, null | undefined> extends infer TRow ? TRow extends Primitive ? {
+    value: TRow;
+} : TRow : never) & Record<TKeyName, string>;
 
 // @public (undocumented)
 export type FieldElement<TFieldValues extends FieldValues = FieldValues> = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | CustomElement<TFieldValues>;
