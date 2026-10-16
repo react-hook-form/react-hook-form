@@ -27,19 +27,15 @@ import unset from './utils/unset';
 import updateAt from './utils/update';
 import { ROOT_ERROR_TYPE, VALIDATION_MODE } from './constants';
 import type {
-  Control,
   Field,
   FieldArray,
   FieldArrayMethodProps,
   FieldArrayPath,
   FieldArrayWithId,
   FieldError,
-  FieldErrors,
   FieldPath,
   FieldValues,
-  FormState,
   InternalFieldName,
-  RegisterOptions,
   UseFieldArrayProps,
   UseFieldArrayReturn,
 } from './types';
@@ -102,10 +98,7 @@ export function useFieldArray<
       !disabled &&
       rules &&
       fields.length >= 0 &&
-      (control as Control<TFieldValues, unknown, TTransformedValues>).register(
-        name as FieldPath<TFieldValues>,
-        rules as RegisterOptions<TFieldValues>,
-      ),
+      control.register(name as FieldPath<TFieldValues>, rules),
     [control, name, fields.length, rules, disabled],
   );
 
@@ -372,21 +365,25 @@ export function useFieldArray<
     isWatched(name, control._names) &&
       control._subjects.state.next({
         ...control._formState,
-      } as FormState<TFieldValues>);
+      });
 
     const validationModes = getValidationModes(control._options.mode);
+    const reValidateModes = getValidationModes(control._options.reValidateMode);
 
     if (
       _actioned.current &&
       (!validationModes.isOnSubmit || control._formState.isSubmitted) &&
-      !getValidationModes(control._options.reValidateMode).isOnSubmit &&
-      !validationModes.isOnBlur
+      !reValidateModes.isOnSubmit &&
+      (!validationModes.isOnBlur ||
+        (control._formState.isSubmitted && reValidateModes.isOnChange))
     ) {
       if (control._options.resolver) {
         control._runSchema([name]).then((result) => {
           control._updateIsValidating([name]);
-          const error = get(result.errors, name);
-          const existingError = get(control._formState.errors, name);
+          const error: FieldError | undefined = get(result.errors, name);
+          const existingError:
+            | (FieldError & { root?: FieldError })
+            | undefined = get(control._formState.errors, name);
           const existingErrorType =
             existingError &&
             (existingError.type ||
@@ -408,7 +405,7 @@ export function useFieldArray<
               isObject(error) &&
               !Object.keys(error).some((key) => !Number.isNaN(+key))
                 ? updateFieldArrayRootError(
-                    control._formState.errors as FieldErrors<TFieldValues>,
+                    control._formState.errors,
                     { [name]: error } as Partial<Record<string, FieldError>>,
                     name,
                   )
@@ -418,7 +415,7 @@ export function useFieldArray<
             }
             control._formState.errors = { ...control._formState.errors };
             control._subjects.state.next({
-              errors: control._formState.errors as FieldErrors<TFieldValues>,
+              errors: control._formState.errors,
             });
           }
         });
@@ -434,24 +431,21 @@ export function useFieldArray<
             true,
           ).then((error) => {
             if (!isEmptyObject(error)) {
-              updateFieldArrayRootError(
-                control._formState.errors as FieldErrors<TFieldValues>,
-                error,
-                name,
-              );
+              updateFieldArrayRootError(control._formState.errors, error, name);
               control._formState.errors = { ...control._formState.errors };
               control._subjects.state.next({
-                errors: control._formState.errors as FieldErrors<TFieldValues>,
+                errors: control._formState.errors,
               });
             } else {
-              const existingError = get(control._formState.errors, name);
+              const existingError:
+                | (FieldError & { root?: FieldError })
+                | undefined = get(control._formState.errors, name);
 
               if (existingError && existingError[ROOT_ERROR_TYPE]) {
                 unset(control._formState.errors, `${name}.${ROOT_ERROR_TYPE}`);
                 control._formState.errors = { ...control._formState.errors };
                 control._subjects.state.next({
-                  errors: control._formState
-                    .errors as FieldErrors<TFieldValues>,
+                  errors: control._formState.errors,
                 });
               }
             }
@@ -496,6 +490,7 @@ export function useFieldArray<
 
     return () => {
       control._state.actionArrayLengths.delete(name);
+      control._state.actionArrayLengths.size || (control._state.action = false);
 
       if (disabled) {
         return;
@@ -518,7 +513,13 @@ export function useFieldArray<
         });
       }
 
-      if (!shouldKeepFieldArrayValues && control._state.action) {
+      if (
+        !shouldKeepFieldArrayValues &&
+        control._state.action &&
+        [...control._state.actionArrayLengths.keys()].some((arrayName) =>
+          name.startsWith(arrayName + '.'),
+        )
+      ) {
         return;
       }
 

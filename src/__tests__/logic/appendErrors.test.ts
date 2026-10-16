@@ -1,7 +1,7 @@
 import appendErrors from '../../logic/appendErrors';
 
 describe('appendErrors', () => {
-  it('should return empty object when validateAllFieldCriteria is false', () => {
+  it('return empty object when validateAllFieldCriteria is false', () => {
     const errors = {
       test: {
         type: 'required',
@@ -11,7 +11,7 @@ describe('appendErrors', () => {
     expect(appendErrors('test', false, errors, 'min', 'test')).toEqual({});
   });
 
-  it('should return error object when validateAllFieldCriteria is true', () => {
+  it('return error object when validateAllFieldCriteria is true', () => {
     const errors = {
       test: {
         type: 'required',

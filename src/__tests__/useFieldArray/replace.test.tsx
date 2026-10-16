@@ -31,7 +31,7 @@ describe('replace', () => {
     mockId = 0;
   });
 
-  it('should replace fields correctly', () => {
+  it('replace fields correctly', () => {
     let currentFields: any = [];
     const defaultValues: DefaultValues = {
       test: [{ x: '101' }, { x: '102' }, { x: '103' }],
@@ -89,7 +89,7 @@ describe('replace', () => {
       { key: '9', x: '302' },
     ]);
   });
-  it('should not omit keyName when provided', async () => {
+  it('not omit keyName when provided', async () => {
     type FormValues = {
       test: {
         test: string;
@@ -145,7 +145,7 @@ describe('replace', () => {
     ).toBeVisible();
   });
 
-  it('should not omit keyName when provided and defaultValue is empty', async () => {
+  it('not omit keyName when provided and defaultValue is empty', async () => {
     type FormValues = {
       test: {
         test: string;
@@ -212,7 +212,7 @@ describe('replace', () => {
     ).toBeVisible();
   });
 
-  it('should not replace errors state', async () => {
+  it('not replace errors state', async () => {
     const App = () => {
       const {
         control,
@@ -273,7 +273,7 @@ describe('replace', () => {
     expect(await screen.findByText('This is required')).toBeVisible();
   });
 
-  it('should drop errors for rows removed by replace', async () => {
+  it('drop errors for rows removed by replace', async () => {
     let errorsSnapshot: unknown;
 
     const App = () => {
@@ -328,7 +328,7 @@ describe('replace', () => {
     });
   });
 
-  it('should drop touched state for rows removed by replace', () => {
+  it('drop touched state for rows removed by replace', () => {
     let touched: unknown;
 
     const Component = () => {
@@ -372,7 +372,7 @@ describe('replace', () => {
     });
   });
 
-  it('should not affect other formState during replace action', () => {
+  it('not affect other formState during replace action', () => {
     const defaultValue = {
       firstName: 'test',
     };
@@ -427,7 +427,7 @@ describe('replace', () => {
   });
 
   describe('with resolver', () => {
-    it('should not invoke resolver per register during replace, but run after replace completes', async () => {
+    it('not invoke resolver per register during replace, but run after replace completes', async () => {
       const resolver = jest
         .fn()
         .mockImplementation((values) => ({ values, errors: {} }));

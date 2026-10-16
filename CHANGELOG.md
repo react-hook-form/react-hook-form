@@ -1,5 +1,31 @@
 # Changelog
 
+## [7.90.0] - 2026-10-10
+
+### Changed
+
+- Improve performance of `watch`, `subscribe`, scoped subscriptions, dirty field checks and form state fan-out
+- Reduce bundle size
+
+### Fixed
+
+- Fields named after `Object.prototype` members not being marked as touched on blur and `setValue`
+- Dirty values extraction for fields named `hasOwnProperty`
+- `cloneObject` dropping the length of sparse arrays
+- `cloneObject` failing on objects with a null prototype
+- Form options removed from props on re-render not being reset
+- `remove()` mishandling duplicated indexes and mutating the indexes passed in
+- `useFieldArray` unregistering fields while a parent array reindexes
+- Input edited before the form is ready being overwritten
+- `useWatch` not updating watched objects after an `<Activity>` subtree reconnects
+- `useWatch` preferring its own `defaultValue` over form `defaultValues` for array names
+- `reset` without values and `keepDefaultValues` setting `isDirty` to true
+- `Controller` blur validation not working after `reset`
+- `watch` reading a stale `shouldUnregister` option when a field registers
+- Native validation reading a stale `shouldUseNativeValidation` option when stopping at the first error
+- Form values stored under a `ref` key not being compared correctly
+- `setError`, `clearErrors` and remaining error updates not producing a new `errors` reference
+
 ## [7.89.0] - 2026-09-26
 
 ### Changed

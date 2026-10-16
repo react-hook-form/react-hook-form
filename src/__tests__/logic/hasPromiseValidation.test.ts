@@ -13,7 +13,7 @@ describe('hasPromiseValidation', () => {
   it('validate option does not exist', () => {
     expect(hasPromiseValidation(commonParam)).toEqual(false);
   });
-  it('should return true when validate option has a function type value and is an async function', () => {
+  it('return true when validate option has a function type value and is an async function', () => {
     const param = {
       ...commonParam,
       validate: async () => {
@@ -23,7 +23,7 @@ describe('hasPromiseValidation', () => {
 
     expect(hasPromiseValidation(param)).toEqual(true);
   });
-  it('should return false when validate option has a function type value and is not an async function', () => {
+  it('return false when validate option has a function type value and is not an async function', () => {
     const param = {
       ...commonParam,
       validate: () => {
@@ -33,7 +33,7 @@ describe('hasPromiseValidation', () => {
 
     expect(hasPromiseValidation(param)).toEqual(false);
   });
-  it('should return true when validate option has an object type value, and the values of all properties are async function.', () => {
+  it('return true when validate option has an object type value, and the values of all properties are async function.', () => {
     const param = {
       ...commonParam,
       validate: {
@@ -44,7 +44,7 @@ describe('hasPromiseValidation', () => {
 
     expect(hasPromiseValidation(param)).toEqual(true);
   });
-  it('should return true when validate option has an object type value, and the value of one property is an async function.', () => {
+  it('return true when validate option has an object type value, and the value of one property is an async function.', () => {
     const param = {
       ...commonParam,
       validate: {
@@ -55,7 +55,7 @@ describe('hasPromiseValidation', () => {
 
     expect(hasPromiseValidation(param)).toEqual(true);
   });
-  it('should return false when validate option has an object type value, and the values of all properties are not async function.', () => {
+  it('return false when validate option has an object type value, and the values of all properties are not async function.', () => {
     const param = {
       ...commonParam,
       validate: {

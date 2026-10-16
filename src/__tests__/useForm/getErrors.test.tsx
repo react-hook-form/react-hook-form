@@ -13,7 +13,7 @@ import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
 
 describe('getErrors', () => {
-  it('should return the entire errors object without an argument', () => {
+  it('return the entire errors object without an argument', () => {
     const { result } = renderHook(() =>
       useForm<{ foo: string; bar: string }>(),
     );
@@ -29,7 +29,7 @@ describe('getErrors', () => {
     });
   });
 
-  it('should return a single field error', () => {
+  it('return a single field error', () => {
     const { result } = renderHook(() => useForm<{ foo: string }>());
 
     act(() => {
@@ -43,7 +43,7 @@ describe('getErrors', () => {
     });
   });
 
-  it('should return errors in the requested order, including missing entries', () => {
+  it('return errors in the requested order, including missing entries', () => {
     const { result } = renderHook(() =>
       useForm<{ foo: string; bar: string; baz: string }>(),
     );
@@ -60,13 +60,13 @@ describe('getErrors', () => {
     ]);
   });
 
-  it('should return undefined when no error is stored for a path', () => {
+  it('return undefined when no error is stored for a path', () => {
     const { result } = renderHook(() => useForm<{ foo: string }>());
 
     expect(result.current.getErrors('foo')).toBeUndefined();
   });
 
-  it('should return stored errors without running validation', async () => {
+  it('return stored errors without running validation', async () => {
     const { result } = renderHook(() =>
       useForm<{ foo: string }>({ mode: 'onSubmit' }),
     );
@@ -87,7 +87,7 @@ describe('getErrors', () => {
     );
   });
 
-  it('should reflect the setError -> getErrors -> clearErrors -> getErrors transition', () => {
+  it('reflect the setError -> getErrors -> clearErrors -> getErrors transition', () => {
     const { result } = renderHook(() => useForm<{ foo: string }>());
 
     act(() => {
@@ -105,7 +105,7 @@ describe('getErrors', () => {
   });
 
   describe('global errors', () => {
-    it('should include root and form global errors', () => {
+    it('include root and form global errors', () => {
       const { result } = renderHook(() => useForm<{ foo: string }>());
 
       act(() => {
@@ -127,7 +127,7 @@ describe('getErrors', () => {
       );
     });
 
-    it('should read a nested form error via its full path', () => {
+    it('read a nested form error via its full path', () => {
       const { result } = renderHook(() => useForm<{ foo: string }>());
 
       act(() => {
@@ -144,7 +144,7 @@ describe('getErrors', () => {
   });
 
   describe('nested and array field paths', () => {
-    it('should return the nested error tree for a parent object path', () => {
+    it('return the nested error tree for a parent object path', () => {
       const { result } = renderHook(() =>
         useForm<{ user: { name: string } }>(),
       );
@@ -158,7 +158,7 @@ describe('getErrors', () => {
       });
     });
 
-    it('should return the nested error tree for an array parent path', () => {
+    it('return the nested error tree for an array parent path', () => {
       const { result } = renderHook(() =>
         useForm<{ items: { name: string }[] }>(),
       );
@@ -176,7 +176,7 @@ describe('getErrors', () => {
     });
   });
 
-  it('should not re-render a component that only calls getErrors when setError fires', () => {
+  it('not re-render a component that only calls getErrors when setError fires', () => {
     let renderCount = 0;
     let setError!: ReturnType<typeof useForm<{ foo: string }>>['setError'];
     let getErrors!: ReturnType<typeof useForm<{ foo: string }>>['getErrors'];
@@ -205,7 +205,7 @@ describe('getErrors', () => {
     expect(getErrors('foo')).toEqual({ type: 'required', ref: undefined });
   });
 
-  it('should expose getErrors on createFormControl and its formControl', () => {
+  it('expose getErrors on createFormControl and its formControl', () => {
     const formControl = createFormControl<{ foo: string }>();
 
     expect(typeof formControl.getErrors).toBe('function');
@@ -225,7 +225,7 @@ describe('getErrors', () => {
     expect(formControl.getErrors()).toEqual({});
   });
 
-  it('should expose getErrors through FormProvider and useFormContext at runtime', () => {
+  it('expose getErrors through FormProvider and useFormContext at runtime', () => {
     const Child = () => {
       const { getErrors, setError } = useFormContext<{ foo: string }>();
       const [shown, setShown] = React.useState('none');
@@ -259,7 +259,7 @@ describe('getErrors', () => {
     expect(screen.getByRole('button')).toHaveTextContent('ctx error');
   });
 
-  it('should protect internal errors from top-level mutations', () => {
+  it('protect internal errors from top-level mutations', () => {
     const { result } = renderHook(() => useForm<{ foo: string }>());
 
     act(() => {
@@ -275,7 +275,7 @@ describe('getErrors', () => {
     });
   });
 
-  it('should read a field-array root error', async () => {
+  it('read a field-array root error', async () => {
     type FormValues = { items: { name: string }[] };
     const { result } = renderHook(() => {
       const form = useForm<FormValues>({ defaultValues: { items: [] } });

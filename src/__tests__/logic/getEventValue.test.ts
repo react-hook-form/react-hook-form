@@ -1,6 +1,6 @@
 import getEventValue from '../../logic/getEventValue';
 
-test('getEventValue should return correct value', () => {
+test('getEventValue return correct value', () => {
   expect(
     getEventValue({
       target: { checked: true, type: 'checkbox' },
@@ -20,7 +20,7 @@ test('getEventValue should return correct value', () => {
   expect(getEventValue(null)).toEqual(null);
 });
 
-test('getEventValue should return files for a file input target', () => {
+test('getEventValue return files for a file input target', () => {
   const files = [new File(['hello'], 'hello.png', { type: 'image/png' })];
 
   expect(

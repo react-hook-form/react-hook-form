@@ -27,6 +27,7 @@ const RESET_OPTIONS = {
   shouldUnregister: undefined,
   shouldUseNativeValidation: undefined,
   context: undefined,
+  progressive: undefined,
 } as const;
 
 /**
@@ -143,6 +144,7 @@ export function useForm<
     }));
 
     control._formState.isReady = true;
+    control._subjects.state.next({ isReady: true });
 
     return () => {
       unsubscribe();

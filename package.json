@@ -117,7 +117,7 @@
     "files": [
       {
         "path": "./dist/index.cjs.js",
-        "maxSize": "15.0 kB"
+        "maxSize": "15.1 kB"
       }
     ]
   },

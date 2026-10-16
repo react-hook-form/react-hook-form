@@ -13,7 +13,11 @@ import { useForm } from '../../useForm';
 import { useFormState } from '../../useFormState';
 
 describe('clearErrors', () => {
-  it('should remove error', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('remove error', () => {
     const { result } = renderHook(() => useForm<{ input: string }>());
     act(() => {
       result.current.register('input');
@@ -28,7 +32,7 @@ describe('clearErrors', () => {
     expect(result.current.formState.errors).toEqual({});
   });
 
-  it('should remove nested error', () => {
+  it('remove nested error', () => {
     const { result } = renderHook(() =>
       useForm<{ input: { nested: string } }>(),
     );
@@ -43,7 +47,7 @@ describe('clearErrors', () => {
     expect(result.current.formState.errors.input?.nested).toBeUndefined();
   });
 
-  it('should remove deep nested error and set it to undefined', async () => {
+  it('remove deep nested error and set it to undefined', async () => {
     let currentErrors = {};
 
     const Component = () => {
@@ -91,7 +95,7 @@ describe('clearErrors', () => {
     expect(currentErrors).toEqual({});
   });
 
-  it('should remove specified errors', () => {
+  it('remove specified errors', () => {
     const { result } = renderHook(() =>
       useForm<{
         input: string;
@@ -167,7 +171,7 @@ describe('clearErrors', () => {
     });
   });
 
-  it('should remove all error', () => {
+  it('remove all error', () => {
     const { result } = renderHook(() =>
       useForm<{ input: string; input1: string; input2: string }>(),
     );
@@ -203,7 +207,7 @@ describe('clearErrors', () => {
     expect(result.current.formState.errors).toEqual({});
   });
 
-  it('should prevent the submission if there is a custom error', async () => {
+  it('prevent the submission if there is a custom error', async () => {
     const submit = jest.fn();
     const { result } = renderHook(() =>
       useForm<{ data: string; whatever: string }>(),
@@ -226,7 +230,7 @@ describe('clearErrors', () => {
     expect(submit).toHaveBeenCalled();
   });
 
-  it('should update isValid to true with setError', async () => {
+  it('update isValid to true with setError', async () => {
     const App = () => {
       const {
         formState: { isValid },
@@ -271,7 +275,7 @@ describe('clearErrors', () => {
     expect(await screen.findByText('no')).toBeVisible();
   });
 
-  it('should be able to clear root error', () => {
+  it('be able to clear root error', () => {
     const App = () => {
       const { clearErrors } = useForm();
 
@@ -286,7 +290,7 @@ describe('clearErrors', () => {
     render(<App />);
   });
 
-  it('should only notify subscribers for the cleared field when using exact: true', async () => {
+  it('only notify subscribers for the cleared field when using exact: true', async () => {
     let renderCountA = 0;
     let renderCountB = 0;
 
@@ -373,7 +377,7 @@ describe('clearErrors', () => {
     expect(afterClearErrorRenderB).toBe(afterSetErrorRenderB);
   });
 
-  it('should cancel a pending delayError timer so the cleared error does not come back', async () => {
+  it('cancel a pending delayError timer so the cleared error does not come back', async () => {
     jest.useFakeTimers();
 
     const message = 'too long.';
@@ -435,7 +439,7 @@ describe('clearErrors', () => {
     jest.useRealTimers();
   });
 
-  it('should cancel pending delayError timers for nested fields when their parent is cleared', async () => {
+  it('cancel pending delayError timers for nested fields when their parent is cleared', async () => {
     jest.useFakeTimers();
 
     const message = 'too long.';
@@ -481,7 +485,7 @@ describe('clearErrors', () => {
     jest.useRealTimers();
   });
 
-  it('should not cancel a pending delayError timer for a field that only shares a name prefix', async () => {
+  it('not cancel a pending delayError timer for a field that only shares a name prefix', async () => {
     jest.useFakeTimers();
 
     const message = 'too long.';

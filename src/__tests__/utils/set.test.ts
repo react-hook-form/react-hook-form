@@ -1,7 +1,7 @@
 import set from '../../utils/set';
 
 describe('set', () => {
-  it('should set the correct values', () => {
+  it('set the correct values', () => {
     const test1 = { a: [{ b: { c: 3 } }] };
     set(test1, 'a[0].b.c', 4);
     expect(test1.a[0].b.c).toEqual(4);
@@ -64,7 +64,7 @@ describe('set', () => {
     });
   });
 
-  it('should not populate prototype', () => {
+  it('not populate prototype', () => {
     set({}, '__proto__[test2]', '456');
     expect(Object.prototype).toEqual({});
   });

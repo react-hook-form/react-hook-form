@@ -15,7 +15,7 @@ import { useWatch } from './useWatch';
  * ```tsx
  * <Watch
  *   control={control}
- *   name={["foo", "bar"]}
+ *   names={["foo", "bar"]}
  *   render={([foo, bar]) => <span>{foo} {bar}</span>}
  * />
  * ```
@@ -41,9 +41,9 @@ export const Watch = <
   >,
 ) =>
   props.render(
-    useWatch(props as any) as WatchRenderValue<
-      TFieldName,
-      TFieldValues,
-      TComputeValue
-    >,
+    (
+      useWatch as (
+        options: typeof props,
+      ) => WatchRenderValue<TFieldName, TFieldValues, TComputeValue>
+    )(props),
   );

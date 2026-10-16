@@ -4,7 +4,7 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import { useForm } from '../../useForm';
 
 describe('setFocus', () => {
-  it('should focus input when called after setError', async () => {
+  it('focus input when called after setError', async () => {
     const App = () => {
       const { register, setError, setFocus } = useForm({
         mode: 'onChange',
@@ -47,7 +47,7 @@ describe('setFocus', () => {
     );
   });
 
-  it('should focus the correct field', async () => {
+  it('focus the correct field', async () => {
     const Component = () => {
       const { register, setFocus } = useForm();
 
@@ -81,7 +81,7 @@ describe('setFocus', () => {
     );
   });
 
-  it('should select the field value when shouldSelect is true', async () => {
+  it('select the field value when shouldSelect is true', async () => {
     const Component = () => {
       const { register, setFocus } = useForm();
 
@@ -117,7 +117,7 @@ describe('setFocus', () => {
     );
   });
 
-  it('should work with field arrays', async () => {
+  it('work with field arrays', async () => {
     const Component = () => {
       const { register, setFocus } = useForm();
 

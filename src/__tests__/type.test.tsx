@@ -16,7 +16,7 @@ import { useForm } from '../useForm';
 import { useFormState } from '../useFormState';
 import { useWatch } from '../useWatch';
 
-test('should not throw type error with path name', () => {
+test('not throw type error with path name', () => {
   type MissingCompanyNamePath = Path<{
     test: {
       test: {
@@ -37,7 +37,7 @@ test('should not throw type error with path name', () => {
   test;
 });
 
-test('should not throw type error with optional array fields', () => {
+test('not throw type error with optional array fields', () => {
   type Thing = { id: string; name: string };
 
   interface FormData {
@@ -74,7 +74,7 @@ test('should not throw type error with optional array fields', () => {
   App;
 });
 
-test('should work with optional field with Controller', () => {
+test('work with optional field with Controller', () => {
   type FormValues = {
     firstName: string;
     lastName?: string;
@@ -108,7 +108,7 @@ test('should work with optional field with Controller', () => {
   App;
 });
 
-test('should work with useWatch return correct array types', () => {
+test('work with useWatch return correct array types', () => {
   type FormValues = {
     testString: string;
     testNumber: number;
@@ -135,7 +135,7 @@ test('should work with useWatch return correct array types', () => {
   App;
 });
 
-test('should type errors correctly with Path generic', () => {
+test('type errors correctly with Path generic', () => {
   interface InputProps<T extends FieldValues = FieldValues> {
     name: FieldPath<T>;
     register: UseFormRegister<T>;
@@ -158,7 +158,7 @@ test('should type errors correctly with Path generic', () => {
   Input;
 });
 
-test('should allow unpackedValue and deep partial unpackValue for reset', () => {
+test('allow unpackedValue and deep partial unpackValue for reset', () => {
   type Type1 = { name: string };
   type Type2 = { name: string };
 
@@ -177,7 +177,7 @@ test('should allow unpackedValue and deep partial unpackValue for reset', () => 
   Test;
 });
 
-test('should infer context type into control', () => {
+test('infer context type into control', () => {
   function App() {
     const [isValid] = React.useState(true);
     const { control } = useForm<
@@ -206,7 +206,7 @@ test('should infer context type into control', () => {
   App;
 });
 
-test('should support optional field errors', () => {
+test('support optional field errors', () => {
   type Errors = FieldErrors<{
     steps?: { action: string }[];
     foo?: {
@@ -239,7 +239,7 @@ test('should support optional field errors', () => {
   errors;
 });
 
-test('should support nullable field errors', () => {
+test('support nullable field errors', () => {
   type Errors = FieldErrors<{
     steps?: { action: string }[] | null;
     foo: {
@@ -272,7 +272,7 @@ test('should support nullable field errors', () => {
   errors;
 });
 
-test('should work with generic component path assertion', () => {
+test('work with generic component path assertion', () => {
   function App<T extends FieldValues>() {
     const { register } = useForm<T>();
     const FIELD_DATA_EXTENSION = '__data';
@@ -290,7 +290,7 @@ test('should work with generic component path assertion', () => {
   App;
 });
 
-test('should infer async default values', () => {
+test('infer async default values', () => {
   const formValues = {
     test: 'test',
     test1: {
@@ -386,7 +386,7 @@ test('should infer async default values', () => {
   App;
 });
 
-test('should work for root error type', () => {
+test('work for root error type', () => {
   const App = () => {
     const {
       setError,
@@ -422,7 +422,7 @@ test('should work for root error type', () => {
   App;
 });
 
-it('should worked for error with type or message keyword', () => {
+it('worked for error with type or message keyword', () => {
   type FormInputs = {
     object: { id: string; type: string; message: string };
   };
@@ -459,7 +459,7 @@ it('should worked for error with type or message keyword', () => {
   App;
 });
 
-test('should provide correct type for validate function with useFieldArray', () => {
+test('provide correct type for validate function with useFieldArray', () => {
   const App = () => {
     const { control } = useForm<{
       test: {
@@ -507,7 +507,7 @@ test('should provide correct type for validate function with useFieldArray', () 
   App;
 });
 
-test('should support compute function via useWatch without name prop', () => {
+test('support compute function via useWatch without name prop', () => {
   const Form = () => {
     type FormValue = {
       test: string;
@@ -538,7 +538,7 @@ test('should support compute function via useWatch without name prop', () => {
   render(<Form />);
 });
 
-test('should support compute function via useWatch with string name prop', () => {
+test('support compute function via useWatch with string name prop', () => {
   const Form = () => {
     type FormValue = {
       test: string;
@@ -562,7 +562,7 @@ test('should support compute function via useWatch with string name prop', () =>
   render(<Form />);
 });
 
-test('should support compute function via useWatch with array name prop', () => {
+test('support compute function via useWatch with array name prop', () => {
   const Form = () => {
     type FormValue = {
       test1: string;
@@ -592,7 +592,7 @@ test('should support compute function via useWatch with array name prop', () => 
   render(<Form />);
 });
 
-test('useWatch should correctly select the name from object like param', () => {
+test('useWatch correctly select the name from object like param', () => {
   const App = () => {
     const { control } = useForm<{
       test: {

@@ -10,7 +10,7 @@ export default function extractFormValues<
   >;
 
   for (const key in fieldsState) {
-    if (fieldsState.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(fieldsState, key)) {
       const fieldState = fieldsState[key];
       const fieldValue = formValues[key];
 
@@ -19,7 +19,7 @@ export default function extractFormValues<
         (isObject(fieldState) || Array.isArray(fieldState)) &&
         fieldValue
       ) {
-        values[key] = extractFormValues(fieldState, fieldValue as K);
+        values[key] = extractFormValues(fieldState, fieldValue);
       } else if (fieldsState[key]) {
         values[key] = fieldValue;
       }

@@ -13,19 +13,19 @@ describe('live', () => {
     jest.resetAllMocks();
   });
 
-  it('should return true when ref is HTMLElement and connected', () => {
+  it('return true when ref is HTMLElement and connected', () => {
     mockIsHTMLElement.mockReturnValue(true);
     const ref: Ref = { isConnected: true, name: 'mock' };
     expect(live(ref)).toBe(true);
   });
 
-  it('should return false when ref is not connected', () => {
+  it('return false when ref is not connected', () => {
     mockIsHTMLElement.mockReturnValue(true);
     const ref: Ref = { isConnected: false, name: 'mock' };
     expect(live(ref)).toBe(false);
   });
 
-  it('should return false when ref is not an HTMLElement', () => {
+  it('return false when ref is not an HTMLElement', () => {
     mockIsHTMLElement.mockReturnValue(false);
     const ref: Ref = { isConnected: false, name: 'mock' };
     expect(live(ref)).toBe(false);

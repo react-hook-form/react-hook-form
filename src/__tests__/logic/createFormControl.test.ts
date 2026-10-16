@@ -19,7 +19,21 @@ jest.mock('../../logic/getDirtyFields', () => {
 });
 
 describe('createFormControl', () => {
-  it('should keep dirtyFields reference stable when dirty fields do not change', () => {
+  it('rejects text with maxLength zero and accepts an empty value', async () => {
+    const { register, trigger, setValue, getFieldState } = createFormControl({
+      defaultValues: { text: 'x' },
+    });
+    register('text', { maxLength: 0 });
+
+    expect(await trigger('text')).toBe(false);
+    expect(getFieldState('text').error?.type).toBe('maxLength');
+
+    setValue('text', '');
+    expect(await trigger('text')).toBe(true);
+    expect(getFieldState('text').error).toBeUndefined();
+  });
+
+  it('keep dirtyFields reference stable when dirty fields do not change', () => {
     const { control, setValue, subscribe } = createFormControl<{
       a: string;
       b: string;
@@ -51,7 +65,7 @@ describe('createFormControl', () => {
     expect(dirtyFieldsRefs[3]).toBe(dirtyFieldsRefs[0]);
   });
 
-  it('should call `executeBuiltInValidation` once for a single field', async () => {
+  it('call `executeBuiltInValidation` once for a single field', async () => {
     const { register, control } = createFormControl({
       defaultValues: {
         foo: 'foo',
@@ -65,7 +79,7 @@ describe('createFormControl', () => {
     expect(isEmptyObject).toHaveBeenCalledTimes(1);
   });
 
-  it('should call `executeBuiltInValidation` twice for a field as an object with a single sub-field', async () => {
+  it('call `executeBuiltInValidation` twice for a field as an object with a single sub-field', async () => {
     const { register, control } = createFormControl({
       defaultValues: {
         foo: {
@@ -81,7 +95,7 @@ describe('createFormControl', () => {
     expect(isEmptyObject).toHaveBeenCalledTimes(2);
   });
 
-  it('should call executeBuiltInValidation the correct number of times in case the field is an array', async () => {
+  it('call executeBuiltInValidation the correct number of times in case the field is an array', async () => {
     const { register, control } = createFormControl({
       defaultValues: {
         foo: [
@@ -104,7 +118,7 @@ describe('createFormControl', () => {
     expect(isEmptyObject).toHaveBeenCalledTimes(3);
   });
 
-  it('should clear the entire internal errors state when `clearErrors()` is called without arguments', () => {
+  it('clear the entire internal errors state when `clearErrors()` is called without arguments', () => {
     const { setError, clearErrors, getFieldState, control } =
       createFormControl<{
         foo: string;
@@ -124,7 +138,7 @@ describe('createFormControl', () => {
     expect(control._formState.errors).toEqual({});
   });
 
-  it('should reuse an emitted values snapshot across values subscribers', () => {
+  it('reuse an emitted values snapshot across values subscribers', () => {
     const { control, subscribe } = createFormControl<{
       field: string;
       probe?: string;
@@ -158,7 +172,7 @@ describe('createFormControl', () => {
     expect(probeReads).toBe(0);
   });
 
-  it('should not recompute dirty fields on every change once the form is dirty', async () => {
+  it('not recompute dirty fields on every change once the form is dirty', async () => {
     const fields = Array.from({ length: 20 }, (_, index) => `field${index}`);
     const { register, subscribe } = createFormControl<Record<string, string>>({
       defaultValues: Object.fromEntries(fields.map((name) => [name, ''])),
@@ -185,7 +199,7 @@ describe('createFormControl', () => {
     expect(getDirtyFields).not.toHaveBeenCalled();
   });
 
-  it('should only copy form values for whole-form watch reads', () => {
+  it('only copy form values for whole-form watch reads', () => {
     const { control } = createFormControl<{
       field: string;
       probe?: string;
@@ -216,7 +230,7 @@ describe('createFormControl', () => {
     expect(probeReads).toBe(1);
   });
 
-  it('should not share a null prototype defaultValues object with form values', () => {
+  it('not share a null prototype defaultValues object with form values', () => {
     const defaultValues = Object.assign(Object.create(null), {
       name: '',
     }) as { name: string };
@@ -233,5 +247,42 @@ describe('createFormControl', () => {
     expect(control._defaultValues.name).toBe('');
     expect(defaultValues.name).toBe('');
     expect(control._getDirty()).toBe(true);
+  });
+
+  it('not stay dirty when defaultValues holds an empty null prototype object', () => {
+    const { control, register, setValue } = createFormControl({
+      defaultValues: { name: '', filters: Object.create(null) },
+    });
+
+    register('name');
+    control._state.mount = true;
+
+    setValue('name', 'changed');
+    setValue('name', '');
+
+    expect(control._getDirty()).toBe(false);
+  });
+
+  it('not share a defaultValues object that has a constructor key with form values', () => {
+    const defaultValues = {
+      team: { constructor: 'Ferrari', name: 'Scuderia' },
+    };
+    const { control, register, setValue, getValues, reset } = createFormControl(
+      { defaultValues },
+    );
+
+    register('team.name');
+    control._state.mount = true;
+
+    setValue('team.name', 'Maranello');
+
+    expect(getValues('team.name')).toBe('Maranello');
+    expect(control._defaultValues.team.name).toBe('Scuderia');
+    expect(defaultValues.team.name).toBe('Scuderia');
+    expect(control._getDirty()).toBe(true);
+
+    reset();
+
+    expect(getValues('team.name')).toBe('Scuderia');
   });
 });

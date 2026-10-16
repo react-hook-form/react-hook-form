@@ -15,7 +15,7 @@ describe('useFieldArray dirtyFields isolation', () => {
     mockId = 0;
   });
 
-  it('should only mark items dirty when only items field array is appended', async () => {
+  it('only mark items dirty when only items field array is appended', async () => {
     let dirtyResult = {};
     const Component = () => {
       const {
@@ -67,7 +67,7 @@ describe('useFieldArray dirtyFields isolation', () => {
     });
   });
 
-  it('should mark both name and items dirty when both are modified', async () => {
+  it('mark both name and items dirty when both are modified', async () => {
     let dirtyResult = {};
     const Component = () => {
       const {
@@ -121,7 +121,7 @@ describe('useFieldArray dirtyFields isolation', () => {
     });
   });
 
-  it('should only mark items_copy dirty when only items_copy is appended (multiple field arrays)', async () => {
+  it('only mark items_copy dirty when only items_copy is appended (multiple field arrays)', async () => {
     let dirtyResult = {};
     const Component = () => {
       const {
@@ -185,7 +185,7 @@ describe('useFieldArray dirtyFields isolation', () => {
     });
   });
 
-  it('should mark both field arrays dirty when both are appended', async () => {
+  it('mark both field arrays dirty when both are appended', async () => {
     let dirtyResult = {};
     const Component = () => {
       const {
@@ -254,7 +254,7 @@ describe('useFieldArray dirtyFields isolation', () => {
     });
   });
 
-  it('should mark name and items_copy dirty when both are modified, leaving age and items clean', async () => {
+  it('mark name and items_copy dirty when both are modified, leaving age and items clean', async () => {
     let dirtyResult = {};
     const Component = () => {
       const {
@@ -320,7 +320,7 @@ describe('useFieldArray dirtyFields isolation', () => {
     });
   });
 
-  it('should not mark unrelated fields dirty with nested field array path', async () => {
+  it('not mark unrelated fields dirty with nested field array path', async () => {
     let dirtyResult = {};
     const Component = () => {
       const {
@@ -386,7 +386,7 @@ describe('useFieldArray dirtyFields isolation', () => {
     });
   });
 
-  it('should not mark unrelated fields dirty after remove operation', async () => {
+  it('not mark unrelated fields dirty after remove operation', async () => {
     let dirtyResult = {};
     const Component = () => {
       const {
@@ -438,7 +438,7 @@ describe('useFieldArray dirtyFields isolation', () => {
     });
   });
 
-  it('should preserve name dirty state after append then remove reverts array', async () => {
+  it('preserve name dirty state after append then remove reverts array', async () => {
     let dirtyResult = {};
     const Component = () => {
       const {
@@ -501,7 +501,7 @@ describe('useFieldArray dirtyFields isolation', () => {
     });
   });
 
-  it('should not pollute unrelated fields after multiple appends', async () => {
+  it('not pollute unrelated fields after multiple appends', async () => {
     let dirtyResult = {};
     const Component = () => {
       const {
@@ -560,7 +560,7 @@ describe('useFieldArray dirtyFields isolation', () => {
     });
   });
 
-  it('should isolate dirty state in large forms with many fields', async () => {
+  it('isolate dirty state in large forms with many fields', async () => {
     let dirtyResult = {};
     const Component = () => {
       const {
@@ -622,7 +622,7 @@ describe('useFieldArray dirtyFields isolation', () => {
     });
   });
 
-  it('should only update root branch when nested useFieldArray with indexed name is appended', async () => {
+  it('only update root branch when nested useFieldArray with indexed name is appended', async () => {
     let dirtyResult = {};
     const Component = () => {
       const {
@@ -710,7 +710,7 @@ describe('useFieldArray dirtyFields isolation', () => {
     });
   });
 
-  it('should not mark unrelated fields dirty when using setValue with shouldDirty on a field array', async () => {
+  it('not mark unrelated fields dirty when using setValue with shouldDirty on a field array', async () => {
     let dirtyResult = {};
     const Component = () => {
       const {
@@ -768,7 +768,7 @@ describe('useFieldArray dirtyFields isolation', () => {
     });
   });
 
-  it('should preserve other dirty fields when using setValue with shouldDirty on a field array', async () => {
+  it('preserve other dirty fields when using setValue with shouldDirty on a field array', async () => {
     let dirtyResult = {};
     const Component = () => {
       const {
@@ -832,7 +832,7 @@ describe('useFieldArray dirtyFields isolation', () => {
     });
   });
 
-  it('should revalidate dirty fields when dirty flag is not match field level dirty', async () => {
+  it('revalidate dirty fields when dirty flag is not match field level dirty', async () => {
     function App() {
       const { register, handleSubmit, formState, setValue } = useForm({
         defaultValues: {

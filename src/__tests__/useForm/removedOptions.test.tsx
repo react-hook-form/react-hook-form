@@ -75,4 +75,32 @@ describe('useForm options removed on re-render', () => {
 
     expect(validate).not.toHaveBeenCalled();
   });
+
+  it('should stop emitting progressive enhancement attributes when progressive is no longer passed', () => {
+    let setUseProgressive: (value: boolean) => void = () => {};
+
+    const App = () => {
+      const [useProgressive, setState] = React.useState(true);
+      setUseProgressive = setState;
+      const { register } = useForm<{ test: string }>(
+        useProgressive ? { progressive: true } : {},
+      );
+
+      return (
+        <input
+          {...register('test', {
+            required: true,
+          })}
+        />
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByRole('textbox')).toBeRequired();
+
+    act(() => setUseProgressive(false));
+
+    expect(screen.getByRole('textbox')).not.toBeRequired();
+  });
 });

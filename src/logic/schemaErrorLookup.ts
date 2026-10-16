@@ -9,7 +9,7 @@ export default function schemaErrorLookup<T extends FieldValues = FieldValues>(
   error?: FieldError;
   name: string;
 } {
-  const error = get(errors, name);
+  const error: FieldError | undefined = get(errors, name);
 
   if ((error && (error.type || error.message)) || Array.isArray(error)) {
     return {
@@ -23,7 +23,10 @@ export default function schemaErrorLookup<T extends FieldValues = FieldValues>(
   while (names.length) {
     const fieldName = names.join('.');
     const field = get(_fields, fieldName);
-    const foundError = get(errors, fieldName);
+    const foundError: (FieldError & { root?: FieldError }) | undefined = get(
+      errors,
+      fieldName,
+    );
 
     if (field && !Array.isArray(field) && name !== fieldName) {
       return { name };
