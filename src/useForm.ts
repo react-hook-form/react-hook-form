@@ -56,6 +56,7 @@ export function useForm<
   const _values = React.useRef<typeof props.values>(undefined);
   const _formControlProp = React.useRef(props.formControl);
   const _hadValidate = React.useRef(!!props.validate);
+  const _hadDisabled = React.useRef(!!props.disabled);
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>(
     () => ({
       ...cloneObject(DEFAULT_FORM_STATE),
@@ -103,6 +104,10 @@ export function useForm<
     }
   }
 
+  if (_hadDisabled.current && !props.disabled) {
+    removedOptions.disabled = false;
+  }
+
   control._options = {
     ...removedOptions,
     ...props,
@@ -146,10 +151,12 @@ export function useForm<
     };
   }, [control, resyncIfNeeded, snapshot]);
 
-  React.useEffect(
-    () => control._disableForm(props.disabled),
-    [control, props.disabled],
-  );
+  React.useEffect(() => {
+    control._disableForm(
+      _hadDisabled.current && !props.disabled ? false : props.disabled,
+    );
+    _hadDisabled.current = !!props.disabled;
+  }, [control, props.disabled]);
 
   React.useEffect(() => {
     if (props.mode) {

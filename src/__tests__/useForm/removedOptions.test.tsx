@@ -7,6 +7,8 @@ import {
   waitFor,
 } from '@testing-library/react';
 
+import { Controller } from '../../controller';
+import { createFormControl } from '../../logic/createFormControl';
 import { useForm } from '../../useForm';
 
 describe('useForm options removed on re-render', () => {
@@ -102,5 +104,102 @@ describe('useForm options removed on re-render', () => {
     act(() => setUseProgressive(false));
 
     expect(screen.getByRole('textbox')).not.toBeRequired();
+  });
+
+  it('should re-enable the form when disabled is no longer passed', async () => {
+    const onSubmit = jest.fn();
+    let setUseDisabled: (value: boolean) => void = () => {};
+
+    const App = () => {
+      const [useDisabled, setState] = React.useState(true);
+      setUseDisabled = setState;
+      const { register, control, handleSubmit, formState } = useForm<{
+        native: string;
+        controlled: string;
+      }>({
+        defaultValues: { native: 'a', controlled: 'b' },
+        ...(useDisabled ? { disabled: true } : {}),
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <input aria-label="native" {...register('native')} />
+          <Controller
+            control={control}
+            name="controlled"
+            render={({ field }) => <input aria-label="controlled" {...field} />}
+          />
+          <p>{formState.disabled ? 'disabled' : 'enabled'}</p>
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByRole('textbox', { name: 'native' })).toBeDisabled();
+    expect(screen.getByRole('textbox', { name: 'controlled' })).toBeDisabled();
+
+    act(() => setUseDisabled(false));
+
+    expect(screen.getByRole('textbox', { name: 'native' })).toBeEnabled();
+    expect(screen.getByRole('textbox', { name: 'controlled' })).toBeEnabled();
+    expect(screen.getByText('enabled')).toBeVisible();
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(
+        { native: 'a', controlled: 'b' },
+        expect.anything(),
+      ),
+    );
+  });
+
+  it('should keep a field disabled by its own option when disabled is no longer passed', () => {
+    let setUseDisabled: (value: boolean) => void = () => {};
+
+    const App = () => {
+      const [useDisabled, setState] = React.useState(true);
+      setUseDisabled = setState;
+      const { register } = useForm<{ locked: string; open: string }>(
+        useDisabled ? { disabled: true } : {},
+      );
+
+      return (
+        <>
+          <input
+            aria-label="locked"
+            {...register('locked', { disabled: true })}
+          />
+          <input aria-label="open" {...register('open')} />
+        </>
+      );
+    };
+
+    render(<App />);
+
+    act(() => setUseDisabled(false));
+
+    expect(screen.getByRole('textbox', { name: 'locked' })).toBeDisabled();
+    expect(screen.getByRole('textbox', { name: 'open' })).toBeEnabled();
+  });
+
+  it('should not re-enable a formControl created with disabled on re-render', () => {
+    const { formControl } = createFormControl<{ test: string }>({
+      disabled: true,
+    });
+
+    const App = () => {
+      const { register } = useForm({ formControl });
+
+      return <input aria-label="test" {...register('test')} />;
+    };
+
+    const { rerender } = render(<App />);
+
+    rerender(<App />);
+
+    expect(screen.getByRole('textbox', { name: 'test' })).toBeDisabled();
   });
 });
