@@ -147,7 +147,7 @@ export const DEFAULT_FORM_STATE = {
 
 export function createFormControl<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
+  TContext = unknown,
   TTransformedValues = TFieldValues,
 >(
   props: UseFormProps<TFieldValues, TContext, TTransformedValues> = {},
@@ -1324,7 +1324,7 @@ export function createFormControl<
 
   const onChange: ChangeHandler = async (event) => {
     _state.mount = true;
-    const target = event.target;
+    const target = event.target as HTMLInputElement;
     let name: string = target.name;
     let isFieldValueUpdated = true;
     const field: Field = get(_fields, name);
@@ -1382,7 +1382,7 @@ export function createFormControl<
       !isBlurEvent &&
         _subjects.state.next({
           name,
-          type: event.type,
+          type: event.type as EventType,
           ...(_hasValuesSubscriber(name)
             ? { values: cloneObject(_formValues) }
             : {}),
@@ -1411,7 +1411,7 @@ export function createFormControl<
       if (!_options.resolver && _options.validate) {
         await validateForm({
           name: name as FieldPath<TFieldValues>,
-          eventType: event.type,
+          eventType: event.type as ValidateFormEventType,
         });
       }
 
@@ -1478,7 +1478,7 @@ export function createFormControl<
               fields: _fields,
               onlyCheckValid: true,
               name: name as FieldPath<TFieldValues>,
-              eventType: event.type,
+              eventType: event.type as ValidateFormEventType,
             });
 
             if (resetCallId !== _resetCallId) {
@@ -1946,7 +1946,9 @@ export function createFormControl<
       name,
       onChange,
       onBlur: onChange,
-      ref: (ref: HTMLInputElement | null): void => {
+      ref: (instance: unknown): void => {
+        const ref = instance as HTMLInputElement | null;
+
         if (ref) {
           _names.registerName.add(name);
           register(name, options);

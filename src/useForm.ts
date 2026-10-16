@@ -46,7 +46,7 @@ const RESET_OPTIONS = {
  */
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
+  TContext = unknown,
   TTransformedValues = TFieldValues,
 >(
   props: UseFormProps<TFieldValues, TContext, TTransformedValues> = {},

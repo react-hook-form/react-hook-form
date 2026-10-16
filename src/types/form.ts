@@ -24,7 +24,7 @@ import type {
   FieldPathValues,
 } from './path';
 import type { Resolver } from './resolvers';
-import type { DeepMap, DeepPartial, Noop } from './utils';
+import type { BivariantCallback, DeepMap, DeepPartial, Noop } from './utils';
 import type { RegisterOptions, ValidateForm } from './validator';
 
 declare const $NestedValue: unique symbol;
@@ -98,8 +98,8 @@ export type ResetFieldConfig<
 }>;
 
 export type ChangeHandler = (event: {
-  target: any;
-  type?: any;
+  target: unknown;
+  type?: unknown;
 }) => Promise<void | boolean>;
 
 export type DelayCallback = (wait: number) => void;
@@ -110,7 +110,7 @@ type AsyncDefaultValues<TFieldValues> = (
 
 export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
+  TContext = unknown,
   TTransformedValues = TFieldValues,
 > = Partial<{
   mode: Mode;
@@ -193,7 +193,7 @@ export type KeepStateOptions = Partial<{
 export type SetFieldValue<TFieldValues extends FieldValues> =
   FieldValue<TFieldValues>;
 
-export type RefCallBack = (instance: any) => void;
+export type RefCallBack = BivariantCallback<[instance: unknown]>;
 
 export type UseFormRegisterReturn<
   TFieldName extends InternalFieldName = InternalFieldName,
@@ -939,7 +939,7 @@ export type FromSubscribe<TFieldValues extends FieldValues> = <
 
 export type Control<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
+  TContext = unknown,
   TTransformedValues = TFieldValues,
 > = {
   _subjects: Subjects<TFieldValues>;
@@ -988,7 +988,7 @@ export type Control<
 
 export type UseFormReturn<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
+  TContext = unknown,
   TTransformedValues = TFieldValues,
 > = {
   watch: UseFormWatch<TFieldValues>;
@@ -1016,7 +1016,7 @@ export type UseFormStateProps<
   TFieldValues extends FieldValues,
   TTransformedValues = TFieldValues,
 > = Partial<{
-  control?: Control<TFieldValues, any, TTransformedValues>;
+  control?: Control<TFieldValues, unknown, TTransformedValues>;
   disabled?: boolean;
   name?:
     | FieldPath<TFieldValues>
@@ -1030,7 +1030,7 @@ export type UseFormStateReturn<TFieldValues extends FieldValues> =
 
 export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
+  TContext = unknown,
   TTransformedValues = TFieldValues,
 > = {
   children: React.ReactNode | React.ReactNode[];
@@ -1041,7 +1041,7 @@ export type FormProps<
   TTransformedValues = TFieldValues,
 > = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError' | 'onSubmit'> &
   Partial<{
-    control: Control<TFieldValues, any, TTransformedValues>;
+    control: Control<TFieldValues, unknown, TTransformedValues>;
     headers: Record<string, string>;
     validateStatus: (status: number) => boolean;
     onError: ({
