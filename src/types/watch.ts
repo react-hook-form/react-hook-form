@@ -51,7 +51,7 @@ export type WatchRenderValue<
 export type WatchProps<
   TFieldName extends WatchName<TFieldValues>,
   TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
+  TContext = unknown,
   TTransformedValues = TFieldValues,
   TComputeValue = undefined,
 > = {

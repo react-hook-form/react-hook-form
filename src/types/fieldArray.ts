@@ -10,7 +10,7 @@ export type UseFieldArrayProps<
   TTransformedValues = TFieldValues,
 > = {
   name: TFieldArrayName;
-  control?: Control<TFieldValues, any, TTransformedValues>;
+  control?: Control<TFieldValues, unknown, TTransformedValues>;
   rules?: {
     validate?:
       | Validate<FieldArray<TFieldValues, TFieldArrayName>[], TFieldValues>

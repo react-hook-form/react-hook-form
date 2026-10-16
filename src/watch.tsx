@@ -28,7 +28,7 @@ export const Watch = <
     | FieldPath<TFieldValues>[]
     | readonly FieldPath<TFieldValues>[]
     | undefined = undefined,
-  TContext = any,
+  TContext = unknown,
   TTransformedValues = TFieldValues,
   TComputeValue = undefined,
 >(
