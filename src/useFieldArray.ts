@@ -90,7 +90,7 @@ export function useFieldArray<
   );
 
   const _actioned = React.useRef(false);
-  const _validateCallId = React.useRef(0);
+  const _validatedValues = React.useRef<unknown>(undefined);
 
   const { resyncIfNeeded, snapshot } =
     useResyncOnReconnect(getCurrentFieldArray);
@@ -140,7 +140,6 @@ export function useFieldArray<
         values?: FieldValues;
         name?: InternalFieldName;
       }) => {
-        !fieldArrayName && _validateCallId.current++;
         if (fieldArrayName === name || !fieldArrayName) {
           const fieldValues = get(values, name);
           if (Array.isArray(fieldValues)) {
@@ -390,11 +389,17 @@ export function useFieldArray<
       (!validationModes.isOnBlur ||
         (control._formState.isSubmitted && reValidateModes.isOnChange))
     ) {
-      const callId = ++_validateCallId.current;
+      const fieldArrayValues = (_validatedValues.current = get(
+        control._formValues,
+        name,
+      ));
       if (control._options.resolver) {
         control._runSchema([name]).then((result) => {
+          if (fieldArrayValues !== _validatedValues.current) {
+            return;
+          }
           control._updateIsValidating([name]);
-          if (callId !== _validateCallId.current) {
+          if (fieldArrayValues !== get(control._formValues, name)) {
             return;
           }
           const error: FieldError | undefined = get(result.errors, name);
@@ -447,7 +452,7 @@ export function useFieldArray<
             control._options.shouldUseNativeValidation,
             true,
           ).then((error) => {
-            if (callId !== _validateCallId.current) {
+            if (fieldArrayValues !== get(control._formValues, name)) {
               return;
             }
             if (!isEmptyObject(error)) {
