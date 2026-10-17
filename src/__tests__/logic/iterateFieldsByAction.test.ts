@@ -1,7 +1,7 @@
 import iterateFieldsByAction from '../../logic/iterateFieldsByAction';
 
 describe('iterateFieldsByAction', () => {
-  it('should focus on the first error it encounter', () => {
+  it('focus on the first error it encounter', () => {
     const focus = jest.fn();
     iterateFieldsByAction(
       {
@@ -24,7 +24,7 @@ describe('iterateFieldsByAction', () => {
     expect(focus).toHaveBeenCalled();
   });
 
-  it('should focus on first option when options input error encounters', () => {
+  it('focus on first option when options input error encounters', () => {
     const focus = jest.fn();
     iterateFieldsByAction(
       {
@@ -51,7 +51,7 @@ describe('iterateFieldsByAction', () => {
     expect(focus).toHaveBeenCalled();
   });
 
-  it('should not call focus when field is undefined', () => {
+  it('not call focus when field is undefined', () => {
     expect(() => {
       iterateFieldsByAction(
         {
@@ -65,7 +65,7 @@ describe('iterateFieldsByAction', () => {
     }).not.toThrow();
   });
 
-  it('should focus on the first error it encounter and not the second', () => {
+  it('focus on the first error it encounter and not the second', () => {
     const focus = jest.fn();
     iterateFieldsByAction(
       {
@@ -98,7 +98,7 @@ describe('iterateFieldsByAction', () => {
     expect(focus).not.toHaveBeenCalledWith('second');
   });
 
-  it('should recursively drill into objects', () => {
+  it('recursively drill into objects', () => {
     const focus = jest.fn();
     iterateFieldsByAction(
       {
@@ -138,7 +138,7 @@ describe('iterateFieldsByAction', () => {
     expect(focus).toHaveBeenCalledWith('last');
   });
 
-  it('should recursively drill into objects and break out of all loops on first focus', () => {
+  it('recursively drill into objects and break out of all loops on first focus', () => {
     const focus = jest.fn();
     const notFocus = jest.fn();
     iterateFieldsByAction(
@@ -204,7 +204,7 @@ describe('iterateFieldsByAction', () => {
     expect(notFocus).not.toHaveBeenCalledWith('line1');
   });
 
-  it('should break out of all loops when the match is nested below a sibling top-level group', () => {
+  it('break out of all loops when the match is nested below a sibling top-level group', () => {
     const focus = jest.fn();
     const notFocus = jest.fn();
     iterateFieldsByAction(

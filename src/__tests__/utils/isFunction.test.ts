@@ -1,7 +1,7 @@
 import isFunction from '../../utils/isFunction';
 
 describe('isFunction', () => {
-  it('should return true when value is a function', () => {
+  it('return true when value is a function', () => {
     expect(isFunction(() => null)).toBeTruthy();
     expect(
       isFunction(function foo() {
@@ -10,7 +10,7 @@ describe('isFunction', () => {
     ).toBeTruthy();
   });
 
-  it('should return false when value is not a function', () => {
+  it('return false when value is not a function', () => {
     expect(isFunction(null)).toBeFalsy();
     expect(isFunction(undefined)).toBeFalsy();
     expect(isFunction(-1)).toBeFalsy();

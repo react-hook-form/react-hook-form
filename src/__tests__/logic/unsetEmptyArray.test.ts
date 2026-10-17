@@ -13,7 +13,7 @@ describe('unsetEmptyArray', () => {
     mockedUnset.mockClear();
   });
 
-  it('should call unset when the array is empty', () => {
+  it('call unset when the array is empty', () => {
     const ref = { foo: [] as unknown[] };
 
     unsetEmptyArray(ref, 'foo');
@@ -21,7 +21,7 @@ describe('unsetEmptyArray', () => {
     expect(mockedUnset).toHaveBeenCalledWith(ref, 'foo');
   });
 
-  it('should not call unset when the array is not empty', () => {
+  it('not call unset when the array is not empty', () => {
     const ref = { foo: ['data'] };
 
     unsetEmptyArray(ref, 'foo');

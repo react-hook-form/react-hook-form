@@ -1,14 +1,14 @@
 import getRadioValue from '../../logic/getRadioValue';
 
 describe('getRadioValue', () => {
-  it('should return default value if not valid or empty options', () => {
+  it('return default value if not valid or empty options', () => {
     expect(getRadioValue(undefined)).toEqual({
       isValid: false,
       value: null,
     });
   });
 
-  it('should return valid to true when value found', () => {
+  it('return valid to true when value found', () => {
     expect(
       getRadioValue([
         { name: 'bill', checked: false, value: '1' } as HTMLInputElement,
@@ -20,7 +20,7 @@ describe('getRadioValue', () => {
     });
   });
 
-  it('should return disabled input correctly', () => {
+  it('return disabled input correctly', () => {
     expect(
       getRadioValue([
         {

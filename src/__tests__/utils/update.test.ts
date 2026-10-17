@@ -1,7 +1,7 @@
 import update from '../../utils/update';
 
 describe('update', () => {
-  it('should update element at index and mutate original array', () => {
+  it('update element at index and mutate original array', () => {
     const data = [1, 2, 3];
     const result = update(data, 1, 99);
 
@@ -9,7 +9,7 @@ describe('update', () => {
     expect(result).toBe(data);
   });
 
-  it('should work with object arrays', () => {
+  it('work with object arrays', () => {
     const data = [
       {
         firstName: '1',
@@ -31,7 +31,7 @@ describe('update', () => {
     });
   });
 
-  it('should update with falsy values', () => {
+  it('update with falsy values', () => {
     expect(update([1, 2, 3], 1, 0)).toEqual([1, 0, 3]);
     expect(update([true, true, true] as boolean[], 1, false)).toEqual([
       true,

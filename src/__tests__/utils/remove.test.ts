@@ -1,7 +1,7 @@
 import remove from '../../utils/remove';
 
 describe('remove', () => {
-  it('should remove item accordingly', () => {
+  it('remove item accordingly', () => {
     expect(
       remove([, , { type: 'required', message: '', ref: 'test' }], 1),
     ).toEqual([undefined, { type: 'required', message: '', ref: 'test' }]);
@@ -58,7 +58,7 @@ describe('remove', () => {
     ).toEqual([0, 1, 2, 3, 4, 5]);
   });
 
-  it('should remove correctly with indexes which contains gap', () => {
+  it('remove correctly with indexes which contains gap', () => {
     expect(
       remove(
         [
@@ -83,7 +83,7 @@ describe('remove', () => {
     ]);
   });
 
-  it('should remove all items', () => {
+  it('remove all items', () => {
     expect(
       remove(
         [
@@ -138,12 +138,12 @@ describe('remove', () => {
     ).toEqual([]);
   });
 
-  it('should ignore duplicated indexes', () => {
+  it('ignore duplicated indexes', () => {
     expect(remove(['a', 'b', 'c', 'd'], [1, 1])).toEqual(['a', 'c', 'd']);
     expect(remove(['a', 'b', 'c', 'd'], [3, 1, 3, 1])).toEqual(['a', 'c']);
   });
 
-  it('should not change the indexes passed in', () => {
+  it('not change the indexes passed in', () => {
     const indexes = [3, 1];
 
     remove(['a', 'b', 'c', 'd'], indexes);

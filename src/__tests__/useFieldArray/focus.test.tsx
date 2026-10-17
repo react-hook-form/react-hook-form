@@ -6,7 +6,7 @@ import { useForm } from '../../useForm';
 import noop from '../../utils/noop';
 
 describe('useFieldArray focus', () => {
-  it('should not focus any element when shouldFocus is set to false', () => {
+  it('not focus any element when shouldFocus is set to false', () => {
     const Component = () => {
       const { register, control } = useForm<{
         test: { value: string }[];
@@ -58,7 +58,7 @@ describe('useFieldArray focus', () => {
     expect(document.activeElement).toEqual(document.body);
   });
 
-  it('should focus on the precise input index', () => {
+  it('focus on the precise input index', () => {
     function App() {
       const { register, handleSubmit, control } = useForm({
         defaultValues: {
@@ -102,7 +102,7 @@ describe('useFieldArray focus', () => {
     expect(document.activeElement).toEqual(screen.getAllByRole('textbox')[1]);
   });
 
-  it('should focus correct field array by focus index', () => {
+  it('focus correct field array by focus index', () => {
     const Component = () => {
       const { register, control } = useForm<{
         test: { value: string }[];
@@ -158,7 +158,7 @@ describe('useFieldArray focus', () => {
     expect(document.activeElement).toEqual(screen.getAllByRole('textbox')[0]);
   });
 
-  it('should focus correct field array by focus name', () => {
+  it('focus correct field array by focus name', () => {
     const Component = () => {
       const { register, control } = useForm<{
         test: { value: string }[];
@@ -218,7 +218,7 @@ describe('useFieldArray focus', () => {
     expect(document.activeElement).toEqual(screen.getAllByRole('textbox')[0]);
   });
 
-  it('should focus on a checkbox input of the appended field', () => {
+  it('focus on a checkbox input of the appended field', () => {
     const Component = () => {
       const { register, control } = useForm<{
         test: { checked: boolean }[];

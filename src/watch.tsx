@@ -28,7 +28,7 @@ export const Watch = <
     | FieldPath<TFieldValues>[]
     | readonly FieldPath<TFieldValues>[]
     | undefined = undefined,
-  TContext = any,
+  TContext = unknown,
   TTransformedValues = TFieldValues,
   TComputeValue = undefined,
 >(
@@ -41,9 +41,9 @@ export const Watch = <
   >,
 ) =>
   props.render(
-    useWatch(props as any) as WatchRenderValue<
-      TFieldName,
-      TFieldValues,
-      TComputeValue
-    >,
+    (
+      useWatch as (
+        options: typeof props,
+      ) => WatchRenderValue<TFieldName, TFieldValues, TComputeValue>
+    )(props),
   );

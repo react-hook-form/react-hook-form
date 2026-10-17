@@ -1,7 +1,7 @@
 import schemaErrorLookup from '../../logic/schemaErrorLookup';
 
 describe('errorsLookup', () => {
-  it('should be able to look up the error', () => {
+  it('be able to look up the error', () => {
     expect(
       schemaErrorLookup<{
         test: {
@@ -105,7 +105,7 @@ describe('errorsLookup', () => {
     });
   });
 
-  it('should return undefined when not found', () => {
+  it('return undefined when not found', () => {
     expect(
       schemaErrorLookup(
         {
@@ -161,7 +161,7 @@ describe('errorsLookup', () => {
     });
   });
 
-  it('should prevent error from reported when field is identified', () => {
+  it('prevent error from reported when field is identified', () => {
     expect(
       schemaErrorLookup<{
         test: {
@@ -233,7 +233,7 @@ describe('errorsLookup', () => {
     });
   });
 
-  it('should find the nearest root error', () => {
+  it('find the nearest root error', () => {
     const errors = {
       test: {
         0: {
@@ -280,7 +280,7 @@ describe('errorsLookup', () => {
     });
   });
 
-  it('should not report a nested error container as the exact-name field error', () => {
+  it('not report a nested error container as the exact-name field error', () => {
     expect(
       schemaErrorLookup<{ test: { nested: string } }>(
         {
@@ -299,7 +299,7 @@ describe('errorsLookup', () => {
     });
   });
 
-  it('should resolve an exact-name root error to the .root path', () => {
+  it('resolve an exact-name root error to the .root path', () => {
     expect(
       schemaErrorLookup<{ test: string[] }>(
         {

@@ -1,7 +1,7 @@
 import isWatched from '../../logic/isWatched';
 
 describe('isWatched', () => {
-  it('should return watched fields', () => {
+  it('return watched fields', () => {
     expect(
       isWatched('', {
         registerName: new Set(),
@@ -29,7 +29,7 @@ describe('isWatched', () => {
     ).toBeTruthy();
   });
 
-  it('should return true when watched with parent node', () => {
+  it('return true when watched with parent node', () => {
     expect(
       isWatched('test.test', {
         registerName: new Set(),
@@ -96,7 +96,7 @@ describe('isWatched', () => {
     ).toBeTruthy();
   });
 
-  it("should return false when watched with parent node that doesn't match child name", () => {
+  it("return false when watched with parent node that doesn't match child name", () => {
     expect(
       isWatched('test.test.test', {
         registerName: new Set(),
@@ -167,7 +167,7 @@ describe('isWatched', () => {
     ).toBeFalsy();
   });
 
-  it('should return falsy for blur event', () => {
+  it('return falsy for blur event', () => {
     expect(
       isWatched(
         '',

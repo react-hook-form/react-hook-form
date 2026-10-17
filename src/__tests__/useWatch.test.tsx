@@ -40,7 +40,7 @@ describe('useWatch', () => {
     mockId = 0;
   });
 
-  it('should return default value in useForm', () => {
+  it('return default value in useForm', () => {
     let method;
     let watched;
     const Component = () => {
@@ -53,7 +53,7 @@ describe('useWatch', () => {
     expect(watched).toEqual({ test: 'test' });
   });
 
-  it('should return default value in useWatch', () => {
+  it('return default value in useWatch', () => {
     const { result } = renderHook(() => {
       const { control } = useForm<{ test: string }>({
         defaultValues: {
@@ -69,7 +69,7 @@ describe('useWatch', () => {
     expect(result.current).toEqual('test');
   });
 
-  it('should return default value for single input', () => {
+  it('return default value for single input', () => {
     const { result } = renderHook(() => {
       const { control } = useForm<{ test: string; test1: string }>({
         defaultValues: {
@@ -86,7 +86,7 @@ describe('useWatch', () => {
     expect(result.current).toEqual('test');
   });
 
-  it('should return default values for array of inputs', () => {
+  it('return default values for array of inputs', () => {
     const { result } = renderHook(() => {
       const { control } = useForm<{ test: string; test1: string }>({
         defaultValues: {
@@ -103,7 +103,7 @@ describe('useWatch', () => {
     expect(result.current).toEqual(['test', 'test1']);
   });
 
-  it('should return own default value for single input', () => {
+  it('return own default value for single input', () => {
     const { result } = renderHook(() => {
       const { control } = useForm<{ test: string; test1: string }>({});
       return useWatch({
@@ -116,7 +116,7 @@ describe('useWatch', () => {
     expect(result.current).toEqual('test');
   });
 
-  it('should prefer the form default value over its own default value for single input', () => {
+  it('prefer the form default value over its own default value for single input', () => {
     const { result } = renderHook(() => {
       const { control } = useForm<{ test: string }>({
         defaultValues: {
@@ -133,7 +133,7 @@ describe('useWatch', () => {
     expect(result.current).toEqual('form default');
   });
 
-  it('should return own default value for array of inputs', () => {
+  it('return own default value for array of inputs', () => {
     const { result } = renderHook(() => {
       const { control } = useForm<{ test: string; test1: string }>({});
       return useWatch({
@@ -149,7 +149,7 @@ describe('useWatch', () => {
     expect(result.current).toEqual(['test', 'test1']);
   });
 
-  it('should prefer the form default values over its own default value for array of inputs', () => {
+  it('prefer the form default values over its own default value for array of inputs', () => {
     const { result } = renderHook(() => {
       const { control } = useForm<{ test: string; test1: string }>({
         defaultValues: {
@@ -169,7 +169,7 @@ describe('useWatch', () => {
     expect(result.current).toEqual(['form default', 'form default1']);
   });
 
-  it('should keep its own default value for array of inputs after a value change', async () => {
+  it('keep its own default value for array of inputs after a value change', async () => {
     const Form = () => {
       const { control, setValue } = useForm<{ test: string; test1: string }>(
         {},
@@ -197,7 +197,7 @@ describe('useWatch', () => {
     });
   });
 
-  it('should return default value when name is undefined', () => {
+  it('return default value when name is undefined', () => {
     const { result } = renderHook(() => {
       const { control } = useForm<{ test: string; test1: string }>({
         defaultValues: {
@@ -213,7 +213,7 @@ describe('useWatch', () => {
     expect(result.current).toEqual({ test: 'test', test1: 'test1' });
   });
 
-  it('should return empty array when watch array fields', () => {
+  it('return empty array when watch array fields', () => {
     const { result } = renderHook(() => {
       const { control } = useForm<{ test: string }>();
       return useWatch({
@@ -225,7 +225,7 @@ describe('useWatch', () => {
     expect(result.current).toEqual([undefined]);
   });
 
-  it('should return undefined', () => {
+  it('return undefined', () => {
     const { result } = renderHook(() => {
       const { control } = useForm<{ test: string }>();
       return useWatch({
@@ -237,7 +237,7 @@ describe('useWatch', () => {
     expect(result.current).toBeUndefined();
   });
 
-  it('should render with FormProvider', () => {
+  it('render with FormProvider', () => {
     const Provider = ({ children }: { children: React.ReactNode }) => {
       const methods = useForm<{ test: string }>();
       return <FormProvider {...methods}>{children}</FormProvider>;
@@ -249,7 +249,7 @@ describe('useWatch', () => {
     ).not.toThrow();
   });
 
-  it('should remove input with shouldUnregister: true and deeply nested', async () => {
+  it('remove input with shouldUnregister: true and deeply nested', async () => {
     type FormValue = {
       test: string;
     };
@@ -302,7 +302,7 @@ describe('useWatch', () => {
     expect(submitData).toEqual({});
   });
 
-  it('should return defaultValue with shouldUnregister set to true and keepDefaultValues', () => {
+  it('return defaultValue with shouldUnregister set to true and keepDefaultValues', () => {
     const output: unknown[] = [];
 
     function App() {
@@ -347,7 +347,7 @@ describe('useWatch', () => {
     ]);
   });
 
-  it('should subscribe to exact input change', () => {
+  it('subscribe to exact input change', () => {
     const App = () => {
       const { control, register } = useForm();
       const value = useWatch({
@@ -376,7 +376,7 @@ describe('useWatch', () => {
     expect(screen.getByText('test')).toBeVisible();
   });
 
-  it('should return root object subscription', () => {
+  it('return root object subscription', () => {
     function App() {
       const { register, control } = useForm({
         defaultValues: { field: { firstName: 'value' } },
@@ -417,7 +417,7 @@ describe('useWatch', () => {
   });
 
   describe('when disabled prop is used', () => {
-    it('should be able to disabled subscription and started with true', async () => {
+    it('be able to disabled subscription and started with true', async () => {
       type FormValues = {
         test: string;
       };
@@ -495,7 +495,7 @@ describe('useWatch', () => {
       expect(screen.getByText('what12345')).toBeVisible();
     });
 
-    it('should be able to toggle the subscription and started with false', async () => {
+    it('be able to toggle the subscription and started with false', async () => {
       type FormValues = {
         test: string;
       };
@@ -565,7 +565,7 @@ describe('useWatch', () => {
   });
 
   describe('update', () => {
-    it('should partial re-render', async () => {
+    it('partial re-render', async () => {
       type FormInputs = {
         child: string;
         parent: string;
@@ -630,7 +630,7 @@ describe('useWatch', () => {
       expect(childCount).toBe(1);
     });
 
-    it('should partial re-render with array name and exact option', async () => {
+    it('partial re-render with array name and exact option', async () => {
       type FormInputs = {
         child: string;
         childSecond: string;
@@ -723,7 +723,7 @@ describe('useWatch', () => {
       expect(childSecondCount).toBe(1);
     });
 
-    it('should not re-render useWatch when submit does not change watched values', async () => {
+    it('not re-render useWatch when submit does not change watched values', async () => {
       type FormInputs = {
         firstName: string;
       };
@@ -767,7 +767,7 @@ describe('useWatch', () => {
       expect(watchCount).toBe(0);
     });
 
-    it('should only subscribe change at useWatch level instead of useForm', () => {
+    it('only subscribe change at useWatch level instead of useForm', () => {
       type FormValues = {
         test: string;
         test1: string;
@@ -826,7 +826,7 @@ describe('useWatch', () => {
       expect(childRenderCount).toEqual(5);
     });
 
-    it("should not re-render external component when field name don't match", async () => {
+    it("not re-render external component when field name don't match", async () => {
       type FormInputs = { test1: string; test2: string };
 
       const Child = ({ control }: { control: Control<FormInputs> }) => {
@@ -858,7 +858,7 @@ describe('useWatch', () => {
       });
     });
 
-    it('should not throw error when null or undefined is set', () => {
+    it('not throw error when null or undefined is set', () => {
       const watchedValue: Record<string, any> = {};
       const Component = () => {
         const { register, control } = useForm<{
@@ -880,7 +880,7 @@ describe('useWatch', () => {
       expect(watchedValue).toEqual({ test: undefined, test1: undefined });
     });
 
-    it('should return undefined when input gets unregistered', async () => {
+    it('return undefined when input gets unregistered', async () => {
       const Component = () => {
         const { register, control, unregister } = useForm<{ test: number }>();
         const [show, setShow] = React.useState(true);
@@ -918,7 +918,7 @@ describe('useWatch', () => {
       expect(screen.queryByText('test')).not.toBeInTheDocument();
     });
 
-    it('should return undefined when input get unregistered', () => {
+    it('return undefined when input get unregistered', () => {
       type FormValues = {
         test: string;
       };
@@ -958,7 +958,7 @@ describe('useWatch', () => {
       expect(screen.getByText('yes')).toBeVisible();
     });
 
-    it('should react to changing field name', () => {
+    it('react to changing field name', () => {
       type FormValues = {
         field1: string;
         field2: string;
@@ -995,7 +995,105 @@ describe('useWatch', () => {
       expect(result.current).toBe('value1');
     });
 
-    it('should return the new field value synchronously on the same render even when that value is null', () => {
+    it('return the defaultValue passed with the new name or control', () => {
+      type FormValues = {
+        field1: string;
+        field2: string;
+      };
+
+      const { result: form1Result } = renderHook(() => useForm<FormValues>());
+      const { result: form2Result } = renderHook(() => useForm<FormValues>());
+
+      const { result, rerender } = renderHook(
+        ({
+          control,
+          name,
+          defaultValue,
+        }: {
+          control: Control<FormValues>;
+          name: 'field1' | 'field2';
+          defaultValue: string;
+        }) => useWatch({ control, name, defaultValue }),
+        {
+          initialProps: {
+            control: form1Result.current.control,
+            name: 'field1',
+            defaultValue: 'field1 default',
+          },
+        },
+      );
+
+      expect(result.current).toBe('field1 default');
+
+      rerender({
+        control: form1Result.current.control,
+        name: 'field2',
+        defaultValue: 'field2 default',
+      });
+      expect(result.current).toBe('field2 default');
+
+      rerender({
+        control: form2Result.current.control,
+        name: 'field2',
+        defaultValue: 'form2 default',
+      });
+      expect(result.current).toBe('form2 default');
+    });
+
+    it('return the new name defaultValue when re-enabled after the name changed while disabled', () => {
+      type FormValues = {
+        field1: string;
+        field2: string;
+      };
+
+      const { result: formResult } = renderHook(() => useForm<FormValues>());
+
+      const { result, rerender } = renderHook(
+        ({
+          name,
+          defaultValue,
+          disabled,
+        }: {
+          name: 'field1' | 'field2';
+          defaultValue: string;
+          disabled: boolean;
+        }) =>
+          useWatch({
+            control: formResult.current.control,
+            name,
+            defaultValue,
+            disabled,
+          }),
+        {
+          initialProps: {
+            name: 'field1',
+            defaultValue: 'field1 default',
+            disabled: false,
+          },
+        },
+      );
+
+      expect(result.current).toBe('field1 default');
+
+      rerender({
+        name: 'field1',
+        defaultValue: 'field1 default',
+        disabled: true,
+      });
+      rerender({
+        name: 'field2',
+        defaultValue: 'field2 default',
+        disabled: true,
+      });
+      rerender({
+        name: 'field2',
+        defaultValue: 'field2 default',
+        disabled: false,
+      });
+      expect(result.current).toBe('field2 default');
+    });
+
+    it('return the new field value synchronously on the same render even when that value is null', () => {
       type FormValues = {
         a: string;
         c: string | null;
@@ -1030,7 +1128,7 @@ describe('useWatch', () => {
       expect(renders[1]).toBe(null);
     });
 
-    it('should react to changing control', () => {
+    it('react to changing control', () => {
       type FormValues = {
         name: string;
       };
@@ -1151,7 +1249,7 @@ describe('useWatch', () => {
   });
 
   describe('fieldArray', () => {
-    it('should watch correct input update with single field array input', () => {
+    it('watch correct input update with single field array input', () => {
       const inputValues: string[] = [];
 
       type FormValues = {
@@ -1247,7 +1345,7 @@ describe('useWatch', () => {
       ]);
     });
 
-    it('should return shallow merged watch values', () => {
+    it('return shallow merged watch values', () => {
       const watchedValue: unknown[] = [];
 
       function App() {
@@ -1304,7 +1402,7 @@ describe('useWatch', () => {
   });
 
   describe('fieldArray with shouldUnregister true', () => {
-    it('should watch correct input update with single field array input', async () => {
+    it('watch correct input update with single field array input', async () => {
       const watchData: unknown[] = [];
 
       type Unpacked<T> = T extends (infer U)[] ? U : T;
@@ -1592,7 +1690,7 @@ describe('useWatch', () => {
       },
     );
 
-    it('should return updated default value with watched field after reset', async () => {
+    it('return updated default value with watched field after reset', async () => {
       type FormValues = {
         test: string;
         name: string;
@@ -1629,7 +1727,7 @@ describe('useWatch', () => {
       expect(await screen.findByText('test')).toBeVisible();
     });
 
-    it('should return default value of reset method', async () => {
+    it('return default value of reset method', async () => {
       const Component = () => {
         const { register, reset, control } = useForm<{
           test: string;
@@ -1655,7 +1753,7 @@ describe('useWatch', () => {
       expect(await screen.findByText('default')).toBeDefined();
     });
 
-    it('should re-register watched input after reset', async () => {
+    it('re-register watched input after reset', async () => {
       type FormValues = {
         firstName: string;
       };
@@ -1700,7 +1798,7 @@ describe('useWatch', () => {
       expect(screen.getByText('123')).toBeVisible();
     });
 
-    it('should fallback to inline defaultValue with reset API', () => {
+    it('fallback to inline defaultValue with reset API', () => {
       const App = () => {
         const { control, reset } = useForm();
         const value = useWatch({
@@ -1723,7 +1821,7 @@ describe('useWatch', () => {
 
     describe('with useFieldArray', () => {
       // issue: https://github.com/react-hook-form/react-hook-form/issues/2229
-      it('should return current value with radio type', () => {
+      it('return current value with radio type', () => {
         type FormValues = {
           options: { option: string }[];
         };
@@ -1805,7 +1903,7 @@ describe('useWatch', () => {
         expect(watchedValue).toMatchSnapshot();
       });
 
-      it("should watch item correctly with useFieldArray's remove method", async () => {
+      it("watch item correctly with useFieldArray's remove method", async () => {
         let watchedValue: { [x: string]: any } | undefined;
         const Component = () => {
           const { register, control } = useForm<{
@@ -1860,7 +1958,7 @@ describe('useWatch', () => {
     });
 
     describe('with custom register', () => {
-      it('should return default value of reset method when value is not empty', async () => {
+      it('return default value of reset method when value is not empty', async () => {
         const Component = () => {
           const { register, reset, control } = useForm<{
             test: string;
@@ -1895,7 +1993,7 @@ describe('useWatch', () => {
         );
       });
 
-      it('should return default value of reset method', async () => {
+      it('return default value of reset method', async () => {
         const Component = () => {
           const { register, reset, control } = useForm<{
             test: string;
@@ -1924,7 +2022,7 @@ describe('useWatch', () => {
         expect(await screen.findByText('default')).toBeDefined();
       });
 
-      it('should return default value', async () => {
+      it('return default value', async () => {
         const Component = () => {
           const { register, reset, control } = useForm<{ test: string }>({
             defaultValues: {
@@ -1957,7 +2055,7 @@ describe('useWatch', () => {
       });
     });
 
-    it('Should update the value immediately after reset when used with Controller', async () => {
+    it('update the value immediately after reset when used with Controller', async () => {
       const getDefaultValue = () => ({
         test: undefined,
       });
@@ -2022,7 +2120,7 @@ describe('useWatch', () => {
   });
 
   describe('unregister', () => {
-    it('should return correct value after input get unregistered', async () => {
+    it('return correct value after input get unregistered', async () => {
       type FormValues = { test: string };
 
       const Component = ({ control }: { control: Control<FormValues> }) => {
@@ -2055,7 +2153,7 @@ describe('useWatch', () => {
   });
 
   describe('setValue', () => {
-    it('should return correct value after input get unregistered', async () => {
+    it('return correct value after input get unregistered', async () => {
       type FormValues = { test: string };
 
       const Child = ({ register }: UseFormReturn<FormValues>) => {
@@ -2091,7 +2189,7 @@ describe('useWatch', () => {
       expect(await screen.findByText('no')).toBeVisible();
     });
 
-    it('should keep set type after set value', async () => {
+    it('keep set type after set value', async () => {
       const Form = () => {
         const { control, setValue } = useForm({
           defaultValues: { test: new Set(['test']) },
@@ -2115,7 +2213,7 @@ describe('useWatch', () => {
       });
     });
 
-    it('should watch nested object field update', () => {
+    it('watch nested object field update', () => {
       interface FormData {
         one: {
           two: {
@@ -2179,7 +2277,7 @@ describe('useWatch', () => {
       );
     });
 
-    it('should return field value, not resolver transformed value', async () => {
+    it('return field value, not resolver transformed value', async () => {
       const Form = () => {
         const { control, setValue } = useForm<
           { test: string },
@@ -2211,7 +2309,7 @@ describe('useWatch', () => {
       });
     });
 
-    it('should return field value when resolver transformed value is a different shape', async () => {
+    it('return field value when resolver transformed value is a different shape', async () => {
       const Form = () => {
         const { control, setValue } = useForm<
           { alpha: string; beta: string },
@@ -2245,7 +2343,7 @@ describe('useWatch', () => {
   });
 
   describe('formContext', () => {
-    it('should work with form context', async () => {
+    it('work with form context', async () => {
       const Component = () => {
         const test = useWatch<{ test: string }>({ name: 'test' });
         return <div>{test}</div>;
@@ -2270,7 +2368,7 @@ describe('useWatch', () => {
   });
 
   describe('compute ', () => {
-    it('should update to undefined on the first computed value change', () => {
+    it('update to undefined on the first computed value change', () => {
       const Form = () => {
         const { control, register } = useForm({
           defaultValues: { test: 'initial' },
@@ -2309,7 +2407,7 @@ describe('useWatch', () => {
       expect(screen.getByText('empty')).toBeVisible();
     });
 
-    it('should only update when value changed within compute', () => {
+    it('only update when value changed within compute', () => {
       type FormValue = {
         test: string;
       };

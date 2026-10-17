@@ -4,7 +4,10 @@ import isPlainObject from './isPlainObject';
 import isPrimitive from './isPrimitive';
 
 const isEmptyObjectWithCustomPrototype = (object: object, keys: string[]) =>
-  keys.length === 0 && !Array.isArray(object) && !isPlainObject(object);
+  keys.length === 0 &&
+  !Array.isArray(object) &&
+  Object.getPrototypeOf(object) !== null &&
+  !isPlainObject(object);
 
 export default function deepEqual(
   object1: unknown,
@@ -22,6 +25,14 @@ export default function deepEqual(
 
   if (isDateObject(object1) && isDateObject(object2)) {
     return Object.is(object1.getTime(), object2.getTime());
+  }
+
+  if (
+    Array.isArray(object1) &&
+    Array.isArray(object2) &&
+    object1.length !== object2.length
+  ) {
+    return false;
   }
 
   const keys1 = Object.keys(object1);
@@ -59,7 +70,7 @@ export default function deepEqual(
   for (const key of keys1) {
     const val1 = (object1 as Record<string, unknown>)[key];
 
-    if (!(key in (object2 as object))) {
+    if (!Object.prototype.hasOwnProperty.call(object2, key)) {
       return false;
     }
 

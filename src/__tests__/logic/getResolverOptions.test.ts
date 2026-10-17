@@ -2,7 +2,7 @@ import type { InternalFieldName } from '../..';
 import getResolverOptions from '../../logic/getResolverOptions';
 
 describe('getFielfs', () => {
-  it('should return fields from `fieldsNames` and `fieldsRef`', () => {
+  it('return fields from `fieldsNames` and `fieldsRef`', () => {
     const fieldNames: Set<InternalFieldName> = new Set(['test.sub', 'test1']);
     const fieldsRef: any = {
       test: {

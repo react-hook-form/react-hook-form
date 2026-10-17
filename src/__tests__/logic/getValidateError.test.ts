@@ -2,7 +2,7 @@ import getValidateError from '../../logic/getValidateError';
 import noop from '../../utils/noop';
 
 describe('getValidateError', () => {
-  it('should return field error in correct format', () => {
+  it('return field error in correct format', () => {
     expect(
       getValidateError(
         'This is a required field',
@@ -40,7 +40,7 @@ describe('getValidateError', () => {
     });
   });
 
-  it('should return undefined when called with non string result', () => {
+  it('return undefined when called with non string result', () => {
     expect(getValidateError(undefined, noop)).toBeUndefined();
   });
 });

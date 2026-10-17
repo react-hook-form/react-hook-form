@@ -1,7 +1,7 @@
 import getFocusFieldName from '../../logic/getFocusFieldName';
 
 describe('getFocusFieldName', () => {
-  it('should return expected focus name', () => {
+  it('return expected focus name', () => {
     expect(getFocusFieldName('test', 0, { shouldFocus: false })).toEqual('');
     expect(
       getFocusFieldName('test', 0, { shouldFocus: true, focusName: 'test' }),

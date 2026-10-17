@@ -1,7 +1,7 @@
 import stringToPath from '../../utils/stringToPath';
 
 describe('stringToPath', () => {
-  it('should convert string to path', () => {
+  it('convert string to path', () => {
     expect(stringToPath('test')).toEqual(['test']);
 
     expect(stringToPath('[test]]')).toEqual(['test']);

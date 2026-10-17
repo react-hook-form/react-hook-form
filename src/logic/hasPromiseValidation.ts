@@ -1,4 +1,4 @@
-import type { Field, Validate } from '../types';
+import type { Field } from '../types';
 import isFunction from '../utils/isFunction';
 import isObject from '../utils/isObject';
 
@@ -13,10 +13,7 @@ export default (fieldReference: Field['_f']) => {
 
   if (isObject(fieldReference.validate)) {
     for (const key in fieldReference.validate) {
-      if (
-        (fieldReference.validate[key] as Validate<unknown, unknown>).constructor
-          .name === ASYNC_FUNCTION
-      ) {
+      if (fieldReference.validate[key].constructor.name === ASYNC_FUNCTION) {
         return true;
       }
     }

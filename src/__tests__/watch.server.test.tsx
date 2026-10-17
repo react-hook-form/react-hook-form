@@ -5,7 +5,7 @@ import { useForm } from '../useForm';
 import { Watch } from '../watch';
 
 describe('Watch with SSR', () => {
-  it('should be rendered correctly', () => {
+  it('be rendered correctly', () => {
     const Component = () => {
       const { control } = useForm({ defaultValues: { foo: 'bar' } });
       return (

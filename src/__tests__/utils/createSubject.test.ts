@@ -1,7 +1,7 @@
 import createSubject from '../../utils/createSubject';
 
 describe('createSubject', () => {
-  it('should subscribe to all the correct observer', () => {
+  it('subscribe to all the correct observer', () => {
     const subject = createSubject();
     const next = jest.fn();
 
@@ -21,7 +21,7 @@ describe('createSubject', () => {
     expect(next).toHaveBeenCalledWith(2);
   });
 
-  it('should unsubscribe observers', () => {
+  it('unsubscribe observers', () => {
     const subject = createSubject();
     const next1 = jest.fn();
     const next2 = jest.fn();
@@ -46,7 +46,7 @@ describe('createSubject', () => {
     expect(next2).toHaveBeenCalledWith(2);
   });
 
-  it('should unsubscribe all observers', () => {
+  it('unsubscribe all observers', () => {
     const subject = createSubject();
     const next = jest.fn();
 
@@ -71,7 +71,7 @@ describe('createSubject', () => {
   });
 
   describe('during an active emission', () => {
-    it('should still deliver the current value to an observer unsubscribed by an earlier observer', () => {
+    it('still deliver the current value to an observer unsubscribed by an earlier observer', () => {
       const subject = createSubject<number>();
       const later = jest.fn();
       let laterSubscription = { unsubscribe: () => {} };
@@ -87,7 +87,7 @@ describe('createSubject', () => {
       expect(subject.observers.length).toBe(1);
     });
 
-    it('should let an observer unsubscribe itself', () => {
+    it('let an observer unsubscribe itself', () => {
       const subject = createSubject<number>();
       const self = jest.fn();
       const after = jest.fn();
@@ -107,7 +107,7 @@ describe('createSubject', () => {
       expect(after).toHaveBeenCalledTimes(2);
     });
 
-    it('should skip an observer unsubscribed before a nested emission', () => {
+    it('skip an observer unsubscribed before a nested emission', () => {
       const subject = createSubject<number>();
       const later = jest.fn();
       let laterSubscription = { unsubscribe: () => {} };
@@ -128,7 +128,7 @@ describe('createSubject', () => {
       expect(later).toHaveBeenCalledWith(1);
     });
 
-    it('should deliver the current value to an observer subscribed during the emission', () => {
+    it('deliver the current value to an observer subscribed during the emission', () => {
       const subject = createSubject<number>();
       const added = jest.fn();
       let subscribed = false;
@@ -149,7 +149,7 @@ describe('createSubject', () => {
       expect(added).toHaveBeenNthCalledWith(1, 1);
     });
 
-    it('should still deliver the current value to everyone after unsubscribing all', () => {
+    it('still deliver the current value to everyone after unsubscribing all', () => {
       const subject = createSubject<number>();
       const later = jest.fn();
 
@@ -164,7 +164,7 @@ describe('createSubject', () => {
     });
   });
 
-  it('should deliver once to an observer object subscribed twice', () => {
+  it('deliver once to an observer object subscribed twice', () => {
     const subject = createSubject<number>();
     const next = jest.fn();
     const observer = { next };
@@ -188,7 +188,7 @@ describe('createSubject', () => {
     expect(next).toHaveBeenCalledTimes(1);
   });
 
-  it('should keep other observers after many unsubscribes', () => {
+  it('keep other observers after many unsubscribes', () => {
     const subject = createSubject<number>();
     const kept = jest.fn();
     const subscriptions = Array.from({ length: 100 }, () =>

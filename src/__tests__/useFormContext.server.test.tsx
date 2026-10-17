@@ -8,7 +8,7 @@ import { useFormState } from '../useFormState';
 import { useWatch } from '../useWatch';
 
 describe('FormProvider', () => {
-  it('should work correctly with Controller, useWatch, useFormState.', () => {
+  it('work correctly with Controller, useWatch, useFormState.', () => {
     const App = () => {
       const { field } = useController({
         name: 'test',

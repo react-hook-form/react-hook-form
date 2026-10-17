@@ -242,7 +242,7 @@ describe('ErrorMessage', () => {
   });
 
   describe('snapshot: prop matrix', () => {
-    it('should render correctly with no errors', () => {
+    it('render correctly with no errors', () => {
       const Fixture = () => {
         const { control } = useForm();
         return <ErrorMessage control={control} name={'test' as any} />;
@@ -251,7 +251,7 @@ describe('ErrorMessage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('should render correctly with flat errors', () => {
+    it('render correctly with flat errors', () => {
       const { asFragment } = renderMessage('flat', {
         type: 'flat',
         message: 'flat',
@@ -259,7 +259,7 @@ describe('ErrorMessage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('should render correctly with flat errors and as with string', () => {
+    it('render correctly with flat errors and as with string', () => {
       const { asFragment } = renderMessage(
         'flat',
         { type: 'flat', message: 'flat' },
@@ -268,7 +268,7 @@ describe('ErrorMessage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('should render correctly with flat errors and as with element and render', () => {
+    it('render correctly with flat errors and as with element and render', () => {
       const { asFragment } = renderMessage(
         'flat',
         { type: 'flat', message: 'flat' },
@@ -277,7 +277,7 @@ describe('ErrorMessage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('should render correctly with flat errors and as with component', () => {
+    it('render correctly with flat errors and as with component', () => {
       function CustErrComp({ children }: { children: React.ReactNode }) {
         return <div>{children}</div>;
       }
@@ -289,7 +289,7 @@ describe('ErrorMessage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('should render correctly with flat errors and as with component and render', () => {
+    it('render correctly with flat errors and as with component and render', () => {
       function CustErrComp({ children }: { children: React.ReactNode }) {
         return <div>{children}</div>;
       }
@@ -304,7 +304,7 @@ describe('ErrorMessage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('should render correctly with flat multiple errors and render', () => {
+    it('render correctly with flat multiple errors and render', () => {
       const { asFragment } = renderMessage(
         'flat',
         {
@@ -327,7 +327,7 @@ describe('ErrorMessage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('should render correctly with flat multiple errors and as with element and render', () => {
+    it('render correctly with flat multiple errors and as with element and render', () => {
       const { asFragment } = renderMessage(
         'flat',
         {
@@ -350,7 +350,7 @@ describe('ErrorMessage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('should render correctly with nested errors object', () => {
+    it('render correctly with nested errors object', () => {
       const { asFragment } = renderMessage('nested.object', {
         type: 'object',
         message: 'object',
@@ -358,7 +358,7 @@ describe('ErrorMessage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('should render correctly with nested errors object and as with string', () => {
+    it('render correctly with nested errors object and as with string', () => {
       const { asFragment } = renderMessage(
         'nested.object',
         { type: 'object', message: 'object' },
@@ -367,7 +367,7 @@ describe('ErrorMessage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('should render correctly with nested errors and as with element and render', () => {
+    it('render correctly with nested errors and as with element and render', () => {
       const { asFragment } = renderMessage(
         'nested.object',
         { type: 'object', message: 'object' },
@@ -376,7 +376,7 @@ describe('ErrorMessage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('should render correctly with nested multiple errors and render', () => {
+    it('render correctly with nested multiple errors and render', () => {
       const { asFragment } = renderMessage(
         'nested.object',
         {
@@ -399,7 +399,7 @@ describe('ErrorMessage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('should render correctly with nested multiple errors and as with element and render', () => {
+    it('render correctly with nested multiple errors and as with element and render', () => {
       const { asFragment } = renderMessage(
         'nested.object',
         {
@@ -422,7 +422,7 @@ describe('ErrorMessage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('should render correctly with nested errors array', () => {
+    it('render correctly with nested errors array', () => {
       const { asFragment } = renderMessage('nested.0.array', {
         type: 'array',
         message: 'array',
@@ -430,7 +430,7 @@ describe('ErrorMessage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('should render correctly with nested errors array and as with string', () => {
+    it('render correctly with nested errors array and as with string', () => {
       const { asFragment } = renderMessage(
         'nested.0.array',
         { type: 'array', message: 'array' },
@@ -439,7 +439,7 @@ describe('ErrorMessage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('should render correctly with nested errors array and as with element and render', () => {
+    it('render correctly with nested errors array and as with element and render', () => {
       const { asFragment } = renderMessage(
         'nested.0.array',
         { type: 'array', message: 'array' },
@@ -448,7 +448,7 @@ describe('ErrorMessage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('should render correctly with nested multiple errors array and render', () => {
+    it('render correctly with nested multiple errors array and render', () => {
       const { asFragment } = renderMessage(
         'nested.0.array',
         {
@@ -471,7 +471,7 @@ describe('ErrorMessage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('should render correctly with nested multiple errors array and as with element and render', () => {
+    it('render correctly with nested multiple errors array and as with element and render', () => {
       const { asFragment } = renderMessage(
         'nested.0.array',
         {

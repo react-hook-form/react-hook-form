@@ -24,7 +24,7 @@ export function useWatch<
 >(props: {
   name?: undefined;
   defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
+  control?: Control<TFieldValues, unknown, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
   compute?: undefined;
@@ -37,7 +37,7 @@ export function useWatch<
 >(props: {
   name: TFieldName;
   defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
+  control?: Control<TFieldValues, unknown, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
   compute?: undefined;
@@ -50,7 +50,7 @@ export function useWatch<
 >(props: {
   name?: undefined;
   defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
+  control?: Control<TFieldValues, unknown, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
   compute: (formValues: TFieldValues) => TComputeValue;
@@ -64,7 +64,7 @@ export function useWatch<
 >(props: {
   name: TFieldName;
   defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
+  control?: Control<TFieldValues, unknown, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
   compute: (
@@ -80,7 +80,7 @@ export function useWatch<
 >(props: {
   name: readonly [...TFieldNames];
   defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
+  control?: Control<TFieldValues, unknown, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
   compute?: undefined;
@@ -95,7 +95,7 @@ export function useWatch<
 >(props: {
   name: readonly [...TFieldNames];
   defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
+  control?: Control<TFieldValues, unknown, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
   compute: (
@@ -160,7 +160,9 @@ export function useWatch<TFieldValues extends FieldValues>(
         _defaultValue.current,
       );
 
-      return _compute.current ? _compute.current(formValues) : formValues;
+      return _compute.current
+        ? _compute.current(formValues as TFieldValues)
+        : formValues;
     },
     [control._formValues, control._names, name],
   );
@@ -177,7 +179,9 @@ export function useWatch<TFieldValues extends FieldValues>(
         );
 
         if (_compute.current) {
-          const computedFormValues = _compute.current(formValues);
+          const computedFormValues = _compute.current(
+            formValues as TFieldValues,
+          );
 
           if (!deepEqual(computedFormValues, _computeFormValues.current)) {
             updateValue(computedFormValues);
@@ -245,18 +249,16 @@ export function useWatch<TFieldValues extends FieldValues>(
   // Optimize: Check control reference first before expensive deepEqual
   const controlChanged = _prevControl.current !== control;
   const prevName = _prevName.current;
+  const nameChanged = React.useMemo(
+    () => !controlChanged && !deepEqual(prevName, name),
+    [controlChanged, name, prevName],
+  );
 
-  // `null`/`undefined` are valid watched values, so a boolean flag (rather
-  // than a sentinel return value) decides whether to return the freshly
-  // computed output instead of the possibly-stale state value.
-  const shouldReturnImmediate = React.useMemo(() => {
-    if (disabled) {
-      return false;
-    }
+  if (controlChanged || nameChanged) {
+    _defaultValue.current = defaultValue;
+  }
 
-    const nameChanged = !controlChanged && !deepEqual(prevName, name);
-    return controlChanged || nameChanged;
-  }, [disabled, controlChanged, name, prevName]);
+  const shouldReturnImmediate = !disabled && (controlChanged || nameChanged);
 
   return shouldReturnImmediate ? getCurrentOutput() : value;
 }

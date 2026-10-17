@@ -15,7 +15,7 @@ export default (
     ? {
         ...errors[name],
         types: {
-          ...(errors[name] && errors[name]!.types ? errors[name]!.types : {}),
+          ...(errors[name] && errors[name].types ? errors[name].types : {}),
           [type]: message || true,
         },
       }
