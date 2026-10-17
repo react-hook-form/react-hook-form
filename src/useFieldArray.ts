@@ -377,9 +377,13 @@ export function useFieldArray<
       (!validationModes.isOnBlur ||
         (control._formState.isSubmitted && reValidateModes.isOnChange))
     ) {
+      const fieldArrayValues = get(control._formValues, name);
       if (control._options.resolver) {
         control._runSchema([name]).then((result) => {
           control._updateIsValidating([name]);
+          if (fieldArrayValues !== get(control._formValues, name)) {
+            return;
+          }
           const error: FieldError | undefined = get(result.errors, name);
           const existingError:
             | (FieldError & { root?: FieldError })
@@ -430,6 +434,9 @@ export function useFieldArray<
             control._options.shouldUseNativeValidation,
             true,
           ).then((error) => {
+            if (fieldArrayValues !== get(control._formValues, name)) {
+              return;
+            }
             if (!isEmptyObject(error)) {
               updateFieldArrayRootError(control._formState.errors, error, name);
               control._formState.errors = { ...control._formState.errors };

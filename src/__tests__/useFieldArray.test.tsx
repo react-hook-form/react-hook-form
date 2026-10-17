@@ -1054,6 +1054,73 @@ describe('useFieldArray', () => {
         ).toBeInTheDocument(),
       );
     });
+
+    describe('with an async resolver', () => {
+      type FormValues = { test: { value: string }[] };
+
+      const pending: (() => void)[] = [];
+      const resolver = (values: FormValues) =>
+        new Promise<ResolverResult<FormValues>>((resolve) => {
+          const result: ResolverResult<FormValues> =
+            values.test.length < 3
+              ? {
+                  values: {},
+                  errors: { test: { type: 'min', message: 'too few' } },
+                }
+              : { values, errors: {} };
+          pending.push(() => resolve(result));
+        });
+
+      const Component = () => {
+        const {
+          control,
+          reset,
+          setValue,
+          formState: { errors, isValidating },
+        } = useForm<FormValues>({
+          mode: 'onChange',
+          resolver,
+          defaultValues: { test: [{ value: '1' }] },
+        });
+        const { fields, append } = useFieldArray({ control, name: 'test' });
+        const threeRows = [{ value: '1' }, { value: '2' }, { value: '3' }];
+
+        return (
+          <div>
+            <p>{fields.length} rows</p>
+            <p>{errors.test?.root?.message}</p>
+            <p>{isValidating ? 'validating' : 'idle'}</p>
+            <button onClick={() => append({ value: '2' })}>append</button>
+            <button onClick={() => reset({ test: threeRows })}>reset</button>
+            <button onClick={() => setValue('test', threeRows)}>
+              setValue
+            </button>
+          </div>
+        );
+      };
+
+      beforeEach(() => {
+        pending.length = 0;
+      });
+
+      it.each(['append', 'reset', 'setValue'])(
+        'ignore a result that settles after a later %s',
+        async (action) => {
+          render(<Component />);
+
+          fireEvent.click(screen.getByRole('button', { name: 'append' }));
+          fireEvent.click(screen.getByRole('button', { name: action }));
+
+          for (const settle of [...pending].reverse()) {
+            await act(async () => settle());
+          }
+
+          expect(screen.getByText('3 rows')).toBeVisible();
+          expect(screen.queryByText('too few')).not.toBeInTheDocument();
+          expect(screen.getByText('idle')).toBeVisible();
+        },
+      );
+    });
   });
 
   describe('when component unMount', () => {
@@ -5415,6 +5482,65 @@ describe('useFieldArray', () => {
         expect(onSubmit.mock.calls[0][0]).toEqual({
           items: [{ tags: ['c'] }, { tags: ['a'] }, { tags: ['b'] }],
         });
+      },
+    );
+
+    it.each(['append', 'setValue'])(
+      'ignore an async validate result that settles after a later %s',
+      async (action) => {
+        const pending: (() => void)[] = [];
+        const validate = (items: { value: string }[]) =>
+          new Promise<string | true>((resolve) => {
+            const result = items.length < 3 ? 'too few' : true;
+            pending.push(() => resolve(result));
+          });
+
+        const Component = () => {
+          const {
+            control,
+            setValue,
+            formState: { errors },
+          } = useForm<{ test: { value: string }[] }>({
+            mode: 'onChange',
+            defaultValues: { test: [{ value: '1' }] },
+          });
+          const { fields, append } = useFieldArray({
+            control,
+            name: 'test',
+            rules: { validate },
+          });
+
+          return (
+            <div>
+              <p>{fields.length} rows</p>
+              <p>{errors.test?.root?.message}</p>
+              <button onClick={() => append({ value: '2' })}>append</button>
+              <button
+                onClick={() =>
+                  setValue('test', [
+                    { value: '1' },
+                    { value: '2' },
+                    { value: '3' },
+                  ])
+                }
+              >
+                setValue
+              </button>
+            </div>
+          );
+        };
+
+        render(<Component />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+        fireEvent.click(screen.getByRole('button', { name: action }));
+
+        for (const settle of [...pending].reverse()) {
+          await act(async () => settle());
+        }
+
+        expect(screen.getByText('3 rows')).toBeVisible();
+        expect(screen.queryByText('too few')).not.toBeInTheDocument();
       },
     );
   });
