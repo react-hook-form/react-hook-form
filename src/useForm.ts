@@ -26,6 +26,7 @@ const RESET_OPTIONS = {
   shouldUnregister: undefined,
   shouldUseNativeValidation: undefined,
   context: undefined,
+  progressive: undefined,
 } as const;
 
 /**
@@ -54,6 +55,7 @@ export function useForm<
   >(undefined);
   const _values = React.useRef<typeof props.values>(undefined);
   const _formControlProp = React.useRef(props.formControl);
+  const _hadDisabled = React.useRef(false);
   const _hadValidate = React.useRef(!!props.validate);
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>(
     () => ({
@@ -72,6 +74,7 @@ export function useForm<
     (props.formControl && _formControlProp.current !== props.formControl)
   ) {
     _formControlProp.current = props.formControl;
+    _hadDisabled.current = false;
     if (props.formControl) {
       _formControl.current = {
         ...props.formControl,
@@ -100,6 +103,10 @@ export function useForm<
     if (key in previousOptions && !(key in props)) {
       removedOptions[key] = RESET_OPTIONS[key as keyof typeof RESET_OPTIONS];
     }
+  }
+
+  if (_hadDisabled.current && !props.disabled) {
+    removedOptions.disabled = false;
   }
 
   control._options = {
@@ -145,10 +152,12 @@ export function useForm<
     };
   }, [control, resyncIfNeeded, snapshot]);
 
-  React.useEffect(
-    () => control._disableForm(props.disabled),
-    [control, props.disabled],
-  );
+  React.useEffect(() => {
+    control._disableForm(
+      _hadDisabled.current && !props.disabled ? false : props.disabled,
+    );
+    _hadDisabled.current = !!props.disabled;
+  }, [control, props.disabled]);
 
   React.useEffect(() => {
     if (props.mode) {

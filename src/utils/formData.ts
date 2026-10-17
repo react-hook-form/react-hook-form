@@ -1,10 +1,12 @@
+import type { FieldValues } from '../types';
+
 import { flatten } from './flatten';
 import isUndefined from './isUndefined';
 
-function jsonToFormData(json: any) {
+function jsonToFormData(json: unknown) {
   const result = new FormData();
 
-  const flattenFormValues = flatten(json);
+  const flattenFormValues = flatten(json as FieldValues);
 
   for (const key in flattenFormValues) {
     const value = flattenFormValues[key];

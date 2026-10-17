@@ -1074,6 +1074,178 @@ describe('useController', () => {
     expect(onInvalid).not.toHaveBeenCalled();
   });
 
+  it('should validate required checkbox and radio values with a DOM ref', async () => {
+    const onValid = jest.fn();
+    const onInvalid = jest.fn();
+
+    function App() {
+      const { control, handleSubmit } = useForm({
+        defaultValues: { accepted: false, choice: '' },
+      });
+      const { field: checkbox } = useController({
+        control,
+        name: 'accepted',
+        rules: { required: true },
+      });
+      const { field: radio } = useController({
+        control,
+        name: 'choice',
+        rules: { required: true },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onValid, onInvalid)}>
+          <input
+            type="checkbox"
+            ref={checkbox.ref}
+            checked={checkbox.value}
+            onChange={(e) => checkbox.onChange(e.target.checked)}
+          />
+          {['first', 'second'].map((value) => (
+            <input
+              key={value}
+              type="radio"
+              name={radio.name}
+              ref={radio.ref}
+              value={value}
+              checked={radio.value === value}
+              onChange={(e) => radio.onChange(e.target.value)}
+            />
+          ))}
+          <button type="submit">submit</button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('checkbox'));
+    fireEvent.click(screen.getAllByRole('radio')[0]);
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() =>
+      expect(onValid).toHaveBeenCalledWith(
+        { accepted: true, choice: 'first' },
+        expect.anything(),
+      ),
+    );
+    expect(onInvalid).not.toHaveBeenCalled();
+  });
+
+  it('should validate number bounds against the stored value with a DOM ref', async () => {
+    const onValid = jest.fn();
+
+    function App() {
+      const { control, handleSubmit } = useForm({
+        defaultValues: { amount: 15 },
+      });
+      const { field, fieldState } = useController({
+        control,
+        name: 'amount',
+        rules: { min: 10, max: 20 },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onValid)}>
+          <input
+            type="number"
+            ref={field.ref}
+            value={field.value * 100}
+            onChange={(e) => field.onChange(+e.target.value / 100)}
+          />
+          {fieldState.error && <p role="alert">{fieldState.error.type}</p>}
+          <button type="submit">submit</button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('spinbutton'), {
+      target: { value: '500' },
+    });
+    fireEvent.click(screen.getByRole('button'));
+    expect(await screen.findByText('min')).toBeVisible();
+
+    fireEvent.change(screen.getByRole('spinbutton'), {
+      target: { value: '2500' },
+    });
+    fireEvent.click(screen.getByRole('button'));
+    expect(await screen.findByText('max')).toBeVisible();
+    expect(onValid).not.toHaveBeenCalled();
+
+    fireEvent.change(screen.getByRole('spinbutton'), {
+      target: { value: '1500' },
+    });
+    fireEvent.click(screen.getByRole('button'));
+    await waitFor(() =>
+      expect(onValid).toHaveBeenCalledWith({ amount: 15 }, expect.anything()),
+    );
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('should validate date bounds against the stored value with a DOM ref', async () => {
+    const onValid = jest.fn();
+
+    function App() {
+      const { control, handleSubmit } = useForm({
+        defaultValues: { arrival: '2024-01-15' },
+      });
+      const { field, fieldState } = useController({
+        control,
+        name: 'arrival',
+        rules: { min: '2024-01-10', max: '2024-01-20' },
+      });
+      const departure = new Date(field.value);
+      departure.setUTCDate(departure.getUTCDate() + 1);
+
+      return (
+        <form onSubmit={handleSubmit(onValid)}>
+          <input
+            aria-label="departure"
+            type="date"
+            ref={field.ref}
+            value={departure.toISOString().slice(0, 10)}
+            onChange={(e) => {
+              const arrival = new Date(e.target.value);
+              arrival.setUTCDate(arrival.getUTCDate() - 1);
+              field.onChange(arrival.toISOString().slice(0, 10));
+            }}
+          />
+          {fieldState.error && <p role="alert">{fieldState.error.type}</p>}
+          <button type="submit">submit</button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.change(screen.getByLabelText('departure'), {
+      target: { value: '2024-01-10' },
+    });
+    fireEvent.click(screen.getByRole('button'));
+    expect(await screen.findByText('min')).toBeVisible();
+
+    fireEvent.change(screen.getByLabelText('departure'), {
+      target: { value: '2024-01-22' },
+    });
+    fireEvent.click(screen.getByRole('button'));
+    expect(await screen.findByText('max')).toBeVisible();
+    expect(onValid).not.toHaveBeenCalled();
+
+    fireEvent.change(screen.getByLabelText('departure'), {
+      target: { value: '2024-01-21' },
+    });
+    fireEvent.click(screen.getByRole('button'));
+    await waitFor(() =>
+      expect(onValid).toHaveBeenCalledWith(
+        { arrival: '2024-01-20' },
+        expect.anything(),
+      ),
+    );
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
   it('disable the controller input', async () => {
     function Form() {
       const { field } = useController({

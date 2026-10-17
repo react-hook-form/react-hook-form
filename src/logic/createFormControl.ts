@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import {
   EVENTS,
   FORM_ERROR_TYPE,
@@ -18,6 +20,7 @@ import type {
   FieldErrors,
   FieldNamesMarkedBoolean,
   FieldPath,
+  FieldPathError,
   FieldPathValue,
   FieldRefs,
   FieldValues,
@@ -34,6 +37,8 @@ import type {
   SetFieldValue,
   SetValueConfig,
   Subjects,
+  SubmitErrorHandler,
+  SubmitHandler,
   TriggerConfig,
   UseFormClearErrors,
   UseFormGetErrors,
@@ -287,15 +292,42 @@ export function createFormControl<
     }
   };
 
+  const _updateValidatingFields = (
+    names: Iterable<string>,
+    isValidating?: boolean,
+  ) => {
+    const fieldNames = [...names];
+
+    if (
+      !fieldNames.some(
+        (name) =>
+          name &&
+          (isValidating
+            ? get(_formState.validatingFields, name) !== true
+            : has(_formState.validatingFields, name)),
+      )
+    ) {
+      return;
+    }
+
+    const validatingFields = cloneObject(_formState.validatingFields);
+
+    for (const name of fieldNames) {
+      if (name) {
+        isValidating
+          ? set(validatingFields, name, true)
+          : unset(validatingFields, name);
+      }
+    }
+
+    if (!deepEqual(_formState.validatingFields, validatingFields)) {
+      _formState.validatingFields = validatingFields;
+    }
+  };
+
   const _updateIsValidating = (names?: string[], isValidating?: boolean) => {
     if (!_options.disabled && _isTracked('isValidating', 'validatingFields')) {
-      (names || _names.mount).forEach((name) => {
-        if (name) {
-          isValidating
-            ? set(_formState.validatingFields, name, isValidating)
-            : unset(_formState.validatingFields, name);
-        }
-      });
+      _updateValidatingFields(names || _names.mount, isValidating);
 
       _subjects.state.next({
         validatingFields: _formState.validatingFields,
@@ -310,7 +342,7 @@ export function createFormControl<
       _formValues,
       undefined,
       _fields,
-    );
+    ) as typeof _formState.dirtyFields;
   };
 
   const _setFieldArray: BatchFieldArrayUpdate = (
@@ -323,7 +355,7 @@ export function createFormControl<
   ) => {
     if (args && method && !_options.disabled) {
       _state.action = true;
-      const field = get(_fields, name);
+      const field: FieldRefs | undefined = get(_fields, name);
       const rootField = field && field._f;
       const fields = rootField ? Object.assign([], field) : field;
       if (!_state.actionArrayLengths.has(name)) {
@@ -511,7 +543,7 @@ export function createFormControl<
       }
 
       const wasUnsetInFormValues = isUndefined(get(_formValues, name));
-      const defaultValue = get(
+      const defaultValue: SetFieldValue<TFieldValues> = get(
         _formValues,
         name,
         isUndefined(value) ? get(_defaultValues, name) : value,
@@ -617,7 +649,7 @@ export function createFormControl<
           unset(_formState.dirtyFields, name);
         } else {
           const defaultFieldValue = get(_defaultValues, name);
-          const field = get(_fields, name);
+          const field: FieldRefs | undefined = get(_fields, name);
           const dirtyValue =
             !(field && field._f) &&
             (isObject(defaultFieldValue) || Array.isArray(defaultFieldValue))
@@ -751,7 +783,7 @@ export function createFormControl<
 
     if (names) {
       for (const name of names) {
-        const error = get(errors, name);
+        const error: FieldError | undefined = get(errors, name);
         cancelDelayedErrorTree(name);
         const isFieldArrayRootError =
           _names.array.has(name) &&
@@ -1130,7 +1162,7 @@ export function createFormControl<
       }
       const fieldValue = value[fieldKey];
       const fieldName = name + '.' + fieldKey;
-      const field = get(_fields, fieldName);
+      const field: FieldRefs | undefined = get(_fields, fieldName);
 
       (_names.array.has(name) ||
         isObject(fieldValue) ||
@@ -1164,7 +1196,7 @@ export function createFormControl<
     skipClone: boolean,
     skipStateEmit = false,
   ) => {
-    const field = get(_fields, name);
+    const field: FieldRefs | undefined = get(_fields, name);
     const isFieldArray = _names.array.has(name);
     const cloneValue = skipClone ? value : cloneObject(value);
     const previousValue = get(_formValues, name);
@@ -1507,7 +1539,7 @@ export function createFormControl<
       validationResult = (
         await Promise.all(
           fieldNames.map(async (fieldName) => {
-            const field = get(_fields, fieldName);
+            const field: FieldRefs = get(_fields, fieldName);
             return await executeBuiltInValidation({
               fields: field && field._f ? { [fieldName]: field } : field,
               eventType: EVENTS.TRIGGER,
@@ -1525,7 +1557,7 @@ export function createFormControl<
     }
 
     if (options.delayError && _options.delayError && isString(name)) {
-      const error = get(_formState.errors, name);
+      const error: FieldError | undefined = get(_formState.errors, name);
       if (error) {
         unset(_formState.errors, name);
         delayErrorCallbacks[name] = debounce(name, () =>
@@ -1569,7 +1601,7 @@ export function createFormControl<
     return validationResult;
   };
 
-  const getValues: UseFormGetValues<TFieldValues> = (
+  const getValues = ((
     fieldNames?:
       | FieldPath<TFieldValues>
       | ReadonlyArray<FieldPath<TFieldValues>>,
@@ -1591,23 +1623,28 @@ export function createFormControl<
       : isString(fieldNames)
         ? get(values, fieldNames)
         : fieldNames.map((name) => get(values, name));
-  };
+  }) as UseFormGetValues<TFieldValues>;
 
-  const getErrors: UseFormGetErrors<TFieldValues> = (
+  const getErrors = ((
     fieldNames?: InternalFieldName | ReadonlyArray<InternalFieldName>,
   ) =>
     isUndefined(fieldNames)
       ? { ..._formState.errors }
       : isString(fieldNames)
         ? get(_formState.errors, fieldNames)
-        : fieldNames.map((name) => get(_formState.errors, name));
+        : fieldNames.map((name) =>
+            get(_formState.errors, name),
+          )) as UseFormGetErrors<TFieldValues>;
 
   const getFieldState: UseFormGetFieldState<TFieldValues> = (
     name,
     formState,
   ) => {
     const targetFormState = formState || _formState;
-    const error = get(targetFormState.errors, name);
+    const error: FieldPathError<TFieldValues, typeof name> = get(
+      targetFormState.errors,
+      name,
+    );
 
     return {
       invalid: !!error,
@@ -1643,8 +1680,10 @@ export function createFormControl<
   const setError: UseFormSetError<TFieldValues> = (name, error, options) => {
     cancelDelayedErrorTree(name);
 
-    const ref = (get(_fields, name, { _f: {} })._f || {}).ref;
-    const currentError = get(_formState.errors, name) || {};
+    const field: Partial<Field> = get(_fields, name, { _f: {} });
+    const ref = field._f && field._f.ref;
+    const currentError: Partial<FieldError> =
+      get(_formState.errors, name) || {};
 
     const {
       ref: currentRef,
@@ -1733,6 +1772,8 @@ export function createFormControl<
           props.callback({
             ..._formState,
             ...formState,
+            validatingFields: _formState.validatingFields,
+            isValidating: _formState.isValidating,
             values,
             defaultValues:
               _defaultValues as FormState<TFieldValues>['defaultValues'],
@@ -1776,7 +1817,15 @@ export function createFormControl<
   };
 
   const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) => {
-    for (const fieldName of name ? convertToArrayPayload(name) : _names.mount) {
+    const fieldNames = name
+      ? (convertToArrayPayload(name) as InternalFieldName[])
+      : _names.mount;
+
+    if (!options.keepIsValidating) {
+      _updateValidatingFields(fieldNames);
+    }
+
+    for (const fieldName of fieldNames) {
       _names.mount.delete(fieldName);
       _names.array.delete(fieldName);
       _names.disabled.delete(fieldName);
@@ -1792,8 +1841,6 @@ export function createFormControl<
       }
       !options.keepDirty && unset(_formState.dirtyFields, fieldName);
       !options.keepTouched && unset(_formState.touchedFields, fieldName);
-      !options.keepIsValidating &&
-        unset(_formState.validatingFields, fieldName);
       !_options.shouldUnregister &&
         !options.keepDefaultValue &&
         unset(_defaultValues, fieldName);
@@ -1838,7 +1885,7 @@ export function createFormControl<
   };
 
   const register: UseFormRegister<TFieldValues> = (name, options = {}) => {
-    let field = get(_fields, name);
+    let field: Field | undefined = get(_fields, name);
     const disabledIsDefined =
       isBoolean(options.disabled) || isBoolean(_options.disabled);
     const shouldRevalidateRemount =
@@ -1898,7 +1945,7 @@ export function createFormControl<
           _names.registerName.add(name);
           register(name, options);
           _names.registerName.delete(name);
-          field = get(_fields, name);
+          field = get<FieldRefs, Field>(_fields, name);
 
           const fieldRef = isUndefined(ref.value)
             ? ref.querySelectorAll
@@ -1923,7 +1970,9 @@ export function createFormControl<
             newField.refs = [
               ...refs.filter(live),
               fieldRef,
-              ...(Array.isArray(get(_defaultValues, name)) ? [{}] : []),
+              ...(Array.isArray(get(_defaultValues, name))
+                ? [{} as HTMLInputElement]
+                : []),
             ];
             newField.ref = { type: fieldRef.type, name };
           } else {
@@ -1937,7 +1986,7 @@ export function createFormControl<
 
           updateValidAndValue(name, false, undefined, fieldRef);
         } else {
-          field = get(_fields, name, {});
+          field = get<FieldRefs, Field>(_fields, name, {});
 
           if (field._f) {
             field._f.mount = false;
@@ -1979,8 +2028,14 @@ export function createFormControl<
   };
 
   const handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues> =
-    (onValid, onInvalid) => async (e) => {
-      let result: any = undefined;
+    <TResult>(
+      onValid: SubmitHandler<TTransformedValues, TResult>,
+      onInvalid?: SubmitErrorHandler<TFieldValues>,
+    ) =>
+    async (
+      e?: React.BaseSyntheticEvent,
+    ): Promise<Awaited<TResult> | undefined> => {
+      let result: Awaited<TResult> | undefined = undefined;
       let onValidError = undefined;
       if (e) {
         e.preventDefault && e.preventDefault();
@@ -2061,7 +2116,7 @@ export function createFormControl<
 
   const resetField: UseFormResetField<TFieldValues> = (name, options = {}) => {
     if (get(_fields, name)) {
-      unset(_formState.validatingFields, name);
+      _updateValidatingFields([name]);
 
       if (isUndefined(options.defaultValue)) {
         setValue(name, cloneObject(get(_defaultValues, name)));
@@ -2124,7 +2179,10 @@ export function createFormControl<
         for (const fieldName of fieldsToCheck) {
           const isDirty = get(_formState.dirtyFields, fieldName);
           const existingValue = get(_formValues, fieldName);
-          const newValue = get(values, fieldName);
+          const newValue: FieldPathValue<
+            TFieldValues,
+            FieldPath<TFieldValues>
+          > = get(values, fieldName);
 
           if (isDirty && !isUndefined(existingValue)) {
             set(values, fieldName, existingValue);
@@ -2135,7 +2193,7 @@ export function createFormControl<
       } else {
         if (isWeb && isUndefined(formValues)) {
           for (const name of _names.mount) {
-            const field = get(_fields, name);
+            const field: Field | undefined = get(_fields, name);
             if (field && field._f) {
               const fieldReference = Array.isArray(field._f.refs)
                 ? field._f.refs[0]
@@ -2239,7 +2297,7 @@ export function createFormControl<
       isSubmitted: keepStateOptions.keepIsSubmitted
         ? _formState.isSubmitted
         : false,
-      dirtyFields: isEmptyResetValues
+      dirtyFields: (isEmptyResetValues
         ? {}
         : keepStateOptions.keepDirtyValues
           ? keepStateOptions.keepDefaultValues && _formValues
@@ -2256,7 +2314,7 @@ export function createFormControl<
                     undefined,
                     fieldRefs,
                   )
-                : {},
+                : {}) as typeof _formState.dirtyFields,
       touchedFields: keepStateOptions.keepTouched
         ? _formState.touchedFields
         : {},
@@ -2280,13 +2338,13 @@ export function createFormControl<
     });
 
   const setFocus: UseFormSetFocus<TFieldValues> = (name, options = {}) => {
-    const field = get(_fields, name);
+    const field: Field | undefined = get(_fields, name);
     const fieldReference = field && field._f;
 
     if (fieldReference) {
-      const fieldRef = fieldReference.refs
-        ? fieldReference.refs[0]
-        : fieldReference.ref;
+      const fieldRef = (
+        fieldReference.refs ? fieldReference.refs[0] : fieldReference.ref
+      ) as HTMLInputElement;
 
       if (fieldRef.focus) {
         setTimeout(() => {
