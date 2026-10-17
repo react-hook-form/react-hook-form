@@ -61,10 +61,8 @@ import type {
   UseFormWatch,
   ValidateFormEventType,
   WatchInternal,
-  WatchObserver,
 } from '../types';
 import cloneObject from '../utils/cloneObject';
-import compact from '../utils/compact';
 import convertToArrayPayload from '../utils/convertToArrayPayload';
 import createSubject from '../utils/createSubject';
 import deepEqual from '../utils/deepEqual';
@@ -148,7 +146,7 @@ export const DEFAULT_FORM_STATE = {
 
 export function createFormControl<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
+  TContext = unknown,
   TTransformedValues = TFieldValues,
 >(
   props: UseFormProps<TFieldValues, TContext, TTransformedValues> = {},
@@ -1022,14 +1020,17 @@ export function createFormControl<
 
   const _getFieldArray = <TFieldArrayValues>(
     name: InternalFieldName,
-  ): Partial<TFieldArrayValues>[] =>
-    compact(
-      get(
-        _state.mount ? _formValues : _defaultValues,
-        name,
-        _options.shouldUnregister ? get(_defaultValues, name, []) : [],
-      ),
+  ): Partial<TFieldArrayValues>[] => {
+    const values = get(
+      _state.mount ? _formValues : _defaultValues,
+      name,
+      _options.shouldUnregister ? get(_defaultValues, name, []) : [],
     );
+
+    return Array.isArray(values)
+      ? values.filter((value) => !isNullOrUndefined(value))
+      : [];
+  };
 
   const setFieldValue = (
     name: InternalFieldName,
@@ -1325,7 +1326,7 @@ export function createFormControl<
 
   const onChange: ChangeHandler = async (event) => {
     _state.mount = true;
-    const target = event.target;
+    const target = event.target as HTMLInputElement;
     let name: string = target.name;
     let isFieldValueUpdated = true;
     const field: Field = get(_fields, name);
@@ -1383,7 +1384,7 @@ export function createFormControl<
       !isBlurEvent &&
         _subjects.state.next({
           name,
-          type: event.type,
+          type: event.type as EventType,
           ...(_hasValuesSubscriber(name)
             ? { values: cloneObject(_formValues) }
             : {}),
@@ -1412,7 +1413,7 @@ export function createFormControl<
       if (!_options.resolver && _options.validate) {
         await validateForm({
           name: name as FieldPath<TFieldValues>,
-          eventType: event.type,
+          eventType: event.type as ValidateFormEventType,
         });
       }
 
@@ -1479,7 +1480,7 @@ export function createFormControl<
               fields: _fields,
               onlyCheckValid: true,
               name: name as FieldPath<TFieldValues>,
-              eventType: event.type,
+              eventType: event.type as ValidateFormEventType,
             });
 
             if (resetCallId !== _resetCallId) {
@@ -1710,41 +1711,14 @@ export function createFormControl<
   };
 
   const watch: UseFormWatch<TFieldValues> = (
-    name?:
-      | FieldPath<TFieldValues>
-      | ReadonlyArray<FieldPath<TFieldValues>>
-      | WatchObserver<TFieldValues>,
+    name?: FieldPath<TFieldValues> | ReadonlyArray<FieldPath<TFieldValues>>,
     defaultValue?: DeepPartial<TFieldValues>,
-  ) => {
-    if (isFunction(name)) {
-      const valuesSubscriber = {};
-      _valuesSubscribers.add(valuesSubscriber);
-      const { unsubscribe } = _subjects.state.subscribe({
-        next: (payload) =>
-          'values' in payload &&
-          name(
-            payload.values || _getWatch(undefined, defaultValue),
-            payload as {
-              name?: FieldPath<TFieldValues>;
-              type?: EventType;
-              value?: unknown;
-            },
-          ),
-      });
-
-      return {
-        unsubscribe: () => {
-          _valuesSubscribers.delete(valuesSubscriber);
-          unsubscribe();
-        },
-      };
-    }
-    return _getWatch(
+  ) =>
+    _getWatch(
       name as InternalFieldName | InternalFieldName[],
       defaultValue,
       true,
     );
-  };
 
   const _subscribe: FromSubscribe<TFieldValues> = (props) => {
     const valuesSubscriber = { name: props.name, exact: props.exact };
@@ -1940,7 +1914,9 @@ export function createFormControl<
       name,
       onChange,
       onBlur: onChange,
-      ref: (ref: HTMLInputElement | null): void => {
+      ref: (instance: unknown): void => {
+        const ref = instance as HTMLInputElement | null;
+
         if (ref) {
           _names.registerName.add(name);
           register(name, options);

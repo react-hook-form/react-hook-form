@@ -1,0 +1,169 @@
+import React from 'react';
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+} from '@testing-library/react';
+
+import type { UseFormReturn } from '../types';
+import { useForm } from '../useForm';
+import { FormProvider, useFormContext } from '../useFormContext';
+
+type FormValues = { test: string };
+
+function ChildWithMethods({
+  watch,
+  getErrors,
+  formState,
+}: Pick<UseFormReturn<FormValues>, 'watch' | 'getErrors' | 'formState'>) {
+  return (
+    <>
+      <p>watch: {watch('test')}</p>
+      <p>errors: {formState.errors.test?.message}</p>
+      <p>getErrors: {getErrors('test')?.message}</p>
+    </>
+  );
+}
+
+function ContextChild() {
+  const { watch, getFieldState, formState } = useFormContext<FormValues>();
+  return (
+    <>
+      <p>context watch: {watch('test')}</p>
+      <p>context invalid: {String(getFieldState('test', formState).invalid)}</p>
+    </>
+  );
+}
+
+function App() {
+  const methods = useForm<FormValues>({ defaultValues: { test: '' } });
+
+  return (
+    <FormProvider {...methods}>
+      <form onSubmit={methods.handleSubmit(() => {})}>
+        <input
+          {...methods.register('test', { required: 'required' })}
+          placeholder="test"
+        />
+        <ChildWithMethods
+          watch={methods.watch}
+          getErrors={methods.getErrors}
+          formState={methods.formState}
+        />
+        <ContextChild />
+        <button>submit</button>
+      </form>
+    </FormProvider>
+  );
+}
+
+describe('React Compiler compatibility', () => {
+  it('should not serve stale values from memoized method calls', async () => {
+    render(<App />);
+
+    fireEvent.change(screen.getByPlaceholderText('test'), {
+      target: { value: 'abc' },
+    });
+
+    expect(await screen.findByText('watch: abc')).toBeVisible();
+    expect(screen.getByText('context watch: abc')).toBeVisible();
+
+    fireEvent.change(screen.getByPlaceholderText('test'), {
+      target: { value: '' },
+    });
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(await screen.findByText('errors: required')).toBeVisible();
+    expect(screen.getByText('getErrors: required')).toBeVisible();
+    expect(screen.getByText('context invalid: true')).toBeVisible();
+  });
+
+  it('should keep the methods object stable and refresh read methods', () => {
+    const { result } = renderHook(() => {
+      const methods = useForm<FormValues>();
+      methods.formState.errors;
+      return methods;
+    });
+    const methods = result.current;
+    const first = { ...methods };
+
+    act(() => {
+      result.current.setError('test', { message: 'error' });
+    });
+
+    expect(result.current).toBe(methods);
+    expect(result.current.watch).not.toBe(first.watch);
+    expect(result.current.getValues).not.toBe(first.getValues);
+    expect(result.current.getErrors).not.toBe(first.getErrors);
+    expect(result.current.getFieldState).not.toBe(first.getFieldState);
+    expect(result.current.register).not.toBe(first.register);
+    expect(result.current.handleSubmit).toBe(first.handleSubmit);
+    expect(result.current.setValue).toBe(first.setValue);
+    expect(result.current.control).toBe(first.control);
+  });
+
+  it('should not nest bound methods across updates', () => {
+    const { result } = renderHook(() => {
+      const methods = useForm<FormValues>();
+      methods.formState.errors;
+      return methods;
+    });
+
+    for (let i = 0; i < 5; i++) {
+      act(() => {
+        result.current.setError('test', { message: `error ${i}` });
+      });
+    }
+
+    expect(result.current.watch.name).toBe('bound watch');
+    expect(result.current.getValues.name).toBe('bound getValues');
+  });
+
+  // Known failure, skipped in jest-react-compiler.config.js: the useForm return
+  // value keeps its identity, so the compiler memoizes method calls on it.
+  it('should refresh read methods called on the useForm return value', async () => {
+    const Form = () => {
+      const methods = useForm<FormValues>({ defaultValues: { test: '' } });
+      const { isDirty } = methods.formState;
+
+      return (
+        <>
+          <input {...methods.register('test')} placeholder="test" />
+          <p>form dirty: {String(isDirty)}</p>
+          <p>field dirty: {String(methods.getFieldState('test').isDirty)}</p>
+        </>
+      );
+    };
+
+    render(<Form />);
+
+    fireEvent.change(screen.getByPlaceholderText('test'), {
+      target: { value: 'test' },
+    });
+
+    expect(await screen.findByText('form dirty: true')).toBeVisible();
+    expect(screen.getByText('field dirty: true')).toBeVisible();
+  });
+
+  it('should not loop when the methods object is an effect dependency', async () => {
+    const onReset = jest.fn();
+
+    const Form = () => {
+      const form = useForm<FormValues>({ defaultValues: { test: '' } });
+
+      React.useEffect(() => {
+        onReset();
+        form.reset({ test: 'reset' });
+      }, [form]);
+
+      return <p>{form.formState.isDirty ? 'dirty' : 'clean'}</p>;
+    };
+
+    render(<Form />);
+
+    expect(await screen.findByText('clean')).toBeVisible();
+    expect(onReset).toHaveBeenCalledTimes(1);
+  });
+});

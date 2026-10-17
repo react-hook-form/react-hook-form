@@ -6,7 +6,6 @@ import isNameInFieldArray from './logic/isNameInFieldArray';
 import cloneObject from './utils/cloneObject';
 import get from './utils/get';
 import isBoolean from './utils/isBoolean';
-import isFunction from './utils/isFunction';
 import isUndefined from './utils/isUndefined';
 import set from './utils/set';
 import { EVENTS } from './constants';
@@ -172,16 +171,11 @@ export function useController<
   }, [name, control]);
 
   const ref = React.useCallback(
-    (elm: Partial<HTMLInputElement> | null) => {
+    (instance: unknown) => {
+      const elm = instance as Ref | null;
+
       if (elm) {
-        _proxyRef.current = {
-          focus: () => isFunction(elm.focus) && elm.focus(),
-          select: () => isFunction(elm.select) && elm.select(),
-          setCustomValidity: (message: string) =>
-            isFunction(elm.setCustomValidity) && elm.setCustomValidity(message),
-          reportValidity: () =>
-            isFunction(elm.reportValidity) && elm.reportValidity(),
-        } as Ref;
+        _proxyRef.current = elm;
       }
 
       const field: Field | undefined = get(control._fields, name);
