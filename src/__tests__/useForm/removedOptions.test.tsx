@@ -9,7 +9,7 @@ import {
 
 import { Controller } from '../../controller';
 import { createFormControl } from '../../logic/createFormControl';
-import type { UseFormProps } from '../../types';
+import type { FieldErrors, UseFormProps } from '../../types';
 import { useForm } from '../../useForm';
 
 describe('useForm options removed on re-render', () => {
@@ -245,5 +245,39 @@ describe('useForm options removed on re-render', () => {
 
       expect(screen.getByRole('textbox', { name: 'test' })).toBeEnabled();
     });
+  });
+
+  it('should clear errors when errors option is no longer passed', () => {
+    let setErrors: (errors?: FieldErrors<{ test: string }>) => void = () => {};
+
+    const App = () => {
+      const [errors, setState] = React.useState<
+        FieldErrors<{ test: string }> | undefined
+      >({
+        test: { type: 'server', message: 'server error' },
+      });
+      setErrors = setState;
+      const {
+        register,
+        formState: { errors: formErrors },
+      } = useForm<{ test: string }>({
+        ...(errors ? { errors } : {}),
+      });
+
+      return (
+        <div>
+          <input {...register('test')} />
+          {formErrors.test && <p role="alert">{formErrors.test.message}</p>}
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByRole('alert')).toHaveTextContent('server error');
+
+    act(() => setErrors(undefined));
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 });
