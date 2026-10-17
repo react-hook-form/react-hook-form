@@ -888,6 +888,9 @@ describe('useForm', () => {
         expect(screen.queryByText('taken')).not.toBeInTheDocument(),
       );
 
+      // Client-side error remains
+      expect(screen.getByText('test2 is required')).toBeVisible();
+
       // Form remains invalid because test2 fails client-side validation rules
       expect(screen.getByText('invalid')).toBeVisible();
 
@@ -898,6 +901,59 @@ describe('useForm', () => {
 
       await waitFor(() => expect(screen.getByText('valid')).toBeVisible());
       expect(screen.queryByText('test2 is required')).not.toBeInTheDocument();
+    });
+
+    it('should preserve client-side errors when external errors are removed', async () => {
+      type FormValues = {
+        test1: string;
+        test2: string;
+      };
+
+      const Form = ({ errors }: { errors?: FieldErrors<FormValues> }) => {
+        const {
+          register,
+          formState: { errors: formErrors },
+        } = useForm<FormValues>({
+          mode: 'onChange',
+          defaultValues: { test1: 'valid', test2: '' },
+          errors,
+          shouldFocusError: false,
+        });
+
+        return (
+          <div>
+            <input {...register('test1')} />
+            {formErrors.test1 && <p>{formErrors.test1.message}</p>}
+            <input {...register('test2', { required: 'test2 is required' })} />
+            {formErrors.test2 && <p>{formErrors.test2.message}</p>}
+          </div>
+        );
+      };
+
+      const { rerender } = render(
+        <Form errors={{ test1: { type: 'server', message: 'taken' } }} />,
+      );
+
+      // Trigger client-side validation error.
+      const input = screen.getAllByRole('textbox')[1];
+      fireEvent.change(input, { target: { value: 'a' } });
+      fireEvent.change(input, { target: { value: '' } });
+
+      await waitFor(() => {
+        expect(screen.getByText('test2 is required')).toBeVisible();
+      });
+
+      expect(screen.getByText('taken')).toBeVisible();
+
+      // Remove external errors.
+      rerender(<Form errors={undefined} />);
+
+      await waitFor(() => {
+        expect(screen.queryByText('taken')).not.toBeInTheDocument();
+      });
+
+      // Client-side error must remain.
+      expect(screen.getByText('test2 is required')).toBeVisible();
     });
   });
 

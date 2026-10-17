@@ -4,10 +4,13 @@ import { DEFAULT_FORM_STATE, defaultOptions } from './logic/createFormControl';
 import getProxyFormState from './logic/getProxyFormState';
 import cloneObject from './utils/cloneObject';
 import deepEqual from './utils/deepEqual';
+import isEmptyObject from './utils/isEmptyObject';
 import isFunction from './utils/isFunction';
+import isObject from './utils/isObject';
 import { FORM_ERROR_TYPE } from './constants';
 import { createFormControl } from './logic';
 import type {
+  FieldPath,
   FieldValues,
   FormState,
   UseFormProps,
@@ -15,6 +18,29 @@ import type {
 } from './types';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
 import { useResyncOnReconnect } from './useResyncOnReconnect';
+
+const isFieldError = (val: unknown): boolean =>
+  isObject(val) &&
+  (typeof (val as Record<string, unknown>).type === 'string' ||
+    typeof (val as Record<string, unknown>).message === 'string' ||
+    isObject((val as Record<string, unknown>).types));
+
+const getErrorKeys = (obj: object, prefix = ''): string[] => {
+  const keys: string[] = [];
+
+  for (const key of Object.keys(obj)) {
+    const val = (obj as Record<string, unknown>)[key];
+    const path = prefix ? `${prefix}.${key}` : key;
+
+    if (val && typeof val === 'object' && !isFieldError(val)) {
+      keys.push(...getErrorKeys(val, path));
+    } else {
+      keys.push(path);
+    }
+  }
+
+  return keys;
+};
 
 const RESET_OPTIONS = {
   mode: defaultOptions.mode,
@@ -55,7 +81,7 @@ export function useForm<
   const _values = React.useRef<typeof props.values>(undefined);
   const _formControlProp = React.useRef(props.formControl);
   const _hadValidate = React.useRef(!!props.validate);
-  const _hadErrors = React.useRef(!!props.errors);
+  const _previousErrors = React.useRef(cloneObject(props.errors));
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>(
     () => ({
       ...cloneObject(DEFAULT_FORM_STATE),
@@ -161,13 +187,23 @@ export function useForm<
   }, [control, props.mode, props.reValidateMode]);
 
   React.useEffect(() => {
-    if (props.errors) {
+    if (props.errors && !isEmptyObject(props.errors)) {
       control._setErrors(props.errors);
       control._focusError();
-    } else if (_hadErrors.current) {
-      control._setErrors({});
+    } else if (
+      _previousErrors.current &&
+      !isEmptyObject(_previousErrors.current)
+    ) {
+      const errorKeys = getErrorKeys(_previousErrors.current);
+      if (errorKeys.length) {
+        _formControl.current &&
+          _formControl.current.clearErrors(
+            errorKeys as FieldPath<TFieldValues>[],
+          );
+      }
+      control._setValid();
     }
-    _hadErrors.current = !!props.errors;
+    _previousErrors.current = cloneObject(props.errors);
   }, [control, props.errors]);
 
   React.useEffect(() => {

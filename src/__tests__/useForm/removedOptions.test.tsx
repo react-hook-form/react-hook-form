@@ -151,4 +151,52 @@ describe('useForm options removed on re-render', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     expect(screen.getByText('invalid')).toBeVisible();
   });
+
+  it('should preserve client-side errors when errors option is no longer passed', async () => {
+    let setErrors: (
+      errors?: FieldErrors<{ test1: string; test2: string }>,
+    ) => void = () => {};
+
+    const App = () => {
+      const [errors, setState] = React.useState<
+        FieldErrors<{ test1: string; test2: string }> | undefined
+      >({
+        test1: { type: 'server', message: 'taken' },
+      });
+      setErrors = setState;
+      const {
+        register,
+        formState: { errors: formErrors },
+      } = useForm<{ test1: string; test2: string }>({
+        mode: 'onChange',
+        defaultValues: { test1: 'valid', test2: '' },
+        ...(errors ? { errors } : {}),
+      });
+
+      return (
+        <div>
+          <input {...register('test1')} />
+          {formErrors.test1 && <p>{formErrors.test1.message}</p>}
+          <input {...register('test2', { required: 'test2 is required' })} />
+          {formErrors.test2 && <p>{formErrors.test2.message}</p>}
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    const input = screen.getAllByRole('textbox')[1];
+    fireEvent.change(input, { target: { value: 'a' } });
+    fireEvent.change(input, { target: { value: '' } });
+
+    await waitFor(() => {
+      expect(screen.getByText('test2 is required')).toBeVisible();
+    });
+    expect(screen.getByText('taken')).toBeVisible();
+
+    act(() => setErrors(undefined));
+
+    expect(screen.queryByText('taken')).not.toBeInTheDocument();
+    expect(screen.getByText('test2 is required')).toBeVisible();
+  });
 });
