@@ -16,6 +16,7 @@ import get from './utils/get';
 import insertAt from './utils/insert';
 import isBoolean from './utils/isBoolean';
 import isEmptyObject from './utils/isEmptyObject';
+import isNullOrUndefined from './utils/isNullOrUndefined';
 import isObject from './utils/isObject';
 import isUndefined from './utils/isUndefined';
 import moveArrayAt from './utils/move';
@@ -319,7 +320,7 @@ export function useFieldArray<
       updateValue as FieldArrayWithId<TFieldValues, TFieldArrayName>,
     );
     ids.current = [...updatedFieldArrayValues].map((item, i) =>
-      !item || i === index ? generateId() : ids.current[i],
+      isNullOrUndefined(item) || i === index ? generateId() : ids.current[i],
     );
     updateValues(updatedFieldArrayValues);
     setFields([...updatedFieldArrayValues]);
