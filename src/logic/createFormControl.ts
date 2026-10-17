@@ -1830,10 +1830,8 @@ export function createFormControl<
       _names.array.delete(fieldName);
       _names.disabled.delete(fieldName);
 
-      if (!options.keepValue) {
-        unset(_fields, fieldName);
-        unset(_formValues, fieldName);
-      }
+      unset(_fields, fieldName);
+      !options.keepValue && unset(_formValues, fieldName);
 
       if (!options.keepError) {
         cancelDelayedErrorTree(fieldName);
