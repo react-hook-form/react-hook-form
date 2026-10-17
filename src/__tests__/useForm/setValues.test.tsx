@@ -87,8 +87,10 @@ describe('setValues', () => {
       }),
     );
 
-    // Register a watch(fn) subscriber so values are included in notifications.
-    const watchSub = result.current.watch(() => {});
+    const unsubscribe = result.current.subscribe({
+      formState: { values: true },
+      callback: () => {},
+    });
 
     const control = result.current.control as any;
     const nextSpy = jest.spyOn(control._subjects.state, 'next');
@@ -100,7 +102,7 @@ describe('setValues', () => {
       });
     });
 
-    watchSub.unsubscribe();
+    unsubscribe();
 
     const valueNotifications = nextSpy.mock.calls.filter(
       (call) =>
@@ -126,8 +128,10 @@ describe('setValues', () => {
       result.current.setValue('a', 'changed', { shouldValidate: true });
     });
 
-    // Register a watch(fn) subscriber so values are included in notifications.
-    const watchSub = result.current.watch(() => {});
+    const unsubscribe = result.current.subscribe({
+      formState: { values: true },
+      callback: () => {},
+    });
 
     const control = result.current.control as any;
     const nextSpy = jest.spyOn(control._subjects.state, 'next');
@@ -139,7 +143,7 @@ describe('setValues', () => {
       });
     });
 
-    watchSub.unsubscribe();
+    unsubscribe();
 
     const valueNotifications = nextSpy.mock.calls.filter(
       (call) =>

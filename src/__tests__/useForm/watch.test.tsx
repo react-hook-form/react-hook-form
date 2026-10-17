@@ -18,6 +18,25 @@ import isFunction from '../../utils/isFunction';
 import noop from '../../utils/noop';
 
 describe('watch', () => {
+  it('not call a callback passed to watch', () => {
+    const callback = jest.fn();
+    const { result } = renderHook(() =>
+      useForm<{ test: string }>({ defaultValues: { test: '' } }),
+    );
+
+    act(() => {
+      (result.current.watch as unknown as (callback: () => void) => void)(
+        callback,
+      );
+    });
+
+    act(() => {
+      result.current.setValue('test', 'test');
+    });
+
+    expect(callback).not.toHaveBeenCalled();
+  });
+
   it('return undefined when input gets unregister', async () => {
     const Component = () => {
       const { register, watch, unregister } = useForm<{ test: string }>();

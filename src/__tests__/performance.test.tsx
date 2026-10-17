@@ -47,22 +47,22 @@ describe('onChange value-clone optimization', () => {
     expect(emits.every((p) => !('values' in p))).toBe(true);
   });
 
-  it('emits a values key when watch(fn) is active', async () => {
+  it('emits a values key when a values subscriber is active', async () => {
     let control: any;
 
     function Form() {
       const {
         register,
-        watch,
+        subscribe,
         control: c,
       } = useForm({
         defaultValues: { name: '' },
       });
       control = c;
-      React.useEffect(() => {
-        const sub = watch(() => {});
-        return () => sub.unsubscribe();
-      }, [watch]);
+      React.useEffect(
+        () => subscribe({ formState: { values: true }, callback: () => {} }),
+        [subscribe],
+      );
       return <input {...register('name')} data-testid="name" />;
     }
 
@@ -107,23 +107,25 @@ describe('onChange value-clone optimization', () => {
     expect(emits.some((p) => 'values' in p)).toBe(true);
   });
 
-  it('stops emitting values after watch(fn) unsubscribes', async () => {
+  it('stops emitting values after values subscriber unsubscribes', async () => {
     let control: any;
     let unsubscribeWatch: () => void;
 
     function Form() {
       const {
         register,
-        watch,
+        subscribe,
         control: c,
       } = useForm({
         defaultValues: { name: '' },
       });
       control = c;
       React.useEffect(() => {
-        const sub = watch(() => {});
-        unsubscribeWatch = () => sub.unsubscribe();
-      }, [watch]);
+        unsubscribeWatch = subscribe({
+          formState: { values: true },
+          callback: () => {},
+        });
+      }, [subscribe]);
       return <input {...register('name')} data-testid="name" />;
     }
 
@@ -141,7 +143,7 @@ describe('onChange value-clone optimization', () => {
 
     const emits = changeEmits(nextSpy);
     expect(emits.length).toBeGreaterThan(0);
-    expect(emits.every((p) => !('values' in p))).toBe(false);
+    expect(emits.every((p) => !('values' in p))).toBe(true);
   });
 });
 
@@ -192,13 +194,13 @@ describe('Throughput', () => {
     expect(performance.now() - t0).toBeLessThan(BUDGET_MS);
   });
 
-  it('handles 500 onChange events with an active watch(fn) subscriber within budget', async () => {
+  it('handles 500 onChange events with an active values subscriber within budget', async () => {
     function Form() {
-      const { register, watch } = useForm({ defaultValues: { a: '' } });
-      React.useEffect(() => {
-        const sub = watch(() => {});
-        return () => sub.unsubscribe();
-      }, [watch]);
+      const { register, subscribe } = useForm({ defaultValues: { a: '' } });
+      React.useEffect(
+        () => subscribe({ formState: { values: true }, callback: () => {} }),
+        [subscribe],
+      );
       return <input {...register('a')} data-testid="a" />;
     }
 
@@ -587,7 +589,7 @@ describe('setValues emission batching', () => {
 });
 
 describe('setValues _valuesSubscriberCount guard', () => {
-  it('omits values from the broadcast when no watch(fn) subscriber is active', async () => {
+  it('omits values from the broadcast when no values subscriber is active', async () => {
     const { result } = renderHook(() =>
       useForm({ defaultValues: { a: '', b: '' } }),
     );
@@ -606,7 +608,7 @@ describe('setValues _valuesSubscriberCount guard', () => {
     expect(emits.every((p: any) => !('values' in p))).toBe(true);
   });
 
-  it('includes values in the broadcast when a watch(fn) subscriber is active', async () => {
+  it('includes values in the broadcast when a values subscriber is active', async () => {
     const { result } = renderHook(() =>
       useForm({ defaultValues: { a: '', b: '' } }),
     );
@@ -614,7 +616,10 @@ describe('setValues _valuesSubscriberCount guard', () => {
     result.current.register('a' as any);
     result.current.register('b' as any);
 
-    const watchSub = result.current.watch(() => {});
+    const unsubscribe = result.current.subscribe({
+      formState: { values: true },
+      callback: () => {},
+    });
     const control = result.current.control as any;
     const nextSpy = jest.spyOn(control._subjects.state, 'next');
 
@@ -622,7 +627,7 @@ describe('setValues _valuesSubscriberCount guard', () => {
       result.current.setValues({ a: 'x', b: 'y' } as any);
     });
 
-    watchSub.unsubscribe();
+    unsubscribe();
 
     const emits = nextSpy.mock.calls.map(([p]) => p);
     expect(emits.some((p: any) => 'values' in p)).toBe(true);
@@ -649,30 +654,6 @@ describe('unregister _valuesSubscriberCount guard', () => {
     expect(emits.length).toBeGreaterThan(0);
     expect(emits.every((p: any) => !('values' in p))).toBe(true);
     expect(emits).not.toContainEqual({});
-  });
-
-  it('still delivers unregistered values to a watch(fn) subscriber', () => {
-    const seen: Record<string, unknown>[] = [];
-
-    const { result } = renderHook(() =>
-      useForm({ defaultValues: { a: 'a', b: 'b' } }),
-    );
-
-    result.current.register('a' as any);
-    result.current.register('b' as any);
-
-    const watchSub = result.current.watch((values) => {
-      seen.push(values as Record<string, unknown>);
-    });
-
-    act(() => {
-      result.current.unregister('a' as any);
-    });
-
-    watchSub.unsubscribe();
-
-    expect(seen.length).toBeGreaterThan(0);
-    expect(seen[seen.length - 1]).toEqual({ b: 'b' });
   });
 
   it('tracks a public values subscriber through unsubscribe', () => {
@@ -879,14 +860,11 @@ describe('name-scoped values subscribers', () => {
   it('sends values from onChange to whole-form subscribers', async () => {
     const { result, control, emitsFor } = setup();
     const subscribeCallback = jest.fn();
-    const watchCallback = jest.fn();
 
     control._subscribe({
       formState: { values: true },
       callback: subscribeCallback,
     });
-    result.current.watch(watchCallback);
-
     await changeA(result);
 
     expect(emitsFor('a').some((payload) => 'values' in payload)).toBe(true);
@@ -894,10 +872,6 @@ describe('name-scoped values subscribers', () => {
       expect.objectContaining({
         values: expect.objectContaining({ a: 'x' }),
       }),
-    );
-    expect(watchCallback).toHaveBeenCalledWith(
-      expect.objectContaining({ a: 'x' }),
-      expect.objectContaining({ name: 'a' }),
     );
   });
 
@@ -918,22 +892,6 @@ describe('name-scoped values subscribers', () => {
     expect(emitsFor('a').length).toBeGreaterThan(0);
     expect(emitsFor('a').every((payload) => payload.values === undefined)).toBe(
       true,
-    );
-  });
-
-  it('sends latest values from setValue to watch(fn) without a clone subscriber', () => {
-    const { result } = setup();
-    const watchCallback = jest.fn();
-
-    result.current.watch(watchCallback);
-
-    act(() => {
-      result.current.setValue('a', 'x');
-    });
-
-    expect(watchCallback).toHaveBeenCalledWith(
-      expect.objectContaining({ a: 'x' }),
-      expect.objectContaining({ name: 'a' }),
     );
   });
 
@@ -1139,28 +1097,31 @@ describe('subscribe form state tracking lifetime', () => {
 });
 
 describe('_valuesSubscriberCount idempotency', () => {
-  it('does not go negative when watch(fn) unsubscribe is called twice', () => {
+  it('does not go negative when values subscriber unsubscribe is called twice', () => {
     let control: any;
-    let watchFn: any;
+    let subscribeFn: any;
 
     function Form() {
       const {
         register,
-        watch,
+        subscribe,
         control: c,
       } = useForm({
         defaultValues: { name: '' },
       });
       control = c;
-      watchFn = watch;
+      subscribeFn = subscribe;
       return <input {...register('name')} data-testid="name" />;
     }
 
     render(<Form />);
 
-    const sub = watchFn(() => {});
-    sub.unsubscribe();
-    sub.unsubscribe();
+    const unsubscribe = subscribeFn({
+      formState: { values: true },
+      callback: () => {},
+    });
+    unsubscribe();
+    unsubscribe();
 
     const nextSpy = jest.spyOn(control._subjects.state, 'next');
     fireEvent.change(screen.getByTestId('name'), { target: { value: 'x' } });

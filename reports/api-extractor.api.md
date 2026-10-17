@@ -911,13 +911,6 @@ export type UseFormUnregister<TFieldValues extends FieldValues> = (name?: FieldP
 // @public (undocumented)
 export type UseFormWatch<TFieldValues extends FieldValues> = {
     (): TFieldValues;
-    (callback: (value: TFieldValues, info: {
-        name?: FieldPath<TFieldValues>;
-        type?: EventType;
-        value?: unknown;
-    }) => void, defaultValue?: DeepPartial<TFieldValues>): {
-        unsubscribe: () => void;
-    };
     <TFieldNames extends readonly FieldPath<TFieldValues>[]>(names: readonly [...TFieldNames], defaultValue?: DeepPartial<TFieldValues>): FieldPathValues<TFieldValues, TFieldNames>;
     <TFieldName extends FieldPath<TFieldValues>>(name: TFieldName, defaultValue?: FieldPathValue<TFieldValues, TFieldName>): FieldPathValue<TFieldValues, TFieldName>;
 };
@@ -1071,7 +1064,7 @@ export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValue
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:958:3 - (ae-forgotten-export) The symbol "FormState_2" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:928:3 - (ae-forgotten-export) The symbol "FormState_2" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

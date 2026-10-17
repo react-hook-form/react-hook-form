@@ -1711,48 +1711,14 @@ export function createFormControl<
   };
 
   const watch: UseFormWatch<TFieldValues> = (
-    name?:
-      | FieldPath<TFieldValues>
-      | ReadonlyArray<FieldPath<TFieldValues>>
-      | ((
-          value: TFieldValues,
-          info: {
-            name?: FieldPath<TFieldValues>;
-            type?: EventType;
-            value?: unknown;
-          },
-        ) => void),
+    name?: FieldPath<TFieldValues> | ReadonlyArray<FieldPath<TFieldValues>>,
     defaultValue?: DeepPartial<TFieldValues>,
-  ) => {
-    if (isFunction(name)) {
-      const valuesSubscriber = {};
-      _valuesSubscribers.add(valuesSubscriber);
-      const { unsubscribe } = _subjects.state.subscribe({
-        next: (payload) =>
-          'values' in payload &&
-          name(
-            payload.values || _getWatch(undefined, defaultValue),
-            payload as {
-              name?: FieldPath<TFieldValues>;
-              type?: EventType;
-              value?: unknown;
-            },
-          ),
-      });
-
-      return {
-        unsubscribe: () => {
-          _valuesSubscribers.delete(valuesSubscriber);
-          unsubscribe();
-        },
-      };
-    }
-    return _getWatch(
+  ) =>
+    _getWatch(
       name as InternalFieldName | InternalFieldName[],
       defaultValue,
       true,
     );
-  };
 
   const _subscribe: FromSubscribe<TFieldValues> = (props) => {
     const valuesSubscriber = { name: props.name, exact: props.exact };
