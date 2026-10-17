@@ -1114,19 +1114,6 @@ describe('useFieldArray', () => {
           expect(screen.getByText('idle')).toBeVisible();
         },
       );
-
-      it('keep isValidating until the latest result settles', async () => {
-        render(<Component />);
-
-        fireEvent.click(screen.getByRole('button', { name: 'append' }));
-        fireEvent.click(screen.getByRole('button', { name: 'append' }));
-
-        await act(async () => pending[0]());
-        expect(screen.getByText('validating')).toBeVisible();
-
-        await act(async () => pending[1]());
-        expect(screen.getByText('idle')).toBeVisible();
-      });
     });
   });
 

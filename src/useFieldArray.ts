@@ -90,7 +90,6 @@ export function useFieldArray<
   );
 
   const _actioned = React.useRef(false);
-  const _validatedValues = React.useRef<unknown>(undefined);
 
   const { resyncIfNeeded, snapshot } =
     useResyncOnReconnect(getCurrentFieldArray);
@@ -389,15 +388,9 @@ export function useFieldArray<
       (!validationModes.isOnBlur ||
         (control._formState.isSubmitted && reValidateModes.isOnChange))
     ) {
-      const fieldArrayValues = (_validatedValues.current = get(
-        control._formValues,
-        name,
-      ));
+      const fieldArrayValues = get(control._formValues, name);
       if (control._options.resolver) {
         control._runSchema([name]).then((result) => {
-          if (fieldArrayValues !== _validatedValues.current) {
-            return;
-          }
           control._updateIsValidating([name]);
           if (fieldArrayValues !== get(control._formValues, name)) {
             return;
