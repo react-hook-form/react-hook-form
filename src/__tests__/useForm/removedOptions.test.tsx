@@ -9,6 +9,7 @@ import {
 
 import { Controller } from '../../controller';
 import { createFormControl } from '../../logic/createFormControl';
+import type { UseFormProps } from '../../types';
 import { useForm } from '../../useForm';
 
 describe('useForm options removed on re-render', () => {
@@ -201,5 +202,48 @@ describe('useForm options removed on re-render', () => {
     rerender(<App />);
 
     expect(screen.getByRole('textbox', { name: 'test' })).toBeDisabled();
+  });
+
+  describe('when switching formControl', () => {
+    type Props = Pick<UseFormProps<{ test: string }>, 'formControl'> & {
+      disabled?: boolean;
+    };
+
+    const App = ({ formControl, disabled }: Props) => {
+      const { register } = useForm({
+        formControl,
+        ...(disabled ? { disabled } : {}),
+      });
+
+      return <input aria-label="test" {...register('test')} />;
+    };
+
+    it('should not re-enable a disabled formControl when disabled is no longer passed', () => {
+      const first = createFormControl<{ test: string }>().formControl;
+      const second = createFormControl<{ test: string }>({
+        disabled: true,
+      }).formControl;
+
+      const { rerender } = render(<App formControl={first} disabled />);
+
+      rerender(<App formControl={second} />);
+
+      expect(screen.getByRole('textbox', { name: 'test' })).toBeDisabled();
+    });
+
+    it('should re-enable the new formControl when disabled is removed after the switch', () => {
+      const first = createFormControl<{ test: string }>().formControl;
+      const second = createFormControl<{ test: string }>().formControl;
+
+      const { rerender } = render(<App formControl={first} disabled />);
+
+      rerender(<App formControl={second} disabled />);
+
+      expect(screen.getByRole('textbox', { name: 'test' })).toBeDisabled();
+
+      rerender(<App formControl={second} />);
+
+      expect(screen.getByRole('textbox', { name: 'test' })).toBeEnabled();
+    });
   });
 });

@@ -55,8 +55,8 @@ export function useForm<
   >(undefined);
   const _values = React.useRef<typeof props.values>(undefined);
   const _formControlProp = React.useRef(props.formControl);
+  const _hadDisabled = React.useRef(false);
   const _hadValidate = React.useRef(!!props.validate);
-  const _hadDisabled = React.useRef(!!props.disabled);
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>(
     () => ({
       ...cloneObject(DEFAULT_FORM_STATE),
@@ -74,6 +74,7 @@ export function useForm<
     (props.formControl && _formControlProp.current !== props.formControl)
   ) {
     _formControlProp.current = props.formControl;
+    _hadDisabled.current = false;
     if (props.formControl) {
       _formControl.current = {
         ...props.formControl,
