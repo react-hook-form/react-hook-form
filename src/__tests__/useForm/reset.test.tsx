@@ -60,6 +60,55 @@ describe('reset', () => {
     expect(await submit()).toEqual({ title: 'kept', enabled: 'yes' });
   });
 
+  it('keeps disabled state consistent with retained registrations after reset', async () => {
+    const { register, unregister, reset, handleSubmit } = createFormControl({
+      defaultValues: { title: 'kept', enabled: 'yes' },
+    });
+    register('title');
+    register('title', { disabled: true });
+    register('enabled');
+
+    const submit = () => handleSubmit((data) => data)();
+
+    expect(await submit()).toEqual({ enabled: 'yes' });
+
+    reset(undefined, { keepValues: true });
+
+    expect(await submit()).toEqual({ enabled: 'yes' });
+
+    unregister('title', { keepValue: true });
+
+    expect(await submit()).toEqual({ title: 'kept', enabled: 'yes' });
+
+    register('title');
+
+    expect(await submit()).toEqual({ title: 'kept', enabled: 'yes' });
+
+    register('title', { disabled: true });
+
+    expect(await submit()).toEqual({ enabled: 'yes' });
+  });
+
+  it('drops disabled names whose field reference was discarded before reset', async () => {
+    const { control, register, reset, handleSubmit } = createFormControl({
+      defaultValues: { title: 'kept', enabled: 'yes' },
+    });
+    register('title');
+    register('title', { disabled: true });
+    register('enabled');
+
+    expect(control._names.disabled.has('title')).toBe(true);
+
+    delete control._fields.title;
+    reset(undefined, { keepValues: true });
+
+    expect(control._names.disabled.has('title')).toBe(false);
+    expect(await handleSubmit((data) => data)()).toEqual({
+      title: 'kept',
+      enabled: 'yes',
+    });
+  });
+
   it('reset the form and re-render the form', async () => {
     const { result } = renderHook(() => useForm<{ test: string }>());
 

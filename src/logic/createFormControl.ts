@@ -2198,7 +2198,7 @@ export function createFormControl<
         keepStateOptions.keepValues ||
         keepStateOptions.keepDirtyValues ||
         keepStateOptions.keepFieldsRef
-          ? _names.disabled
+          ? new Set([..._names.disabled].filter((name) => get(_fields, name)))
           : new Set(),
       watch: new Set(),
       watchAll: false,
