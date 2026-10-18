@@ -94,6 +94,76 @@ describe('getValues', () => {
     expect(result.current.getValues('test')).toEqual(undefined);
   });
 
+  it('return fresh containers while preserving nested value references', () => {
+    const { result } = renderHook(() =>
+      useForm({
+        defaultValues: {
+          field: 'value',
+          user: { name: 'test' },
+          items: [{ value: 1 }],
+        },
+      }),
+    );
+    const { getValues } = result.current;
+    const snapshot = getValues();
+    const names = ['user', 'items'] as const;
+    const selected = getValues(names);
+
+    expect(snapshot).not.toBe(getValues());
+    expect(snapshot.user).toBe(getValues('user'));
+    expect(snapshot.items).toBe(getValues('items'));
+    expect(selected).not.toBe(getValues(names));
+    expect(selected[0]).toBe(snapshot.user);
+    expect(selected[1]).toBe(snapshot.items);
+
+    snapshot.field = 'changed outside the form';
+
+    expect(getValues('field')).toBe('value');
+  });
+
+  it.each([
+    { filter: 'dirtyFields', config: { dirtyFields: true } },
+    { filter: 'touchedFields', config: { touchedFields: true } },
+  ] as const)(
+    'preserve form values when filtering with $filter',
+    ({ config }) => {
+      const { result } = renderHook(() =>
+        useForm({
+          defaultValues: {
+            user: { name: 'test', note: 'unchanged' },
+            items: [{ value: 1 }, { value: 2 }],
+          },
+        }),
+      );
+
+      act(() => {
+        result.current.setValue('user.name', 'changed', {
+          shouldDirty: true,
+          shouldTouch: true,
+        });
+        result.current.setValue('items.1.value', 3, {
+          shouldDirty: true,
+          shouldTouch: true,
+        });
+      });
+
+      const filtered = result.current.getValues(undefined, config);
+
+      expect(filtered).toEqual({
+        user: { name: 'changed' },
+        items: [undefined, { value: 3 }],
+      });
+
+      filtered.user.name = 'changed outside the form';
+      filtered.items[1].value = 4;
+
+      expect(result.current.getValues()).toEqual({
+        user: { name: 'changed', note: 'unchanged' },
+        items: [{ value: 1 }, { value: 3 }],
+      });
+    },
+  );
+
   it('get value from shallowFieldsStateRef by name', () => {
     const { result, unmount } = renderHook(() =>
       useForm<{
