@@ -68,14 +68,14 @@ export type UseControllerReturn<
  * const { field, fieldState, formState } = useController();
  *
  * <Controller
- *   render={({ field, formState, fieldState }) => ({
+ *   render={({ field, formState, fieldState }) => (
  *     <input
  *       onChange={field.onChange}
  *       onBlur={field.onBlur}
  *       name={field.name}
  *       ref={field.ref} // optional for focus management
  *     />
- *   })}
+ *   )}
  * />
  * ```
  */
