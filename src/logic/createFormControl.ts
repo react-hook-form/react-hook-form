@@ -170,7 +170,7 @@ export function createFormControl<
   } = {
     ...cloneObject(DEFAULT_FORM_STATE),
     isLoading: isFunction(_options.defaultValues),
-    errors: _options.errors || {},
+    errors: cloneObject(_options.errors) || {},
     disabled: _options.disabled || false,
   };
   let _fields: FieldRefs = {};
@@ -434,7 +434,7 @@ export function createFormControl<
   const _setErrors = (errors: FieldErrors<TFieldValues>) => {
     Object.keys(delayErrorCallbacks).forEach(cancelDelayedError);
     const hasErrors = !isEmptyObject(errors);
-    _formState.errors = errors;
+    _formState.errors = cloneObject(errors);
     _subjects.state.next({
       errors: _formState.errors,
       ...(hasErrors ? { isValid: false } : {}),
@@ -994,7 +994,7 @@ export function createFormControl<
   };
 
   const _getDirty: GetIsDirty = (name, data) => (
-    name && data && set(_formValues, name, data),
+    name && !isUndefined(data) && set(_formValues, name, data),
     !deepEqual(_state.mount ? _formValues : _defaultValues, _defaultValues)
   );
 
@@ -1608,9 +1608,12 @@ export function createFormControl<
       | ReadonlyArray<FieldPath<TFieldValues>>,
     config?: GetValuesConfig,
   ) => {
-    let values = {
-      ...(_state.mount ? _formValues : _defaultValues),
-    };
+    let values =
+      isUndefined(fieldNames) && !config
+        ? { ...(_state.mount ? _formValues : _defaultValues) }
+        : _state.mount
+          ? _formValues
+          : _defaultValues;
 
     if (config) {
       values = extractFormValues(
@@ -1804,10 +1807,8 @@ export function createFormControl<
       _names.array.delete(fieldName);
       _names.disabled.delete(fieldName);
 
-      if (!options.keepValue) {
-        unset(_fields, fieldName);
-        unset(_formValues, fieldName);
-      }
+      unset(_fields, fieldName);
+      !options.keepValue && unset(_formValues, fieldName);
 
       if (!options.keepError) {
         cancelDelayedErrorTree(fieldName);
@@ -2107,7 +2108,7 @@ export function createFormControl<
 
       if (!options.keepDirty) {
         unset(_formState.dirtyFields, name);
-        _formState.isDirty = options.defaultValue
+        _formState.isDirty = !isUndefined(options.defaultValue)
           ? _getDirty(name, cloneObject(get(_defaultValues, name)))
           : _getDirty();
       }

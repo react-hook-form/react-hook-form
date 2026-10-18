@@ -761,6 +761,144 @@ describe('useForm', () => {
 
       await waitFor(() => expect(screen.getByText('invalid')).toBeVisible());
     });
+
+    it('not mutate the errors prop when validation adds or clears an error', async () => {
+      type FormValues = { email: string; name: string };
+      const serverErrors: FieldErrors<FormValues> = {
+        email: { type: 'server', message: 'email taken' },
+      };
+
+      const Form = () => {
+        const {
+          register,
+          clearErrors,
+          formState: { errors },
+        } = useForm<FormValues>({
+          mode: 'onChange',
+          errors: serverErrors,
+          shouldFocusError: false,
+        });
+
+        return (
+          <div>
+            <input {...register('name', { required: 'name required' })} />
+            <p>{errors.name?.message}</p>
+            <button onClick={() => clearErrors('email')}>clear</button>
+          </div>
+        );
+      };
+
+      render(<Form />);
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'x' },
+      });
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '' },
+      });
+      expect(await screen.findByText('name required')).toBeVisible();
+
+      fireEvent.click(screen.getByRole('button'));
+
+      expect(serverErrors).toEqual({
+        email: { type: 'server', message: 'email taken' },
+      });
+    });
+
+    it.each([
+      [
+        'validate on change',
+        () => {
+          fireEvent.change(screen.getByRole('textbox'), {
+            target: { value: 'x' },
+          });
+          fireEvent.change(screen.getByRole('textbox'), {
+            target: { value: '' },
+          });
+        },
+        'street required',
+      ],
+      [
+        'submit',
+        () => fireEvent.click(screen.getByRole('button', { name: 'submit' })),
+        'street required',
+      ],
+      [
+        'clear an error',
+        () => fireEvent.click(screen.getByRole('button', { name: 'clear' })),
+        'no city error',
+      ],
+    ])('%s with a frozen errors prop', async (_, action, message) => {
+      type FormValues = { address: { city: string; street: string } };
+      const onSubmit = jest.fn();
+
+      const Form = ({ errors }: { errors: FieldErrors<FormValues> }) => {
+        const {
+          register,
+          handleSubmit,
+          clearErrors,
+          formState: { errors: formErrors, isSubmitting },
+        } = useForm<FormValues>({
+          mode: 'onChange',
+          errors,
+          shouldFocusError: false,
+        });
+
+        return (
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <input
+              {...register('address.street', { required: 'street required' })}
+            />
+            <p>{formErrors.address?.street?.message}</p>
+            <p>{formErrors.address?.city?.message || 'no city error'}</p>
+            <p>{isSubmitting ? 'submitting' : 'idle'}</p>
+            <button type="button" onClick={() => clearErrors('address.city')}>
+              clear
+            </button>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      const { rerender } = render(<Form errors={{}} />);
+
+      rerender(
+        <Form
+          errors={Object.freeze({
+            address: Object.freeze({
+              city: Object.freeze({ type: 'server', message: 'unknown city' }),
+            }),
+          })}
+        />,
+      );
+      expect(screen.getByText('unknown city')).toBeVisible();
+
+      action();
+
+      expect(await screen.findByText(message)).toBeVisible();
+      expect(screen.getByText('idle')).toBeVisible();
+      expect(onSubmit).not.toHaveBeenCalled();
+    });
+
+    it('validate a createFormControl whose errors option is frozen', async () => {
+      type FormValues = { address: { city: string; street: string } };
+      const { register, trigger, getFieldState } =
+        createFormControl<FormValues>({
+          errors: Object.freeze({
+            address: Object.freeze({
+              city: Object.freeze({ type: 'server', message: 'unknown city' }),
+            }),
+          }),
+        });
+
+      register('address.street', { required: 'street required' });
+
+      expect(await trigger('address.street')).toBe(false);
+      expect(getFieldState('address.street').error?.message).toBe(
+        'street required',
+      );
+      expect(getFieldState('address.city').error?.message).toBe('unknown city');
+    });
   });
 
   describe('handleChangeRef', () => {

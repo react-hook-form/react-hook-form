@@ -1791,8 +1791,12 @@ describe('Controller', () => {
       test: string;
     };
 
-    const MemoField = React.memo(
-      ({ control }: { control: Control<FormValues> }) => (
+    const MemoField = React.memo(function ControlledInput({
+      control,
+    }: {
+      control: Control<FormValues>;
+    }) {
+      return (
         <Controller
           control={control}
           name="test"
@@ -1800,8 +1804,8 @@ describe('Controller', () => {
             <input value={field.value} onChange={field.onChange} />
           )}
         />
-      ),
-    );
+      );
+    });
 
     const App = () => {
       const { control, reset } = useForm<FormValues>({

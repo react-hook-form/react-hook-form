@@ -329,7 +329,7 @@ describe('FormProvider', () => {
   it('not rerender unrelated fields when using useController', () => {
     const onRender = jest.fn();
 
-    const RenderCounter = React.memo(() => {
+    const RenderCounter = React.memo(function ControlledField() {
       useController({
         name: 'value2',
         defaultValue: '',
@@ -381,7 +381,7 @@ describe('FormProvider', () => {
   it('not do unnecessary rerenders by useFormContext', () => {
     const onRender = jest.fn();
 
-    const RenderCounter = React.memo(() => {
+    const RenderCounter = React.memo(function DirtyFields() {
       const {
         formState: { dirtyFields },
       } = useFormContext();
