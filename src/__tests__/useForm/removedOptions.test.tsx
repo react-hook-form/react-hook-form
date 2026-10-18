@@ -280,4 +280,35 @@ describe('useForm options removed on re-render', () => {
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
+  it('should reset resetOptions when resetOptions option is no longer passed', () => {
+    let updateForm: (
+      newProps: UseFormProps<{ test: string }>,
+    ) => void = () => {};
+
+    const App = () => {
+      const [props, setProps] = React.useState<UseFormProps<{ test: string }>>({
+        values: { test: 'initial' },
+        resetOptions: { keepDirtyValues: true },
+      });
+      updateForm = setProps;
+
+      const { register } = useForm<{ test: string }>(props);
+
+      return <input {...register('test')} />;
+    };
+
+    render(<App />);
+
+    const input = screen.getByRole('textbox') as HTMLInputElement;
+    expect(input.value).toBe('initial');
+
+    fireEvent.change(input, { target: { value: 'dirty' } });
+    expect(input.value).toBe('dirty');
+
+    act(() => {
+      updateForm({ values: { test: 'updated' } });
+    });
+
+    expect(input.value).toBe('updated');
+  });
 });
