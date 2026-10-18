@@ -230,6 +230,101 @@ describe('createFormControl', () => {
     expect(probeReads).toBe(1);
   });
 
+  it.each([
+    { phase: 'before mount', mounted: false },
+    { phase: 'after mount', mounted: true },
+  ])(
+    'only copy form values for unfiltered whole-form getValues reads $phase',
+    ({ mounted }) => {
+      const { control, getValues } = createFormControl<{
+        field: string;
+        probe?: string;
+      }>({
+        defaultValues: { field: 'default' },
+      });
+      control._formValues.field = 'updated';
+      control._state.mount = mounted;
+
+      const values = mounted ? control._formValues : control._defaultValues;
+      const probe = jest.fn(() => 'probe');
+
+      Object.defineProperty(values, 'probe', {
+        enumerable: true,
+        get: probe,
+      });
+
+      const expectedValue = mounted ? 'updated' : 'default';
+
+      expect(getValues('field')).toBe(expectedValue);
+      expect(getValues(['field'])).toEqual([expectedValue]);
+      expect(getValues([])).toEqual([]);
+      expect(probe).not.toHaveBeenCalled();
+
+      const snapshot = getValues();
+
+      expect(snapshot).toEqual({ field: expectedValue, probe: 'probe' });
+      expect(snapshot).not.toBe(values);
+      expect(probe).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it.each([
+    { filter: 'dirtyFields', phase: 'before mount', mounted: false },
+    { filter: 'dirtyFields', phase: 'after mount', mounted: true },
+    { filter: 'touchedFields', phase: 'before mount', mounted: false },
+    { filter: 'touchedFields', phase: 'after mount', mounted: true },
+  ] as const)(
+    'not read unrelated fields when filtering getValues by $filter $phase',
+    ({ filter, mounted }) => {
+      const { control, getValues } = createFormControl<{
+        field: string;
+        probe?: string;
+      }>({
+        defaultValues: { field: 'default' },
+      });
+      control._formValues.field = 'updated';
+      control._state.mount = mounted;
+      control._formState[filter] = { field: true };
+
+      const values = mounted ? control._formValues : control._defaultValues;
+      const probe = jest.fn(() => 'probe');
+      const config =
+        filter === 'dirtyFields'
+          ? { dirtyFields: true }
+          : { touchedFields: true };
+
+      Object.defineProperty(values, 'probe', {
+        enumerable: true,
+        get: probe,
+      });
+
+      const expectedValue = mounted ? 'updated' : 'default';
+
+      expect(getValues('field', config)).toBe(expectedValue);
+      expect(getValues(['field', 'probe'], config)).toEqual([
+        expectedValue,
+        undefined,
+      ]);
+      expect(getValues([], config)).toEqual([]);
+
+      const snapshot = getValues(undefined, config);
+
+      expect(snapshot).toEqual({ field: expectedValue });
+      expect(snapshot).not.toBe(values);
+      expect(snapshot).not.toBe(getValues(undefined, config));
+
+      snapshot.field = 'changed outside the form';
+
+      expect(values.field).toBe(expectedValue);
+
+      control._formState[filter] = {};
+
+      expect(getValues(undefined, config)).toEqual({});
+      expect(getValues('field', config)).toBeUndefined();
+      expect(probe).not.toHaveBeenCalled();
+    },
+  );
+
   it('not share a null prototype defaultValues object with form values', () => {
     const defaultValues = Object.assign(Object.create(null), {
       name: '',

@@ -1607,9 +1607,12 @@ export function createFormControl<
       | ReadonlyArray<FieldPath<TFieldValues>>,
     config?: GetValuesConfig,
   ) => {
-    let values = {
-      ...(_state.mount ? _formValues : _defaultValues),
-    };
+    let values =
+      isUndefined(fieldNames) && !config
+        ? { ...(_state.mount ? _formValues : _defaultValues) }
+        : _state.mount
+          ? _formValues
+          : _defaultValues;
 
     if (config) {
       values = extractFormValues(
