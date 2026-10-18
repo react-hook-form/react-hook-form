@@ -19,7 +19,7 @@ export default function extractFormValues<
         (isObject(fieldState) || Array.isArray(fieldState)) &&
         fieldValue
       ) {
-        values[key] = extractFormValues(fieldState, fieldValue as K);
+        values[key] = extractFormValues(fieldState, fieldValue);
       } else if (fieldsState[key]) {
         values[key] = fieldValue;
       }

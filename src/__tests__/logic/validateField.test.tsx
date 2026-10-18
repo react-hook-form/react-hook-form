@@ -6,6 +6,23 @@ jest.mock('../../logic/getRadioValue');
 jest.mock('../../logic/getCheckboxValue');
 
 describe('validateField', () => {
+  it.each(['x', ['x']])(
+    'enforces a numeric zero maxLength for %p',
+    async (value) => {
+      const ref = { type: 'text', name: 'test' };
+      expect(
+        await validateField(
+          { _f: { mount: true, name: 'test', ref, maxLength: 0 } },
+          new Set(),
+          { test: value },
+          false,
+          false,
+          Array.isArray(value),
+        ),
+      ).toEqual({ test: { ref, message: '', type: 'maxLength' } });
+    },
+  );
+
   it('return required true when input not filled with required', async () => {
     (getRadioValue as jest.Mock).mockImplementation(() => ({
       value: '2',

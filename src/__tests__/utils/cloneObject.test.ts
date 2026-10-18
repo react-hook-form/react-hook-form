@@ -239,4 +239,30 @@ describe('clone', () => {
     expect(data.name).toBe('test');
     expect(data.nested.value).toBe(1);
   });
+
+  it('clone object with a constructor key', () => {
+    const data = {
+      constructor: 'Ferrari',
+      nested: { constructor: 'Scuderia', value: 1 },
+    };
+    const copy = cloneObject(data);
+
+    expect(copy).not.toBe(data);
+    expect(copy.nested).not.toBe(data.nested);
+    expect(copy).toEqual(data);
+
+    copy.nested.value = 2;
+
+    expect(data.nested.value).toBe(1);
+  });
+
+  it('skip clone if a class instance has a constructor key', () => {
+    class Foo {
+      a = 1;
+    }
+
+    const object = Object.assign(new Foo(), { constructor: Object });
+
+    expect(cloneObject(object)).toBe(object);
+  });
 });

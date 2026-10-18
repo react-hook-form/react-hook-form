@@ -71,7 +71,7 @@ type PathInternal<T, TraversedTypes = T, D extends number = 9> = [D] extends [
  */
 // We want to explode the union type and process each individually
 // so assignable types don't leak onto the stack from the base.
-export type Path<T> = T extends any ? PathInternal<T> : never;
+export type Path<T> = T extends unknown ? PathInternal<T> : never;
 
 /**
  * See {@link Path}
@@ -145,7 +145,7 @@ type ArrayPathInternal<T, TraversedTypes = T, D extends number = 9> = [
  */
 // We want to explode the union type and process each individually
 // so assignable types don't leak onto the stack from the base.
-export type ArrayPath<T> = T extends any ? ArrayPathInternal<T> : never;
+export type ArrayPath<T> = T extends unknown ? ArrayPathInternal<T> : never;
 
 /**
  * See {@link ArrayPath}
@@ -168,7 +168,7 @@ export type PathValue<T, P extends Path<T> | ArrayPath<T>> = PathValueImpl<
   P
 >;
 
-type PathValueImpl<T, P extends string> = T extends any
+type PathValueImpl<T, P extends string> = T extends unknown
   ? P extends `${infer K}.${infer R}`
     ? K extends keyof T
       ? undefined extends T[K]

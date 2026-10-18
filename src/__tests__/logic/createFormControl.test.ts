@@ -19,6 +19,20 @@ jest.mock('../../logic/getDirtyFields', () => {
 });
 
 describe('createFormControl', () => {
+  it('rejects text with maxLength zero and accepts an empty value', async () => {
+    const { register, trigger, setValue, getFieldState } = createFormControl({
+      defaultValues: { text: 'x' },
+    });
+    register('text', { maxLength: 0 });
+
+    expect(await trigger('text')).toBe(false);
+    expect(getFieldState('text').error?.type).toBe('maxLength');
+
+    setValue('text', '');
+    expect(await trigger('text')).toBe(true);
+    expect(getFieldState('text').error).toBeUndefined();
+  });
+
   it('keep dirtyFields reference stable when dirty fields do not change', () => {
     const { control, setValue, subscribe } = createFormControl<{
       a: string;
@@ -328,5 +342,42 @@ describe('createFormControl', () => {
     expect(control._defaultValues.name).toBe('');
     expect(defaultValues.name).toBe('');
     expect(control._getDirty()).toBe(true);
+  });
+
+  it('not stay dirty when defaultValues holds an empty null prototype object', () => {
+    const { control, register, setValue } = createFormControl({
+      defaultValues: { name: '', filters: Object.create(null) },
+    });
+
+    register('name');
+    control._state.mount = true;
+
+    setValue('name', 'changed');
+    setValue('name', '');
+
+    expect(control._getDirty()).toBe(false);
+  });
+
+  it('not share a defaultValues object that has a constructor key with form values', () => {
+    const defaultValues = {
+      team: { constructor: 'Ferrari', name: 'Scuderia' },
+    };
+    const { control, register, setValue, getValues, reset } = createFormControl(
+      { defaultValues },
+    );
+
+    register('team.name');
+    control._state.mount = true;
+
+    setValue('team.name', 'Maranello');
+
+    expect(getValues('team.name')).toBe('Maranello');
+    expect(control._defaultValues.team.name).toBe('Scuderia');
+    expect(defaultValues.team.name).toBe('Scuderia');
+    expect(control._getDirty()).toBe(true);
+
+    reset();
+
+    expect(getValues('team.name')).toBe('Scuderia');
   });
 });

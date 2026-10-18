@@ -90,6 +90,10 @@ describe('deepEqual', () => {
     ).toBeTruthy();
   });
 
+  it('return false when comparing sparse arrays with different lengths', () => {
+    expect(deepEqual(new Array(2), new Array(3))).toBeFalsy();
+  });
+
   it('return true when comparing sparse array against plain object with numeric string keys (issue #13346)', () => {
     const sparseArray: any[] = [];
     sparseArray[123] = { name: 'Alice' };
@@ -224,6 +228,16 @@ describe('deepEqual', () => {
     expect(deepEqual(new EmptyObject(), new EmptyObject())).toBeFalsy();
   });
 
+  it('compare empty null prototype objects by content', () => {
+    expect(deepEqual(Object.create(null), Object.create(null))).toBeTruthy();
+    expect(
+      deepEqual(
+        { filters: Object.create(null) },
+        { filters: Object.create(null) },
+      ),
+    ).toBeTruthy();
+  });
+
   it('return false when comparing an empty array with an empty plain object', () => {
     expect(deepEqual([], {})).toBeFalsy();
     expect(deepEqual({}, [])).toBeFalsy();
@@ -237,6 +251,15 @@ describe('deepEqual', () => {
       deepEqual({ order: { ref: 'A-100' } }, { order: { ref: 'B-200' } }),
     ).toBeFalsy();
     expect(deepEqual([{ ref: 'A-100' }], [{ ref: 'A-100' }])).toBeTruthy();
+  });
+
+  it('return false when a key only matches via the prototype chain', () => {
+    expect(
+      deepEqual({ toString: Object.prototype.toString }, { x: 1 }),
+    ).toBeFalsy();
+    expect(
+      deepEqual({ x: 1 }, { toString: Object.prototype.toString }),
+    ).toBeFalsy();
   });
 
   it('ignore the `ref` key when comparing field errors', () => {

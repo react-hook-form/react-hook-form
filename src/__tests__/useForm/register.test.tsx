@@ -20,6 +20,7 @@ import type {
   UseFormRegister,
   UseFormReturn,
 } from '../../types';
+import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
 import isFunction from '../../utils/isFunction';
@@ -2337,6 +2338,107 @@ describe('register', () => {
       expect(methods!.getValues('test')).toBe(true);
     });
 
+    it('keep the selected options as the field values', async () => {
+      let methods: UseFormReturn<{ single: string; multiple: string[] }>;
+
+      function App() {
+        methods = useForm({
+          defaultValues: { single: 'a', multiple: ['a'] },
+        });
+        return (
+          <>
+            <select {...methods.register('single')}>
+              <option value="a">A</option>
+              <option value="b">B</option>
+              <option value="c">C</option>
+            </select>
+            <select multiple {...methods.register('multiple')}>
+              <option value="a">A</option>
+              <option value="b">B</option>
+              <option value="c">C</option>
+            </select>
+          </>
+        );
+      }
+
+      const container = document.createElement('div');
+      container.innerHTML = renderToString(<App />);
+      const [single, multiple] = container.querySelectorAll('select');
+      single.value = 'c';
+      multiple.options[1].selected = true;
+      multiple.options[2].selected = true;
+
+      await act(async () => {
+        hydrateRoot(container, <App />);
+      });
+
+      expect(single.value).toBe('c');
+      expect(methods!.getValues()).toEqual({
+        single: 'c',
+        multiple: ['b', 'c'],
+      });
+      expect(methods!.getFieldState('single').isDirty).toBe(true);
+      expect(methods!.getFieldState('multiple').isDirty).toBe(true);
+    });
+
+    it('still set the default values into selects nobody changed', async () => {
+      let methods: UseFormReturn<{
+        single: string;
+        multiple: string[];
+        listbox: string;
+        placeholder: string;
+      }>;
+
+      function App() {
+        methods = useForm({
+          defaultValues: {
+            single: 'b',
+            multiple: ['b'],
+            listbox: 'b',
+            placeholder: 'b',
+          },
+        });
+        return (
+          <>
+            <select {...methods.register('single')}>
+              <option value="a">A</option>
+              <option value="b">B</option>
+            </select>
+            <select multiple {...methods.register('multiple')}>
+              <option value="a">A</option>
+              <option value="b">B</option>
+            </select>
+            <select size={3} {...methods.register('listbox')}>
+              <option value="a">A</option>
+              <option value="b">B</option>
+            </select>
+            <select {...methods.register('placeholder')}>
+              <option value="" disabled>
+                Pick one
+              </option>
+              <option value="a">A</option>
+              <option value="b">B</option>
+            </select>
+          </>
+        );
+      }
+
+      const container = document.createElement('div');
+      container.innerHTML = renderToString(<App />);
+
+      await act(async () => {
+        hydrateRoot(container, <App />);
+      });
+
+      expect(methods!.getValues()).toEqual({
+        single: 'b',
+        multiple: ['b'],
+        listbox: 'b',
+        placeholder: 'b',
+      });
+      expect(methods!.formState.dirtyFields).toEqual({});
+    });
+
     it('still set a reset value into an input edited after the form is ready', async () => {
       let methods: UseFormReturn<{ test: string }>;
 
@@ -2353,6 +2455,84 @@ describe('register', () => {
 
       expect(input.value).toBe('reset');
       expect(methods!.getValues('test')).toBe('reset');
+    });
+  });
+
+  describe('when registering past the end of an array', () => {
+    it('should not add a row to a plain array when registered without a value', () => {
+      const { result } = renderHook(() =>
+        useForm<{ items: { name: string }[] }>({
+          defaultValues: { items: [] },
+        }),
+      );
+
+      result.current.register('items.0.name');
+
+      expect(result.current.getValues('items')).toEqual([]);
+    });
+
+    it('should not add a row to a plain array from a Controller without a value', () => {
+      let getValues: () => unknown;
+
+      const Component = () => {
+        const { control, getValues: _getValues } = useForm<{
+          items: { name: string }[];
+        }>({
+          defaultValues: { items: [] },
+        });
+        getValues = () => _getValues('items');
+
+        return (
+          <Controller
+            control={control}
+            name="items.0.name"
+            render={({ field }) => (
+              <input {...field} value={field.value ?? ''} />
+            )}
+          />
+        );
+      };
+
+      render(<Component />);
+
+      expect(getValues!()).toEqual([]);
+    });
+
+    it('should not add a field array row but still update isValid', async () => {
+      const Component = () => {
+        const {
+          control,
+          register,
+          getValues,
+          formState: { isValid },
+        } = useForm<{ test: { value: string }[] }>({
+          mode: 'onChange',
+          defaultValues: { test: [] },
+        });
+        useFieldArray({ control, name: 'test' });
+
+        return (
+          <>
+            <button
+              type="button"
+              onClick={() => register('test.0.value', { required: true })}
+            >
+              Register
+            </button>
+            <p>{JSON.stringify(getValues('test'))}</p>
+            <p>{isValid ? 'valid' : 'invalid'}</p>
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      expect(await screen.findByText('valid')).toBeVisible();
+
+      fireEvent.click(screen.getByRole('button', { name: 'Register' }));
+
+      expect(await screen.findByText('invalid')).toBeVisible();
+      expect(screen.getByText('[]')).toBeVisible();
     });
   });
 });
