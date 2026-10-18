@@ -15,7 +15,7 @@ export const appendErrors: (name: InternalFieldName, validateAllFieldCriteria: b
 // Warning: (ae-forgotten-export) The symbol "ArrayPathInternal" needs to be exported by the entry point index.d.ts
 //
 // @public
-export type ArrayPath<T> = T extends any ? ArrayPathInternal<T> : never;
+export type ArrayPath<T> = T extends unknown ? ArrayPathInternal<T> : never;
 
 // Warning: (ae-forgotten-export) The symbol "FieldArray_2" needs to be exported by the entry point index.d.ts
 //
@@ -64,7 +64,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     _setErrors: (errors: FieldErrors<TFieldValues>) => void;
     _setDisabledField: (props: {
         disabled?: boolean;
-        name: FieldName<any>;
+        name: InternalFieldName;
     }) => void;
     _runSchema: (names: InternalFieldName[]) => Promise<{
         errors: FieldErrors;
@@ -144,7 +144,7 @@ export type DeepPartial<T> = IsPrimitiveLike<T> extends true ? T : T extends Bro
 };
 
 // @public (undocumented)
-export type DeepPartialSkipArrayKey<T> = IsPrimitiveLike<T> extends true ? T : T extends BrowserNativeObject | NestedValue | OpaqueType ? T : T extends ReadonlyArray<any> ? {
+export type DeepPartialSkipArrayKey<T> = IsPrimitiveLike<T> extends true ? T : T extends BrowserNativeObject | NestedValue | OpaqueType ? T : T extends ReadonlyArray<unknown> ? {
     [K in keyof T]: DeepPartialSkipArrayKey<T[K]>;
 } : {
     [K in keyof T]?: DeepPartialSkipArrayKey<T[K]>;
@@ -256,7 +256,7 @@ export type FieldError = {
 // @public (undocumented)
 export type FieldErrors<T extends FieldValues = FieldValues> = Partial<FieldErrorsImpl<DeepRequired<T>>> & {
     root?: Record<string, GlobalError> & GlobalError;
-    form?: GlobalError;
+    form?: Record<string, GlobalError> & GlobalError;
 };
 
 // @public (undocumented)
@@ -386,7 +386,7 @@ export type FormSubmitHandler<TTransformedValues> = (payload: {
 // @public (undocumented)
 export type FormValidateResult<T> = Partial<Record<keyof T, {
     message: Message | Message[] | boolean | undefined;
-    type: string;
+    type?: string;
 }>> | string | boolean;
 
 // @public (undocumented)
@@ -402,7 +402,7 @@ export type FromSubscribe<TFieldValues extends FieldValues> = <TFieldNames exten
 }) => () => void;
 
 // @public (undocumented)
-export const get: <T>(object: T, path?: string | null, defaultValue?: unknown) => any;
+export const get: <T, TResult = unknown>(object: T, path?: string | null, defaultValue?: unknown) => TResult;
 
 // @public
 export type GetErrorsResult<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues> | ErrorNamespacePath> = TName extends 'root' ? (Record<string, GlobalError> & GlobalError) | undefined : TName extends ErrorNamespacePath ? GlobalError | undefined : TName extends FieldPath<TFieldValues> ? FieldPathError<TFieldValues, TName> | undefined : never;
@@ -445,7 +445,7 @@ export type IsAny<T> = 0 extends 1 & T ? true : false;
 export type IsEqual<T1, T2> = T1 extends T2 ? (<G>() => G extends T1 ? 1 : 2) extends <G>() => G extends T2 ? 1 : 2 ? true : false : false;
 
 // @public (undocumented)
-export type IsFlatObject<T extends object> = Extract<Exclude<T[keyof T], NestedValue | Date | FileList_2 | OpaqueType>, any[] | object> extends never ? true : false;
+export type IsFlatObject<T extends object> = Extract<Exclude<T[keyof T], NestedValue | Date | FileList_2 | OpaqueType>, unknown[] | object> extends never ? true : false;
 
 // @public
 export type IsNever<T> = [T] extends [never] ? true : false;
@@ -531,7 +531,7 @@ export interface OpaqueTypes {
 // Warning: (ae-forgotten-export) The symbol "PathInternal" needs to be exported by the entry point index.d.ts
 //
 // @public
-export type Path<T> = T extends any ? PathInternal<T> : never;
+export type Path<T> = T extends unknown ? PathInternal<T> : never;
 
 // @public
 export type PathString = string;
@@ -1071,8 +1071,8 @@ export type WatchValue<TFieldName, TFieldValues extends FieldValues = FieldValue
 
 // Warnings were encountered during analysis:
 //
-// src/types/form.ts:587:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
-// src/types/form.ts:962:3 - (ae-forgotten-export) The symbol "FormState_2" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:586:3 - (ae-forgotten-export) The symbol "Subscription" needs to be exported by the entry point index.d.ts
+// src/types/form.ts:961:3 - (ae-forgotten-export) The symbol "FormState_2" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

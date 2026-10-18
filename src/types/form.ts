@@ -12,7 +12,6 @@ import type {
 import type { EventType } from './events';
 import type { FieldArray } from './fieldArray';
 import type {
-  FieldName,
   FieldRefs,
   FieldValue,
   FieldValues,
@@ -973,7 +972,7 @@ export type Control<
   _setErrors: (errors: FieldErrors<TFieldValues>) => void;
   _setDisabledField: (props: {
     disabled?: boolean;
-    name: FieldName<any>;
+    name: InternalFieldName;
   }) => void;
   _runSchema: (names: InternalFieldName[]) => Promise<{ errors: FieldErrors }>;
   _updateIsValidating: (

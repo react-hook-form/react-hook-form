@@ -92,7 +92,7 @@ export type DeepPartialSkipArrayKey<T> =
     ? T
     : T extends BrowserNativeObject | NestedValue | OpaqueType
       ? T
-      : T extends ReadonlyArray<any>
+      : T extends ReadonlyArray<unknown>
         ? { [K in keyof T]: DeepPartialSkipArrayKey<T[K]> }
         : { [K in keyof T]?: DeepPartialSkipArrayKey<T[K]> };
 
@@ -151,7 +151,7 @@ export type DeepMap<T, TValue> =
 export type IsFlatObject<T extends object> =
   Extract<
     Exclude<T[keyof T], NestedValue | Date | FileList | OpaqueType>,
-    any[] | object
+    unknown[] | object
   > extends never
     ? true
     : false;

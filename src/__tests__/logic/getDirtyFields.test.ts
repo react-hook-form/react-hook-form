@@ -402,6 +402,22 @@ describe('getDirtyFields', () => {
     });
   });
 
+  it.each([null, undefined])(
+    'mark every default leaf as dirty when form values are %s',
+    (formValues) => {
+      expect(
+        getDirtyFields<Record<string, unknown> | null | undefined>(
+          { type: 'static', value: 100, nested: { name: 'bill' } },
+          formValues,
+        ),
+      ).toEqual({ type: true, value: true, nested: { name: true } });
+
+      expect(
+        getDirtyFields<string[] | null | undefined>(['a', 'b'], formValues),
+      ).toEqual([true, true]);
+    },
+  );
+
   it('mark an array-valued registered field as dirty with a boolean rather than diffing elements (#13584)', () => {
     const fieldRefs = {
       fruits: { _f: { name: 'fruits', ref: {} } },
@@ -443,5 +459,114 @@ describe('getDirtyFields', () => {
     ).toEqual({
       test: [undefined, { value: true }],
     });
+  });
+
+  it('diff nested arrays element-by-element', () => {
+    expect(
+      getDirtyFields(
+        {
+          matrix: [
+            [1, 2],
+            [3, 4],
+          ],
+        },
+        {
+          matrix: [
+            [1, 9],
+            [3, 4],
+          ],
+        },
+      ),
+    ).toStrictEqual({ matrix: [[undefined, true], undefined] });
+  });
+
+  it('diff arrays nested inside array items', () => {
+    expect(
+      getDirtyFields(
+        {
+          steps: [
+            { tags: ['a', 'b'], meta: { values: [{ id: 1 }] } },
+            { tags: ['c'], meta: { values: [{ id: 2 }] } },
+          ],
+        },
+        {
+          steps: [
+            { tags: ['a', 'b'], meta: { values: [{ id: 1 }, { id: 3 }] } },
+            { tags: ['d'], meta: { values: [{ id: 2 }] } },
+          ],
+        },
+      ),
+    ).toStrictEqual({
+      steps: [
+        { meta: { values: [undefined, { id: true }] } },
+        { tags: [true] },
+      ],
+    });
+  });
+
+  it('mark items appended to a nested array as dirty', () => {
+    expect(
+      getDirtyFields(
+        { test: { list: [[{ value: 'a' }]] } },
+        {
+          test: { list: [[{ value: 'a' }, { value: 'b' }], [{ value: 'c' }]] },
+        },
+      ),
+    ).toStrictEqual({
+      test: { list: [[undefined, { value: true }], [{ value: true }]] },
+    });
+  });
+
+  it('mark items removed from a nested array as dirty', () => {
+    expect(
+      getDirtyFields(
+        { test: [{ list: ['a', 'b', 'c'] }] },
+        { test: [{ list: ['a'] }] },
+      ),
+    ).toStrictEqual({ test: [{ list: [undefined, true, true] }] });
+  });
+
+  it('keep holes in sparse form value arrays', () => {
+    const values: { name: string }[] = [];
+    values[2] = { name: 'bill' };
+    const expected: { name: boolean }[] = [];
+    expected[2] = { name: true };
+
+    expect(getDirtyFields({ test: [] }, { test: values })).toStrictEqual({
+      test: expected,
+    });
+  });
+
+  it('skip holes in sparse default value arrays', () => {
+    const defaultValues: { name: string }[] = [];
+    defaultValues[1] = { name: 'bill' };
+
+    expect(
+      getDirtyFields(
+        { test: defaultValues },
+        { test: [{ name: 'luo' }, { name: 'bill' }] },
+      ),
+    ).toStrictEqual({ test: [{ name: true }, undefined] });
+  });
+
+  it('keep sparse nested arrays aligned by index', () => {
+    const inner: string[] = [];
+    inner[3] = 'd';
+    const expected: boolean[] = [];
+    expected[3] = true;
+
+    expect(
+      getDirtyFields({ test: [{ list: [] }] }, { test: [{ list: inner }] }),
+    ).toStrictEqual({ test: [{ list: expected }] });
+  });
+
+  it('merge into existing dirty fields for nested arrays', () => {
+    expect(
+      getDirtyFields(
+        { test: [{ list: ['a', 'b'] }] },
+        { test: [{ list: ['a', 'c'] }] },
+        { test: [{ list: [true] }] },
+      ),
+    ).toStrictEqual({ test: [{ list: [undefined, true] }] });
   });
 });

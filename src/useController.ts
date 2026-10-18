@@ -17,6 +17,7 @@ import type {
   FieldPathValue,
   FieldValues,
   InternalFieldName,
+  Ref,
   UseControllerProps,
   UseControllerReturn,
 } from './types';
@@ -65,9 +66,9 @@ export function useController<
       get(control._defaultValues, name, defaultValue),
     );
 
-    return isUndefined(resolved)
-      ? getNullAncestorValue(control, name)
-      : resolved;
+    return (
+      isUndefined(resolved) ? getNullAncestorValue(control, name) : resolved
+    ) as FieldPathValue<TFieldValues, TName>;
   }, [control, name, defaultValue]);
 
   const value = useWatch({
@@ -75,7 +76,7 @@ export function useController<
     name,
     defaultValue: defaultValueMemo,
     exact,
-  }) as FieldPathValue<TFieldValues, TName>;
+  });
 
   const formState = useFormState({
     control,
@@ -84,7 +85,7 @@ export function useController<
   });
 
   const _props = React.useRef(props);
-  const _proxyRef = React.useRef<any>(null);
+  const _proxyRef = React.useRef<Ref | null>(null);
 
   const _registerProps = React.useRef(
     control.register(name, {
@@ -128,7 +129,7 @@ export function useController<
 
   const onChange = React.useCallback(
     (event: unknown) => {
-      const value = getEventValue(event);
+      const value = getEventValue(event) as FieldPathValue<TFieldValues, TName>;
 
       if (!get(control._fields, name)) {
         _registerProps.current = control.register(name, {
@@ -140,7 +141,7 @@ export function useController<
       return _registerProps.current.onChange({
         target: {
           value: getEventValue(event),
-          name: name as InternalFieldName,
+          name,
         },
         type: EVENTS.CHANGE,
       });
@@ -149,7 +150,10 @@ export function useController<
   );
 
   const onBlur = React.useCallback(() => {
-    const value = get(control._formValues, name);
+    const value: FieldPathValue<TFieldValues, TName> = get(
+      control._formValues,
+      name,
+    );
 
     if (!get(control._fields, name)) {
       _registerProps.current = control.register(name, {
@@ -161,14 +165,14 @@ export function useController<
     return _registerProps.current.onBlur({
       target: {
         value,
-        name: name as InternalFieldName,
+        name,
       },
       type: EVENTS.BLUR,
     });
   }, [name, control]);
 
   const ref = React.useCallback(
-    (elm: any) => {
+    (elm: Partial<HTMLInputElement> | null) => {
       if (elm) {
         _proxyRef.current = {
           focus: () => isFunction(elm.focus) && elm.focus(),
@@ -177,13 +181,13 @@ export function useController<
             isFunction(elm.setCustomValidity) && elm.setCustomValidity(message),
           reportValidity: () =>
             isFunction(elm.reportValidity) && elm.reportValidity(),
-        };
+        } as Ref;
       }
 
-      const field = get(control._fields, name);
+      const field: Field | undefined = get(control._fields, name);
 
       if (field && field._f && elm) {
-        field._f.ref = _proxyRef.current;
+        field._f.ref = _proxyRef.current as Ref;
         field._f._c = true;
       }
     },

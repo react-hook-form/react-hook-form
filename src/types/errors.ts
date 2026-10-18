@@ -56,7 +56,7 @@ export type FieldErrors<T extends FieldValues = FieldValues> = Partial<
   FieldErrorsImpl<DeepRequired<T>>
 > & {
   root?: Record<string, GlobalError> & GlobalError;
-  form?: GlobalError;
+  form?: Record<string, GlobalError> & GlobalError;
 };
 
 /** Resolves the error type stored by {@link FieldErrors} for a field path. */

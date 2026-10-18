@@ -313,9 +313,11 @@ describe('Form', () => {
 
   it.each([
     ['Content-Type', 'application/json', true],
+    ['Content-Type', 'application/JSON', true],
     ['content-type', 'application/json', true],
     ['CoNtEnT-TyPe', 'application/json', true],
     ['content-type', 'text/plain', false],
+    ['content-type', 'application/x-www-form-urlencodedfoo', false],
     ['X-Response-Format', 'application/json', false],
   ] as const)(
     'choose the submission body for header %s: %s',
@@ -353,6 +355,61 @@ describe('Form', () => {
           }),
         );
       });
+    },
+  );
+
+  it.each([
+    [
+      'encType',
+      'application/x-www-form-urlencoded',
+      { encType: 'application/x-www-form-urlencoded' },
+    ],
+    [
+      'headers',
+      'application/x-www-form-urlencoded',
+      { headers: { 'content-type': 'application/x-www-form-urlencoded' } },
+    ],
+    [
+      'headers',
+      'application/x-www-form-urlencoded; charset=UTF-8',
+      {
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        },
+      },
+    ],
+  ] as const)(
+    'send a url-encoded body when %s sets %s',
+    async (_, contentType, props) => {
+      const fetchSpy = jest
+        .spyOn(global, 'fetch')
+        .mockResolvedValueOnce(new Response(null, { status: 200 }));
+      const resume = new Blob(['content'], { type: 'text/plain' });
+
+      const App = () => {
+        const { register, control } = useForm({
+          defaultValues: { name: 'bill', city: 'New York', resume },
+        });
+
+        return (
+          <Form action="/api" control={control} {...props}>
+            <input {...register('name')} />
+            <input {...register('city')} />
+            <button>Submit</button>
+          </Form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+
+      const init = fetchSpy.mock.calls[0][1];
+
+      expect(new Headers(init?.headers).get('content-type')).toBe(contentType);
+      expect(String(init?.body)).toBe('name=bill&city=New+York&resume=blob');
     },
   );
 

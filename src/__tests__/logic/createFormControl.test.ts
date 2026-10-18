@@ -19,6 +19,20 @@ jest.mock('../../logic/getDirtyFields', () => {
 });
 
 describe('createFormControl', () => {
+  it('rejects text with maxLength zero and accepts an empty value', async () => {
+    const { register, trigger, setValue, getFieldState } = createFormControl({
+      defaultValues: { text: 'x' },
+    });
+    register('text', { maxLength: 0 });
+
+    expect(await trigger('text')).toBe(false);
+    expect(getFieldState('text').error?.type).toBe('maxLength');
+
+    setValue('text', '');
+    expect(await trigger('text')).toBe(true);
+    expect(getFieldState('text').error).toBeUndefined();
+  });
+
   it('keep dirtyFields reference stable when dirty fields do not change', () => {
     const { control, setValue, subscribe } = createFormControl<{
       a: string;
@@ -216,6 +230,101 @@ describe('createFormControl', () => {
     expect(probeReads).toBe(1);
   });
 
+  it.each([
+    { phase: 'before mount', mounted: false },
+    { phase: 'after mount', mounted: true },
+  ])(
+    'only copy form values for unfiltered whole-form getValues reads $phase',
+    ({ mounted }) => {
+      const { control, getValues } = createFormControl<{
+        field: string;
+        probe?: string;
+      }>({
+        defaultValues: { field: 'default' },
+      });
+      control._formValues.field = 'updated';
+      control._state.mount = mounted;
+
+      const values = mounted ? control._formValues : control._defaultValues;
+      const probe = jest.fn(() => 'probe');
+
+      Object.defineProperty(values, 'probe', {
+        enumerable: true,
+        get: probe,
+      });
+
+      const expectedValue = mounted ? 'updated' : 'default';
+
+      expect(getValues('field')).toBe(expectedValue);
+      expect(getValues(['field'])).toEqual([expectedValue]);
+      expect(getValues([])).toEqual([]);
+      expect(probe).not.toHaveBeenCalled();
+
+      const snapshot = getValues();
+
+      expect(snapshot).toEqual({ field: expectedValue, probe: 'probe' });
+      expect(snapshot).not.toBe(values);
+      expect(probe).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it.each([
+    { filter: 'dirtyFields', phase: 'before mount', mounted: false },
+    { filter: 'dirtyFields', phase: 'after mount', mounted: true },
+    { filter: 'touchedFields', phase: 'before mount', mounted: false },
+    { filter: 'touchedFields', phase: 'after mount', mounted: true },
+  ] as const)(
+    'not read unrelated fields when filtering getValues by $filter $phase',
+    ({ filter, mounted }) => {
+      const { control, getValues } = createFormControl<{
+        field: string;
+        probe?: string;
+      }>({
+        defaultValues: { field: 'default' },
+      });
+      control._formValues.field = 'updated';
+      control._state.mount = mounted;
+      control._formState[filter] = { field: true };
+
+      const values = mounted ? control._formValues : control._defaultValues;
+      const probe = jest.fn(() => 'probe');
+      const config =
+        filter === 'dirtyFields'
+          ? { dirtyFields: true }
+          : { touchedFields: true };
+
+      Object.defineProperty(values, 'probe', {
+        enumerable: true,
+        get: probe,
+      });
+
+      const expectedValue = mounted ? 'updated' : 'default';
+
+      expect(getValues('field', config)).toBe(expectedValue);
+      expect(getValues(['field', 'probe'], config)).toEqual([
+        expectedValue,
+        undefined,
+      ]);
+      expect(getValues([], config)).toEqual([]);
+
+      const snapshot = getValues(undefined, config);
+
+      expect(snapshot).toEqual({ field: expectedValue });
+      expect(snapshot).not.toBe(values);
+      expect(snapshot).not.toBe(getValues(undefined, config));
+
+      snapshot.field = 'changed outside the form';
+
+      expect(values.field).toBe(expectedValue);
+
+      control._formState[filter] = {};
+
+      expect(getValues(undefined, config)).toEqual({});
+      expect(getValues('field', config)).toBeUndefined();
+      expect(probe).not.toHaveBeenCalled();
+    },
+  );
+
   it('not share a null prototype defaultValues object with form values', () => {
     const defaultValues = Object.assign(Object.create(null), {
       name: '',
@@ -233,5 +342,42 @@ describe('createFormControl', () => {
     expect(control._defaultValues.name).toBe('');
     expect(defaultValues.name).toBe('');
     expect(control._getDirty()).toBe(true);
+  });
+
+  it('not stay dirty when defaultValues holds an empty null prototype object', () => {
+    const { control, register, setValue } = createFormControl({
+      defaultValues: { name: '', filters: Object.create(null) },
+    });
+
+    register('name');
+    control._state.mount = true;
+
+    setValue('name', 'changed');
+    setValue('name', '');
+
+    expect(control._getDirty()).toBe(false);
+  });
+
+  it('not share a defaultValues object that has a constructor key with form values', () => {
+    const defaultValues = {
+      team: { constructor: 'Ferrari', name: 'Scuderia' },
+    };
+    const { control, register, setValue, getValues, reset } = createFormControl(
+      { defaultValues },
+    );
+
+    register('team.name');
+    control._state.mount = true;
+
+    setValue('team.name', 'Maranello');
+
+    expect(getValues('team.name')).toBe('Maranello');
+    expect(control._defaultValues.team.name).toBe('Scuderia');
+    expect(defaultValues.team.name).toBe('Scuderia');
+    expect(control._getDirty()).toBe(true);
+
+    reset();
+
+    expect(getValues('team.name')).toBe('Scuderia');
   });
 });

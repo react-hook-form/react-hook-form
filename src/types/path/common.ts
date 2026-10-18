@@ -28,9 +28,8 @@ export type Traversable = object;
  * IsTuple<number[]> = false
  * ```
  */
-export type IsTuple<T extends ReadonlyArray<any>> = number extends T['length']
-  ? false
-  : true;
+export type IsTuple<T extends ReadonlyArray<unknown>> =
+  number extends T['length'] ? false : true;
 
 /**
  * Type which can be used to index an array or tuple type.
@@ -77,8 +76,8 @@ export type AsPathTuple<T> = Extract<T, PathTuple>;
  * ```
  */
 export type UnionToIntersection<U> = (
-  U extends any ? (_: U) => any : never
-) extends (_: infer I) => any
+  U extends unknown ? (_: U) => void : never
+) extends (_: infer I) => void
   ? I
   : never;
 
@@ -198,7 +197,7 @@ type TryAccess<T, K> = K extends keyof T
  * ```
  */
 type TryAccessArray<
-  T extends ReadonlyArray<any>,
+  T extends ReadonlyArray<unknown>,
   K extends Key,
 > = K extends `${ArrayKey}` ? T[number] : TryAccess<T, K>;
 
@@ -214,7 +213,7 @@ type TryAccessArray<
  * ```
  */
 export type EvaluateKey<T, K extends Key> =
-  T extends ReadonlyArray<any>
+  T extends ReadonlyArray<unknown>
     ? IsTuple<T> extends true
       ? TryAccess<T, K>
       : TryAccessArray<T, K>
@@ -247,9 +246,9 @@ export type EvaluatePath<T, PT extends PathTuple> = PT extends [
  * TupleKeys<[number, string]> = '0' | '1'
  * ```
  */
-export type TupleKeys<T extends ReadonlyArray<any>> = Exclude<
+export type TupleKeys<T extends ReadonlyArray<unknown>> = Exclude<
   keyof T,
-  keyof any[]
+  keyof unknown[]
 >;
 
 /**
@@ -277,7 +276,7 @@ type NumericObjectKeys<T extends Traversable> = ToKey<
  * ```
  */
 export type NumericKeys<T extends Traversable> = UnionToIntersection<
-  T extends ReadonlyArray<any>
+  T extends ReadonlyArray<unknown>
     ? IsTuple<T> extends true
       ? [TupleKeys<T>]
       : [ToKey<ArrayKey>]
@@ -312,7 +311,7 @@ export type ObjectKeys<T extends Traversable> = Exclude<
  * CheckKeyConstraint<string[], number, string> = `${number}`
  * ```
  */
-export type CheckKeyConstraint<T, K extends Key, U> = K extends any
+export type CheckKeyConstraint<T, K extends Key, U> = K extends unknown
   ? EvaluateKey<T, K> extends U
     ? K
     : never
@@ -329,7 +328,7 @@ export type CheckKeyConstraint<T, K extends Key, U> = K extends any
  * ```
  */
 export type ContainsIndexable<T> =
-  IsNever<Extract<T, ReadonlyArray<any>>> extends true ? false : true;
+  IsNever<Extract<T, ReadonlyArray<unknown>>> extends true ? false : true;
 
 /**
  * Type to implement {@link Keys} for non-nullable values.

@@ -346,6 +346,96 @@ describe('unregister', () => {
     );
   });
 
+  it('stop validating a field registered without a ref once it is unregistered with keepValue', async () => {
+    const onValid = jest.fn();
+    const onInvalid = jest.fn();
+
+    const App = () => {
+      const { register, unregister, handleSubmit } = useForm<{
+        phone: string;
+        firstName: string;
+      }>({
+        defaultValues: { phone: '', firstName: 'bill' },
+      });
+
+      React.useEffect(() => {
+        register('phone', { required: true });
+      }, [register]);
+
+      return (
+        <form onSubmit={handleSubmit(onValid, onInvalid)}>
+          <button
+            type="button"
+            onClick={() => unregister('phone', { keepValue: true })}
+          >
+            unregister
+          </button>
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'unregister' }));
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    });
+
+    expect(onInvalid).not.toHaveBeenCalled();
+    expect(onValid).toHaveBeenCalledWith(
+      { phone: '', firstName: 'bill' },
+      expect.any(Object),
+    );
+  });
+
+  it('recompute isValid and trigger without a field unregistered with keepValue', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ phone: string }>({ defaultValues: { phone: '' } }),
+    );
+
+    expect(result.current.formState.isValid).toBe(false);
+
+    act(() => {
+      result.current.register('phone', { required: true });
+    });
+
+    await act(async () => {
+      expect(await result.current.trigger()).toBe(false);
+    });
+
+    act(() => {
+      result.current.unregister('phone', { keepValue: true });
+    });
+
+    await waitFor(() => expect(result.current.formState.isValid).toBe(true));
+
+    await act(async () => {
+      expect(await result.current.trigger()).toBe(true);
+    });
+    expect(result.current.getValues()).toEqual({ phone: '' });
+  });
+
+  it('validate the value kept by keepValue when the field is registered again', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ phone: string }>({ defaultValues: { phone: '' } }),
+    );
+
+    act(() => {
+      result.current.register('phone');
+      result.current.setValue('phone', '12');
+      result.current.unregister('phone', { keepValue: true });
+      result.current.register('phone', { minLength: 3 });
+    });
+
+    await act(async () => {
+      expect(await result.current.trigger('phone')).toBe(false);
+    });
+    expect(result.current.getValues('phone')).toBe('12');
+    expect(result.current.formState.errors.phone?.type).toBe('minLength');
+  });
+
   it('recompute isValidating after unregistering a field with a pending validation', async () => {
     let resolveValidate: (value: boolean) => void;
 
