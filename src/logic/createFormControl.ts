@@ -996,7 +996,7 @@ export function createFormControl<
   };
 
   const _getDirty: GetIsDirty = (name, data) => (
-    name && data && set(_formValues, name, data),
+    name && !isUndefined(data) && set(_formValues, name, data),
     !deepEqual(_state.mount ? _formValues : _defaultValues, _defaultValues)
   );
 
@@ -2132,7 +2132,7 @@ export function createFormControl<
 
       if (!options.keepDirty) {
         unset(_formState.dirtyFields, name);
-        _formState.isDirty = options.defaultValue
+        _formState.isDirty = !isUndefined(options.defaultValue)
           ? _getDirty(name, cloneObject(get(_defaultValues, name)))
           : _getDirty();
       }
