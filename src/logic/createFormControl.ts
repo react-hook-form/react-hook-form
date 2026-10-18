@@ -172,7 +172,7 @@ export function createFormControl<
   } = {
     ...cloneObject(DEFAULT_FORM_STATE),
     isLoading: isFunction(_options.defaultValues),
-    errors: _options.errors || {},
+    errors: cloneObject(_options.errors) || {},
     disabled: _options.disabled || false,
   };
   let _fields: FieldRefs = {};
@@ -436,7 +436,7 @@ export function createFormControl<
   const _setErrors = (errors: FieldErrors<TFieldValues>) => {
     Object.keys(delayErrorCallbacks).forEach(cancelDelayedError);
     const hasErrors = !isEmptyObject(errors);
-    _formState.errors = errors;
+    _formState.errors = cloneObject(errors);
     _subjects.state.next({
       errors: _formState.errors,
       ...(hasErrors ? { isValid: false } : {}),
