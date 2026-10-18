@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  act,
   fireEvent,
   render,
   renderHook,
@@ -2510,6 +2511,73 @@ describe('useWatch', () => {
       screen.getByText('no');
 
       expect(renderCount).toEqual(4);
+    });
+
+    it('use the latest compute when it changes without a form update', () => {
+      let setMin: (min: number) => void = noop;
+
+      const Form = () => {
+        const { control, register } = useForm({
+          defaultValues: { age: 15 },
+        });
+        const [min, _setMin] = React.useState(18);
+        setMin = _setMin;
+
+        const isAdult = useWatch({
+          control,
+          name: 'age',
+          compute: (age) => Number(age) >= min,
+        });
+
+        return (
+          <>
+            <input type="number" {...register('age')} />
+            <p>{isAdult ? 'adult' : 'minor'}</p>
+          </>
+        );
+      };
+
+      render(<Form />);
+      expect(screen.getByText('minor')).toBeVisible();
+
+      act(() => setMin(14));
+      expect(screen.getByText('adult')).toBeVisible();
+
+      // later updates are compared with the result of the new compute
+      fireEvent.change(screen.getByRole('spinbutton'), {
+        target: { value: '10' },
+      });
+      expect(screen.getByText('minor')).toBeVisible();
+    });
+
+    it('keep the computed reference when a new compute returns an equal result', () => {
+      const results: unknown[] = [];
+      let rerender: () => void = noop;
+
+      const Form = () => {
+        const { control } = useForm({
+          defaultValues: { test: 'value' },
+        });
+        const [, setCount] = React.useState(0);
+        rerender = () => setCount((count) => count + 1);
+
+        results.push(
+          useWatch({
+            control,
+            name: 'test',
+            compute: (test) => ({ test }),
+          }),
+        );
+
+        return null;
+      };
+
+      render(<Form />);
+      act(() => rerender());
+      act(() => rerender());
+
+      expect(results[results.length - 1]).toEqual({ test: 'value' });
+      expect(new Set(results).size).toBe(1);
     });
   });
 });

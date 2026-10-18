@@ -135,6 +135,7 @@ export function useWatch<TFieldValues extends FieldValues>(
 
   const _prevControl = React.useRef(control);
   const _prevName = React.useRef(name);
+  const _prevCompute = React.useRef(compute);
 
   _compute.current = compute;
 
@@ -240,6 +241,15 @@ export function useWatch<TFieldValues extends FieldValues>(
     };
   }, [control, exact, name, disabled, resyncIfNeeded, snapshot]);
 
+  // `compute` often closes over props or state, so a new `compute` can give a
+  // different result for the same form values.
+  useIsomorphicLayoutEffect(() => {
+    if (_prevCompute.current !== compute) {
+      _prevCompute.current = compute;
+      _refreshValue.current();
+    }
+  }, [compute]);
+
   React.useEffect(() => control._removeUnmounted());
 
   // If name or control changed for this render, synchronously reflect the
@@ -260,5 +270,17 @@ export function useWatch<TFieldValues extends FieldValues>(
 
   const shouldReturnImmediate = !disabled && (controlChanged || nameChanged);
 
-  return shouldReturnImmediate ? getCurrentOutput() : value;
+  if (shouldReturnImmediate) {
+    return getCurrentOutput();
+  }
+
+  // A new `compute` takes effect in this render; the layout effect above then
+  // stores the result. Keep the previous reference while the result is equal.
+  if (!disabled && _prevCompute.current !== compute) {
+    const output = getCurrentOutput();
+
+    return deepEqual(output, value) ? value : output;
+  }
+
+  return value;
 }
