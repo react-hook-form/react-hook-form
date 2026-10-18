@@ -27,6 +27,7 @@ const RESET_OPTIONS = {
   shouldUseNativeValidation: undefined,
   context: undefined,
   progressive: undefined,
+  resetOptions: undefined,
 } as const;
 
 /**

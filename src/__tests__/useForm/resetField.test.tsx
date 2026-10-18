@@ -1,5 +1,11 @@
 import React from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+} from '@testing-library/react';
 
 import { useForm } from '../../useForm';
 import { useFormState } from '../../useFormState';
@@ -737,4 +743,34 @@ describe('resetField', () => {
 
     jest.useRealTimers();
   });
+  it.each([
+    ['number', 0, 10],
+    ['boolean', false, true],
+    ['string', '', 'hello'],
+  ])(
+    'correctly update isDirty when resetting a field with falsy defaultValue (%s)',
+    (_, falsyDefault, initialDefault) => {
+      const { result } = renderHook(() =>
+        useForm<{ test: unknown }>({
+          defaultValues: { test: initialDefault },
+        }),
+      );
+
+      result.current.register('test');
+      result.current.formState.isDirty;
+
+      act(() => {
+        result.current.setValue('test', 'dirty-value', { shouldDirty: true });
+      });
+
+      expect(result.current.formState.isDirty).toBe(true);
+
+      act(() => {
+        result.current.resetField('test', { defaultValue: falsyDefault });
+      });
+
+      expect(result.current.getValues('test')).toBe(falsyDefault);
+      expect(result.current.formState.isDirty).toBe(false);
+    },
+  );
 });

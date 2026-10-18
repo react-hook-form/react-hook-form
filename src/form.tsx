@@ -6,7 +6,7 @@ import isString from './utils/isString';
 import { safeJSONStringify } from './utils/json';
 import noop from './utils/noop';
 import type { FieldValues, FormProps } from './types';
-import { useFormContext } from './useFormContext';
+import { useFormControlContext } from './useFormControlContext';
 
 const POST_REQUEST = 'post';
 
@@ -32,10 +32,14 @@ export function Form<
   TFieldValues extends FieldValues,
   TTransformedValues = TFieldValues,
 >(props: FormProps<TFieldValues, TTransformedValues>): React.ReactNode {
-  const methods = useFormContext<TFieldValues, unknown, TTransformedValues>();
+  const formControl = useFormControlContext<
+    TFieldValues,
+    unknown,
+    TTransformedValues
+  >();
   const [mounted, setMounted] = React.useState(false);
   const {
-    control = methods.control,
+    control = formControl,
     onSubmit = noop,
     children,
     action,

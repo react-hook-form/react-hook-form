@@ -575,4 +575,37 @@ describe('Form', () => {
       expect(onSuccess).toHaveBeenCalled();
     });
   });
+  it('not re-render Form when unrelated formState updates in FormProvider', () => {
+    let formRenderCount = 0;
+
+    const FormConsumer = React.memo(() => {
+      formRenderCount++;
+      return (
+        <Form>
+          <input data-testid="inside-form" />
+        </Form>
+      );
+    });
+
+    const App = () => {
+      const methods = useForm<{ test: string }>();
+      methods.formState.isDirty;
+
+      return (
+        <FormProvider {...methods}>
+          <FormConsumer />
+          <input data-testid="outside-input" {...methods.register('test')} />
+        </FormProvider>
+      );
+    };
+
+    render(<App />);
+    const initialRenderCount = formRenderCount;
+
+    fireEvent.change(screen.getByTestId('outside-input'), {
+      target: { value: 'updated' },
+    });
+
+    expect(formRenderCount).toBe(initialRenderCount);
+  });
 });
