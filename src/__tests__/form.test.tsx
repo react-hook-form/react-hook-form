@@ -316,7 +316,8 @@ describe('Form', () => {
     ['Content-Type', 'application/JSON', true],
     ['content-type', 'application/json', true],
     ['CoNtEnT-TyPe', 'application/json', true],
-    ['content-type', 'text/plain', false],
+    ['content-type', 'text/csv', false],
+    ['content-type', 'text/plainfoo', false],
     ['content-type', 'application/x-www-form-urlencodedfoo', false],
     ['X-Response-Format', 'application/json', false],
   ] as const)(
@@ -410,6 +411,50 @@ describe('Form', () => {
 
       expect(new Headers(init?.headers).get('content-type')).toBe(contentType);
       expect(String(init?.body)).toBe('name=bill&city=New+York&resume=blob');
+    },
+  );
+
+  it.each([
+    ['encType', 'text/plain', { encType: 'text/plain' }],
+    ['headers', 'text/plain', { headers: { 'content-type': 'text/plain' } }],
+    ['headers', 'Text/Plain', { headers: { 'Content-Type': 'Text/Plain' } }],
+    [
+      'headers',
+      'text/plain; charset=UTF-8',
+      { headers: { 'content-type': 'text/plain; charset=UTF-8' } },
+    ],
+  ] as const)(
+    'send a text/plain body when %s sets %s',
+    async (_, contentType, props) => {
+      const fetchSpy = jest
+        .spyOn(global, 'fetch')
+        .mockResolvedValueOnce(new Response(null, { status: 200 }));
+      const resume = new Blob(['content'], { type: 'text/plain' });
+
+      const App = () => {
+        const { register, control } = useForm({
+          defaultValues: { name: 'bill', city: 'New York', resume },
+        });
+
+        return (
+          <Form action="/api" control={control} {...props}>
+            <input {...register('name')} />
+            <input {...register('city')} />
+            <button>Submit</button>
+          </Form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalled());
+
+      const init = fetchSpy.mock.calls[0][1];
+
+      expect(new Headers(init?.headers).get('content-type')).toBe(contentType);
+      expect(init?.body).toBe('name=bill\r\ncity=New York\r\nresume=blob\r\n');
     },
   );
 
