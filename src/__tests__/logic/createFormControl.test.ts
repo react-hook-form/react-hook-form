@@ -380,4 +380,19 @@ describe('createFormControl', () => {
 
     expect(getValues('team.name')).toBe('Scuderia');
   });
+  it('update form value and evaluate isDirty when data is falsy in _getDirty', () => {
+    const { control } = createFormControl({
+      defaultValues: { count: 1, flag: true, text: 'hello' },
+    });
+    control._state.mount = true;
+
+    expect(control._getDirty('count', 0)).toBe(true);
+    expect(control._formValues.count).toBe(0);
+
+    expect(control._getDirty('flag', false)).toBe(true);
+    expect(control._formValues.flag).toBe(false);
+
+    expect(control._getDirty('text', '')).toBe(true);
+    expect(control._formValues.text).toBe('');
+  });
 });
