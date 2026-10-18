@@ -235,7 +235,11 @@ describe('resetField', () => {
   });
 
   it('notify a memoized field-scoped subscriber after an unrelated field validated via onChange', async () => {
-    const BWatcher = React.memo(({ control }: { control: any }) => {
+    const BWatcher = React.memo(function TouchedField({
+      control,
+    }: {
+      control: any;
+    }) {
       const { touchedFields } = useFormState({
         control,
         name: 'b',
