@@ -140,4 +140,20 @@ describe('flatten', () => {
       'settings.theme': 'dark',
     });
   });
+
+  it('flatten a class instance whose toJSON returns an object', () => {
+    class Address {
+      _city = 'Kyiv';
+      _zip = '01001';
+
+      toJSON() {
+        return { city: this._city, zip: this._zip };
+      }
+    }
+
+    expect(flatten({ address: new Address() })).toEqual({
+      'address.city': 'Kyiv',
+      'address.zip': '01001',
+    });
+  });
 });

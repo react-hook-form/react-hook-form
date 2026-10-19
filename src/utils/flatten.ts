@@ -22,12 +22,24 @@ export const flatten = (obj: FieldValues) => {
       !isFileLike(obj[key]) &&
       !isFileListLike(obj[key])
     ) {
-      if ('toJSON' in obj[key] && isFunction(obj[key].toJSON)) {
-        output[key] = obj[key].toJSON();
-        continue;
+      let value = obj[key];
+
+      if ('toJSON' in value && isFunction(value.toJSON)) {
+        value = value.toJSON();
+
+        if (
+          !isObjectType(value) ||
+          value === null ||
+          isDateObject(value) ||
+          isFileLike(value) ||
+          isFileListLike(value)
+        ) {
+          output[key] = value;
+          continue;
+        }
       }
 
-      const nested = flatten(obj[key]);
+      const nested = flatten(value);
 
       for (const nestedKey of Object.keys(nested)) {
         output[`${key}.${nestedKey}`] = nested[nestedKey];
