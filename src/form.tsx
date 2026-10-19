@@ -78,6 +78,27 @@ export function Form<
               )) ||
             (encType && type.test(encType));
 
+          let body: BodyInit = formData;
+
+          if (hasContentType(/json/i)) {
+            body = formDataJson;
+          } else if (
+            hasContentType(/^\s*application\/x-www-form-urlencoded\s*(;|$)/i)
+          ) {
+            body = new URLSearchParams(
+              Array.from(formData, ([name, value]) => [
+                name,
+                isString(value) ? value : value.name,
+              ]),
+            );
+          } else if (hasContentType(/^\s*text\/plain\s*(;|$)/i)) {
+            body = Array.from(
+              formData,
+              ([name, value]) =>
+                `${name}=${isString(value) ? value : value.name}\r\n`,
+            ).join('');
+          }
+
           const response = await fetch(action, {
             method,
             headers: {
@@ -87,18 +108,7 @@ export function Form<
                   'Content-Type': encType,
                 }),
             },
-            body: hasContentType(/json/i)
-              ? formDataJson
-              : hasContentType(
-                    /^\s*application\/x-www-form-urlencoded\s*(;|$)/i,
-                  )
-                ? new URLSearchParams(
-                    Array.from(formData, ([name, value]) => [
-                      name,
-                      isString(value) ? value : value.name,
-                    ]),
-                  )
-                : formData,
+            body,
           });
 
           if (response && !validateStatus(response.status)) {
