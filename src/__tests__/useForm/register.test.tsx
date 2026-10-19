@@ -2458,6 +2458,36 @@ describe('register', () => {
     });
   });
 
+  describe('with progressive', () => {
+    it.each([
+      [/^[a-z][a-z0-9_]*$/i, true, 'JohnDoe'],
+      [/src/, true, 'my src file'],
+      [/src/, false, 'none'],
+      [/^[a-z]+$/, true, 'abc'],
+      [/^[a-z]+$/, false, 'abc1'],
+      [/cat|dog/, true, 'a dog'],
+      [/cat|dog/, false, 'bird'],
+    ])(
+      'make the native check of %s give %s for "%s"',
+      (pattern, valid, value) => {
+        function App() {
+          const { register } = useForm<{ test: string }>({
+            progressive: true,
+          });
+          return <input {...register('test', { pattern })} />;
+        }
+
+        const container = document.createElement('div');
+        container.innerHTML = renderToString(<App />);
+        const input = container.querySelector('input') as HTMLInputElement;
+        input.value = value;
+
+        expect(pattern.test(value)).toBe(valid);
+        expect(input.checkValidity()).toBe(valid);
+      },
+    );
+  });
+
   describe('when registering past the end of an array', () => {
     it('should not add a row to a plain array when registered without a value', () => {
       const { result } = renderHook(() =>

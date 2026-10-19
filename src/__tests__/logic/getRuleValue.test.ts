@@ -6,14 +6,22 @@ describe('getRuleValue', () => {
     expect(getRuleValue('2')).toEqual('2');
     expect(getRuleValue(2)).toEqual(2);
 
-    expect(getRuleValue(/test/)).toEqual('test');
+    expect(getRuleValue(/test/)).toEqual('.*(?:test).*');
+    expect(getRuleValue(/a|b/)).toEqual('.*(?:a|b).*');
 
     expect(getRuleValue({ value: '2', message: 'data' })).toEqual('2');
     expect(getRuleValue({ value: '1990/09/09', message: 'data' })).toEqual(
       '1990/09/09',
     );
     expect(getRuleValue({ value: 2, message: 'data' })).toEqual(2);
-    expect(getRuleValue({ value: /test/, message: 'data' })).toEqual('test');
+    expect(getRuleValue({ value: /test/, message: 'data' })).toEqual(
+      '.*(?:test).*',
+    );
+  });
+
+  it('return undefined for a case-insensitive pattern', () => {
+    expect(getRuleValue(/test/i)).toBeUndefined();
+    expect(getRuleValue({ value: /test/i, message: 'data' })).toBeUndefined();
   });
 
   it('return undefined when no value is set', () => {
