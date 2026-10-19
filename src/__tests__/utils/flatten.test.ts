@@ -1,5 +1,23 @@
 import { flatten } from '../../utils/flatten';
 
+class DateValue {
+  $y: number;
+  $M: number;
+  $D: number;
+  $d: Date;
+
+  constructor(iso: string) {
+    this.$d = new Date(iso);
+    this.$y = this.$d.getUTCFullYear();
+    this.$M = this.$d.getUTCMonth();
+    this.$D = this.$d.getUTCDate();
+  }
+
+  toJSON() {
+    return this.$d.toISOString();
+  }
+}
+
 describe('flatten', () => {
   it('flatten form values into flat form data', () => {
     expect(
@@ -77,6 +95,49 @@ describe('flatten', () => {
     expect(flatten({ name: 'Alice', attachments: fileList })).toEqual({
       name: 'Alice',
       attachments: fileList,
+    });
+  });
+
+  it('use the toJSON value of a class instance instead of its fields', () => {
+    expect(
+      flatten({
+        name: 'bill',
+        startDate: new DateValue('2026-10-13T00:00:00.000Z'),
+      }),
+    ).toEqual({
+      name: 'bill',
+      startDate: '2026-10-13T00:00:00.000Z',
+    });
+  });
+
+  it('use the toJSON value of nested and indexed class instances', () => {
+    expect(
+      flatten({
+        range: { start: new DateValue('2026-10-13T00:00:00.000Z') },
+        dates: [new DateValue('2026-10-14T00:00:00.000Z')],
+      }),
+    ).toEqual({
+      'range.start': '2026-10-13T00:00:00.000Z',
+      'dates.0': '2026-10-14T00:00:00.000Z',
+    });
+  });
+
+  it('flatten a class instance without toJSON into its fields', () => {
+    class Address {
+      city = 'Kyiv';
+      zip = '01001';
+    }
+
+    expect(flatten({ address: new Address() })).toEqual({
+      'address.city': 'Kyiv',
+      'address.zip': '01001',
+    });
+  });
+
+  it('flatten an object whose toJSON is not a function', () => {
+    expect(flatten({ settings: { toJSON: 'on', theme: 'dark' } })).toEqual({
+      'settings.toJSON': 'on',
+      'settings.theme': 'dark',
     });
   });
 });
