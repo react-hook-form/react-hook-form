@@ -668,6 +668,44 @@ describe('Form', () => {
       new Headers(fetchSpy.mock.calls[0][1]?.headers).has('content-type'),
     ).toBe(false);
   });
+
+  it.each(['Multipart/Form-Data', 'multipart/form-data; charset=UTF-8'])(
+    'omit Content-Type header when encType is %s',
+    async (encType) => {
+      const fetchSpy = jest
+        .spyOn(global, 'fetch')
+        .mockResolvedValueOnce(new Response(null, { status: 200 }));
+
+      const onSuccess = jest.fn();
+
+      const App = () => {
+        const { control } = useForm();
+
+        return (
+          <Form
+            encType={encType}
+            action={'/formData'}
+            control={control}
+            onSuccess={onSuccess}
+          >
+            <button>Submit</button>
+          </Form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      await waitFor(() => {
+        expect(onSuccess).toHaveBeenCalled();
+      });
+
+      expect(
+        new Headers(fetchSpy.mock.calls[0][1]?.headers).has('content-type'),
+      ).toBe(false);
+    },
+  );
   it('not re-render Form when unrelated formState updates in FormProvider', () => {
     let formRenderCount = 0;
 
