@@ -2210,6 +2210,7 @@ export function createFormControl<
     const isEmptyResetValues = isEmptyObject(formValues);
     const values = cloneUpdatedValues;
     const fieldRefs = _fields;
+    const controllerFieldNames: InternalFieldName[] = [];
 
     Object.keys(delayErrorCallbacks).forEach(cancelDelayedError);
 
@@ -2268,7 +2269,23 @@ export function createFormControl<
             );
           }
         } else {
-          _fields = {};
+          const fields: FieldRefs = {};
+
+          for (const fieldName of _names.mount) {
+            const field: Field | undefined = get(_fields, fieldName);
+
+            if (
+              field &&
+              field._f &&
+              field._f._c &&
+              !isUndefined(get(values, fieldName))
+            ) {
+              set(fields, fieldName, field);
+              controllerFieldNames.push(fieldName);
+            }
+          }
+
+          _fields = fields;
         }
       }
 
@@ -2324,6 +2341,18 @@ export function createFormControl<
     _state.action = false;
     _state.actionArrayLengths.clear();
     _dirtyFieldsStale = false;
+
+    for (const fieldName of controllerFieldNames) {
+      const field: Field = get(_fields, fieldName);
+
+      _names.mount.add(fieldName);
+
+      if (field._f.disabled) {
+        _names.disabled.add(fieldName);
+      }
+
+      updateValidAndValue(fieldName, true);
+    }
 
     if (!keepStateOptions.keepErrors) {
       _formState.errors = {};

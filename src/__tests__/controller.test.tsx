@@ -9,10 +9,12 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../controller';
+import { createFormControl } from '../logic/createFormControl';
 import type {
   Control,
   ControllerRenderProps,
   FieldValues,
+  UseFormProps,
   ValidateResult,
 } from '../types';
 import { useFieldArray } from '../useFieldArray';
@@ -34,6 +36,45 @@ function Input<TFieldValues extends FieldValues>({
       onChange={() => onChange(1)}
       onBlur={() => onBlur()}
     />
+  );
+}
+
+const MemoizedField = React.memo(function MemoizedField({
+  control,
+  disabled,
+}: {
+  control: Control<{ test: string }>;
+  disabled?: boolean;
+}) {
+  return (
+    <Controller
+      control={control}
+      name="test"
+      disabled={disabled}
+      rules={{ required: 'required' }}
+      render={({ field }) => <input {...field} />}
+    />
+  );
+});
+
+function MemoizedFieldForm({
+  formControl,
+  disabled,
+  shouldUnregister,
+  onValid = noop,
+}: {
+  formControl: UseFormProps<{ test: string }>['formControl'];
+  disabled?: boolean;
+  shouldUnregister?: boolean;
+  onValid?: () => void;
+}) {
+  const { control, handleSubmit } = useForm({ formControl, shouldUnregister });
+
+  return (
+    <form onSubmit={handleSubmit(onValid)}>
+      <MemoizedField control={control} disabled={disabled} />
+      <button>submit</button>
+    </form>
   );
 }
 
@@ -1816,6 +1857,111 @@ describe('Controller', () => {
     });
 
     await waitFor(() => expect(screen.getByRole('textbox')).toHaveValue('a'));
+  });
+
+  it('validate a memoized Controller on submit after reset', async () => {
+    const onValid = jest.fn();
+    const { formControl, reset, getFieldState } = createFormControl({
+      defaultValues: { test: '' },
+    });
+
+    render(<MemoizedFieldForm formControl={formControl} onValid={onValid} />);
+
+    actComponent(() => reset({ test: '' }));
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() =>
+      expect(getFieldState('test').error?.message).toBe('required'),
+    );
+    expect(onValid).not.toHaveBeenCalled();
+  });
+
+  it('validate a memoized Controller with trigger after each reset', async () => {
+    const { formControl, reset, trigger } = createFormControl({
+      defaultValues: { test: '' },
+    });
+
+    render(<MemoizedFieldForm formControl={formControl} />);
+
+    actComponent(() => reset({ test: '' }));
+    await actComponent(async () => {
+      expect(await trigger()).toBe(false);
+    });
+
+    actComponent(() => reset({ test: '' }));
+    await actComponent(async () => {
+      expect(await trigger('test')).toBe(false);
+    });
+  });
+
+  it('focus a memoized Controller with setFocus after reset', async () => {
+    const { formControl, reset, setFocus } = createFormControl({
+      defaultValues: { test: '' },
+    });
+
+    render(<MemoizedFieldForm formControl={formControl} />);
+
+    actComponent(() => reset({ test: '' }));
+    actComponent(() => setFocus('test'));
+
+    await waitFor(() => expect(screen.getByRole('textbox')).toHaveFocus());
+  });
+
+  it('keep a disabled memoized Controller out of submit values after reset', async () => {
+    const onValid = jest.fn();
+    const { formControl, reset } = createFormControl({
+      defaultValues: { test: '' },
+    });
+
+    render(
+      <MemoizedFieldForm
+        formControl={formControl}
+        onValid={onValid}
+        disabled
+      />,
+    );
+
+    actComponent(() => reset({ test: '' }));
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => expect(onValid).toHaveBeenCalled());
+    expect(onValid.mock.calls[0][0]).toEqual({});
+  });
+
+  it('keep a memoized Controller value after reset with shouldUnregister', async () => {
+    const onValid = jest.fn();
+    const { formControl, reset } = createFormControl({
+      defaultValues: { test: 'value' },
+    });
+
+    render(
+      <MemoizedFieldForm
+        formControl={formControl}
+        onValid={onValid}
+        shouldUnregister
+      />,
+    );
+
+    actComponent(() => reset({ test: 'value' }));
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => expect(onValid).toHaveBeenCalled());
+    expect(onValid.mock.calls[0][0]).toEqual({ test: 'value' });
+  });
+
+  it('skip a memoized Controller whose name the reset values omit', async () => {
+    const onValid = jest.fn();
+    const { formControl, reset } = createFormControl({
+      defaultValues: { test: '' },
+    });
+
+    render(<MemoizedFieldForm formControl={formControl} onValid={onValid} />);
+
+    actComponent(() => reset({}));
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => expect(onValid).toHaveBeenCalled());
+    expect(onValid.mock.calls[0][0]).toEqual({});
   });
 
   it('stop enforcing Controller rules removed at runtime', async () => {
