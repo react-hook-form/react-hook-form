@@ -2037,8 +2037,7 @@ export function createFormControl<
       e?: React.BaseSyntheticEvent,
     ): Promise<Awaited<TResult> | undefined> => {
       let result: Awaited<TResult> | undefined = undefined;
-      let submitError: unknown;
-      let hasSubmitError = false;
+      let onValidError = undefined;
       if (e) {
         e.preventDefault && e.preventDefault();
         e.persist && e.persist();
@@ -2053,70 +2052,76 @@ export function createFormControl<
       });
 
       const resetCallId = _resetCallId;
-
-      try {
-        if (_options.resolver) {
-          const { errors, values } = await _runSchema();
-
-          if (resetCallId !== _resetCallId) {
-            return;
-          }
-
-          _updateIsValidating();
-          Object.keys(delayErrorCallbacks).forEach(cancelDelayedError);
-          _formState.errors = errors;
-          fieldValues = cloneObject(values);
-        } else {
-          await executeBuiltInValidation({
-            fields: _fields,
-            eventType: EVENTS.SUBMIT,
-          });
-
-          if (resetCallId !== _resetCallId) {
-            return;
-          }
-
-          unset(_formState.errors, ROOT_ERROR_TYPE);
-          _formState.errors = { ..._formState.errors };
-        }
-
-        if (_names.disabled.size) {
-          for (const name of _names.disabled) {
-            unset(fieldValues, name);
-          }
-        }
-
-        if (isEmptyObject(_formState.errors)) {
-          _subjects.state.next({
-            errors: {},
-          });
-          result = await onValid(fieldValues as TTransformedValues, e);
-        } else {
-          if (onInvalid) {
-            await onInvalid({ ..._formState.errors }, e);
-          }
-
-          _focusError();
-          setTimeout(_focusError);
-        }
-      } catch (error) {
-        hasSubmitError = true;
-        submitError = error;
-      } finally {
+      const onSubmitError = (error: unknown): never => {
         if (resetCallId === _resetCallId) {
-          _subjects.state.next({
-            isSubmitted: true,
-            isSubmitting: false,
-            isSubmitSuccessful:
-              isEmptyObject(_formState.errors) && !hasSubmitError,
-            submitCount: _formState.submitCount + 1,
-            errors: _formState.errors,
-          });
+          _subjects.state.next({ isSubmitting: false });
+        }
+
+        throw error;
+      };
+
+      if (_options.resolver) {
+        const { errors, values } = await _runSchema().catch(onSubmitError);
+
+        if (resetCallId !== _resetCallId) {
+          return;
+        }
+
+        _updateIsValidating();
+        Object.keys(delayErrorCallbacks).forEach(cancelDelayedError);
+        _formState.errors = errors;
+        fieldValues = cloneObject(values);
+      } else {
+        await executeBuiltInValidation({
+          fields: _fields,
+          eventType: EVENTS.SUBMIT,
+        }).catch(onSubmitError);
+
+        if (resetCallId !== _resetCallId) {
+          return;
+        }
+
+        unset(_formState.errors, ROOT_ERROR_TYPE);
+        _formState.errors = { ..._formState.errors };
+      }
+
+      if (_names.disabled.size) {
+        for (const name of _names.disabled) {
+          unset(fieldValues, name);
         }
       }
 
-      if (hasSubmitError) {
-        throw submitError;
+      if (isEmptyObject(_formState.errors)) {
+        _subjects.state.next({
+          errors: {},
+        });
+        try {
+          result = await onValid(fieldValues as TTransformedValues, e);
+        } catch (error) {
+          onValidError = error;
+        }
+      } else {
+        if (onInvalid) {
+          try {
+            await onInvalid({ ..._formState.errors }, e);
+          } catch (error) {
+            onSubmitError(error);
+          }
+        }
+
+        _focusError();
+        setTimeout(_focusError);
+      }
+
+      _subjects.state.next({
+        isSubmitted: true,
+        isSubmitting: false,
+        isSubmitSuccessful: isEmptyObject(_formState.errors) && !onValidError,
+        submitCount: _formState.submitCount + 1,
+        errors: _formState.errors,
+      });
+      if (onValidError) {
+        throw onValidError;
       }
       return result;
     };

@@ -35,11 +35,11 @@ const useFormWithSubmitState = (props?: UseFormProps<TestFormValues>) => {
   };
 };
 
-const settledFailedSubmitState = {
+const exceptionalSubmitState = {
   isSubmitting: false,
-  isSubmitted: true,
+  isSubmitted: false,
   isSubmitSuccessful: false,
-  submitCount: 1,
+  submitCount: 0,
 };
 
 const captureError = async (callback: () => Promise<unknown>) => {
@@ -584,7 +584,7 @@ describe('handleSubmit', () => {
   });
 
   it.each(['throws', 'rejects'] as const)(
-    'bubble the original error up and settle formState when onInvalid %s',
+    'preserve the original error and only settle isSubmitting when onInvalid %s',
     async (failureType) => {
       const expectedError = new Error(`onInvalid ${failureType}`);
       const { result } = renderHook(() => useFormWithSubmitState());
@@ -605,7 +605,7 @@ describe('handleSubmit', () => {
 
       expect(error).toBe(expectedError);
       expect(result.current.state).toEqual({
-        ...settledFailedSubmitState,
+        ...exceptionalSubmitState,
         errors: {
           test: expect.objectContaining({
             type: 'required',
@@ -617,7 +617,7 @@ describe('handleSubmit', () => {
   );
 
   it.each(['throws', 'rejects'] as const)(
-    'bubble the original error up and settle formState when the resolver %s',
+    'preserve the original error and only settle isSubmitting when the resolver %s',
     async (failureType) => {
       const expectedError = new Error(`resolver ${failureType}`);
       const resolver =
@@ -637,14 +637,14 @@ describe('handleSubmit', () => {
 
       expect(error).toBe(expectedError);
       expect(result.current.state).toEqual({
-        ...settledFailedSubmitState,
+        ...exceptionalSubmitState,
         errors: {},
       });
     },
   );
 
   it.each(['throws', 'rejects'] as const)(
-    'bubble the original error up and settle formState when a validator %s',
+    'preserve the original error and only settle isSubmitting when a validator %s',
     async (failureType) => {
       const expectedError = new Error(`validator ${failureType}`);
       const { result } = renderHook(() => useFormWithSubmitState());
@@ -664,13 +664,13 @@ describe('handleSubmit', () => {
 
       expect(error).toBe(expectedError);
       expect(result.current.state).toEqual({
-        ...settledFailedSubmitState,
+        ...exceptionalSubmitState,
         errors: {},
       });
     },
   );
 
-  it('bubble a falsy thrown value up', async () => {
+  it('preserve a falsy value thrown by onInvalid', async () => {
     const { result } = renderHook(() => useFormWithSubmitState());
 
     result.current.methods.register('test', { required: true });
@@ -683,37 +683,40 @@ describe('handleSubmit', () => {
     expect(error).toBe(0);
   });
 
-  it('not overwrite reset state when reset runs before submit settlement', async () => {
-    const { result } = renderHook(() =>
-      useFormWithSubmitState({ defaultValues: { test: 'before' } }),
-    );
+  it('not publish submit cleanup after reset supersedes validation', async () => {
+    const expectedError = new Error('resolver failed after reset');
+    let rejectResolver!: (error: Error) => void;
+    const { handleSubmit, reset, subscribe } =
+      createFormControl<TestFormValues>({
+        defaultValues: { test: 'before' },
+        resolver: () =>
+          new Promise((_, reject) => {
+            rejectResolver = reject;
+          }),
+      });
     const onValid = jest.fn();
-    let resetCalled = false;
-    const unsubscribe = result.current.methods.subscribe({
-      formState: { errors: true },
-      callback: () => {
-        if (!resetCalled) {
-          resetCalled = true;
-          result.current.methods.reset({ test: 'after' });
-        }
-      },
+    const onInvalid = jest.fn();
+    const subscriber = jest.fn();
+    const unsubscribe = subscribe({
+      formState: { isSubmitting: true },
+      callback: subscriber,
     });
 
-    await act(async () => {
-      await result.current.methods.handleSubmit(onValid)();
-    });
+    const submitPromise = handleSubmit(onValid, onInvalid)();
+
+    reset({ test: 'after' });
+    expect(subscriber).toHaveBeenLastCalledWith(
+      expect.objectContaining(exceptionalSubmitState),
+    );
+    subscriber.mockClear();
+
+    rejectResolver(expectedError);
+    await expect(submitPromise).rejects.toBe(expectedError);
+
+    expect(subscriber).not.toHaveBeenCalled();
+    expect(onValid).not.toHaveBeenCalled();
+    expect(onInvalid).not.toHaveBeenCalled();
     unsubscribe();
-
-    expect(resetCalled).toBe(true);
-    expect(onValid).toHaveBeenCalledTimes(1);
-    expect(result.current.methods.getValues()).toEqual({ test: 'after' });
-    expect(result.current.state).toEqual({
-      isSubmitting: false,
-      isSubmitted: false,
-      isSubmitSuccessful: false,
-      submitCount: 0,
-      errors: {},
-    });
   });
 
   describe('with validationSchema', () => {
