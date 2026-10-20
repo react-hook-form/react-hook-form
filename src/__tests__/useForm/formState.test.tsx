@@ -2681,6 +2681,247 @@ describe('formState', () => {
     },
   );
 
+  it('updates a memoized dirtyFields child when the dirty map changes and keeps the reference while it does not', () => {
+    type FormValues = { name: string; other: string };
+    const dirtyFieldsRefs: object[] = [];
+
+    const Dirty = React.memo(function Dirty({
+      dirtyFields,
+    }: {
+      dirtyFields: FormState<FormValues>['dirtyFields'];
+    }) {
+      return (
+        <p data-testid="dirty">
+          {Object.keys(dirtyFields).sort().join(',') || 'none'}
+        </p>
+      );
+    });
+
+    function App() {
+      const {
+        register,
+        formState: { dirtyFields },
+      } = useForm<FormValues>({
+        defaultValues: { name: '', other: '' },
+      });
+
+      dirtyFieldsRefs.push(dirtyFields);
+
+      return (
+        <>
+          <input {...register('name')} />
+          <input {...register('other')} />
+          <Dirty dirtyFields={dirtyFields} />
+        </>
+      );
+    }
+
+    render(<App />);
+
+    const [name, other] = screen.getAllByRole('textbox');
+    const initial = dirtyFieldsRefs.at(-1);
+
+    fireEvent.change(name, { target: { value: 'a' } });
+
+    expect(screen.getByTestId('dirty')).toHaveTextContent('name');
+    const nameDirty = dirtyFieldsRefs.at(-1);
+    expect(nameDirty).not.toBe(initial);
+    expect(nameDirty).toEqual({ name: true });
+
+    fireEvent.change(name, { target: { value: 'ab' } });
+
+    expect(screen.getByTestId('dirty')).toHaveTextContent('name');
+    expect(dirtyFieldsRefs.at(-1)).toBe(nameDirty);
+
+    fireEvent.change(other, { target: { value: 'x' } });
+
+    expect(screen.getByTestId('dirty')).toHaveTextContent('name,other');
+    const bothDirty = dirtyFieldsRefs.at(-1);
+    expect(bothDirty).not.toBe(nameDirty);
+    expect(bothDirty).toEqual({ name: true, other: true });
+
+    fireEvent.change(name, { target: { value: '' } });
+
+    expect(screen.getByTestId('dirty')).toHaveTextContent('other');
+    expect(dirtyFieldsRefs.at(-1)).not.toBe(bothDirty);
+    expect(dirtyFieldsRefs.at(-1)).toEqual({ other: true });
+  });
+
+  it('updates a memoized touchedFields child when a field is blurred or reset', () => {
+    type FormValues = { name: string; other: string };
+    const touchedFieldsRefs: object[] = [];
+
+    const Touched = React.memo(function Touched({
+      touchedFields,
+    }: {
+      touchedFields: FormState<FormValues>['touchedFields'];
+    }) {
+      return (
+        <p data-testid="touched">
+          {Object.keys(touchedFields).sort().join(',') || 'none'}
+        </p>
+      );
+    });
+
+    function App() {
+      const {
+        register,
+        resetField,
+        formState: { touchedFields },
+      } = useForm<FormValues>({
+        defaultValues: { name: '', other: '' },
+      });
+
+      touchedFieldsRefs.push(touchedFields);
+
+      return (
+        <>
+          <input {...register('name')} />
+          <input {...register('other')} />
+          <Touched touchedFields={touchedFields} />
+          <button type="button" onClick={() => resetField('name')}>
+            reset
+          </button>
+        </>
+      );
+    }
+
+    render(<App />);
+
+    const [name, other] = screen.getAllByRole('textbox');
+    const initial = touchedFieldsRefs.at(-1);
+
+    fireEvent.blur(name);
+
+    expect(screen.getByTestId('touched')).toHaveTextContent('name');
+    const nameTouched = touchedFieldsRefs.at(-1);
+    expect(nameTouched).not.toBe(initial);
+    expect(nameTouched).toEqual({ name: true });
+
+    fireEvent.blur(name);
+
+    expect(touchedFieldsRefs.at(-1)).toBe(nameTouched);
+
+    fireEvent.blur(other);
+
+    expect(screen.getByTestId('touched')).toHaveTextContent('name,other');
+    const bothTouched = touchedFieldsRefs.at(-1);
+    expect(bothTouched).not.toBe(nameTouched);
+
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+
+    expect(screen.getByTestId('touched')).toHaveTextContent('other');
+    expect(touchedFieldsRefs.at(-1)).not.toBe(bothTouched);
+    expect(touchedFieldsRefs.at(-1)).toEqual({ other: true });
+  });
+
+  it('updates a memoized dirtyFields child after resetField and unregister', () => {
+    type FormValues = { name: string; other: string };
+
+    const Dirty = React.memo(function Dirty({
+      dirtyFields,
+    }: {
+      dirtyFields: FormState<FormValues>['dirtyFields'];
+    }) {
+      return (
+        <p data-testid="dirty">
+          {Object.keys(dirtyFields).sort().join(',') || 'none'}
+        </p>
+      );
+    });
+
+    function App() {
+      const {
+        register,
+        resetField,
+        unregister,
+        formState: { dirtyFields },
+      } = useForm<FormValues>({
+        defaultValues: { name: '', other: '' },
+      });
+
+      return (
+        <>
+          <input {...register('name')} />
+          <input {...register('other')} />
+          <Dirty dirtyFields={dirtyFields} />
+          <button type="button" onClick={() => resetField('name')}>
+            reset
+          </button>
+          <button type="button" onClick={() => unregister('other')}>
+            unregister
+          </button>
+        </>
+      );
+    }
+
+    render(<App />);
+
+    const [name, other] = screen.getAllByRole('textbox');
+
+    fireEvent.change(name, { target: { value: 'a' } });
+    fireEvent.change(other, { target: { value: 'b' } });
+
+    expect(screen.getByTestId('dirty')).toHaveTextContent('name,other');
+
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+
+    expect(screen.getByTestId('dirty')).toHaveTextContent('other');
+
+    fireEvent.click(screen.getByRole('button', { name: 'unregister' }));
+
+    expect(screen.getByTestId('dirty')).toHaveTextContent('none');
+  });
+
+  it('updates a memoized touchedFields child when a touched field array row is removed', () => {
+    type FormValues = { items: { name: string }[] };
+
+    const Touched = React.memo(function Touched({
+      touchedFields,
+    }: {
+      touchedFields: FormState<FormValues>['touchedFields'];
+    }) {
+      return <pre data-testid="touched">{JSON.stringify(touchedFields)}</pre>;
+    });
+
+    function App() {
+      const {
+        register,
+        control,
+        formState: { touchedFields },
+      } = useForm<FormValues>({
+        defaultValues: { items: [{ name: 'a' }, { name: 'b' }] },
+      });
+      const { fields, remove } = useFieldArray({ control, name: 'items' });
+
+      return (
+        <>
+          {fields.map((field, index) => (
+            <input key={field.id} {...register(`items.${index}.name`)} />
+          ))}
+          <Touched touchedFields={touchedFields} />
+          <button type="button" onClick={() => remove(0)}>
+            remove
+          </button>
+        </>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.blur(screen.getAllByRole('textbox')[0]);
+
+    expect(screen.getByTestId('touched')).toHaveTextContent(
+      JSON.stringify({ items: [{ name: true }] }),
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+
+    expect(screen.getByTestId('touched')).toHaveTextContent(
+      JSON.stringify({ items: [] }),
+    );
+  });
+
   describe('with Activity', () => {
     itWithActivity(
       'should resync isSubmitting after Activity restoration when a submit resolves while hidden',

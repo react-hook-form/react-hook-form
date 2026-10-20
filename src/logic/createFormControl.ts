@@ -132,6 +132,10 @@ const replaceDirtyFieldsInPlace = (
   Object.assign(dirtyFields, nextDirtyFields);
 };
 
+// A changed map needs a new reference so memoized readers re-render.
+const shallowCopyState = <T>(value: T): T =>
+  (Array.isArray(value) ? [...value] : { ...value }) as T;
+
 export const DEFAULT_FORM_STATE = {
   submitCount: 0,
   isDirty: false,
@@ -394,6 +398,7 @@ export function createFormControl<
       if (shouldUpdateTouchedFields) {
         const touchedFields = method(touchedFieldsArray, args.argA, args.argB);
         shouldSetValues && set(_formState.touchedFields, name, touchedFields);
+        _formState.touchedFields = shallowCopyState(_formState.touchedFields);
       }
 
       const dirtyFieldsArray = get(_formState.dirtyFields, name);
@@ -681,6 +686,13 @@ export function createFormControl<
           }
         }
 
+        if (
+          didResyncDirtyFields ||
+          isPreviousDirty !== !isCurrentFieldPristine
+        ) {
+          _formState.dirtyFields = shallowCopyState(_formState.dirtyFields);
+        }
+
         output.dirtyFields = _formState.dirtyFields;
         shouldUpdateField =
           shouldUpdateField ||
@@ -696,6 +708,7 @@ export function createFormControl<
 
         if (!isPreviousFieldTouched) {
           set(_formState.touchedFields, name, isBlurEvent);
+          _formState.touchedFields = shallowCopyState(_formState.touchedFields);
           output.touchedFields = _formState.touchedFields;
           shouldUpdateField =
             shouldUpdateField ||
@@ -1570,9 +1583,24 @@ export function createFormControl<
     }
 
     if (options.shouldTouch) {
+      let touchedFieldsChanged = false;
+
       for (const fieldName of name ? fieldNames : _names.mount) {
-        !_names.array.has(fieldName) &&
-          set(_formState.touchedFields, fieldName, true);
+        if (_names.array.has(fieldName)) {
+          continue;
+        }
+
+        const wasTouched = get(_formState.touchedFields, fieldName);
+
+        set(_formState.touchedFields, fieldName, true);
+
+        if (wasTouched !== true) {
+          touchedFieldsChanged = true;
+        }
+      }
+
+      if (touchedFieldsChanged) {
+        _formState.touchedFields = shallowCopyState(_formState.touchedFields);
       }
     }
 
@@ -1828,6 +1856,9 @@ export function createFormControl<
       _updateValidatingFields(fieldNames);
     }
 
+    let dirtyFieldsChanged = false;
+    let touchedFieldsChanged = false;
+
     for (const fieldName of fieldNames) {
       _names.mount.delete(fieldName);
       _names.array.delete(fieldName);
@@ -1840,11 +1871,25 @@ export function createFormControl<
         cancelDelayedErrorTree(fieldName);
         unset(_formState.errors, fieldName);
       }
-      !options.keepDirty && unset(_formState.dirtyFields, fieldName);
-      !options.keepTouched && unset(_formState.touchedFields, fieldName);
+      if (!options.keepDirty && has(_formState.dirtyFields, fieldName)) {
+        unset(_formState.dirtyFields, fieldName);
+        dirtyFieldsChanged = true;
+      }
+      if (!options.keepTouched && has(_formState.touchedFields, fieldName)) {
+        unset(_formState.touchedFields, fieldName);
+        touchedFieldsChanged = true;
+      }
       !_options.shouldUnregister &&
         !options.keepDefaultValue &&
         unset(_defaultValues, fieldName);
+    }
+
+    if (dirtyFieldsChanged) {
+      _formState.dirtyFields = shallowCopyState(_formState.dirtyFields);
+    }
+
+    if (touchedFieldsChanged) {
+      _formState.touchedFields = shallowCopyState(_formState.touchedFields);
     }
 
     if (!options.keepError) {
@@ -2147,12 +2192,16 @@ export function createFormControl<
         set(_defaultValues, name, cloneObject(options.defaultValue));
       }
 
-      if (!options.keepTouched) {
+      if (!options.keepTouched && has(_formState.touchedFields, name)) {
         unset(_formState.touchedFields, name);
+        _formState.touchedFields = shallowCopyState(_formState.touchedFields);
       }
 
       if (!options.keepDirty) {
-        unset(_formState.dirtyFields, name);
+        if (has(_formState.dirtyFields, name)) {
+          unset(_formState.dirtyFields, name);
+          _formState.dirtyFields = shallowCopyState(_formState.dirtyFields);
+        }
         _formState.isDirty = !isUndefined(options.defaultValue)
           ? _getDirty(name, cloneObject(get(_defaultValues, name)))
           : _getDirty();
