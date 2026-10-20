@@ -679,6 +679,105 @@ describe('unregister', () => {
       },
     );
 
+    it.each([
+      ['a validate rule', false],
+      ['a resolver', true],
+    ])(
+      'not apply %s result to a field registered again under the same name while trigger runs',
+      async (_, withResolver) => {
+        const { checks, validate, resolver } = setup();
+        const { result } = renderHook(() => {
+          const form = useForm<FormValues>({
+            resolver: withResolver ? resolver : undefined,
+          });
+          form.formState.errors;
+          return form;
+        });
+        result.current.register(
+          'company',
+          withResolver ? undefined : { validate },
+        );
+
+        let pending!: Promise<boolean>;
+        await act(async () => {
+          pending = result.current.trigger('company');
+        });
+        const [resolveStale] = checks.splice(0);
+        act(() => {
+          result.current.unregister('company');
+          result.current.register(
+            'company',
+            withResolver ? undefined : { validate },
+          );
+        });
+        await act(async () => {
+          resolveStale(false);
+        });
+
+        expect(await pending).toBe(true);
+        expect(result.current.formState.errors).toEqual({});
+      },
+    );
+
+    it.each([
+      ['a validate rule', false],
+      ['a resolver', true],
+    ])(
+      'not apply %s result from onChange to a field registered again under the same name',
+      async (_, withResolver) => {
+        const { checks, validate, resolver } = setup();
+
+        const App = () => {
+          const {
+            register,
+            unregister,
+            formState: { errors },
+          } = useForm<FormValues>({
+            mode: 'onChange',
+            resolver: withResolver ? resolver : undefined,
+          });
+
+          return (
+            <form>
+              <input
+                {...register(
+                  'company',
+                  withResolver ? undefined : { validate },
+                )}
+              />
+              <p>error:{errors.company?.message}</p>
+              <button
+                type="button"
+                onClick={() => unregister('company', { keepValue: true })}
+              >
+                unregister
+              </button>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'taken' },
+        });
+
+        expect(checks).toHaveLength(1);
+        const [resolveStale] = checks.splice(0);
+
+        fireEvent.click(screen.getByRole('button', { name: 'unregister' }));
+
+        await act(async () => {
+          checks.splice(0).forEach((resolve) => resolve(true));
+        });
+        await act(async () => {
+          resolveStale(false);
+        });
+
+        expect(screen.getByText('error:')).toBeInTheDocument();
+      },
+    );
+
     it('call onValid when a field is unregistered while submit validates it', async () => {
       const { checks, validate } = setup();
       const onValid = jest.fn();
