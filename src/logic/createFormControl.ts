@@ -2051,9 +2051,23 @@ export function createFormControl<
         isSubmitting: true,
       });
 
+      const resetCallId = _resetCallId;
+      const onSubmitError = (error: unknown): never => {
+        if (resetCallId === _resetCallId) {
+          _subjects.state.next({ isSubmitting: false });
+        }
+
+        throw error;
+      };
+
       if (_options.resolver) {
-        const resetCallId = _resetCallId;
-        const { errors, values } = await _runSchema();
+        let validationResult!: Awaited<ReturnType<typeof _runSchema>>;
+        try {
+          validationResult = await _runSchema();
+        } catch (error) {
+          onSubmitError(error);
+        }
+        const { errors, values } = validationResult;
 
         if (resetCallId !== _resetCallId) {
           return;
@@ -2064,11 +2078,14 @@ export function createFormControl<
         _formState.errors = errors;
         fieldValues = cloneObject(values);
       } else {
-        const resetCallId = _resetCallId;
-        await executeBuiltInValidation({
-          fields: _fields,
-          eventType: EVENTS.SUBMIT,
-        });
+        try {
+          await executeBuiltInValidation({
+            fields: _fields,
+            eventType: EVENTS.SUBMIT,
+          });
+        } catch (error) {
+          onSubmitError(error);
+        }
 
         if (resetCallId !== _resetCallId) {
           return;
@@ -2095,7 +2112,11 @@ export function createFormControl<
         }
       } else {
         if (onInvalid) {
-          await onInvalid({ ..._formState.errors }, e);
+          try {
+            await onInvalid({ ..._formState.errors }, e);
+          } catch (error) {
+            onSubmitError(error);
+          }
         }
 
         _focusError();
