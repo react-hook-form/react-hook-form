@@ -189,7 +189,7 @@ describe('DevTool', () => {
 
     afterEach(() => window.removeEventListener('message', listener));
 
-    const Form = () => {
+    const Form = ({ extension = true }: { extension?: boolean }) => {
       const { control, register } = useForm({
         defaultValues: { count: 0, agree: false },
       });
@@ -198,10 +198,29 @@ describe('DevTool', () => {
         <>
           <input {...register('count')} />
           <input type="checkbox" {...register('agree')} />
-          <DevTool id="form" control={control} />
+          <DevTool id="form" control={control} extension={extension} />
         </>
       );
     };
+
+    it('should not respond to INIT unless extension is enabled', async () => {
+      render(<Form extension={false} />);
+
+      fireEvent(
+        window,
+        new MessageEvent('message', {
+          data: { source: 'react-hook-form-bridge', type: 'INIT' },
+          origin: window.location.origin,
+          source: window,
+        }),
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      expect(messages).toEqual([
+        { source: 'react-hook-form-bridge', type: 'INIT' },
+      ]);
+    });
 
     it('should ignore INIT messages from another origin', async () => {
       render(<Form />);

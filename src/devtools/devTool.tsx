@@ -16,6 +16,7 @@ export type Placement =
 export type DevToolProps<T extends FieldValues = FieldValues> = {
   id?: string;
   control?: Control<T>;
+  extension?: boolean;
   placement?: Placement;
   styles?: {
     button?: React.CSSProperties;
@@ -59,9 +60,14 @@ function useSettings(key: string) {
 function DevToolUI({
   id,
   control,
+  extension = false,
   placement = 'top-right',
   styles,
 }: DevToolProps & { control: Control }) {
+  const [fallbackId] = React.useState(() =>
+    Math.random().toString(36).slice(2),
+  );
+  useExtension(id || fallbackId, control, extension);
   const [{ open, expanded, ...settings }, update] = useSettings(
     id ? `${STORAGE_KEY}:${id}` : STORAGE_KEY,
   );
@@ -174,15 +180,11 @@ function DevToolUI({
 }
 
 export const DevTool = <T extends FieldValues>({
-  id,
   control,
   ...props
 }: DevToolProps<T> = {}) => {
   const methods = useFormContext<T>();
   const formControl = control || methods?.control;
-  const [fallbackId] = React.useState(() =>
-    Math.random().toString(36).slice(2),
-  );
 
   if (!formControl) {
     throw new Error(
@@ -190,9 +192,5 @@ export const DevTool = <T extends FieldValues>({
     );
   }
 
-  useExtension(id || fallbackId, formControl);
-
-  return (
-    <DevToolUI id={id} control={formControl as unknown as Control} {...props} />
-  );
+  return <DevToolUI control={formControl as unknown as Control} {...props} />;
 };

@@ -7,6 +7,7 @@ const SOURCE = 'react-hook-form-bridge';
 export function useExtension<T extends FieldValues>(
   id: string,
   control: Control<T>,
+  optIn: boolean,
 ) {
   const [enabled, setEnabled] = React.useState(false);
   const values = useWatch({ control, disabled: !enabled });
@@ -16,6 +17,10 @@ export function useExtension<T extends FieldValues>(
   });
 
   React.useEffect(() => {
+    if (!optIn) {
+      return;
+    }
+
     const onMessage = (event: MessageEvent) => {
       if (
         event.source === window &&
@@ -33,7 +38,7 @@ export function useExtension<T extends FieldValues>(
 
     window.addEventListener('message', onMessage);
     return () => window.removeEventListener('message', onMessage);
-  }, []);
+  }, [optIn]);
 
   React.useEffect(() => {
     if (!enabled) {
