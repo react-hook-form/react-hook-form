@@ -1521,9 +1521,9 @@ export function createFormControl<
     let isValid;
     let validationResult;
     const fieldNames = convertToArrayPayload(name) as InternalFieldName[];
+    const resetCallId = _resetCallId;
 
     if (_options.resolver) {
-      const resetCallId = _resetCallId;
       const errors = await executeSchemaAndUpdateState(
         isUndefined(name) ? name : fieldNames,
       );
@@ -1531,10 +1531,6 @@ export function createFormControl<
       validationResult = name
         ? !fieldNames.some((name) => get(errors, name))
         : isValid;
-
-      if (resetCallId !== _resetCallId) {
-        return validationResult;
-      }
     } else if (name) {
       validationResult = (
         await Promise.all(
@@ -1554,6 +1550,10 @@ export function createFormControl<
         name,
         eventType: EVENTS.TRIGGER,
       });
+    }
+
+    if (resetCallId !== _resetCallId) {
+      return validationResult;
     }
 
     if (options.delayError && _options.delayError && isString(name)) {
@@ -2177,6 +2177,7 @@ export function createFormControl<
     keepStateOptions = {},
   ) => {
     _resetCallId++;
+    _setValidCallId++;
     const updatedValues = formValues ? cloneObject(formValues) : _defaultValues;
     const cloneUpdatedValues = cloneObject(updatedValues);
     const isEmptyResetValues = isEmptyObject(formValues);
