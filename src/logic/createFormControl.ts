@@ -2061,7 +2061,13 @@ export function createFormControl<
       };
 
       if (_options.resolver) {
-        const { errors, values } = await _runSchema().catch(onSubmitError);
+        let validationResult!: Awaited<ReturnType<typeof _runSchema>>;
+        try {
+          validationResult = await _runSchema();
+        } catch (error) {
+          onSubmitError(error);
+        }
+        const { errors, values } = validationResult;
 
         if (resetCallId !== _resetCallId) {
           return;
@@ -2072,10 +2078,14 @@ export function createFormControl<
         _formState.errors = errors;
         fieldValues = cloneObject(values);
       } else {
-        await executeBuiltInValidation({
-          fields: _fields,
-          eventType: EVENTS.SUBMIT,
-        }).catch(onSubmitError);
+        try {
+          await executeBuiltInValidation({
+            fields: _fields,
+            eventType: EVENTS.SUBMIT,
+          });
+        } catch (error) {
+          onSubmitError(error);
+        }
 
         if (resetCallId !== _resetCallId) {
           return;
