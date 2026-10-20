@@ -104,7 +104,7 @@ export function Form<
           for (const name in requestHeaders) {
             if (
               name.toLowerCase() === 'content-type' &&
-              /^\s*multipart\/form-data\s*(;|$)/i.test(requestHeaders[name])
+              /^multipart\/form-data(?:\s*;|$)/i.test(requestHeaders[name])
             ) {
               delete requestHeaders[name];
             }
