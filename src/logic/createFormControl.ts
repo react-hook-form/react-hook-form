@@ -773,6 +773,9 @@ export function createFormControl<
 
   const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
     const resetCallId = _resetCallId;
+    const registeredNames = names
+      ? names.filter((name) => get(_fields, name))
+      : [];
     const { errors } = await _runSchema(names);
 
     if (resetCallId !== _resetCallId) {
@@ -783,6 +786,11 @@ export function createFormControl<
 
     if (names) {
       for (const name of names) {
+        if (!get(_fields, name) && registeredNames.includes(name)) {
+          unset(errors, name);
+          continue;
+        }
+
         const error: FieldError | undefined = get(errors, name);
         cancelDelayedErrorTree(name);
         const isFieldArrayRootError =
@@ -939,6 +947,10 @@ export function createFormControl<
 
           if (isPromiseFunction && shouldTrackIsValidatingState) {
             _updateIsValidating([_f.name]);
+          }
+
+          if (!get(_fields, _f.name)) {
+            continue;
           }
 
           if (fieldError[_f.name]) {
@@ -1330,10 +1342,9 @@ export function createFormControl<
     let isFieldValueUpdated = true;
     const field: Field = get(_fields, name);
     const _updateIsFieldValueUpdated = (fieldValue: unknown) => {
-      isFieldValueUpdated = deepEqual(
-        fieldValue,
-        get(_formValues, name, fieldValue),
-      );
+      isFieldValueUpdated =
+        !!get(_fields, name) &&
+        deepEqual(fieldValue, get(_formValues, name, fieldValue));
     };
 
     if (field) {
