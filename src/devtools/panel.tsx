@@ -129,8 +129,6 @@ export function Panel({
   const [filter, setFilter] = React.useState('');
   const [, refresh] = React.useReducer((count: number) => count + 1, 0);
 
-  React.useEffect(() => refresh(), []);
-
   const names = [...control._names.mount].filter((name) =>
     name.toLowerCase().includes(filter.toLowerCase()),
   );

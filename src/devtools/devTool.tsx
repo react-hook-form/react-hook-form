@@ -31,7 +31,7 @@ type Settings = { open: boolean; expanded: boolean; position?: Position };
 
 const clamp = (value: number, max: number) => Math.max(0, Math.min(value, max));
 
-function useSettings() {
+function useSettings(key: string) {
   const [settings, setSettings] = React.useState<Settings>({
     open: false,
     expanded: true,
@@ -39,16 +39,16 @@ function useSettings() {
 
   React.useEffect(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      const saved = JSON.parse(localStorage.getItem(key) || '{}');
       setSettings((current) => ({ ...current, ...saved }));
     } catch {}
-  }, []);
+  }, [key]);
 
   const update = (patch: Partial<Settings>) =>
     setSettings((current) => {
       const next = { ...current, ...patch };
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+        localStorage.setItem(key, JSON.stringify(next));
       } catch {}
       return next;
     });
@@ -57,11 +57,14 @@ function useSettings() {
 }
 
 function DevToolUI({
+  id,
   control,
   placement = 'top-right',
   styles,
-}: Omit<DevToolProps, 'id'> & { control: Control }) {
-  const [{ open, expanded, ...settings }, update] = useSettings();
+}: DevToolProps & { control: Control }) {
+  const [{ open, expanded, ...settings }, update] = useSettings(
+    id ? `${STORAGE_KEY}:${id}` : STORAGE_KEY,
+  );
   const [drag, setDrag] = React.useState<Position | null>(null);
   const dragRef = React.useRef<
     (Position & { dx: number; dy: number; moved: boolean }) | null
@@ -141,6 +144,10 @@ function DevToolUI({
               setDrag(null);
             }
           }}
+          onPointerCancel={() => {
+            dragRef.current = null;
+            setDrag(null);
+          }}
           onClick={() => {
             const moved = dragRef.current?.moved;
             dragRef.current = null;
@@ -172,14 +179,20 @@ export const DevTool = <T extends FieldValues>({
   ...props
 }: DevToolProps<T> = {}) => {
   const methods = useFormContext<T>();
-  const formControl = control || methods.control;
+  const formControl = control || methods?.control;
   const [fallbackId] = React.useState(() =>
     Math.random().toString(36).slice(2),
   );
 
-  if (useExtension(id || fallbackId, formControl)) {
-    return null;
+  if (!formControl) {
+    throw new Error(
+      'DevTool requires a `control` prop or to be rendered inside <FormProvider>.',
+    );
   }
 
-  return <DevToolUI control={formControl as unknown as Control} {...props} />;
+  useExtension(id || fallbackId, formControl);
+
+  return (
+    <DevToolUI id={id} control={formControl as unknown as Control} {...props} />
+  );
 };

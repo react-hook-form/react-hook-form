@@ -17,8 +17,16 @@ export function useExtension<T extends FieldValues>(
 
   React.useEffect(() => {
     const onMessage = (event: MessageEvent) => {
-      if (event.data?.source === SOURCE && event.data.type === 'INIT') {
-        window.postMessage({ source: SOURCE, type: 'WELCOME' });
+      if (
+        event.source === window &&
+        event.origin === window.location.origin &&
+        event.data?.source === SOURCE &&
+        event.data.type === 'INIT'
+      ) {
+        window.postMessage(
+          { source: SOURCE, type: 'WELCOME' },
+          window.location.origin,
+        );
         setEnabled(true);
       }
     };
@@ -36,30 +44,31 @@ export function useExtension<T extends FieldValues>(
     const flatten = (object: object, fn: (value: any) => any) =>
       Object.fromEntries(names.map((name) => [name, fn(get(object, name))]));
 
-    window.postMessage({
-      source: SOURCE,
-      type: 'UPDATE',
-      payload: {
-        id,
-        data: {
-          formValues: flatten(values, (value) => value || ''),
-          formState: {
-            ...formState,
-            errors: flatten(errors, (error) => ({
-              type: error?.type,
-              message: error?.message,
-            })),
-            dirtyFields: flatten(dirtyFields, (value) => !!value),
-            touchedFields: flatten(touchedFields, (value) => !!value),
-            nativeFields: flatten(
-              control._fields,
-              (field) => field?._f?.ref?.type,
-            ),
+    window.postMessage(
+      {
+        source: SOURCE,
+        type: 'UPDATE',
+        payload: {
+          id,
+          data: {
+            formValues: flatten(values, (value) => value ?? ''),
+            formState: {
+              ...formState,
+              errors: flatten(errors, (error) => ({
+                type: error?.type,
+                message: error?.message,
+              })),
+              dirtyFields: flatten(dirtyFields, (value) => !!value),
+              touchedFields: flatten(touchedFields, (value) => !!value),
+              nativeFields: flatten(
+                control._fields,
+                (field) => field?._f?.ref?.type,
+              ),
+            },
           },
         },
       },
-    });
+      window.location.origin,
+    );
   });
-
-  return enabled;
 }
