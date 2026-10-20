@@ -99,10 +99,21 @@ export function Form<
             ).join('');
           }
 
+          const requestHeaders = { ...headers };
+
+          for (const name in requestHeaders) {
+            if (
+              name.toLowerCase() === 'content-type' &&
+              /^multipart\/form-data(?:\s*;|$)/i.test(requestHeaders[name])
+            ) {
+              delete requestHeaders[name];
+            }
+          }
+
           const response = await fetch(action, {
             method,
             headers: {
-              ...headers,
+              ...requestHeaders,
               ...(encType &&
                 encType !== 'multipart/form-data' && {
                   'Content-Type': encType,
