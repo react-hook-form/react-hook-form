@@ -7,7 +7,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 
-import type { UseFormSubscribe } from '../../types';
+import type { Resolver, UseFormSubscribe } from '../../types';
 import { useForm } from '../../useForm';
 import { useFormState } from '../../useFormState';
 
@@ -441,6 +441,124 @@ describe('subscribe', () => {
         }),
       ),
     );
+  });
+
+  describe('when a child subscribes in an effect', () => {
+    type FormValues = { name: string };
+
+    const callbackFn = jest.fn();
+
+    function ChildComp({
+      subscribe,
+    }: {
+      subscribe: UseFormSubscribe<FormValues>;
+    }) {
+      React.useEffect(() => {
+        return subscribe({
+          formState: { isValid: true },
+          callback: callbackFn,
+        });
+      }, [subscribe]);
+      return null;
+    }
+
+    const resolver: Resolver<FormValues> = async (values) => ({
+      values,
+      errors: {},
+    });
+
+    it('keep the initial isValid of valid default values', async () => {
+      const App = () => {
+        const { register, subscribe, formState } = useForm<FormValues>({
+          mode: 'onChange',
+          defaultValues: { name: 'filled' },
+        });
+        return (
+          <form>
+            <input {...register('name', { required: true })} />
+            <ChildComp subscribe={subscribe} />
+            <button disabled={!formState.isValid}>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await waitFor(() => expect(screen.getByRole('button')).toBeEnabled());
+      expect(callbackFn).toHaveBeenCalledWith(
+        expect.objectContaining({ isValid: true }),
+      );
+    });
+
+    it('keep the initial isValid with a resolver', async () => {
+      const App = () => {
+        const { register, subscribe, formState } = useForm<FormValues>({
+          resolver,
+          defaultValues: { name: 'filled' },
+        });
+        return (
+          <form>
+            <input {...register('name')} />
+            <ChildComp subscribe={subscribe} />
+            <button disabled={!formState.isValid}>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await waitFor(() => expect(screen.getByRole('button')).toBeEnabled());
+    });
+
+    it('run the resolver once on mount with the values prop', async () => {
+      const resolverFn = jest.fn(resolver);
+
+      const App = () => {
+        const { register, subscribe, formState } = useForm<FormValues>({
+          resolver: resolverFn,
+          values: { name: 'filled' },
+        });
+        return (
+          <form>
+            <input {...register('name')} />
+            <ChildComp subscribe={subscribe} />
+            <button disabled={!formState.isValid}>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await waitFor(() => expect(screen.getByRole('button')).toBeEnabled());
+      expect(resolverFn).toHaveBeenCalledTimes(1);
+    });
+
+    it('run the resolver once on mount in StrictMode', async () => {
+      const resolverFn = jest.fn(resolver);
+
+      const App = () => {
+        const { register, subscribe, formState } = useForm<FormValues>({
+          resolver: resolverFn,
+          defaultValues: { name: 'filled' },
+        });
+        return (
+          <form>
+            <input {...register('name')} />
+            <ChildComp subscribe={subscribe} />
+            <button disabled={!formState.isValid}>submit</button>
+          </form>
+        );
+      };
+
+      render(
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>,
+      );
+
+      await waitFor(() => expect(screen.getByRole('button')).toBeEnabled());
+      expect(resolverFn).toHaveBeenCalledTimes(1);
+    });
   });
 });
 
