@@ -1157,7 +1157,7 @@ export function createFormControl<
     }
 
     for (const fieldKey in value) {
-      if (!value.hasOwnProperty(fieldKey)) {
+      if (!Object.prototype.hasOwnProperty.call(value, fieldKey)) {
         continue;
       }
       const fieldValue = value[fieldKey];
