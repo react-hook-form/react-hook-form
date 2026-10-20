@@ -2681,6 +2681,120 @@ describe('formState', () => {
     },
   );
 
+  it('not apply a stale NaN validation after the value becomes a number', async () => {
+    const resolvers: Array<() => void> = [];
+
+    const App = () => {
+      const {
+        register,
+        formState: { errors },
+      } = useForm<{ value: number }>({
+        mode: 'onChange',
+      });
+
+      return (
+        <form>
+          <input
+            {...register('value', {
+              valueAsNumber: true,
+              validate: (value) =>
+                new Promise<true | string>((resolve) => {
+                  resolvers.push(() =>
+                    resolve(Number.isNaN(value) ? 'invalid' : true),
+                  );
+                }),
+            })}
+          />
+          {errors.value && <p>{errors.value.message}</p>}
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    const input = screen.getByRole('textbox');
+
+    fireEvent.change(input, { target: { value: 'abc' } });
+    fireEvent.change(input, { target: { value: '5' } });
+
+    expect(resolvers).toHaveLength(2);
+
+    await act(async () => {
+      resolvers[1]();
+    });
+
+    expect(screen.queryByText('invalid')).not.toBeInTheDocument();
+
+    await act(async () => {
+      resolvers[0]();
+    });
+
+    expect(screen.queryByText('invalid')).not.toBeInTheDocument();
+  });
+
+  it('not apply a stale Invalid Date validation after the value becomes a valid date', async () => {
+    const resolvers: Array<() => void> = [];
+
+    const App = () => {
+      const {
+        control,
+        formState: { errors },
+      } = useForm<{ test: Date }>({
+        mode: 'onChange',
+      });
+
+      return (
+        <form>
+          <Controller
+            name="test"
+            control={control}
+            render={({ field: { onChange } }) => (
+              <input
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  onChange(new Date(event.target.value));
+                }}
+              />
+            )}
+            rules={{
+              validate: (value) =>
+                new Promise<true | string>((resolve) => {
+                  resolvers.push(() =>
+                    resolve(
+                      value instanceof Date && Number.isNaN(value.getTime())
+                        ? 'invalid'
+                        : true,
+                    ),
+                  );
+                }),
+            }}
+          />
+          {errors.test && <p>{errors.test.message}</p>}
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    const input = screen.getByRole('textbox');
+
+    fireEvent.change(input, { target: { value: 'not-a-date' } });
+    fireEvent.change(input, { target: { value: '2024-10-16' } });
+
+    expect(resolvers).toHaveLength(2);
+
+    await act(async () => {
+      resolvers[1]();
+    });
+
+    expect(screen.queryByText('invalid')).not.toBeInTheDocument();
+
+    await act(async () => {
+      resolvers[0]();
+    });
+
+    expect(screen.queryByText('invalid')).not.toBeInTheDocument();
+  });
+
   describe('with Activity', () => {
     itWithActivity(
       'should resync isSubmitting after Activity restoration when a submit resolves while hidden',

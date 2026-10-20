@@ -1330,10 +1330,10 @@ export function createFormControl<
     let isFieldValueUpdated = true;
     const field: Field = get(_fields, name);
     const _updateIsFieldValueUpdated = (fieldValue: unknown) => {
-      isFieldValueUpdated =
-        Number.isNaN(fieldValue) ||
-        (isDateObject(fieldValue) && isNaN(fieldValue.getTime())) ||
-        deepEqual(fieldValue, get(_formValues, name, fieldValue));
+      isFieldValueUpdated = deepEqual(
+        fieldValue,
+        get(_formValues, name, fieldValue),
+      );
     };
 
     if (field) {
