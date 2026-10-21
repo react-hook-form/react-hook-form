@@ -78,6 +78,8 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
     unregister: UseFormUnregister<TFieldValues>;
     getFieldState: UseFormGetFieldState<TFieldValues>;
     setError: UseFormSetError<TFieldValues>;
+    clearErrors: UseFormClearErrors<TFieldValues>;
+    subscribe: UseFormSubscribe<TFieldValues>;
 };
 
 // @public

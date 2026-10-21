@@ -2474,6 +2474,8 @@ export function createFormControl<
       getFieldState,
       handleSubmit,
       setError,
+      clearErrors,
+      subscribe,
       _subscribe,
       _runSchema,
       _updateIsValidating,

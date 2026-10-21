@@ -530,4 +530,17 @@ describe('clearErrors', () => {
 
     jest.useRealTimers();
   });
+
+  it('should clear errors via control', () => {
+    const { result } = renderHook(() => useForm<{ input: string }>());
+
+    act(() => {
+      result.current.formState.errors;
+      result.current.control.setError('input', { type: 'test' });
+    });
+    expect(result.current.formState.errors.input).toBeDefined();
+
+    act(() => result.current.control.clearErrors('input'));
+    expect(result.current.formState.errors).toEqual({});
+  });
 });

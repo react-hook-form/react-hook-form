@@ -7,7 +7,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 
-import type { Resolver, UseFormSubscribe } from '../../types';
+import type { Control, Resolver, UseFormSubscribe } from '../../types';
 import { useForm } from '../../useForm';
 import { useFormState } from '../../useFormState';
 
@@ -867,6 +867,47 @@ describe('call setValue within subscribe', () => {
     expect(callbackFn).toHaveBeenCalledTimes(1);
     expect(callbackFn).toHaveBeenCalledWith(
       expect.objectContaining({ name: 'weight', values: { weight: 100 } }),
+    );
+  });
+
+  it('should subscribe via control', async () => {
+    const callbackFn = jest.fn();
+
+    function ChildComp({ control }: { control: Control<{ test: string }> }) {
+      React.useEffect(
+        () =>
+          control.subscribe({
+            formState: { values: true },
+            callback: callbackFn,
+          }),
+        [control],
+      );
+      return null;
+    }
+
+    const App = () => {
+      const { register, control } = useForm({
+        defaultValues: { test: '' },
+      });
+
+      return (
+        <div>
+          <input {...register('test')} />
+          <ChildComp control={control} />
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'value' },
+    });
+
+    await waitFor(() =>
+      expect(callbackFn).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'test', values: { test: 'value' } }),
+      ),
     );
   });
 });
