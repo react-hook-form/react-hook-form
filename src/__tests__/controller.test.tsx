@@ -1861,52 +1861,28 @@ describe('Controller', () => {
     await waitFor(() => expect(screen.getByRole('textbox')).toHaveValue('a'));
   });
 
-  it('validate a memoized Controller on submit after reset', async () => {
+  it('validate and focus a memoized Controller after reset', async () => {
     const onValid = jest.fn();
-    const { formControl, reset, getFieldState } = createFormControl({
-      defaultValues: { test: '' },
-    });
+    const { formControl, reset, trigger, setFocus, getFieldState } =
+      createFormControl({ defaultValues: { test: '' } });
 
     render(<MemoizedFieldForm formControl={formControl} onValid={onValid} />);
 
     actComponent(() => reset({ test: '' }));
+    await actComponent(async () => {
+      expect(await trigger('test')).toBe(false);
+    });
+
+    actComponent(() => reset({ test: '' }));
+    actComponent(() => setFocus('test'));
+    await waitFor(() => expect(screen.getByRole('textbox')).toHaveFocus());
+
     fireEvent.click(screen.getByRole('button'));
 
     await waitFor(() =>
       expect(getFieldState('test').error?.message).toBe('required'),
     );
     expect(onValid).not.toHaveBeenCalled();
-  });
-
-  it('validate a memoized Controller with trigger after each reset', async () => {
-    const { formControl, reset, trigger } = createFormControl({
-      defaultValues: { test: '' },
-    });
-
-    render(<MemoizedFieldForm formControl={formControl} />);
-
-    actComponent(() => reset({ test: '' }));
-    await actComponent(async () => {
-      expect(await trigger()).toBe(false);
-    });
-
-    actComponent(() => reset({ test: '' }));
-    await actComponent(async () => {
-      expect(await trigger('test')).toBe(false);
-    });
-  });
-
-  it('focus a memoized Controller with setFocus after reset', async () => {
-    const { formControl, reset, setFocus } = createFormControl({
-      defaultValues: { test: '' },
-    });
-
-    render(<MemoizedFieldForm formControl={formControl} />);
-
-    actComponent(() => reset({ test: '' }));
-    actComponent(() => setFocus('test'));
-
-    await waitFor(() => expect(screen.getByRole('textbox')).toHaveFocus());
   });
 
   it('keep a disabled memoized Controller out of submit values after reset', async () => {

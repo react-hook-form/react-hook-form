@@ -2346,11 +2346,7 @@ export function createFormControl<
       const field: Field = get(_fields, fieldName);
 
       _names.mount.add(fieldName);
-
-      if (field._f.disabled) {
-        _names.disabled.add(fieldName);
-      }
-
+      field._f.disabled && _names.disabled.add(fieldName);
       updateValidAndValue(fieldName, true);
     }
 
