@@ -15,6 +15,7 @@ import type {
   ResolverResult,
   SubmitHandler,
   UseFieldArrayProps,
+  UseFieldArrayReturn,
   UseFormRegister,
   UseFormReturn,
 } from '../types';
@@ -1748,6 +1749,120 @@ describe('useFieldArray', () => {
       expect(screen.getAllByRole('textbox')).toHaveLength(1);
       expect(getValues()).toEqual({ items: [{ name: 'a' }] });
     });
+
+    type FormValues = {
+      items: { name: string }[];
+      itemsExtra: { name: string }[];
+    };
+
+    type Items = UseFieldArrayReturn<FormValues, 'items'>;
+
+    it.each([
+      {
+        action: 'append',
+        expected: ['a', 'b', 'c'],
+        mutate: (items: Items) => items.append({ name: 'c' }),
+      },
+      {
+        action: 'prepend',
+        expected: ['c', 'a', 'b'],
+        mutate: (items: Items) => items.prepend({ name: 'c' }),
+      },
+      {
+        action: 'insert',
+        expected: ['a', 'c', 'b'],
+        mutate: (items: Items) => items.insert(1, { name: 'c' }),
+      },
+      {
+        action: 'remove',
+        expected: ['b'],
+        mutate: (items: Items) => items.remove(0),
+      },
+      {
+        action: 'swap',
+        expected: ['b', 'a'],
+        mutate: (items: Items) => items.swap(0, 1),
+      },
+      {
+        action: 'move',
+        expected: ['b', 'a'],
+        mutate: (items: Items) => items.move(0, 1),
+      },
+      {
+        action: 'update',
+        expected: ['c', 'b'],
+        mutate: (items: Items) => items.update(0, { name: 'c' }),
+      },
+      {
+        action: 'replace',
+        expected: ['c'],
+        mutate: (items: Items) => items.replace([{ name: 'c' }]),
+      },
+    ])(
+      'unregister rows hidden in the same event as $action on another field array',
+      ({ expected, mutate }) => {
+        let getValues: UseFormReturn<FormValues>['getValues'];
+
+        const App = () => {
+          const [showExtra, setShowExtra] = React.useState(true);
+          const {
+            control,
+            register,
+            getValues: tempGetValues,
+          } = useForm<FormValues>({
+            shouldUnregister: true,
+            defaultValues: {
+              items: [{ name: 'a' }, { name: 'b' }],
+              itemsExtra: [{ name: 'x' }, { name: 'y' }],
+            },
+          });
+          const items = useFieldArray({ control, name: 'items' });
+          useFieldArray({ control, name: 'itemsExtra' });
+
+          getValues = tempGetValues;
+
+          return (
+            <div>
+              {items.fields.map((field, index) => (
+                <Controller
+                  key={field.id}
+                  control={control}
+                  name={`items.${index}.name`}
+                  render={({ field }) => <input {...field} />}
+                />
+              ))}
+              {showExtra && (
+                <>
+                  <Controller
+                    control={control}
+                    name="itemsExtra.0.name"
+                    render={({ field }) => <input {...field} />}
+                  />
+                  <input {...register('itemsExtra.1.name')} />
+                </>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  mutate(items);
+                  setShowExtra(false);
+                }}
+              >
+                done
+              </button>
+            </div>
+          );
+        };
+
+        render(<App />);
+
+        fireEvent.click(screen.getByRole('button', { name: 'done' }));
+
+        expect(getValues()).toEqual({
+          items: expected.map((name) => ({ name })),
+        });
+      },
+    );
   });
 
   describe('setError', () => {

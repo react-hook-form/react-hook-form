@@ -104,7 +104,6 @@ import getRuleValue from './getRuleValue';
 import getValidationModes from './getValidationModes';
 import hasPromiseValidation from './hasPromiseValidation';
 import hasValidation from './hasValidation';
-import isNameInFieldArray from './isNameInFieldArray';
 import isWatched from './isWatched';
 import iterateFieldsByAction from './iterateFieldsByAction';
 import schemaErrorLookup from './schemaErrorLookup';
@@ -2021,7 +2020,9 @@ export function createFormControl<
           }
 
           (_options.shouldUnregister || options.shouldUnregister) &&
-            !(isNameInFieldArray(_names.array, name) && _state.action) &&
+            ![..._state.actionArrayLengths.keys()].some((arrayName) =>
+              name.startsWith(arrayName + '.'),
+            ) &&
             _names.unMount.add(name);
         }
       },

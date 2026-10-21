@@ -266,10 +266,9 @@ export function useController<
     }
 
     return () => {
-      (
-        isArrayField
-          ? _shouldUnregisterField && !control._state.action
-          : _shouldUnregisterField
+      _shouldUnregisterField &&
+      ![...control._state.actionArrayLengths.keys()].some((arrayName) =>
+        name.startsWith(arrayName + '.'),
       )
         ? control.unregister(name)
         : updateMounted(name, false);
