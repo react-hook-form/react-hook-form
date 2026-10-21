@@ -51,4 +51,14 @@ describe('jsonToFormData', () => {
     expect(Array.from(formData.keys())).toEqual(['name', 'startDate']);
     expect(formData.get('startDate')).toBe('2026-10-13T00:00:00.000Z');
   });
+
+  it('submit a Date as its toJSON value', () => {
+    const formData = jsonToFormData({
+      startDate: new Date('2026-10-13T00:00:00.000Z'),
+      range: { end: new Date('2026-10-14T00:00:00.000Z') },
+    });
+
+    expect(formData.get('startDate')).toBe('2026-10-13T00:00:00.000Z');
+    expect(formData.get('range.end')).toBe('2026-10-14T00:00:00.000Z');
+  });
 });

@@ -1,6 +1,7 @@
 import type { FieldValues } from '../types';
 
 import { flatten } from './flatten';
+import isDateObject from './isDateObject';
 import isUndefined from './isUndefined';
 
 function jsonToFormData(json: unknown) {
@@ -25,7 +26,7 @@ function jsonToFormData(json: unknown) {
       continue;
     }
 
-    result.append(key, value);
+    result.append(key, isDateObject(value) ? value.toJSON() : value);
   }
 
   return result;
