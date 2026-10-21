@@ -115,7 +115,7 @@ export function Form<
             headers: {
               ...requestHeaders,
               ...(encType &&
-                encType !== 'multipart/form-data' && {
+                !/^multipart\/form-data(?:\s*;|$)/i.test(encType) && {
                   'Content-Type': encType,
                 }),
             },
