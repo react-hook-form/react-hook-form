@@ -60,11 +60,13 @@ const MemoizedField = React.memo(function MemoizedField({
 function MemoizedFieldForm({
   formControl,
   disabled,
+  hidden,
   shouldUnregister,
   onValid = noop,
 }: {
   formControl: UseFormProps<{ test: string }>['formControl'];
   disabled?: boolean;
+  hidden?: boolean;
   shouldUnregister?: boolean;
   onValid?: () => void;
 }) {
@@ -72,7 +74,7 @@ function MemoizedFieldForm({
 
   return (
     <form onSubmit={handleSubmit(onValid)}>
-      <MemoizedField control={control} disabled={disabled} />
+      {!hidden && <MemoizedField control={control} disabled={disabled} />}
       <button>submit</button>
     </form>
   );
@@ -1962,6 +1964,95 @@ describe('Controller', () => {
 
     await waitFor(() => expect(onValid).toHaveBeenCalled());
     expect(onValid.mock.calls[0][0]).toEqual({});
+  });
+
+  it('update isValid when a reset changes a memoized Controller value', async () => {
+    const { formControl, reset } = createFormControl({
+      defaultValues: { test: '' },
+    });
+
+    function Form() {
+      const { control, formState } = useForm({ formControl });
+
+      return (
+        <>
+          <MemoizedField control={control} />
+          <p>{formState.isValid ? 'valid' : 'invalid'}</p>
+        </>
+      );
+    }
+
+    render(<Form />);
+    await waitFor(() => screen.getByText('invalid'));
+
+    actComponent(() => reset({ test: 'a' }));
+
+    await waitFor(() => screen.getByText('valid'));
+  });
+
+  it('drop a memoized Controller that unmounts after reset', async () => {
+    const onValid = jest.fn();
+    const { formControl, control, reset } = createFormControl({
+      defaultValues: { test: '' },
+    });
+
+    const { rerender } = render(
+      <MemoizedFieldForm formControl={formControl} onValid={onValid} />,
+    );
+
+    actComponent(() => reset({ test: '' }));
+    rerender(
+      <MemoizedFieldForm formControl={formControl} onValid={onValid} hidden />,
+    );
+    actComponent(() => reset({ test: '' }));
+
+    expect(control._names.mount.has('test')).toBe(false);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => expect(onValid).toHaveBeenCalled());
+    expect(onValid.mock.calls[0][0]).toEqual({ test: '' });
+  });
+
+  it('drop the Controllers of field array rows a reset removes', async () => {
+    const onValid = jest.fn();
+    const { formControl, control, reset } = createFormControl({
+      defaultValues: { items: [{ value: 'a' }, { value: 'b' }] },
+    });
+
+    function FieldArrayForm() {
+      const methods = useForm({ formControl });
+      const { fields } = useFieldArray({
+        control: methods.control,
+        name: 'items',
+      });
+
+      return (
+        <form onSubmit={methods.handleSubmit(onValid)}>
+          {fields.map((field, index) => (
+            <Controller
+              key={field.id}
+              control={methods.control}
+              name={`items.${index}.value`}
+              rules={{ required: 'required' }}
+              render={({ field }) => <input {...field} />}
+            />
+          ))}
+          <button>submit</button>
+        </form>
+      );
+    }
+
+    render(<FieldArrayForm />);
+
+    actComponent(() => reset({ items: [{ value: 'a' }] }));
+
+    expect(control._names.mount.has('items.1.value')).toBe(false);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => expect(onValid).toHaveBeenCalled());
+    expect(onValid.mock.calls[0][0]).toEqual({ items: [{ value: 'a' }] });
   });
 
   it('stop enforcing Controller rules removed at runtime', async () => {
