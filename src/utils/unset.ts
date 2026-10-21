@@ -26,7 +26,10 @@ function baseGet(object: unknown, updatePath: (string | number)[]) {
 
 function isEmptyArray(obj: unknown[]) {
   for (const key in obj) {
-    if (obj.hasOwnProperty(key) && !isUndefined(obj[key])) {
+    if (
+      Object.prototype.hasOwnProperty.call(obj, key) &&
+      !isUndefined(obj[key])
+    ) {
       return false;
     }
   }
@@ -37,6 +40,10 @@ export default function unset<T>(
   object: T,
   path: string | (string | number)[],
 ): T {
+  if (isNullOrUndefined(object)) {
+    return object;
+  }
+
   if (isString(path) && Object.prototype.hasOwnProperty.call(object, path)) {
     delete (object as Record<string, unknown>)[path];
     return object;

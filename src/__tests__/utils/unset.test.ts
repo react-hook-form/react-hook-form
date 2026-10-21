@@ -366,4 +366,21 @@ describe('unset', () => {
       delete (Object.prototype as any)[protoPollutionKey];
     }
   });
+
+  it('return original object when object is null or undefined', () => {
+    expect(unset(null, 'test')).toBeNull();
+    expect(unset(undefined, 'test')).toBeUndefined();
+    expect(unset(null, ['test'])).toBeNull();
+    expect(unset(undefined, ['test'])).toBeUndefined();
+  });
+
+  it('handle array that shadows hasOwnProperty without throwing', () => {
+    const arr: any = [{ item: 'value' }];
+    arr.hasOwnProperty = 'shadowed';
+    const data = { list: arr };
+
+    expect(() => unset(data, 'list[0].item')).not.toThrow();
+    expect(data.list.hasOwnProperty).toBe('shadowed');
+    expect(data.list[0]).toBeUndefined();
+  });
 });
