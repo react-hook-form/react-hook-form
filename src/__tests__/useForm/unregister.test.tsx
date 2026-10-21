@@ -778,6 +778,65 @@ describe('unregister', () => {
       },
     );
 
+    it.each([
+      ['a validate rule', false],
+      ['a resolver', true],
+    ])(
+      'apply %s result to a field that remounts with its kept value',
+      async (_, withResolver) => {
+        const { checks, validate, resolver } = setup();
+
+        const App = () => {
+          const [show, setShow] = React.useState(true);
+          const {
+            register,
+            formState: { errors },
+          } = useForm<FormValues>({
+            mode: 'onChange',
+            resolver: withResolver ? resolver : undefined,
+          });
+
+          return (
+            <form>
+              {show && (
+                <input
+                  {...register(
+                    'company',
+                    withResolver ? undefined : { validate },
+                  )}
+                />
+              )}
+              <p>error:{errors.company?.message}</p>
+              <button type="button" onClick={() => setShow(!show)}>
+                toggle
+              </button>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'taken' },
+        });
+
+        expect(checks).toHaveLength(1);
+        const [resolvePending] = checks.splice(0);
+
+        fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+        expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+        fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+
+        await act(async () => {
+          resolvePending(false);
+        });
+
+        expect(screen.getByRole('textbox')).toHaveValue('taken');
+        expect(screen.getByText('error:name is taken')).toBeInTheDocument();
+        expect(checks).toHaveLength(0);
+      },
+    );
+
     it('call onValid when a field is unregistered while submit validates it', async () => {
       const { checks, validate } = setup();
       const onValid = jest.fn();
