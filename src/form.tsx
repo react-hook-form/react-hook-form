@@ -99,25 +99,21 @@ export function Form<
             ).join('');
           }
 
-          const requestHeaders = { ...headers };
-
-          for (const name in requestHeaders) {
-            if (
-              name.toLowerCase() === 'content-type' &&
-              /^multipart\/form-data(?:\s*;|$)/i.test(requestHeaders[name])
-            ) {
-              delete requestHeaders[name];
-            }
-          }
+          const isMultipart = (value: string) =>
+            /^\s*multipart\/form-data\s*(;|$)/i.test(value);
 
           const response = await fetch(action, {
             method,
             headers: {
-              ...requestHeaders,
+              ...Object.fromEntries(
+                Object.entries(headers || {}).filter(
+                  ([name, value]) =>
+                    name.toLowerCase() !== 'content-type' ||
+                    !isMultipart(value),
+                ),
+              ),
               ...(encType &&
-                !/^multipart\/form-data(?:\s*;|$)/i.test(encType) && {
-                  'Content-Type': encType,
-                }),
+                !isMultipart(encType) && { 'Content-Type': encType }),
             },
             body,
           });
