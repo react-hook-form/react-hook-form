@@ -6,7 +6,7 @@ import isString from './utils/isString';
 import { safeJSONStringify } from './utils/json';
 import noop from './utils/noop';
 import type { FieldValues, FormProps } from './types';
-import { useFormContext } from './useFormContext';
+import { useFormControlContext } from './useFormControlContext';
 
 const POST_REQUEST = 'post';
 
@@ -32,10 +32,14 @@ export function Form<
   TFieldValues extends FieldValues,
   TTransformedValues = TFieldValues,
 >(props: FormProps<TFieldValues, TTransformedValues>): React.ReactNode {
-  const methods = useFormContext<TFieldValues, unknown, TTransformedValues>();
+  const formControl = useFormControlContext<
+    TFieldValues,
+    unknown,
+    TTransformedValues
+  >();
   const [mounted, setMounted] = React.useState(false);
   const {
-    control = methods.control,
+    control = formControl,
     onSubmit = noop,
     children,
     action,
@@ -74,27 +78,48 @@ export function Form<
               )) ||
             (encType && type.test(encType));
 
+          let body: BodyInit = formData;
+
+          if (hasContentType(/json/i)) {
+            body = formDataJson;
+          } else if (
+            hasContentType(/^\s*application\/x-www-form-urlencoded\s*(;|$)/i)
+          ) {
+            body = new URLSearchParams(
+              Array.from(formData, ([name, value]) => [
+                name,
+                isString(value) ? value : value.name,
+              ]),
+            );
+          } else if (hasContentType(/^\s*text\/plain\s*(;|$)/i)) {
+            body = Array.from(
+              formData,
+              ([name, value]) =>
+                `${name}=${isString(value) ? value : value.name}\r\n`,
+            ).join('');
+          }
+
+          const requestHeaders = { ...headers };
+
+          for (const name in requestHeaders) {
+            if (
+              name.toLowerCase() === 'content-type' &&
+              /^multipart\/form-data(?:\s*;|$)/i.test(requestHeaders[name])
+            ) {
+              delete requestHeaders[name];
+            }
+          }
+
           const response = await fetch(action, {
             method,
             headers: {
-              ...headers,
+              ...requestHeaders,
               ...(encType &&
-                encType !== 'multipart/form-data' && {
+                !/^multipart\/form-data(?:\s*;|$)/i.test(encType) && {
                   'Content-Type': encType,
                 }),
             },
-            body: hasContentType(/json/i)
-              ? formDataJson
-              : hasContentType(
-                    /^\s*application\/x-www-form-urlencoded\s*(;|$)/i,
-                  )
-                ? new URLSearchParams(
-                    Array.from(formData, ([name, value]) => [
-                      name,
-                      isString(value) ? value : value.name,
-                    ]),
-                  )
-                : formData,
+            body,
           });
 
           if (response && !validateStatus(response.status)) {
