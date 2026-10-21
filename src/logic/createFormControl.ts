@@ -240,6 +240,8 @@ export function createFormControl<
 
   let _setValidCallId = 0;
   let _resetCallId = 0;
+  let _registerCallId = 0;
+  const _registerCallIds: Record<InternalFieldName, number> = {};
 
   let shouldDisplayAllAssociatedErrors =
     _options.criteriaMode === VALIDATION_MODE.all;
@@ -773,6 +775,10 @@ export function createFormControl<
 
   const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
     const resetCallId = _resetCallId;
+    const registerCallId = _registerCallId;
+    const registeredNames = names
+      ? names.filter((name) => get(_fields, name))
+      : [];
     const { errors } = await _runSchema(names);
 
     if (resetCallId !== _resetCallId) {
@@ -783,6 +789,14 @@ export function createFormControl<
 
     if (names) {
       for (const name of names) {
+        if (
+          registeredNames.includes(name) &&
+          (!get(_fields, name) || _registerCallIds[name] > registerCallId)
+        ) {
+          unset(errors, name);
+          continue;
+        }
+
         const error: FieldError | undefined = get(errors, name);
         cancelDelayedErrorTree(name);
         const isFieldArrayRootError =
@@ -924,6 +938,7 @@ export function createFormControl<
             _updateIsValidating([_f.name], true);
           }
 
+          const registerCallId = _registerCallId;
           const fieldError = await validateField(
             field as Field,
             _names.disabled,
@@ -939,6 +954,13 @@ export function createFormControl<
 
           if (isPromiseFunction && shouldTrackIsValidatingState) {
             _updateIsValidating([_f.name]);
+          }
+
+          if (
+            !get(_fields, _f.name) ||
+            _registerCallIds[_f.name] > registerCallId
+          ) {
+            continue;
           }
 
           if (fieldError[_f.name]) {
@@ -1329,11 +1351,12 @@ export function createFormControl<
     let name: string = target.name;
     let isFieldValueUpdated = true;
     const field: Field = get(_fields, name);
+    const registerCallId = _registerCallId;
     const _updateIsFieldValueUpdated = (fieldValue: unknown) => {
-      isFieldValueUpdated = deepEqual(
-        fieldValue,
-        get(_formValues, name, fieldValue),
-      );
+      isFieldValueUpdated =
+        !!get(_fields, name) &&
+        !(_registerCallIds[name] > registerCallId) &&
+        deepEqual(fieldValue, get(_formValues, name, fieldValue));
     };
 
     if (field) {
@@ -1891,6 +1914,10 @@ export function createFormControl<
       isBoolean(options.disabled) || isBoolean(_options.disabled);
     const shouldRevalidateRemount =
       !_names.registerName.has(name) && field && field._f && !field._f.mount;
+
+    if (!field || !field._f) {
+      _registerCallIds[name] = ++_registerCallId;
+    }
 
     set(_fields, name, {
       ...(field || {}),
