@@ -1957,7 +1957,7 @@ export function createFormControl<
         : {}),
       ...(_options.progressive
         ? {
-            required: !!options.required,
+            required: !!getRuleValue(options.required),
             min: getRuleValue(options.min),
             max: getRuleValue(options.max),
             minLength: getRuleValue<number>(options.minLength) as number,
