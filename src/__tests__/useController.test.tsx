@@ -788,6 +788,139 @@ describe('useController', () => {
     expect(data).toBeUndefined();
   });
 
+  it('validate a remounted shouldUnregister Controller against its empty value', async () => {
+    const onSubmit = jest.fn();
+
+    const App = () => {
+      const [toggle, setToggle] = React.useState(true);
+      const {
+        control,
+        handleSubmit,
+        formState: { errors },
+      } = useForm<{ test: string }>({
+        defaultValues: { test: 'test' },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {toggle && (
+            <Controller
+              control={control}
+              name="test"
+              shouldUnregister
+              rules={{ required: 'required' }}
+              render={({ field }) => (
+                <input {...field} value={field.value ?? ''} />
+              )}
+            />
+          )}
+          {errors.test && <p>{errors.test.message}</p>}
+          <button type="button" onClick={() => setToggle(!toggle)}>
+            toggle
+          </button>
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+
+    expect(screen.getByRole('textbox')).toHaveValue('');
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    expect(await screen.findByText('required')).toBeVisible();
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    [
+      'the Controller defaultValue',
+      {},
+      { shouldUnregister: true, defaultValue: 'test' },
+    ],
+    [
+      'the default with form level shouldUnregister',
+      { defaultValues: { test: 'test' }, shouldUnregister: true },
+      {},
+    ],
+  ])('restore %s on remount', async (_, options, props) => {
+    const onSubmit = jest.fn();
+
+    const App = () => {
+      const [toggle, setToggle] = React.useState(true);
+      const { control, handleSubmit } = useForm<{ test: string }>(options);
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {toggle && (
+            <Controller
+              control={control}
+              name="test"
+              {...props}
+              render={({ field }) => <input {...field} />}
+            />
+          )}
+          <button type="button" onClick={() => setToggle(!toggle)}>
+            toggle
+          </button>
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'changed' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+
+    expect(screen.getByRole('textbox')).toHaveValue('test');
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+    expect(onSubmit.mock.calls[0][0]).toEqual({ test: 'test' });
+  });
+
+  it('leave a renamed shouldUnregister Controller without a default undefined', () => {
+    let data: unknown;
+
+    const App = () => {
+      const [name, setName] = React.useState<'a' | 'b'>('a');
+      const { control, getValues } = useForm<{ a: string; b: string }>({
+        defaultValues: { a: 'test' },
+      });
+
+      data = getValues('b');
+
+      return (
+        <>
+          <Controller
+            control={control}
+            name={name}
+            shouldUnregister
+            render={({ field }) => (
+              <input {...field} value={field.value ?? ''} />
+            )}
+          />
+          <button onClick={() => setName('b')}>rename</button>
+        </>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(data).toBeUndefined();
+  });
+
   it('always get the latest value for onBlur event', async () => {
     const watchResults: unknown[] = [];
 
