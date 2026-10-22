@@ -1477,6 +1477,7 @@ export function createFormControl<
         isValid = isEmptyObject(errors);
       } else {
         const resetCallId = _resetCallId;
+        const setValidCallId = ++_setValidCallId;
         _updateIsValidating([name], true);
         error = (
           await validateField(
@@ -1509,6 +1510,12 @@ export function createFormControl<
 
             if (resetCallId !== _resetCallId) {
               return;
+            }
+
+            _updateIsFieldValueUpdated(fieldValue);
+
+            if (setValidCallId !== _setValidCallId) {
+              isValid = undefined;
             }
           }
         }
