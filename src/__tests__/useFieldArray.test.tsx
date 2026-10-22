@@ -128,6 +128,123 @@ describe('useFieldArray', () => {
     },
   );
 
+  it('keep null rows so field indexes match the form values', () => {
+    const onRead = jest.fn();
+    const Component = () => {
+      const { control, register, getValues } = useForm<{
+        test: (string | null)[];
+      }>({
+        defaultValues: { test: ['a', null, 'b'] },
+      });
+      const { fields, append, remove } = useFieldArray({
+        control,
+        name: 'test',
+      });
+
+      return (
+        <>
+          {fields.map((field, index) => (
+            <input
+              key={field.key}
+              data-testid="row"
+              data-value={String(field.value)}
+              {...register(`test.${index}`)}
+            />
+          ))}
+          <button onClick={() => onRead(getValues())}>read</button>
+          <button onClick={() => append('c')}>append</button>
+          <button onClick={() => remove(0)}>remove</button>
+        </>
+      );
+    };
+    const expectRows = (test: (string | null)[]) => {
+      fireEvent.click(screen.getByRole('button', { name: 'read' }));
+      expect(onRead).toHaveBeenLastCalledWith({ test });
+      expect(
+        screen.getAllByTestId('row').map((row) => row.dataset.value),
+      ).toEqual(test.map(String));
+    };
+
+    render(<Component />);
+
+    expectRows(['a', null, 'b']);
+    expect(screen.getAllByTestId('row')[2]).toHaveValue('b');
+
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+
+    expectRows(['a', null, 'b', 'c']);
+
+    fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+
+    expectRows([null, 'b', 'c']);
+    expect(screen.getAllByTestId('row')[1]).toHaveValue('b');
+  });
+
+  it('keep a row in place when shouldUnregister removes its value', () => {
+    const onRead = jest.fn();
+    const Component = () => {
+      const [hidden, setHidden] = React.useState(false);
+      const { control, register, getValues } = useForm<{
+        test: { name: string }[];
+      }>({
+        shouldUnregister: true,
+        defaultValues: { test: [{ name: 'a' }, { name: 'b' }, { name: 'c' }] },
+      });
+      const { fields, append } = useFieldArray({ control, name: 'test' });
+
+      return (
+        <>
+          {fields.map((field, index) =>
+            hidden && index === 1 ? null : (
+              <input
+                key={field.key}
+                data-testid="row"
+                {...register(`test.${index}.name`)}
+              />
+            ),
+          )}
+          <button onClick={() => setHidden(true)}>hide</button>
+          <button onClick={() => append({ name: 'd' })}>append</button>
+          <button onClick={() => onRead(getValues())}>read</button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'hide' }));
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+    fireEvent.click(screen.getByRole('button', { name: 'read' }));
+
+    expect(onRead).toHaveBeenLastCalledWith({
+      test: [{ name: 'a' }, undefined, { name: 'c' }, { name: 'd' }],
+    });
+    expect(
+      screen
+        .getAllByTestId('row')
+        .map((row) => (row as HTMLInputElement).value),
+    ).toEqual(['a', 'c', 'd']);
+  });
+
+  it('keep null object rows as { value: null }', () => {
+    let rows: unknown[] = [];
+    const Component = () => {
+      const { control } = useForm<{ test: ({ name: string } | null)[] }>({
+        defaultValues: { test: [{ name: 'a' }, null] },
+      });
+      const { fields } = useFieldArray({ control, name: 'test' });
+      rows = fields;
+      return null;
+    };
+
+    render(<Component />);
+
+    expect(rows).toEqual([
+      { name: 'a', key: expect.any(String) },
+      { value: null, key: expect.any(String) },
+    ]);
+  });
+
   describe('initialize', () => {
     it('return default fields value', () => {
       const { result } = renderHook(() => {

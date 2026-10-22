@@ -605,7 +605,7 @@ type Expect<T extends true> = T;
     }
   }
 
-  /** it should keep optional object rows as objects */ {
+  /** it should wrap null and undefined rows in { value } */ {
     /* eslint-disable react-hooks/rules-of-hooks */
 
     const { control } = useForm<{
@@ -613,7 +613,19 @@ type Expect<T extends true> = T;
     }>();
     const { fields } = useFieldArray({ control, name: 'items' });
 
-    type _name = Expect<Equal<(typeof fields)[number]['name'], string>>;
+    type _fields = Expect<
+      Equal<
+        typeof fields,
+        (({ name: string } | { value: null } | { value: undefined }) & {
+          key: string;
+        } & { disabled?: boolean })[]
+      >
+    >;
+
+    const row = fields[0];
+    if ('name' in row) {
+      row.name.toUpperCase();
+    }
   }
 
   /** it should spread structurally Blob-compatible object rows */ {

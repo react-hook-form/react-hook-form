@@ -44,6 +44,12 @@ import type { Equal, Expect, NotEqual } from './__fixtures__';
       ) & { key: string }
     >
   >;
+  type _nullable = Expect<
+    Equal<
+      FieldArrayWithId<{ items: (string | null)[] }>,
+      ({ value: string } | { value: null }) & { key: string }
+    >
+  >;
   type _customKey = Expect<
     Equal<
       FieldArrayWithId<{ items: string[] }, 'items', 'id'>,
