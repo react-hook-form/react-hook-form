@@ -357,6 +357,7 @@ export function createFormControl<
   ) => {
     if (args && method && !_options.disabled) {
       _state.action = true;
+      _state.keepIsValid = false;
       const field: FieldRefs | undefined = get(_fields, name);
       const rootField = field && field._f;
       const fields = rootField ? Object.assign([], field) : field;
@@ -1360,6 +1361,7 @@ export function createFormControl<
     };
 
     if (field) {
+      _state.keepIsValid = false;
       let error;
       let isValid;
       let shouldFlushError = false;

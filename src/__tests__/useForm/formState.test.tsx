@@ -760,6 +760,224 @@ describe('formState', () => {
         );
       });
     });
+
+    it.each([
+      {
+        action: 'types in onSubmit mode',
+        mode: 'onSubmit',
+        defaultValue: '',
+        value: 'xy',
+      },
+      {
+        action: 'types in onTouched mode',
+        mode: 'onTouched',
+        defaultValue: '',
+        value: 'xy',
+      },
+      {
+        action: 'types and blurs in onBlur mode',
+        mode: 'onBlur',
+        defaultValue: '',
+        value: 'xy',
+      },
+      {
+        action: 'clears a valid field',
+        mode: 'onSubmit',
+        defaultValue: 'Mike',
+        value: '',
+      },
+      {
+        action: 'types into a Controller',
+        mode: 'onSubmit',
+        defaultValue: '',
+        value: 'xy',
+        controller: true,
+      },
+      {
+        action: 'types with a resolver',
+        mode: 'onSubmit',
+        defaultValue: '',
+        value: 'xy',
+        withResolver: true,
+      },
+    ] as const)(
+      'recompute preserved isValid when the user $action',
+      async ({ mode, defaultValue, value, ...options }) => {
+        const App = () => {
+          const {
+            register,
+            control,
+            reset,
+            formState: { isValid },
+          } = useForm<{ name: string }>({
+            defaultValues: { name: defaultValue },
+            mode,
+            resolver:
+              'withResolver' in options
+                ? async (values) => {
+                    if (values.name) {
+                      return { values, errors: {} };
+                    }
+                    return {
+                      values: {},
+                      errors: {
+                        name: { type: 'required', message: 'required' },
+                      },
+                    };
+                  }
+                : undefined,
+          });
+
+          return (
+            <form>
+              {'controller' in options ? (
+                <Controller
+                  control={control}
+                  name="name"
+                  rules={{ required: true }}
+                  render={({ field }) => <input {...field} />}
+                />
+              ) : (
+                <input {...register('name', { required: true })} />
+              )}
+              <button
+                type="button"
+                onClick={() => reset({ name: 'x' }, { keepIsValid: true })}
+              >
+                reset
+              </button>
+              <p>is valid: {String(isValid)}</p>
+            </form>
+          );
+        };
+
+        const expectedValid = !!value;
+
+        render(<App />);
+
+        expect(
+          await screen.findByText(`is valid: ${!expectedValid}`),
+        ).toBeVisible();
+
+        fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+        await act(async () => {});
+
+        expect(screen.getByText(`is valid: ${!expectedValid}`)).toBeVisible();
+
+        fireEvent.input(screen.getByRole('textbox'), { target: { value } });
+
+        if (mode === 'onBlur') {
+          fireEvent.blur(screen.getByRole('textbox'));
+        }
+
+        expect(
+          await screen.findByText(`is valid: ${expectedValid}`),
+        ).toBeVisible();
+      },
+    );
+
+    it('recompute preserved isValid when the user types after new values with resetOptions.keepIsValid', async () => {
+      const App = ({ values }: { values: { name: string } }) => {
+        const {
+          register,
+          formState: { isValid },
+        } = useForm({ values, resetOptions: { keepIsValid: true } });
+
+        return (
+          <form>
+            <input {...register('name', { required: true })} />
+            <p>is valid: {String(isValid)}</p>
+          </form>
+        );
+      };
+
+      const { rerender } = render(<App values={{ name: '' }} />);
+
+      expect(await screen.findByText('is valid: false')).toBeVisible();
+
+      rerender(<App values={{ name: 'x' }} />);
+      await act(async () => {});
+
+      expect(screen.getByText('is valid: false')).toBeVisible();
+
+      fireEvent.input(screen.getByRole('textbox'), {
+        target: { value: 'xy' },
+      });
+
+      expect(await screen.findByText('is valid: true')).toBeVisible();
+    });
+
+    type FieldArrayValues = { items: { value: string }[] };
+    const fieldArrayOps: Record<
+      string,
+      (fieldArray: UseFieldArrayReturn<FieldArrayValues>) => void
+    > = {
+      append: ({ append }) => append({ value: 'c' }),
+      prepend: ({ prepend }) => prepend({ value: 'c' }),
+      insert: ({ insert }) => insert(1, { value: 'c' }),
+      remove: ({ remove }) => remove(0),
+      swap: ({ swap }) => swap(0, 1),
+      move: ({ move }) => move(0, 1),
+      update: ({ update }) => update(0, { value: 'c' }),
+      replace: ({ replace }) => replace([{ value: 'c' }]),
+    };
+
+    it.each(Object.entries(fieldArrayOps))(
+      'recompute preserved isValid after a field array %s',
+      async (_, run) => {
+        const App = () => {
+          const {
+            register,
+            control,
+            reset,
+            formState: { isValid },
+          } = useForm<FieldArrayValues>({
+            defaultValues: { items: [{ value: '' }] },
+          });
+          const fieldArray = useFieldArray({ control, name: 'items' });
+
+          return (
+            <form>
+              {fieldArray.fields.map((field, index) => (
+                <input
+                  key={field.id}
+                  {...register(`items.${index}.value`, { required: true })}
+                />
+              ))}
+              <button
+                type="button"
+                onClick={() =>
+                  reset(
+                    { items: [{ value: 'a' }, { value: 'b' }] },
+                    { keepIsValid: true },
+                  )
+                }
+              >
+                reset
+              </button>
+              <button type="button" onClick={() => run(fieldArray)}>
+                op
+              </button>
+              <p>is valid: {String(isValid)}</p>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        expect(await screen.findByText('is valid: false')).toBeVisible();
+
+        fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+        await act(async () => {});
+
+        expect(screen.getAllByRole('textbox')).toHaveLength(2);
+        expect(screen.getByText('is valid: false')).toBeVisible();
+
+        fireEvent.click(screen.getByRole('button', { name: 'op' }));
+
+        expect(await screen.findByText('is valid: true')).toBeVisible();
+      },
+    );
   });
 
   it('not update form state when there is a promise reject', async () => {
