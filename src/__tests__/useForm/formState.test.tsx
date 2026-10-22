@@ -14,6 +14,8 @@ import { createFormControl } from '../../logic/createFormControl';
 import type {
   Control,
   FormState,
+  Resolver,
+  ResolverResult,
   UseFieldArrayReturn,
   UseFormGetFieldState,
   UseFormReturn,
@@ -405,6 +407,201 @@ describe('formState', () => {
       });
 
       expect(screen.getByText('validating')).toBeVisible();
+    });
+
+    describe('when an older isValid check settles after a newer change', () => {
+      const setup = () => {
+        const checks: Array<{ value: string; resolve: () => void }> = [];
+
+        const validate = (value: string) =>
+          new Promise<true | string>((resolve) => {
+            checks.push({
+              value,
+              resolve: () => resolve(value.length > 2 || 'too short'),
+            });
+          });
+
+        const resolver = (values: { name: string }) =>
+          new Promise<ResolverResult<{ name: string }>>((resolve) => {
+            checks.push({
+              value: values.name,
+              resolve: () =>
+                resolve(
+                  values.name.length > 2
+                    ? { values, errors: {} }
+                    : {
+                        values: {},
+                        errors: {
+                          name: { type: 'validate', message: 'too short' },
+                        },
+                      },
+                ),
+            });
+          });
+
+        const settle = async (value: string) => {
+          const index = checks.findIndex((check) => check.value === value);
+
+          expect(index).toBeGreaterThan(-1);
+
+          await act(async () => {
+            checks.splice(index, 1)[0].resolve();
+          });
+        };
+
+        return { validate, resolver, settle };
+      };
+
+      const Form = ({
+        validate,
+        resolver,
+        mode = 'onChange',
+        withController = false,
+        withOther = false,
+      }: {
+        validate: (value: string) => Promise<true | string>;
+        resolver?: Resolver<{ name: string }>;
+        mode?: 'onChange' | 'all' | 'onSubmit';
+        withController?: boolean;
+        withOther?: boolean;
+      }) => {
+        const {
+          register,
+          control,
+          handleSubmit,
+          formState: { errors, isValid },
+        } = useForm<{ name: string; other?: string }>({
+          mode,
+          resolver,
+          defaultValues: { name: '', other: 'xyz' },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(noop)}>
+            {withController ? (
+              <Controller
+                control={control}
+                name="name"
+                rules={{ validate }}
+                render={({ field }) => <input {...field} />}
+              />
+            ) : (
+              <input {...register('name', { validate })} />
+            )}
+            {withOther && <input {...register('other', { validate })} />}
+            <p>{errors.name ? errors.name.message : 'no name error'}</p>
+            <p>{errors.other ? errors.other.message : 'no other error'}</p>
+            <p>{isValid ? 'valid' : 'invalid'}</p>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      it.each([
+        ['onChange mode', { mode: 'onChange' }],
+        ['all mode', { mode: 'all' }],
+        ['a Controller', { withController: true }],
+      ] as const)(
+        'keep the newer error and isValid false with %s',
+        async (_, props) => {
+          const { validate, settle } = setup();
+          render(<Form validate={validate} {...props} />);
+          await settle('');
+
+          fireEvent.change(screen.getByRole('textbox'), {
+            target: { value: 'abc' },
+          });
+          await settle('abc');
+
+          fireEvent.change(screen.getByRole('textbox'), {
+            target: { value: 'ab' },
+          });
+          await settle('ab');
+
+          expect(screen.getByText('too short')).toBeVisible();
+
+          await settle('abc');
+
+          expect(screen.getByText('too short')).toBeVisible();
+          expect(screen.getByText('invalid')).toBeVisible();
+        },
+      );
+
+      it('keep the newer error and isValid false when revalidating after a submit', async () => {
+        const { validate, settle } = setup();
+        render(<Form validate={validate} mode="onSubmit" />);
+        await settle('');
+
+        fireEvent.click(screen.getByRole('button'));
+        await settle('');
+
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'abc' },
+        });
+        await settle('abc');
+
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'ab' },
+        });
+        await settle('ab');
+        await settle('abc');
+
+        expect(screen.getByText('too short')).toBeVisible();
+        expect(screen.getByText('invalid')).toBeVisible();
+      });
+
+      it('keep isValid false when another field becomes invalid during the check', async () => {
+        const { validate, settle } = setup();
+        render(<Form validate={validate} withOther />);
+        await settle('');
+
+        const [name, other] = screen.getAllByRole('textbox');
+
+        fireEvent.change(name, { target: { value: 'abc' } });
+        await settle('abc');
+        await settle('abc');
+
+        fireEvent.change(other, { target: { value: 'ab' } });
+        await settle('ab');
+        await settle('xyz');
+
+        expect(screen.getByText('no name error')).toBeVisible();
+        expect(screen.getByText('too short')).toBeVisible();
+        expect(screen.getByText('invalid')).toBeVisible();
+      });
+
+      it('apply the isValid check when nothing changed while it ran', async () => {
+        const { validate, settle } = setup();
+        render(<Form validate={validate} />);
+        await settle('');
+
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'abc' },
+        });
+        await settle('abc');
+        await settle('abc');
+
+        expect(screen.getByText('no name error')).toBeVisible();
+        expect(screen.getByText('valid')).toBeVisible();
+      });
+
+      it('keep the newer error with a resolver', async () => {
+        const { validate, resolver, settle } = setup();
+        render(<Form validate={validate} resolver={resolver} />);
+        await settle('');
+
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'abc' },
+        });
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'ab' },
+        });
+        await settle('ab');
+        await settle('abc');
+
+        expect(screen.getByText('too short')).toBeVisible();
+        expect(screen.getByText('invalid')).toBeVisible();
+      });
     });
   });
 
