@@ -15,7 +15,7 @@ export default function deepEqual(
   isErrorObject = false,
   visited = new WeakMap<object, WeakSet<object>>(),
 ) {
-  if (object1 === object2) {
+  if (Object.is(object1, object2)) {
     return true;
   }
 

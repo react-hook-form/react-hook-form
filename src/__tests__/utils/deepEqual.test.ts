@@ -210,6 +210,15 @@ describe('deepEqual', () => {
     expect(deepEqual([NaN], [0])).toBeFalsy();
   });
 
+  it('treat positive and negative zero as distinct, at the top level and nested', () => {
+    expect(deepEqual(0, -0)).toBeFalsy();
+    expect(deepEqual(-0, 0)).toBeFalsy();
+    expect(deepEqual({ a: 0 }, { a: -0 })).toBeFalsy();
+    expect(deepEqual([0], [-0])).toBeFalsy();
+    expect(deepEqual(0, 0)).toBeTruthy();
+    expect(deepEqual(-0, -0)).toBeTruthy();
+  });
+
   it('compare empty non-plain objects by reference', () => {
     class EmptyObject {}
 
