@@ -36,10 +36,7 @@ export type FieldArrayWithId<
   TFieldArrayName extends FieldArrayPath<TFieldValues> =
     FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'key',
-> = (Exclude<
-  FieldArray<TFieldValues, TFieldArrayName>,
-  null | undefined
-> extends infer TRow
+> = (FieldArray<TFieldValues, TFieldArrayName> extends infer TRow
   ? TRow extends Primitive
     ? { value: TRow }
     : TRow

@@ -1027,9 +1027,7 @@ export function createFormControl<
       _options.shouldUnregister ? get(_defaultValues, name, []) : [],
     );
 
-    return Array.isArray(values)
-      ? values.filter((value) => !isNullOrUndefined(value))
-      : [];
+    return Array.isArray(values) ? [...values] : [];
   };
 
   const setFieldValue = (

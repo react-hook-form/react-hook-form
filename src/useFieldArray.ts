@@ -558,7 +558,8 @@ export function useFieldArray<
     fields: React.useMemo(
       () =>
         fields.map((field, index) => ({
-          ...(typeof field === 'object' || typeof field === 'function'
+          ...((typeof field === 'object' && field !== null) ||
+          typeof field === 'function'
             ? field
             : { value: field }),
           ...(isBoolean(disabled) ? { disabled } : {}),

@@ -548,90 +548,106 @@ type Expect<T extends true> = T;
   }
 }
 
-/** {@link useFieldArray} row properties */
-function useRowProperties() {
-  const { control } = useForm<{
-    strings: string[];
-    numbers: number[];
-    booleans: boolean[];
-    objects: { name: string }[];
-    values: { value: number; name: string }[];
-    mixed: (string | { name: string })[];
-  }>();
-  const { fields: strings } = useFieldArray({ control, name: 'strings' });
-  const { fields: numbers } = useFieldArray({ control, name: 'numbers' });
-  const { fields: booleans } = useFieldArray({ control, name: 'booleans' });
-  const { fields: objects } = useFieldArray({ control, name: 'objects' });
-  const { fields: values } = useFieldArray({ control, name: 'values' });
-  const { fields: mixed } = useFieldArray({ control, name: 'mixed' });
+/** {@link useFieldArray} primitive rows */ {
+  /** it should wrap primitive rows in { value } */ {
+    /* eslint-disable react-hooks/rules-of-hooks */
 
-  type _string = Expect<Equal<(typeof strings)[number]['value'], string>>;
-  type _number = Expect<Equal<(typeof numbers)[number]['value'], number>>;
-  type _boolean = Expect<Equal<(typeof booleans)[number]['value'], boolean>>;
-  type _key = Expect<Equal<(typeof booleans)[number]['key'], string>>;
-  type _disabled = Expect<
-    Equal<(typeof strings)[number]['disabled'], boolean | undefined>
-  >;
-  type _object = Expect<Equal<(typeof objects)[number]['name'], string>>;
-  type _value = Expect<Equal<(typeof values)[number]['value'], number>>;
-  type _mixed = Expect<
-    Equal<
-      typeof mixed,
-      (({ value: string } | { name: string }) & { key: string } & {
-        disabled?: boolean;
-      })[]
-    >
-  >;
+    const { control } = useForm<{
+      strings: string[];
+      numbers: number[];
+      booleans: boolean[];
+      objects: { name: string }[];
+      values: { value: number; name: string }[];
+      mixed: (string | { name: string })[];
+    }>();
+    const { fields: strings } = useFieldArray({ control, name: 'strings' });
+    const { fields: numbers } = useFieldArray({ control, name: 'numbers' });
+    const { fields: booleans } = useFieldArray({ control, name: 'booleans' });
+    const { fields: objects } = useFieldArray({ control, name: 'objects' });
+    const { fields: values } = useFieldArray({ control, name: 'values' });
+    const { fields: mixed } = useFieldArray({ control, name: 'mixed' });
 
-  strings[0].value.toUpperCase();
-  // @ts-expect-error Primitive rows are wrappers, not strings.
-  strings[0].toUpperCase();
-  // @ts-expect-error Primitive wrappers do not have string indices.
-  strings[0][0];
-  // @ts-expect-error Object rows do not gain a value property.
-  objects[0].value;
-  // @ts-expect-error The wrapper value preserves the primitive type.
-  numbers[0].value.toUpperCase();
-  // @ts-expect-error Union rows must be narrowed before reading value.
-  mixed[0].value;
+    type _string = Expect<Equal<(typeof strings)[number]['value'], string>>;
+    type _number = Expect<Equal<(typeof numbers)[number]['value'], number>>;
+    type _boolean = Expect<Equal<(typeof booleans)[number]['value'], boolean>>;
+    type _key = Expect<Equal<(typeof booleans)[number]['key'], string>>;
+    type _disabled = Expect<
+      Equal<(typeof strings)[number]['disabled'], boolean | undefined>
+    >;
+    type _object = Expect<Equal<(typeof objects)[number]['name'], string>>;
+    type _value = Expect<Equal<(typeof values)[number]['value'], number>>;
+    type _mixed = Expect<
+      Equal<
+        typeof mixed,
+        (({ value: string } | { name: string }) & { key: string } & {
+          disabled?: boolean;
+        })[]
+      >
+    >;
 
-  const row = mixed[0];
-  if ('value' in row) {
-    row.value.toUpperCase();
-  } else {
-    row.name.toUpperCase();
+    strings[0].value.toUpperCase();
+    // @ts-expect-error Primitive rows are wrappers, not strings.
+    strings[0].toUpperCase();
+    // @ts-expect-error Primitive wrappers do not have string indices.
+    type _index = (typeof strings)[number][0];
+    // @ts-expect-error Object rows do not gain a value property.
+    type _objectValue = (typeof objects)[number]['value'];
+    // @ts-expect-error The wrapper value preserves the primitive type.
+    numbers[0].value.toUpperCase();
+    // @ts-expect-error Union rows must be narrowed before reading value.
+    type _mixedValue = (typeof mixed)[number]['value'];
+
+    const row = mixed[0];
+    if ('value' in row) {
+      row.value.toUpperCase();
+    } else {
+      row.name.toUpperCase();
+    }
   }
-}
 
-/** {@link useFieldArray} optional object elements */
-function useOptionalObjectRows() {
-  const { control } = useForm<{
-    items: ({ name: string } | null | undefined)[];
-  }>();
-  const { fields } = useFieldArray({ control, name: 'items' });
+  /** it should wrap null and undefined rows in { value } */ {
+    /* eslint-disable react-hooks/rules-of-hooks */
 
-  type _name = Expect<Equal<(typeof fields)[number]['name'], string>>;
-  const name: string = fields[0].name;
-}
+    const { control } = useForm<{
+      items: ({ name: string } | null | undefined)[];
+    }>();
+    const { fields } = useFieldArray({ control, name: 'items' });
 
-/** {@link useFieldArray} structurally Blob-compatible object rows */
-function useBlobLikeRows() {
-  const blob = new Blob();
-  const blobLike = {
-    size: blob.size,
-    type: blob.type,
-    arrayBuffer: () => blob.arrayBuffer(),
-    bytes: () => blob.bytes(),
-    slice: () => blob.slice(),
-    stream: () => blob.stream(),
-    text: () => blob.text(),
-  } satisfies Blob;
-  const { control } = useForm({ defaultValues: { items: [blobLike] } });
-  const { fields } = useFieldArray({ control, name: 'items' });
+    type _fields = Expect<
+      Equal<
+        typeof fields,
+        (({ name: string } | { value: null } | { value: undefined }) & {
+          key: string;
+        } & { disabled?: boolean })[]
+      >
+    >;
 
-  type _type = Expect<Equal<(typeof fields)[number]['type'], string>>;
-  fields[0].type.toUpperCase();
-  fields[0].text().then((text) => text.toUpperCase());
-  // @ts-expect-error Structurally Blob-compatible objects are spread rows.
-  fields[0].value;
+    const row = fields[0];
+    if ('name' in row) {
+      row.name.toUpperCase();
+    }
+  }
+
+  /** it should spread structurally Blob-compatible object rows */ {
+    /* eslint-disable react-hooks/rules-of-hooks */
+
+    const blob = new Blob();
+    const blobLike = {
+      size: blob.size,
+      type: blob.type,
+      arrayBuffer: () => blob.arrayBuffer(),
+      bytes: () => blob.bytes(),
+      slice: () => blob.slice(),
+      stream: () => blob.stream(),
+      text: () => blob.text(),
+    } satisfies Blob;
+    const { control } = useForm({ defaultValues: { items: [blobLike] } });
+    const { fields } = useFieldArray({ control, name: 'items' });
+
+    type _type = Expect<Equal<(typeof fields)[number]['type'], string>>;
+    fields[0].type.toUpperCase();
+    fields[0].text().then((text) => text.toUpperCase());
+    // @ts-expect-error Structurally Blob-compatible objects are spread rows.
+    type _blobValue = (typeof fields)[number]['value'];
+  }
 }

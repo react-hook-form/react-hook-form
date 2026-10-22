@@ -44,6 +44,12 @@ import type { Equal, Expect, NotEqual } from './__fixtures__';
       ) & { key: string }
     >
   >;
+  type _nullable = Expect<
+    Equal<
+      FieldArrayWithId<{ items: (string | null)[] }>,
+      ({ value: string } | { value: null }) & { key: string }
+    >
+  >;
   type _customKey = Expect<
     Equal<
       FieldArrayWithId<{ items: string[] }, 'items', 'id'>,
@@ -68,13 +74,4 @@ import type { Equal, Expect, NotEqual } from './__fixtures__';
       { a: string; value?: number } & { id: string }
     >
   >;
-
-  const customKey: FieldArrayWithId<{ items: string[] }, 'items', 'id'> = {
-    value: '',
-    id: 'row',
-  };
-  // @ts-expect-error Only the requested key name is added.
-  customKey.key;
-  // @ts-expect-error Primitive rows require a value property.
-  const missingValue: FieldArrayWithId<{ items: string[] }> = { key: 'row' };
 }
