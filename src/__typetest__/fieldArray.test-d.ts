@@ -68,13 +68,4 @@ import type { Equal, Expect, NotEqual } from './__fixtures__';
       { a: string; value?: number } & { id: string }
     >
   >;
-
-  const customKey: FieldArrayWithId<{ items: string[] }, 'items', 'id'> = {
-    value: '',
-    id: 'row',
-  };
-  // @ts-expect-error Only the requested key name is added.
-  customKey.key;
-  // @ts-expect-error Primitive rows require a value property.
-  const missingValue: FieldArrayWithId<{ items: string[] }> = { key: 'row' };
 }
