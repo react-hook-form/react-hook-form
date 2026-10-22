@@ -1113,6 +1113,70 @@ describe('reset', () => {
         }),
       );
     });
+
+    it('keep file and date-library values as dirty leaves when reset keeps dirty and default values', () => {
+      function DateValue(this: { $d: Date }, iso: string) {
+        this.$d = new Date(iso);
+      }
+      DateValue.prototype.format = noop;
+      const createDate = (iso: string) => new (DateValue as any)(iso);
+      type FormValues = { name: string; date: unknown; document?: File };
+      const file = new File(['a'], 'a.pdf');
+      const pickedDate = createDate('2024-02-15');
+      let methods!: UseFormReturn<FormValues>;
+
+      const App = () => {
+        methods = useForm<FormValues>({
+          defaultValues: { name: '', date: createDate('2024-01-01') },
+        });
+
+        return (
+          <form>
+            <input {...methods.register('name')} />
+            <Controller
+              control={methods.control}
+              name="document"
+              render={({ field }) => (
+                <button type="button" onClick={() => field.onChange(file)}>
+                  upload
+                </button>
+              )}
+            />
+            <Controller
+              control={methods.control}
+              name="date"
+              render={({ field }) => (
+                <button
+                  type="button"
+                  onClick={() => field.onChange(pickedDate)}
+                >
+                  pick
+                </button>
+              )}
+            />
+            <p>{JSON.stringify(methods.formState.dirtyFields)}</p>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'upload' }));
+      fireEvent.click(screen.getByRole('button', { name: 'pick' }));
+
+      act(() =>
+        methods.reset(
+          { name: 'loaded', date: createDate('2000-01-01') },
+          { keepDirtyValues: true, keepDefaultValues: true },
+        ),
+      );
+
+      expect(
+        screen.getByText('{"name":true,"date":true,"document":true}'),
+      ).toBeVisible();
+      expect(methods.getValues('date')).toBe(pickedDate);
+      expect(methods.getValues('document')).toBe(file);
+    });
   });
 
   it('allow resetting unmounted field array', () => {

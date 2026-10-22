@@ -44,4 +44,15 @@ describe('objectHasFunction', () => {
     const shadowedWithFn = { hasOwnProperty: 'value', test: noop };
     expect(objectHasFunction(shadowedWithFn)).toBeTruthy();
   });
+
+  it('detect methods inherited from a class or constructor prototype', () => {
+    function DateValue(this: { $d: Date }) {
+      this.$d = new Date('2024-01-01');
+    }
+    DateValue.prototype.format = noop;
+
+    expect(objectHasFunction(new (DateValue as any)())).toBeTruthy();
+    expect(objectHasFunction(new File([''], 'a.png'))).toBeTruthy();
+    expect(objectHasFunction(Object.create(FileList.prototype))).toBeTruthy();
+  });
 });

@@ -9,10 +9,25 @@ import {
 } from '@testing-library/react';
 
 import { Controller } from '../../controller';
+import type { UseFormReturn } from '../../types';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
 import { useFormState } from '../../useFormState';
+import noop from '../../utils/noop';
+
+function DateValue(this: { $d: Date }, iso: string) {
+  this.$d = new Date(iso);
+}
+DateValue.prototype.format = noop;
+const createDate = (iso: string) => new (DateValue as any)(iso);
+
+type FileAndDateValues = {
+  name: string;
+  date: unknown;
+  avatar?: FileList;
+  document?: File;
+};
 
 describe('getValues', () => {
   it('return defaultValues before inputs mounted', () => {
@@ -463,6 +478,156 @@ describe('getValues', () => {
     expect(dirtyValues).toEqual({
       records: [undefined, { name: 'changed' }],
     });
+  });
+
+  it.each([
+    {
+      trigger: 'another field returns to its default value',
+      change: () => {
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { value: 'x' },
+        });
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { value: '' },
+        });
+      },
+    },
+    {
+      trigger: 'setValue runs with shouldDirty',
+      change: (methods: UseFormReturn<FileAndDateValues>) =>
+        act(() =>
+          methods.setValue('date', createDate('2024-03-01'), {
+            shouldDirty: true,
+          }),
+        ),
+    },
+  ])(
+    'keep file and date-library values whole in the dirty values when $trigger',
+    ({ change }) => {
+      const file = new File(['a'], 'a.pdf');
+      const files = Object.create(FileList.prototype);
+      Object.defineProperty(files, 0, { value: file, enumerable: true });
+      Object.defineProperty(files, 'length', { value: 1 });
+      let methods!: UseFormReturn<FileAndDateValues>;
+
+      const App = () => {
+        methods = useForm<FileAndDateValues>({
+          defaultValues: { name: '', date: createDate('2024-01-01') },
+        });
+
+        return (
+          <form>
+            <input {...methods.register('name')} />
+            <input
+              type="file"
+              data-testid="avatar"
+              {...methods.register('avatar')}
+            />
+            <Controller
+              control={methods.control}
+              name="document"
+              render={({ field }) => (
+                <button type="button" onClick={() => field.onChange(file)}>
+                  upload
+                </button>
+              )}
+            />
+            <Controller
+              control={methods.control}
+              name="date"
+              render={({ field }) => (
+                <button
+                  type="button"
+                  onClick={() => field.onChange(createDate('2024-02-15'))}
+                >
+                  pick
+                </button>
+              )}
+            />
+            <p>{JSON.stringify(methods.formState.dirtyFields)}</p>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.change(screen.getByTestId('avatar'), { target: { files } });
+      fireEvent.click(screen.getByRole('button', { name: 'upload' }));
+      fireEvent.click(screen.getByRole('button', { name: 'pick' }));
+      change(methods);
+
+      expect(
+        screen.getByText('{"avatar":true,"document":true,"date":true}'),
+      ).toBeVisible();
+
+      const dirtyValues = methods.getValues(undefined, { dirtyFields: true });
+
+      expect(dirtyValues.avatar).toBe(files);
+      expect(dirtyValues.document).toBe(file);
+      expect(dirtyValues.date).toBeInstanceOf(DateValue);
+    },
+  );
+
+  it('keep a date-library value in a field array row whole in the dirty values after an append', () => {
+    let dirtyValues: Record<string, any> = {};
+
+    const App = () => {
+      const {
+        control,
+        getValues,
+        formState: { dirtyFields },
+      } = useForm({
+        defaultValues: { items: [{ date: createDate('2024-01-01') }] },
+      });
+      const { fields, append } = useFieldArray({ control, name: 'items' });
+
+      return (
+        <form>
+          {fields.map((item, index) => (
+            <Controller
+              key={item.id}
+              control={control}
+              name={`items.${index}.date`}
+              render={({ field }) => (
+                <button
+                  type="button"
+                  onClick={() => field.onChange(createDate('2024-02-15'))}
+                >
+                  pick {index}
+                </button>
+              )}
+            />
+          ))}
+          <button
+            type="button"
+            onClick={() => append({ date: createDate('2024-05-05') })}
+          >
+            append
+          </button>
+          <p>{JSON.stringify(dirtyFields)}</p>
+          <button
+            type="button"
+            onClick={() => {
+              dirtyValues = getValues(undefined, { dirtyFields: true });
+            }}
+          >
+            getValues
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'pick 0' }));
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+    fireEvent.click(screen.getByRole('button', { name: 'getValues' }));
+
+    expect(
+      screen.getByText('{"items":[{"date":true},{"date":true}]}'),
+    ).toBeVisible();
+    expect(dirtyValues.items[0].date).toBeInstanceOf(DateValue);
+    expect(dirtyValues.items[1].date).toBeInstanceOf(DateValue);
   });
 });
 
