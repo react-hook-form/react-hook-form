@@ -1,6 +1,6 @@
 import type {
-  FieldPath,
   FieldValues,
+  WatchName,
   WatchProps,
   WatchRenderValue,
 } from './types';
@@ -22,19 +22,14 @@ import { useWatch } from './useWatch';
  */
 export const Watch = <
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends
-    | FieldPath<TFieldValues>
-    | readonly [FieldPath<TFieldValues>, ...FieldPath<TFieldValues>[]]
-    | FieldPath<TFieldValues>[]
-    | readonly FieldPath<TFieldValues>[]
-    | undefined = undefined,
+  TFieldName extends WatchName<TFieldValues> = undefined,
   TContext = any,
   TTransformedValues = TFieldValues,
   TComputeValue = undefined,
 >(
   props: WatchProps<
-    TFieldName,
     TFieldValues,
+    TFieldName,
     TContext,
     TTransformedValues,
     TComputeValue
@@ -44,6 +39,6 @@ export const Watch = <
     (
       useWatch as (
         options: typeof props,
-      ) => WatchRenderValue<TFieldName, TFieldValues, TComputeValue>
+      ) => WatchRenderValue<TFieldValues, TFieldName, TComputeValue>
     )({ name: props.names, ...props }),
   );

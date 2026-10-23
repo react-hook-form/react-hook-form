@@ -18,8 +18,8 @@ export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
 };
 
 export type WatchDefaultValue<
-  TFieldName,
   TFieldValues extends FieldValues = FieldValues,
+  TFieldName = undefined,
 > =
   TFieldName extends FieldPath<TFieldValues>
     ? FieldPathValue<TFieldValues, TFieldName>
@@ -32,8 +32,8 @@ export type WatchName<TFieldValues extends FieldValues> =
   | undefined;
 
 export type WatchValue<
-  TFieldName,
   TFieldValues extends FieldValues = FieldValues,
+  TFieldName = undefined,
 > = TFieldName extends readonly FieldPath<TFieldValues>[]
   ? FieldPathValues<TFieldValues, TFieldName>
   : TFieldName extends FieldPath<TFieldValues>
@@ -41,16 +41,16 @@ export type WatchValue<
     : TFieldValues;
 
 export type WatchRenderValue<
-  TFieldName,
   TFieldValues extends FieldValues,
+  TFieldName,
   TComputeValue,
 > = TComputeValue extends undefined
-  ? WatchValue<TFieldName, TFieldValues>
+  ? WatchValue<TFieldValues, TFieldName>
   : TComputeValue;
 
 export type WatchProps<
-  TFieldName extends WatchName<TFieldValues>,
   TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends WatchName<TFieldValues> = undefined,
   TContext = any,
   TTransformedValues = TFieldValues,
   TComputeValue = undefined,
@@ -64,9 +64,9 @@ export type WatchProps<
   name?: TFieldName;
   disabled?: boolean;
   exact?: boolean;
-  defaultValue?: WatchDefaultValue<TFieldName, TFieldValues>;
-  compute?: (value: WatchValue<TFieldName, TFieldValues>) => TComputeValue;
+  defaultValue?: WatchDefaultValue<TFieldValues, TFieldName>;
+  compute?: (value: WatchValue<TFieldValues, TFieldName>) => TComputeValue;
   render: (
-    value: WatchRenderValue<TFieldName, TFieldValues, TComputeValue>,
+    value: WatchRenderValue<TFieldValues, TFieldName, TComputeValue>,
   ) => ReactNode | ReactNode[];
 };
