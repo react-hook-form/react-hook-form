@@ -358,6 +358,7 @@ export function createFormControl<
   ) => {
     if (args && method && !_options.disabled) {
       _state.action = true;
+      _state.keepIsValid = false;
       const field: FieldRefs | undefined = get(_fields, name);
       const rootField = field && field._f;
       const fields = rootField ? Object.assign([], field) : field;
@@ -526,7 +527,7 @@ export function createFormControl<
       if (Array.isArray(node) && +key >= node.length) {
         return true;
       }
-      node = (node as Record<string, unknown> | undefined)?.[key];
+      node = node && (node as Record<string, unknown>)[key];
     }
 
     return false;
@@ -1208,13 +1209,6 @@ export function createFormControl<
     skipRender = false,
     skipValueRender = false,
   ) => {
-    if (_names.array.has(name)) {
-      _subjects.array.next({
-        name,
-        values: skipClone ? _formValues : cloneObject(_formValues),
-      });
-    }
-
     for (const fieldKey in value) {
       if (!Object.prototype.hasOwnProperty.call(value, fieldKey)) {
         continue;
@@ -1222,6 +1216,13 @@ export function createFormControl<
       const fieldValue = value[fieldKey];
       const fieldName = name + '.' + fieldKey;
       const field: FieldRefs | undefined = get(_fields, fieldName);
+
+      if (_names.array.has(fieldName)) {
+        _subjects.array.next({
+          name: fieldName,
+          values: skipClone ? _formValues : cloneObject(_formValues),
+        });
+      }
 
       (_names.array.has(name) ||
         isObject(fieldValue) ||
@@ -1397,6 +1398,7 @@ export function createFormControl<
     };
 
     if (field) {
+      _state.keepIsValid = false;
       let error;
       let isValid;
       let shouldFlushError = false;
@@ -1541,6 +1543,7 @@ export function createFormControl<
         isValid = isEmptyObject(errors);
       } else {
         const resetCallId = _resetCallId;
+        const setValidCallId = ++_setValidCallId;
         _updateIsValidating([name], true);
         error = (
           await validateField(
@@ -1573,6 +1576,12 @@ export function createFormControl<
 
             if (resetCallId !== _resetCallId) {
               return;
+            }
+
+            _updateIsFieldValueUpdated(fieldValue);
+
+            if (setValidCallId !== _setValidCallId) {
+              isValid = undefined;
             }
           }
         }
@@ -2023,7 +2032,7 @@ export function createFormControl<
         : {}),
       ...(_options.progressive
         ? {
-            required: !!options.required,
+            required: !!getRuleValue(options.required),
             min: getRuleValue(options.min),
             max: getRuleValue(options.max),
             minLength: getRuleValue<number>(options.minLength) as number,

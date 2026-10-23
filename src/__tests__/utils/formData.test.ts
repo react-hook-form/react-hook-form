@@ -33,22 +33,4 @@ describe('jsonToFormData', () => {
     expect(formData.get('name')).toBe('bill');
     expect(formData.getAll('resume')).toHaveLength(2);
   });
-
-  it('submit a class instance as its toJSON value', () => {
-    class DateValue {
-      $d = new Date('2026-10-13T00:00:00.000Z');
-
-      toJSON() {
-        return this.$d.toISOString();
-      }
-    }
-
-    const formData = jsonToFormData({
-      name: 'bill',
-      startDate: new DateValue(),
-    });
-
-    expect(Array.from(formData.keys())).toEqual(['name', 'startDate']);
-    expect(formData.get('startDate')).toBe('2026-10-13T00:00:00.000Z');
-  });
 });

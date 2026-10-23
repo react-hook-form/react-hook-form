@@ -1,7 +1,6 @@
 import type { FieldValues } from '../types';
 
 import isDateObject from './isDateObject';
-import isFunction from './isFunction';
 import { isObjectType } from './isObject';
 
 const isFileLike = (value: unknown) =>
@@ -22,11 +21,6 @@ export const flatten = (obj: FieldValues) => {
       !isFileLike(obj[key]) &&
       !isFileListLike(obj[key])
     ) {
-      if ('toJSON' in obj[key] && isFunction(obj[key].toJSON)) {
-        output[key] = obj[key].toJSON();
-        continue;
-      }
-
       const nested = flatten(obj[key]);
 
       for (const nestedKey of Object.keys(nested)) {
