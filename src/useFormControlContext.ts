@@ -14,7 +14,7 @@ HookFormControlContext.displayName = 'HookFormControlContext';
  */
 export const useFormControlContext = <
   TFieldValues extends FieldValues,
-  TContext = any,
+  TContext = unknown,
   TTransformedValues = TFieldValues,
 >(): Control<TFieldValues, TContext, TTransformedValues> =>
   React.useContext(HookFormControlContext) as Control<

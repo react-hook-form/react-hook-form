@@ -15,13 +15,25 @@ type FormData = {
 };
 
 /** {@link Watch} */ {
-  /** it should have correct types for render function parameter when names is passed as array */ {
+  /** it should reject the removed names prop */ {
     /* eslint-disable react-hooks/rules-of-hooks */
     const { control } = useForm<FormData>();
 
     void Watch({
       control,
-      names: ['foo', 'fie', 'quux', 'baz', 'baz.qux'],
+      // @ts-expect-error names was replaced by name
+      names: ['foo', 'bar'],
+      render: () => null,
+    });
+  }
+
+  /** it should have correct types for render function parameter when name is passed as array */ {
+    /* eslint-disable react-hooks/rules-of-hooks */
+    const { control } = useForm<FormData>();
+
+    void Watch({
+      control,
+      name: ['foo', 'fie', 'quux', 'baz', 'baz.qux'],
       render: (values) => {
         type _t = Expect<
           Equal<typeof values, [string, null, number, { qux: string }, string]>
@@ -31,13 +43,13 @@ type FormData = {
     });
   }
 
-  /** it should have correct types for render function parameter when names is passed as string */ {
+  /** it should have correct types for render function parameter when name is passed as string */ {
     /* eslint-disable react-hooks/rules-of-hooks */
     const { control } = useForm<FormData>();
 
     void Watch({
       control,
-      names: 'baz.qux',
+      name: 'baz.qux',
       render: (value) => {
         type _t = Expect<Equal<typeof value, string>>;
         return null;
@@ -45,7 +57,7 @@ type FormData = {
     });
   }
 
-  /** it should have correct types for render function parameter when names omitted */ {
+  /** it should have correct types for render function parameter when name omitted */ {
     /* eslint-disable react-hooks/rules-of-hooks */
     const { control } = useForm<FormData>();
 
@@ -64,7 +76,7 @@ type FormData = {
 
     void Watch({
       control,
-      names: 'baz.qux',
+      name: 'baz.qux',
       compute: (val) => val.length > 2,
       render: (value) => {
         type _t = Expect<Equal<typeof value, boolean>>;
@@ -73,13 +85,13 @@ type FormData = {
     });
   }
 
-  /** it should have correct types for compute function parameter when names is passed as string */ {
+  /** it should have correct types for compute function parameter when name is passed as string */ {
     /* eslint-disable react-hooks/rules-of-hooks */
     const { control } = useForm<FormData>();
 
     void Watch({
       control,
-      names: 'baz.qux',
+      name: 'baz.qux',
       compute: (val) => {
         type _t = Expect<Equal<typeof val, string>>;
         return val;
@@ -88,13 +100,13 @@ type FormData = {
     });
   }
 
-  /** it should have correct types for compute function parameter when names is passed as array */ {
+  /** it should have correct types for compute function parameter when name is passed as array */ {
     /* eslint-disable react-hooks/rules-of-hooks */
     const { control } = useForm<FormData>();
 
     void Watch({
       control,
-      names: ['baz.qux', 'fie', 'quux'],
+      name: ['baz.qux', 'fie', 'quux'],
       compute: (val) => {
         type _t = Expect<Equal<typeof val, [string, null, number]>>;
         return val;

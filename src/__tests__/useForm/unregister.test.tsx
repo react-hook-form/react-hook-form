@@ -358,15 +358,18 @@ describe('unregister', () => {
         defaultValues: { phone: '', firstName: 'bill' },
       });
 
-      React.useEffect(() => {
-        register('phone', { required: true });
-      }, [register]);
+      const [show, setShow] = React.useState(true);
+
+      show && register('phone', { required: true });
 
       return (
         <form onSubmit={handleSubmit(onValid, onInvalid)}>
           <button
             type="button"
-            onClick={() => unregister('phone', { keepValue: true })}
+            onClick={() => {
+              setShow(false);
+              unregister('phone', { keepValue: true });
+            }}
           >
             unregister
           </button>

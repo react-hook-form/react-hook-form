@@ -15,7 +15,9 @@ export default <T extends NativeFieldValue>(
           ? +value
           : value
       : valueAsDate && isString(value)
-        ? new Date(value)
+        ? value === ''
+          ? null
+          : new Date(value)
         : setValueAs
           ? setValueAs(value)
           : value;
