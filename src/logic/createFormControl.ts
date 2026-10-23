@@ -526,7 +526,7 @@ export function createFormControl<
       if (Array.isArray(node) && +key >= node.length) {
         return true;
       }
-      node = (node as Record<string, unknown> | undefined)?.[key];
+      node = node && (node as Record<string, unknown>)[key];
     }
 
     return false;
