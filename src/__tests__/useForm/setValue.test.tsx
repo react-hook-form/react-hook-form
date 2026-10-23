@@ -1055,6 +1055,70 @@ describe('setValue', () => {
         toString: true,
       });
     });
+
+    it('should support setting null-prototype or hasOwnProperty-shadowing objects', () => {
+      let formValues: unknown;
+
+      const App = () => {
+        const { register, setValue, getValues } = useForm({
+          defaultValues: {
+            user: {
+              firstName: '',
+              lastName: '',
+            },
+          },
+        });
+
+        return (
+          <>
+            <input {...register('user.firstName')} />
+            <input {...register('user.lastName')} />
+            <button
+              onClick={() => {
+                const nullProto: Record<string, string> = Object.create(null);
+                nullProto.firstName = 'Jane';
+                nullProto.lastName = 'Doe';
+                setValue('user', nullProto as any);
+                formValues = getValues();
+              }}
+            >
+              setNullProto
+            </button>
+            <button
+              onClick={() => {
+                setValue('user', {
+                  firstName: 'John',
+                  lastName: 'Smith',
+                  hasOwnProperty: 'custom',
+                } as any);
+                formValues = getValues();
+              }}
+            >
+              setShadowing
+            </button>
+          </>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByText('setNullProto'));
+      expect(formValues).toEqual({
+        user: {
+          firstName: 'Jane',
+          lastName: 'Doe',
+        },
+      });
+
+      fireEvent.click(screen.getByText('setShadowing'));
+      expect(formValues).toEqual({
+        user: {
+          firstName: 'John',
+          lastName: 'Smith',
+          hasOwnProperty: 'custom',
+        },
+      });
+    });
   });
 
   describe('with strict mode', () => {

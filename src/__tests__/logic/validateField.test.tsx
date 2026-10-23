@@ -1953,6 +1953,37 @@ describe('validateField', () => {
     ).toEqual({});
   });
 
+  it('should not return an error when validate returns an empty message array', async () => {
+    const field = {
+      _f: {
+        mount: true,
+        name: 'test',
+        ref: { type: 'text', name: 'test' },
+        validate: {
+          rules: (value: string) =>
+            [
+              value.length < 3 && 'too short',
+              !/\d/.test(value) && 'no digit',
+            ].filter((message): message is string => !!message),
+        },
+      },
+    };
+
+    expect(
+      await validateField(field, new Set(), { test: 'abc1' }, false),
+    ).toEqual({});
+
+    expect(
+      await validateField(field, new Set(), { test: 'ab' }, false),
+    ).toEqual({
+      test: {
+        type: 'rules',
+        message: '',
+        ref: { type: 'text', name: 'test' },
+      },
+    });
+  });
+
   it('do nothing when validate is not an object nor function', async () => {
     expect(
       await validateField(

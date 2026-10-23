@@ -2869,6 +2869,79 @@ describe('reset', () => {
     unsubscribe();
   });
 
+  it('not overwrite a keepIsValid-preserved isValid when a stale built-in trigger() settles after reset', async () => {
+    const resolvers: Array<(result: string | boolean) => void> = [];
+    const { result } = renderHook(() => {
+      const form = useForm<{ test: string }>({
+        defaultValues: { test: 'invalid' },
+      });
+      form.formState.isValid;
+      return form;
+    });
+    result.current.register('test', {
+      validate: () =>
+        new Promise<string | boolean>((resolve) => {
+          resolvers.push(resolve);
+        }),
+    });
+
+    let first!: Promise<boolean>;
+    await act(async () => {
+      first = result.current.trigger();
+    });
+    await act(async () => {
+      resolvers.splice(0).forEach((resolve) => resolve('invalid'));
+      await first;
+    });
+    expect(result.current.formState.isValid).toBe(false);
+
+    let stale!: Promise<boolean>;
+    await act(async () => {
+      stale = result.current.trigger();
+    });
+    await act(async () => {
+      result.current.reset({ test: 'still invalid' }, { keepIsValid: true });
+    });
+    await act(async () => {
+      resolvers.splice(0).forEach((resolve) => resolve('invalid'));
+      await stale;
+    });
+
+    expect(result.current.formState.isValid).toBe(false);
+  });
+
+  // Control: with no intervening reset(), a slow built-in trigger() result is
+  // still applied as usual.
+  it('apply a delayed built-in trigger() result when reset() is not called', async () => {
+    const resolvers: Array<(result: string | boolean) => void> = [];
+    const { result } = renderHook(() => {
+      const form = useForm<{ test: string }>({
+        defaultValues: { test: '' },
+      });
+      form.formState.isValid;
+      form.formState.touchedFields;
+      return form;
+    });
+    result.current.register('test', {
+      validate: () =>
+        new Promise<string | boolean>((resolve) => {
+          resolvers.push(resolve);
+        }),
+    });
+
+    let pending!: Promise<boolean>;
+    await act(async () => {
+      pending = result.current.trigger(undefined, { shouldTouch: true });
+    });
+    await act(async () => {
+      resolvers.splice(0).forEach((resolve) => resolve('invalid'));
+      await pending;
+    });
+
+    expect(result.current.formState.isValid).toBe(false);
+    expect(result.current.formState.touchedFields).toEqual({ test: true });
+  });
+
   it('keep isValidating true after keepIsValidating reset even once the stale resolver settles', async () => {
     // keepIsValidating intentionally skips the reset-time clear; nothing
     // re-derives isValidating from a resolver call discarded by reset(), so
@@ -2956,6 +3029,44 @@ describe('reset', () => {
     expect(focus).not.toHaveBeenCalled();
   });
 
+  it('not touch or focus reset fields when a stale built-in trigger settles', async () => {
+    const resolvers: Array<(result: string | boolean) => void> = [];
+    const { result } = renderHook(() => {
+      const form = useForm<{ test: string }>({
+        defaultValues: { test: 'old' },
+      });
+      form.formState.touchedFields;
+      form.formState.errors;
+      return form;
+    });
+    const focus = jest.fn();
+    result.current
+      .register('test', {
+        validate: () =>
+          new Promise<string | boolean>((resolve) => {
+            resolvers.push(resolve);
+          }),
+      })
+      .ref({ name: 'test', value: 'old', focus });
+    let pending!: Promise<boolean>;
+    await act(async () => {
+      pending = result.current.trigger('test', {
+        shouldTouch: true,
+        shouldFocus: true,
+      });
+    });
+    await act(async () => {
+      result.current.reset({ test: 'new' });
+    });
+    await act(async () => {
+      resolvers.splice(0, 1)[0]('old error');
+      await pending;
+    });
+    expect(result.current.formState.touchedFields).toEqual({});
+    expect(result.current.formState.errors).toEqual({});
+    expect(focus).not.toHaveBeenCalled();
+  });
+
   it('not delay a current error when a pre-reset trigger settles', async () => {
     jest.useFakeTimers();
 
@@ -2993,6 +3104,47 @@ describe('reset', () => {
     });
     await act(async () => {
       complete({ values: { test: 'old' }, errors: {} });
+      await pending;
+    });
+    expect(result.current.formState.errors.test?.message).toBe('current error');
+    await act(async () => {
+      jest.advanceTimersByTime(100);
+    });
+    expect(result.current.formState.errors.test?.message).toBe('current error');
+  });
+
+  it('not delay a current error when a pre-reset built-in trigger settles', async () => {
+    let complete!: (result: string | boolean) => void;
+    const { result } = renderHook(() => {
+      const form = useForm<{ test: string }>({
+        defaultValues: { test: 'old' },
+        delayError: 100,
+      });
+      form.formState.errors;
+      return form;
+    });
+    result.current.register('test', {
+      validate: () =>
+        new Promise<string | boolean>((resolve) => {
+          complete = resolve;
+        }),
+    });
+    let pending!: Promise<boolean>;
+    const options = { delayError: true, shouldFocus: false };
+    await act(async () => {
+      pending = result.current.trigger('test', options);
+    });
+    await act(async () => {
+      result.current.reset({ test: 'new' });
+    });
+    await act(async () => {
+      result.current.setError('test', {
+        type: 'server',
+        message: 'current error',
+      });
+    });
+    await act(async () => {
+      complete(true);
       await pending;
     });
     expect(result.current.formState.errors.test?.message).toBe('current error');
@@ -3429,6 +3581,168 @@ describe('reset', () => {
 
     expect(screen.getByText(/^error:/).textContent).toEqual(
       'error:stale error',
+    );
+  });
+
+  it.each([
+    ['a validate rule', false],
+    ['a resolver', true],
+  ])(
+    'not apply a stale isValid pass from %s that spans a keepIsValid reset',
+    async (_, withResolver) => {
+      const checks: Array<(valid: boolean) => void> = [];
+      const check = () =>
+        new Promise<boolean>((resolve) => {
+          checks.push(resolve);
+        });
+
+      const App = () => {
+        const {
+          register,
+          reset,
+          formState: { isValid },
+        } = useForm<{ test: string }>({
+          defaultValues: { test: 'invalid' },
+          resolver: withResolver
+            ? async (values) => {
+                if (await check()) {
+                  return { values, errors: {} };
+                }
+                return {
+                  values: {},
+                  errors: { test: { type: 'manual', message: 'invalid' } },
+                };
+              }
+            : undefined,
+        });
+
+        return (
+          <div>
+            <input
+              {...register('test', {
+                validate: withResolver ? undefined : check,
+              })}
+            />
+            <p>{`valid:${isValid}`}</p>
+            <button
+              type="button"
+              onClick={() =>
+                reset({ test: 'still invalid' }, { keepIsValid: true })
+              }
+            >
+              reset
+            </button>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        checks.splice(0).forEach((complete) => complete(false));
+      });
+
+      expect(screen.getByText(/^valid:/).textContent).toEqual('valid:false');
+
+      // In onSubmit mode a keystroke only starts the isValid pass.
+      await act(async () => {
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'valid' },
+        });
+      });
+
+      expect(checks).toHaveLength(1);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+      });
+
+      await act(async () => {
+        checks.splice(0, 1)[0](true);
+      });
+
+      expect(screen.getByText(/^valid:/).textContent).toEqual('valid:false');
+    },
+  );
+
+  it('keep a newer trigger validation marked as validating when a stale isValid pass settles after reset', async () => {
+    type Result = {
+      values: { test: string };
+      errors: FieldErrors<{ test: string }>;
+    };
+    const completions: Array<(value: Result) => void> = [];
+
+    const App = () => {
+      const {
+        register,
+        reset,
+        trigger,
+        formState: { isValid, validatingFields },
+      } = useForm<{ test: string }>({
+        defaultValues: { test: 'old' },
+        resolver: () =>
+          new Promise<Result>((resolve) => completions.push(resolve)),
+      });
+
+      return (
+        <div>
+          <input {...register('test')} />
+          <p>{`valid:${isValid}`}</p>
+          <p>{`validating:${!!validatingFields.test}`}</p>
+          <button type="button" onClick={() => void trigger('test')}>
+            trigger
+          </button>
+          <button
+            type="button"
+            onClick={() => reset({ test: 'new' }, { keepIsValid: true })}
+          >
+            reset
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      completions
+        .splice(0)
+        .forEach((complete) =>
+          complete({ values: { test: 'old' }, errors: {} }),
+        );
+    });
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'changed' },
+      });
+    });
+
+    expect(completions).toHaveLength(1);
+    const completeStale = completions.splice(0, 1)[0];
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+    });
+
+    await act(async () => {
+      completeStale({ values: { test: 'changed' }, errors: {} });
+    });
+
+    expect(screen.getByText(/^validating:/).textContent).toEqual(
+      'validating:true',
+    );
+
+    await act(async () => {
+      completions.splice(0, 1)[0]({ values: { test: 'new' }, errors: {} });
+    });
+
+    expect(screen.getByText(/^validating:/).textContent).toEqual(
+      'validating:false',
     );
   });
 

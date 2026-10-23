@@ -78,27 +78,44 @@ export function Form<
               )) ||
             (encType && type.test(encType));
 
+          let body: BodyInit = formData;
+
+          if (hasContentType(/json/i)) {
+            body = formDataJson;
+          } else if (
+            hasContentType(/^\s*application\/x-www-form-urlencoded\s*(;|$)/i)
+          ) {
+            body = new URLSearchParams(
+              Array.from(formData, ([name, value]) => [
+                name,
+                isString(value) ? value : value.name,
+              ]),
+            );
+          } else if (hasContentType(/^\s*text\/plain\s*(;|$)/i)) {
+            body = Array.from(
+              formData,
+              ([name, value]) =>
+                `${name}=${isString(value) ? value : value.name}\r\n`,
+            ).join('');
+          }
+
+          const isMultipart = (value: string) =>
+            /^\s*multipart\/form-data\s*(;|$)/i.test(value);
+
           const response = await fetch(action, {
             method,
             headers: {
-              ...headers,
+              ...Object.fromEntries(
+                Object.entries(headers || {}).filter(
+                  ([name, value]) =>
+                    name.toLowerCase() !== 'content-type' ||
+                    !isMultipart(value),
+                ),
+              ),
               ...(encType &&
-                encType !== 'multipart/form-data' && {
-                  'Content-Type': encType,
-                }),
+                !isMultipart(encType) && { 'Content-Type': encType }),
             },
-            body: hasContentType(/json/i)
-              ? formDataJson
-              : hasContentType(
-                    /^\s*application\/x-www-form-urlencoded\s*(;|$)/i,
-                  )
-                ? new URLSearchParams(
-                    Array.from(formData, ([name, value]) => [
-                      name,
-                      isString(value) ? value : value.name,
-                    ]),
-                  )
-                : formData,
+            body,
           });
 
           if (response && !validateStatus(response.status)) {

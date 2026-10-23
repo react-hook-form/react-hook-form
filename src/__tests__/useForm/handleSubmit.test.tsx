@@ -10,10 +10,51 @@ import {
 
 import { VALIDATION_MODE } from '../../constants';
 import { createFormControl } from '../../logic/createFormControl';
+import type { UseFormProps } from '../../types';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import isFunction from '../../utils/isFunction';
 import noop from '../../utils/noop';
+
+type TestFormValues = { test: string };
+
+const useFormWithSubmitState = (props?: UseFormProps<TestFormValues>) => {
+  const methods = useForm<TestFormValues>(props);
+  const { isSubmitting, isSubmitted, isSubmitSuccessful, submitCount, errors } =
+    methods.formState;
+
+  return {
+    methods,
+    state: {
+      isSubmitting,
+      isSubmitted,
+      isSubmitSuccessful,
+      submitCount,
+      errors,
+    },
+  };
+};
+
+const exceptionalSubmitState = {
+  isSubmitting: false,
+  isSubmitted: false,
+  isSubmitSuccessful: false,
+  submitCount: 0,
+};
+
+const captureError = async (callback: () => Promise<unknown>) => {
+  let error: unknown;
+
+  await act(async () => {
+    try {
+      await callback();
+    } catch (caughtError) {
+      error = caughtError;
+    }
+  });
+
+  return error;
+};
 
 describe('handleSubmit', () => {
   afterEach(() => {
@@ -495,7 +536,12 @@ describe('handleSubmit', () => {
       const {
         register,
         handleSubmit,
-        formState: { isSubmitting, isSubmitted, isSubmitSuccessful },
+        formState: {
+          isSubmitting,
+          isSubmitted,
+          isSubmitSuccessful,
+          submitCount,
+        },
       } = useForm();
 
       const rejectPromiseFn = jest.fn().mockRejectedValue(new Error(errorMsg));
@@ -507,6 +553,7 @@ describe('handleSubmit', () => {
           <p>isSubmitting : {isSubmitting ? 'true' : 'false'}</p>
           <p>isSubmitted : {isSubmitted ? 'true' : 'false'}</p>
           <p>isSubmitSuccessful : {isSubmitSuccessful ? 'true' : 'false'}</p>
+          <p>submitCount : {submitCount}</p>
           <button
             type={'button'}
             onClick={() =>
@@ -525,6 +572,7 @@ describe('handleSubmit', () => {
     expect(await screen.findByText('isSubmitting : false')).toBeVisible();
     expect(await screen.findByText('isSubmitted : false')).toBeVisible();
     expect(await screen.findByText('isSubmitSuccessful : false')).toBeVisible();
+    expect(await screen.findByText('submitCount : 0')).toBeVisible();
 
     fireEvent.click(screen.getByRole('button'));
 
@@ -532,6 +580,143 @@ describe('handleSubmit', () => {
     expect(await screen.findByText('isSubmitting : false')).toBeVisible();
     expect(await screen.findByText('isSubmitted : true')).toBeVisible();
     expect(await screen.findByText('isSubmitSuccessful : false')).toBeVisible();
+    expect(await screen.findByText('submitCount : 1')).toBeVisible();
+  });
+
+  it.each(['throws', 'rejects'] as const)(
+    'preserve the original error and only settle isSubmitting when onInvalid %s',
+    async (failureType) => {
+      const expectedError = new Error(`onInvalid ${failureType}`);
+      const { result } = renderHook(() => useFormWithSubmitState());
+
+      result.current.methods.register('test', { required: 'required' });
+      const onInvalid =
+        failureType === 'throws'
+          ? () => {
+              throw expectedError;
+            }
+          : async () => {
+              throw expectedError;
+            };
+
+      const error = await captureError(() =>
+        result.current.methods.handleSubmit(noop, onInvalid)(),
+      );
+
+      expect(error).toBe(expectedError);
+      expect(result.current.state).toEqual({
+        ...exceptionalSubmitState,
+        errors: {
+          test: expect.objectContaining({
+            type: 'required',
+            message: 'required',
+          }),
+        },
+      });
+    },
+  );
+
+  it.each(['throws', 'rejects'] as const)(
+    'preserve the original error and only settle isSubmitting when the resolver %s',
+    async (failureType) => {
+      const expectedError = new Error(`resolver ${failureType}`);
+      const resolver =
+        failureType === 'throws'
+          ? () => {
+              throw expectedError;
+            }
+          : async () => {
+              throw expectedError;
+            };
+      const { result } = renderHook(() => useFormWithSubmitState({ resolver }));
+
+      result.current.methods.register('test');
+      const error = await captureError(() =>
+        result.current.methods.handleSubmit(noop)(),
+      );
+
+      expect(error).toBe(expectedError);
+      expect(result.current.state).toEqual({
+        ...exceptionalSubmitState,
+        errors: {},
+      });
+    },
+  );
+
+  it.each(['throws', 'rejects'] as const)(
+    'preserve the original error and only settle isSubmitting when a validator %s',
+    async (failureType) => {
+      const expectedError = new Error(`validator ${failureType}`);
+      const { result } = renderHook(() => useFormWithSubmitState());
+      const validate =
+        failureType === 'throws'
+          ? () => {
+              throw expectedError;
+            }
+          : async () => {
+              throw expectedError;
+            };
+
+      result.current.methods.register('test', { validate });
+      const error = await captureError(() =>
+        result.current.methods.handleSubmit(noop)(),
+      );
+
+      expect(error).toBe(expectedError);
+      expect(result.current.state).toEqual({
+        ...exceptionalSubmitState,
+        errors: {},
+      });
+    },
+  );
+
+  it('preserve a falsy value thrown by onInvalid', async () => {
+    const { result } = renderHook(() => useFormWithSubmitState());
+
+    result.current.methods.register('test', { required: true });
+    const error = await captureError(() =>
+      result.current.methods.handleSubmit(noop, () => {
+        throw 0;
+      })(),
+    );
+
+    expect(error).toBe(0);
+  });
+
+  it('not publish submit cleanup after reset supersedes validation', async () => {
+    const expectedError = new Error('resolver failed after reset');
+    let rejectResolver!: (error: Error) => void;
+    const { handleSubmit, reset, subscribe } =
+      createFormControl<TestFormValues>({
+        defaultValues: { test: 'before' },
+        resolver: () =>
+          new Promise((_, reject) => {
+            rejectResolver = reject;
+          }),
+      });
+    const onValid = jest.fn();
+    const onInvalid = jest.fn();
+    const subscriber = jest.fn();
+    const unsubscribe = subscribe({
+      formState: { isSubmitting: true },
+      callback: subscriber,
+    });
+
+    const submitPromise = handleSubmit(onValid, onInvalid)();
+
+    reset({ test: 'after' });
+    expect(subscriber).toHaveBeenLastCalledWith(
+      expect.objectContaining(exceptionalSubmitState),
+    );
+    subscriber.mockClear();
+
+    rejectResolver(expectedError);
+    await expect(submitPromise).rejects.toBe(expectedError);
+
+    expect(subscriber).not.toHaveBeenCalled();
+    expect(onValid).not.toHaveBeenCalled();
+    expect(onInvalid).not.toHaveBeenCalled();
+    unsubscribe();
   });
 
   describe('with validationSchema', () => {

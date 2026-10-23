@@ -238,6 +238,8 @@ export function createFormControl<
 
   let _setValidCallId = 0;
   let _resetCallId = 0;
+  let _registerCallId = 0;
+  const _registerCallIds: Record<InternalFieldName, number> = {};
 
   let shouldDisplayAllAssociatedErrors =
     _options.criteriaMode === VALIDATION_MODE.all;
@@ -353,6 +355,7 @@ export function createFormControl<
   ) => {
     if (args && method && !_options.disabled) {
       _state.action = true;
+      _state.keepIsValid = false;
       const field: FieldRefs | undefined = get(_fields, name);
       const rootField = field && field._f;
       const fields = rootField ? Object.assign([], field) : field;
@@ -521,7 +524,7 @@ export function createFormControl<
       if (Array.isArray(node) && +key >= node.length) {
         return true;
       }
-      node = (node as Record<string, unknown> | undefined)?.[key];
+      node = node && (node as Record<string, unknown>)[key];
     }
 
     return false;
@@ -771,6 +774,10 @@ export function createFormControl<
 
   const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
     const resetCallId = _resetCallId;
+    const registerCallId = _registerCallId;
+    const registeredNames = names
+      ? names.filter((name) => get(_fields, name))
+      : [];
     const { errors } = await _runSchema(names);
 
     if (resetCallId !== _resetCallId) {
@@ -781,6 +788,14 @@ export function createFormControl<
 
     if (names) {
       for (const name of names) {
+        if (
+          registeredNames.includes(name) &&
+          (!get(_fields, name) || _registerCallIds[name] > registerCallId)
+        ) {
+          unset(errors, name);
+          continue;
+        }
+
         const error: FieldError | undefined = get(errors, name);
         cancelDelayedErrorTree(name);
         const isFieldArrayRootError =
@@ -922,6 +937,7 @@ export function createFormControl<
             _updateIsValidating([_f.name], true);
           }
 
+          const registerCallId = _registerCallId;
           const fieldError = await validateField(
             field as Field,
             _names.disabled,
@@ -937,6 +953,13 @@ export function createFormControl<
 
           if (isPromiseFunction && shouldTrackIsValidatingState) {
             _updateIsValidating([_f.name]);
+          }
+
+          if (
+            !get(_fields, _f.name) ||
+            _registerCallIds[_f.name] > registerCallId
+          ) {
+            continue;
           }
 
           if (fieldError[_f.name]) {
@@ -1148,20 +1171,20 @@ export function createFormControl<
     skipRender = false,
     skipValueRender = false,
   ) => {
-    if (_names.array.has(name)) {
-      _subjects.array.next({
-        name,
-        values: skipClone ? _formValues : cloneObject(_formValues),
-      });
-    }
-
     for (const fieldKey in value) {
-      if (!value.hasOwnProperty(fieldKey)) {
+      if (!Object.prototype.hasOwnProperty.call(value, fieldKey)) {
         continue;
       }
       const fieldValue = value[fieldKey];
       const fieldName = name + '.' + fieldKey;
       const field: FieldRefs | undefined = get(_fields, fieldName);
+
+      if (_names.array.has(fieldName)) {
+        _subjects.array.next({
+          name: fieldName,
+          values: skipClone ? _formValues : cloneObject(_formValues),
+        });
+      }
 
       (_names.array.has(name) ||
         isObject(fieldValue) ||
@@ -1328,14 +1351,16 @@ export function createFormControl<
     let name: string = target.name;
     let isFieldValueUpdated = true;
     const field: Field = get(_fields, name);
+    const registerCallId = _registerCallId;
     const _updateIsFieldValueUpdated = (fieldValue: unknown) => {
       isFieldValueUpdated =
-        Number.isNaN(fieldValue) ||
-        (isDateObject(fieldValue) && isNaN(fieldValue.getTime())) ||
+        !!get(_fields, name) &&
+        !(_registerCallIds[name] > registerCallId) &&
         deepEqual(fieldValue, get(_formValues, name, fieldValue));
     };
 
     if (field) {
+      _state.keepIsValid = false;
       let error;
       let isValid;
       let shouldFlushError = false;
@@ -1451,6 +1476,7 @@ export function createFormControl<
         isValid = isEmptyObject(errors);
       } else {
         const resetCallId = _resetCallId;
+        const setValidCallId = ++_setValidCallId;
         _updateIsValidating([name], true);
         error = (
           await validateField(
@@ -1483,6 +1509,12 @@ export function createFormControl<
 
             if (resetCallId !== _resetCallId) {
               return;
+            }
+
+            _updateIsFieldValueUpdated(fieldValue);
+
+            if (setValidCallId !== _setValidCallId) {
+              isValid = undefined;
             }
           }
         }
@@ -1520,9 +1552,9 @@ export function createFormControl<
     let isValid;
     let validationResult;
     const fieldNames = convertToArrayPayload(name) as InternalFieldName[];
+    const resetCallId = _resetCallId;
 
     if (_options.resolver) {
-      const resetCallId = _resetCallId;
       const errors = await executeSchemaAndUpdateState(
         isUndefined(name) ? name : fieldNames,
       );
@@ -1530,10 +1562,6 @@ export function createFormControl<
       validationResult = name
         ? !fieldNames.some((name) => get(errors, name))
         : isValid;
-
-      if (resetCallId !== _resetCallId) {
-        return validationResult;
-      }
     } else if (name) {
       validationResult = (
         await Promise.all(
@@ -1553,6 +1581,10 @@ export function createFormControl<
         name,
         eventType: EVENTS.TRIGGER,
       });
+    }
+
+    if (resetCallId !== _resetCallId) {
+      return validationResult;
     }
 
     if (options.delayError && _options.delayError && isString(name)) {
@@ -1864,6 +1896,10 @@ export function createFormControl<
     const shouldRevalidateRemount =
       !_names.registerName.has(name) && field && field._f && !field._f.mount;
 
+    if (!field || !field._f) {
+      _registerCallIds[name] = ++_registerCallId;
+    }
+
     set(_fields, name, {
       ...(field || {}),
       _f: {
@@ -1902,7 +1938,7 @@ export function createFormControl<
         : {}),
       ...(_options.progressive
         ? {
-            required: !!options.required,
+            required: !!getRuleValue(options.required),
             min: getRuleValue(options.min),
             max: getRuleValue(options.max),
             minLength: getRuleValue<number>(options.minLength) as number,
@@ -2025,9 +2061,23 @@ export function createFormControl<
         isSubmitting: true,
       });
 
+      const resetCallId = _resetCallId;
+      const onSubmitError = (error: unknown): never => {
+        if (resetCallId === _resetCallId) {
+          _subjects.state.next({ isSubmitting: false });
+        }
+
+        throw error;
+      };
+
       if (_options.resolver) {
-        const resetCallId = _resetCallId;
-        const { errors, values } = await _runSchema();
+        let validationResult!: Awaited<ReturnType<typeof _runSchema>>;
+        try {
+          validationResult = await _runSchema();
+        } catch (error) {
+          onSubmitError(error);
+        }
+        const { errors, values } = validationResult;
 
         if (resetCallId !== _resetCallId) {
           return;
@@ -2038,11 +2088,14 @@ export function createFormControl<
         _formState.errors = errors;
         fieldValues = cloneObject(values);
       } else {
-        const resetCallId = _resetCallId;
-        await executeBuiltInValidation({
-          fields: _fields,
-          eventType: EVENTS.SUBMIT,
-        });
+        try {
+          await executeBuiltInValidation({
+            fields: _fields,
+            eventType: EVENTS.SUBMIT,
+          });
+        } catch (error) {
+          onSubmitError(error);
+        }
 
         if (resetCallId !== _resetCallId) {
           return;
@@ -2069,7 +2122,11 @@ export function createFormControl<
         }
       } else {
         if (onInvalid) {
-          await onInvalid({ ..._formState.errors }, e);
+          try {
+            await onInvalid({ ..._formState.errors }, e);
+          } catch (error) {
+            onSubmitError(error);
+          }
         }
 
         _focusError();
@@ -2130,6 +2187,7 @@ export function createFormControl<
     keepStateOptions = {},
   ) => {
     _resetCallId++;
+    _setValidCallId++;
     const updatedValues = formValues ? cloneObject(formValues) : _defaultValues;
     const cloneUpdatedValues = cloneObject(updatedValues);
     const isEmptyResetValues = isEmptyObject(formValues);
