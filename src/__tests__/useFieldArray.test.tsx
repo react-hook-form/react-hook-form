@@ -12,6 +12,7 @@ import { Controller } from '../controller';
 import type {
   Control,
   FieldValues,
+  KeepStateOptions,
   ResolverResult,
   SubmitHandler,
   UseFieldArrayProps,
@@ -4659,6 +4660,187 @@ describe('useFieldArray', () => {
 
       await waitFor(() => expect(onInvalid).toHaveBeenCalledTimes(1));
       expect(onValid).not.toHaveBeenCalled();
+    });
+
+    describe('when the form is reset', () => {
+      type FormValues = { items: { value: string }[] };
+
+      const required = { required: 'add an item' };
+      const minLength = { minLength: { value: 2, message: 'add two items' } };
+
+      const App = ({
+        rules,
+        defaultItems,
+        resetItems,
+        resetOptions,
+        onValid,
+      }: {
+        rules: NonNullable<UseFieldArrayProps<FormValues, 'items'>['rules']>;
+        defaultItems: FormValues['items'];
+        resetItems?: FormValues['items'];
+        resetOptions?: KeepStateOptions;
+        onValid: (data: FormValues) => void;
+      }) => {
+        const { control, register, handleSubmit, reset, formState } =
+          useForm<FormValues>({
+            defaultValues: { items: defaultItems },
+          });
+        const { fields } = useFieldArray({ control, name: 'items', rules });
+
+        return (
+          <form onSubmit={handleSubmit(onValid)}>
+            {fields.map((field, index) => (
+              <input key={field.id} {...register(`items.${index}.value`)} />
+            ))}
+            <p>{formState.errors.items?.root?.message}</p>
+            <p>{formState.isValid ? 'valid' : 'invalid'}</p>
+            <p>{`submitted ${formState.submitCount}`}</p>
+            <button
+              type="button"
+              onClick={() =>
+                reset(
+                  resetItems ? { items: resetItems } : undefined,
+                  resetOptions,
+                )
+              }
+            >
+              reset
+            </button>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      const clickAndSubmit = async (name: string) => {
+        fireEvent.click(screen.getByRole('button', { name }));
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+        await screen.findByText('submitted 1');
+      };
+
+      it('keep the array rules after reset without values', async () => {
+        const onValid = jest.fn();
+        render(<App rules={required} defaultItems={[]} onValid={onValid} />);
+
+        await clickAndSubmit('reset');
+
+        expect(onValid).not.toHaveBeenCalled();
+        expect(screen.getByText('add an item')).toBeVisible();
+      });
+
+      it('keep the array rules after reset with the same number of rows', async () => {
+        const onValid = jest.fn();
+        render(
+          <App
+            rules={minLength}
+            defaultItems={[{ value: 'a' }]}
+            resetItems={[{ value: 'b' }]}
+            onValid={onValid}
+          />,
+        );
+
+        await clickAndSubmit('reset');
+
+        expect(onValid).not.toHaveBeenCalled();
+        expect(screen.getByText('add two items')).toBeVisible();
+      });
+
+      it('keep isValid false after reset when the array breaks its rules', async () => {
+        render(<App rules={required} defaultItems={[]} onValid={noop} />);
+
+        expect(await screen.findByText('invalid')).toBeVisible();
+
+        fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+
+        await act(async () => {});
+
+        expect(screen.getByText('invalid')).toBeVisible();
+      });
+
+      it('keep the array rules after reset in strict mode', async () => {
+        const onValid = jest.fn();
+        render(
+          <React.StrictMode>
+            <App rules={required} defaultItems={[]} onValid={onValid} />
+          </React.StrictMode>,
+        );
+
+        await clickAndSubmit('reset');
+
+        expect(onValid).not.toHaveBeenCalled();
+        expect(screen.getByText('add an item')).toBeVisible();
+      });
+
+      it('keep the array rules after reset with keepValues', async () => {
+        const onValid = jest.fn();
+        render(
+          <App
+            rules={required}
+            defaultItems={[]}
+            resetOptions={{ keepValues: true }}
+            onValid={onValid}
+          />,
+        );
+
+        await clickAndSubmit('reset');
+
+        expect(onValid).not.toHaveBeenCalled();
+        expect(screen.getByText('add an item')).toBeVisible();
+      });
+
+      it('keep the array rules when the values prop updates', async () => {
+        const onValid = jest.fn();
+        const Values = () => {
+          const [values, setValues] = useState<FormValues>({
+            items: [{ value: 'a' }],
+          });
+          const { control, register, handleSubmit, formState } =
+            useForm<FormValues>({ values });
+          const { fields } = useFieldArray({
+            control,
+            name: 'items',
+            rules: minLength,
+          });
+
+          return (
+            <form onSubmit={handleSubmit(onValid)}>
+              {fields.map((field, index) => (
+                <input key={field.id} {...register(`items.${index}.value`)} />
+              ))}
+              <p>{formState.errors.items?.root?.message}</p>
+              <p>{`submitted ${formState.submitCount}`}</p>
+              <button
+                type="button"
+                onClick={() => setValues({ items: [{ value: 'b' }] })}
+              >
+                update values
+              </button>
+              <button>submit</button>
+            </form>
+          );
+        };
+        render(<Values />);
+
+        await clickAndSubmit('update values');
+
+        expect(onValid).not.toHaveBeenCalled();
+        expect(screen.getByText('add two items')).toBeVisible();
+      });
+
+      it('submit after reset when the rows meet the array rules', async () => {
+        const onValid = jest.fn();
+        render(
+          <App
+            rules={minLength}
+            defaultItems={[{ value: 'a' }, { value: 'b' }]}
+            onValid={onValid}
+          />,
+        );
+
+        await clickAndSubmit('reset');
+
+        expect(onValid).toHaveBeenCalledTimes(1);
+        expect(screen.queryByText('add two items')).not.toBeInTheDocument();
+      });
     });
 
     it('validate the maxLength of the entire field array after submit and correct accordingly', async () => {
