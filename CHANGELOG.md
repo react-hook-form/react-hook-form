@@ -1,5 +1,63 @@
 # Changelog
 
+## [7.91.0] - 2026-10-24
+
+### Changed
+
+- Improve performance of `Form` by reading control from context to avoid unnecessary re-renders
+- Improve performance of `getValues` by avoiding unnecessary shallow copies
+- Simplify multipart content-type header filtering
+- Align form-level validation error types
+
+### Fixed
+
+- `useFieldArray` not registering array rules again after `reset`
+- `setValue` not updating field array rows when a parent object is set
+- `createFormControl` keeping a newer change's error when an older `isValid` pass settles
+- `validate` treating an empty message array as valid
+- `reset` releasing `keepIsValid` on the next field change or field array operation
+- `register` only emitting the progressive `required` attribute when the rule is on
+- `createFormControl` dropping the async result of a field unregistered while it validates
+- `createFormControl` supporting null-prototype objects in `setValue`
+- `Form` handling case-insensitive and parameterized multipart `encType`
+- `createFormControl` ignoring a stale `NaN` or `Invalid Date` validation result
+- Settle submit state when validation throws
+- `Form` letting fetch set the multipart boundary for a multipart content-type header
+- `createFormControl` ignoring a stale built-in validity result after `reset`
+- `useForm` running the initial validity check when a child subscribed first
+- `Form` sending a `text/plain` body for a `text/plain` content type
+- `createFormControl` copying the `errors` prop instead of writing into it
+- `useForm` resetting `resetOptions` when removed from props
+- `createFormControl` handling falsy values correctly in `_getDirty` and `resetField`
+- `unregister` dropping the field's rules when `keepValue` keeps only its value
+- `useForm` clearing errors when the `errors` option is removed or set to `undefined`
+- `useFieldArray` dropping a validation result once the array has changed
+- `reset` keeping retained fields disabled
+- `useForm` re-enabling the form when the `disabled` option is removed
+- `formState` producing a new `validatingFields` reference when it changes
+- `validateField` validating the stored value of `Controller` fields with a DOM ref
+- `useForm` resetting `progressive` option when removed from props
+- `cloneObject` copying plain objects that have a `constructor` key
+- `useFieldArray` reindexing row fields when the array has rules
+- `Form` matching JSON content types case-insensitively
+- `deepEqual` comparing keys as own properties instead of via `in`
+- `register` keeping select options picked before the form is ready
+- Report `isReady` to `useFormState` mounted with the form
+- `useFieldArray` revalidating array operations after submit in `onBlur` mode
+- `getDirtyFields` handling `null` or `undefined` form values when clearing a field
+- `setValue` updating `isDirty` when `shouldDirty` fills a field array
+- `delayError` flushing the delayed error on blur when blur also validates
+- `useWatch` using the new `defaultValue` when the watched name changes
+- `deepEqual` comparing sparse array lengths
+- `Form` sending a url-encoded body for a url-encoded content type
+- `deepEqual` comparing empty null-prototype objects by content
+- Enforce numeric zero `maxLength`
+- `register` not adding an array row when registered without a value
+- `Form` matching `Content-Type` header names case-insensitively
+- `trigger` recomputing preserved `isValid` after `reset`
+- `useFieldArray` unregistering on unmount unless a parent array is reindexing
+- `setValue` notifying field arrays so their rows follow the new values
+
 ## [7.90.0] - 2026-10-10
 
 ### Changed
