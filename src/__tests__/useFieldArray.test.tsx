@@ -2533,7 +2533,7 @@ describe('useFieldArray', () => {
               <input {...register('section.title')} />
               {fields.map((field, index) => (
                 <input
-                  key={field.id}
+                  key={field.key}
                   data-testid="row"
                   {...register(`section.items.${index}.value`)}
                 />
@@ -2608,7 +2608,7 @@ describe('useFieldArray', () => {
 
           return fields.map((field, index) => (
             <input
-              key={field.id}
+              key={field.key}
               data-testid="tag"
               {...register(`rows.0.tags.${index}.label`)}
             />
@@ -4901,7 +4901,7 @@ describe('useFieldArray', () => {
         return (
           <form onSubmit={handleSubmit(onValid)}>
             {fields.map((field, index) => (
-              <input key={field.id} {...register(`items.${index}.value`)} />
+              <input key={field.key} {...register(`items.${index}.value`)} />
             ))}
             <p>{formState.errors.items?.root?.message}</p>
             <p>{formState.isValid ? 'valid' : 'invalid'}</p>
@@ -5015,7 +5015,7 @@ describe('useFieldArray', () => {
           return (
             <form onSubmit={handleSubmit(onValid)}>
               {fields.map((field, index) => (
-                <input key={field.id} {...register(`items.${index}.value`)} />
+                <input key={field.key} {...register(`items.${index}.value`)} />
               ))}
               <p>{formState.errors.items?.root?.message}</p>
               <p>{`submitted ${formState.submitCount}`}</p>
