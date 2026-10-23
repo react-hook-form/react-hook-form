@@ -29,6 +29,7 @@ export type WatchName<TFieldValues extends FieldValues> =
   | FieldPath<TFieldValues>
   | FieldPath<TFieldValues>[]
   | readonly FieldPath<TFieldValues>[]
+  | readonly [FieldPath<TFieldValues>, ...FieldPath<TFieldValues>[]]
   | undefined;
 
 export type WatchValue<
