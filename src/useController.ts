@@ -85,6 +85,7 @@ export function useController<
   });
 
   const _props = React.useRef(props);
+  const _value = React.useRef(value);
   const _proxyRef = React.useRef<Ref | null>(null);
 
   const _registerProps = React.useRef(
@@ -96,6 +97,7 @@ export function useController<
   );
 
   _props.current = props;
+  _value.current = value;
 
   const fieldState = React.useMemo(
     () =>
@@ -237,11 +239,7 @@ export function useController<
             ? control._defaultValues
             : control._options.values || control._defaultValues,
           name,
-          get(
-            control._options.defaultValues,
-            name,
-            _props.current.defaultValue,
-          ),
+          _value.current,
         ),
       );
       set(control._defaultValues, name, value);
