@@ -2133,7 +2133,13 @@ export function createFormControl<
 
       if (_names.disabled.size) {
         for (const name of _names.disabled) {
-          unset(fieldValues, name);
+          const paths = toPath(name);
+          const key = paths.pop() as string;
+          const parent = paths.length
+            ? get(fieldValues, paths.join('.'))
+            : fieldValues;
+
+          parent && unset(parent, key);
         }
       }
 

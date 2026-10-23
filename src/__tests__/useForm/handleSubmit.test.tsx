@@ -9,8 +9,9 @@ import {
 } from '@testing-library/react';
 
 import { VALIDATION_MODE } from '../../constants';
+import { Controller } from '../../controller';
 import { createFormControl } from '../../logic/createFormControl';
-import type { UseFormProps } from '../../types';
+import type { UseFormProps, UseFormReturn } from '../../types';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 import isFunction from '../../utils/isFunction';
@@ -1229,5 +1230,160 @@ describe('handleSubmit', () => {
     expect(onValid).not.toHaveBeenCalled();
     expect(result.current.formState.submitCount).toBe(0);
     expect(result.current.formState.isSubmitSuccessful).toBe(false);
+  });
+
+  describe('with disabled fields', () => {
+    type FormValues = {
+      items: { name: string; address?: { street: string } }[];
+      address: { street: string };
+      tags: string[];
+      title: string;
+    };
+
+    type FieldsProps = UseFormReturn<FormValues>;
+
+    const defaultValues: FormValues = {
+      items: [{ name: 'a' }, { name: 'b' }],
+      address: { street: 'x' },
+      tags: ['c'],
+      title: 't',
+    };
+
+    const submit = async (
+      props: UseFormProps<FormValues>,
+      Fields: React.ComponentType<FieldsProps>,
+    ) => {
+      const onValid = jest.fn();
+
+      const App = () => {
+        const form = useForm<FormValues>(props);
+
+        return (
+          <form onSubmit={form.handleSubmit(onValid)}>
+            <Fields {...form} />
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      await waitFor(() => expect(onValid).toHaveBeenCalled());
+
+      return onValid.mock.calls[0][0];
+    };
+
+    const TwoRowFields = ({ register }: FieldsProps) => (
+      <>
+        <input {...register('items.0.name', { disabled: true })} />
+        <input {...register('items.1.name')} />
+        <input {...register('address.street', { disabled: true })} />
+        <input {...register('tags.0', { disabled: true })} />
+        <input {...register('title')} />
+      </>
+    );
+
+    it('should keep the row and the object that held a disabled field', async () => {
+      expect(await submit({ defaultValues }, TwoRowFields)).toStrictEqual({
+        items: [{}, { name: 'b' }],
+        address: {},
+        tags: new Array(1),
+        title: 't',
+      });
+    });
+
+    it('should keep the parents of disabled fields with a resolver', async () => {
+      const resolver = async (values: FormValues) => ({ values, errors: {} });
+
+      expect(
+        await submit({ defaultValues, resolver }, TwoRowFields),
+      ).toStrictEqual({
+        items: [{}, { name: 'b' }],
+        address: {},
+        tags: new Array(1),
+        title: 't',
+      });
+    });
+
+    it('should keep a single row whose only field is disabled', async () => {
+      expect(
+        await submit(
+          { defaultValues: { items: [{ name: 'a' }], title: 't' } },
+          ({ register }) => (
+            <input {...register('items.0.name', { disabled: true })} />
+          ),
+        ),
+      ).toStrictEqual({ items: [{}], title: 't' });
+    });
+
+    it('should keep a row whose nested object only held a disabled field', async () => {
+      expect(
+        await submit(
+          {
+            defaultValues: { items: [{ name: 'a', address: { street: 'x' } }] },
+          },
+          ({ register }) => (
+            <>
+              <input {...register('items.0.name')} />
+              <input
+                {...register('items.0.address.street', { disabled: true })}
+              />
+            </>
+          ),
+        ),
+      ).toStrictEqual({ items: [{ name: 'a', address: {} }] });
+    });
+
+    it('should keep the object of a disabled Controller', async () => {
+      expect(
+        await submit(
+          { defaultValues: { address: { street: 'x' }, title: 't' } },
+          ({ control }) => (
+            <Controller
+              control={control}
+              name="address.street"
+              disabled
+              render={({ field }) => <input {...field} />}
+            />
+          ),
+        ),
+      ).toStrictEqual({ address: {}, title: 't' });
+    });
+
+    it('should keep the objects of fields disabled by the form', async () => {
+      expect(
+        await submit(
+          {
+            disabled: true,
+            defaultValues: { address: { street: 'x' }, title: 't' },
+          },
+          ({ register }) => (
+            <>
+              <input {...register('address.street')} />
+              <input {...register('title')} />
+            </>
+          ),
+        ),
+      ).toStrictEqual({ address: {} });
+    });
+
+    it('should submit the value of a field re-enabled before submit', async () => {
+      const ReEnabled = ({ register }: FieldsProps) => {
+        const [disabled, setDisabled] = React.useState(true);
+
+        React.useEffect(() => setDisabled(false), []);
+
+        return <input {...register('address.street', { disabled })} />;
+      };
+
+      expect(
+        await submit(
+          { defaultValues: { address: { street: 'x' } } },
+          ReEnabled,
+        ),
+      ).toStrictEqual({ address: { street: 'x' } });
+    });
   });
 });
