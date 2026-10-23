@@ -1172,13 +1172,6 @@ export function createFormControl<
     skipRender = false,
     skipValueRender = false,
   ) => {
-    if (_names.array.has(name)) {
-      _subjects.array.next({
-        name,
-        values: skipClone ? _formValues : cloneObject(_formValues),
-      });
-    }
-
     for (const fieldKey in value) {
       if (!Object.prototype.hasOwnProperty.call(value, fieldKey)) {
         continue;
@@ -1186,6 +1179,13 @@ export function createFormControl<
       const fieldValue = value[fieldKey];
       const fieldName = name + '.' + fieldKey;
       const field: FieldRefs | undefined = get(_fields, fieldName);
+
+      if (_names.array.has(fieldName)) {
+        _subjects.array.next({
+          name: fieldName,
+          values: skipClone ? _formValues : cloneObject(_formValues),
+        });
+      }
 
       (_names.array.has(name) ||
         isObject(fieldValue) ||
