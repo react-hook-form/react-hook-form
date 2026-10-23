@@ -2290,6 +2290,157 @@ describe('useFieldArray', () => {
       expect(fieldsLength).toBe(2);
     });
 
+    describe('when setValue targets the parent object', () => {
+      type FormValues = {
+        section: { title: string; items: { value: string }[] };
+      };
+      let setValue: UseFormReturn<FormValues>['setValue'];
+      let getValues: UseFormReturn<FormValues>['getValues'];
+
+      const renderSection = (
+        items: { value: string }[],
+        rules?: UseFieldArrayProps<FormValues, 'section.items'>['rules'],
+      ) => {
+        const Component = () => {
+          const {
+            register,
+            control,
+            formState,
+            setValue: tempSetValue,
+            getValues: tempGetValues,
+          } = useForm<FormValues>({
+            defaultValues: { section: { title: '', items } },
+          });
+          const { fields } = useFieldArray({
+            control,
+            name: 'section.items',
+            rules,
+          });
+          setValue = tempSetValue;
+          getValues = tempGetValues;
+
+          return (
+            <form>
+              <input {...register('section.title')} />
+              {fields.map((field, index) => (
+                <input
+                  key={field.id}
+                  data-testid="row"
+                  {...register(`section.items.${index}.value`)}
+                />
+              ))}
+              <p>{formState.errors.section?.items?.root?.message}</p>
+            </form>
+          );
+        };
+
+        render(<Component />);
+      };
+
+      const rows = (values: string[]) => values.map((value) => ({ value }));
+
+      it.each([
+        ['grow an array with rules', ['a'], ['x', 'y', 'z'], true],
+        ['fill an empty array with rules', [], ['x', 'y', 'z'], true],
+        ['fill an empty array without rules', [], ['x', 'y'], false],
+        ['shrink an array with rules', ['a', 'b', 'c'], ['z'], true],
+        ['keep the rows on an unchanged write', ['a'], ['a'], true],
+      ])('%s', async (_, before, after, withRules) => {
+        renderSection(rows(before), withRules ? { required: true } : undefined);
+
+        act(() => {
+          setValue('section', {
+            title: 'title',
+            items: rows(after),
+          });
+        });
+
+        await waitFor(() =>
+          expect(
+            screen
+              .getAllByTestId('row')
+              .map((row) => (row as HTMLInputElement).value),
+          ).toEqual(after),
+        );
+        expect(getValues('section.items')).toEqual(rows(after));
+      });
+
+      it('validate the array rules against the new rows with shouldValidate', async () => {
+        renderSection(rows(['a']), {
+          maxLength: { value: 2, message: 'at most 2 rows' },
+        });
+
+        act(() => {
+          setValue(
+            'section',
+            { title: 'title', items: rows(['x', 'y', 'z']) },
+            { shouldValidate: true },
+          );
+        });
+
+        expect(await screen.findByText('at most 2 rows')).toBeVisible();
+        expect(screen.getAllByTestId('row')).toHaveLength(3);
+      });
+
+      it('render the rows of an empty nested field array when its row object is set', async () => {
+        type NestedValues = {
+          rows: { name: string; tags: { label: string }[] }[];
+        };
+        let setValue: UseFormReturn<NestedValues>['setValue'];
+
+        const Tags = ({
+          control,
+          register,
+        }: {
+          control: Control<NestedValues>;
+          register: UseFormRegister<NestedValues>;
+        }) => {
+          const { fields } = useFieldArray({ control, name: 'rows.0.tags' });
+
+          return fields.map((field, index) => (
+            <input
+              key={field.id}
+              data-testid="tag"
+              {...register(`rows.0.tags.${index}.label`)}
+            />
+          ));
+        };
+
+        const Component = () => {
+          const {
+            control,
+            register,
+            setValue: tempSetValue,
+          } = useForm<NestedValues>({
+            defaultValues: { rows: [{ name: 'row', tags: [] }] },
+          });
+          useFieldArray({ control, name: 'rows' });
+          setValue = tempSetValue;
+
+          return (
+            <form>
+              <input {...register('rows.0.name')} />
+              <Tags control={control} register={register} />
+            </form>
+          );
+        };
+
+        render(<Component />);
+
+        act(() => {
+          setValue('rows.0', {
+            name: 'row',
+            tags: [{ label: 'one' }, { label: 'two' }],
+          });
+        });
+
+        await waitFor(() =>
+          expect(screen.getAllByTestId('tag')).toHaveLength(2),
+        );
+        expect(screen.getAllByTestId('tag')[1]).toHaveValue('two');
+      });
+    });
+
     it.each(['dirtyFields'])(
       'should unset name from dirtyFieldRef if array field values are not different with default value when formState.%s is defined',
       (property) => {
