@@ -1333,6 +1333,11 @@ export function createFormControl<
         }
       }
 
+      if (options.shouldDirty && _isTracked('isDirty', 'dirtyFields')) {
+        _updateDirtyFields();
+        _formState.isDirty = _getDirty();
+      }
+
       _subjects.state.next({
         ..._formState,
         name: undefined,
