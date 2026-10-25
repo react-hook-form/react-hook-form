@@ -3,7 +3,15 @@ import React from 'react';
 import cloneObject from './utils/cloneObject';
 import deepEqual from './utils/deepEqual';
 
-export function useResyncOnReconnect<T>(getInitialValue?: () => T) {
+export const cloneFormState = <T extends { defaultValues?: unknown }>({
+  defaultValues,
+  ...formState
+}: T) => ({ ...cloneObject(formState), defaultValues }) as T;
+
+export function useResyncOnReconnect<T>(
+  getInitialValue?: () => T,
+  clone: (value: T) => T = cloneObject,
+) {
   const _connected = React.useRef(false);
   const _initialized = React.useRef(false);
   const _prevValue = React.useRef<T | undefined>(undefined);
@@ -13,7 +21,7 @@ export function useResyncOnReconnect<T>(getInitialValue?: () => T) {
 
   if (!_initialized.current && getInitialValue) {
     _initialized.current = true;
-    _prevValue.current = cloneObject(getInitialValue());
+    _prevValue.current = clone(getInitialValue());
   }
 
   const resyncIfNeeded = React.useCallback(
@@ -42,10 +50,10 @@ export function useResyncOnReconnect<T>(getInitialValue?: () => T) {
   const snapshot = React.useCallback(
     (enabled: boolean, getCurrentValue: () => T) => {
       if (enabled) {
-        _prevValue.current = cloneObject(getCurrentValue());
+        _prevValue.current = clone(getCurrentValue());
       }
     },
-    [],
+    [clone],
   );
 
   return { resyncIfNeeded, snapshot };
