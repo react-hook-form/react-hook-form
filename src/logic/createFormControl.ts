@@ -2246,6 +2246,7 @@ export function createFormControl<
         setValue(name, cloneObject(get(_defaultValues, name)));
       } else {
         setValue(name, options.defaultValue);
+        _defaultValues = cloneObject(_defaultValues);
         set(_defaultValues, name, cloneObject(options.defaultValue));
       }
 
