@@ -14,7 +14,7 @@ import type {
   UseFormReturn,
 } from './types';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
-import { useResyncOnReconnect } from './useResyncOnReconnect';
+import { cloneFormState, useResyncOnReconnect } from './useResyncOnReconnect';
 
 const RESET_OPTIONS = {
   mode: defaultOptions.mode,
@@ -124,8 +124,9 @@ export function useForm<
       control._defaultValues as FormState<TFieldValues>['defaultValues'],
   });
 
-  const { resyncIfNeeded, snapshot } =
-    useResyncOnReconnect<FormState<TFieldValues>>(getCurrentFormState);
+  const { resyncIfNeeded, snapshot } = useResyncOnReconnect<
+    FormState<TFieldValues>
+  >(getCurrentFormState, cloneFormState);
 
   useIsomorphicLayoutEffect(() => {
     resyncIfNeeded(true, getCurrentFormState, updateFormState);
