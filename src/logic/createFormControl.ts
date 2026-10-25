@@ -1334,8 +1334,32 @@ export function createFormControl<
       }
 
       if (options.shouldDirty && _isTracked('isDirty', 'dirtyFields')) {
-        _updateDirtyFields();
-        _formState.isDirty = _getDirty();
+        let hasDirtyUpdatedValue = false;
+        for (const name of Object.keys(updatedFormValues)) {
+          const value = _formValues[name];
+          const defaultValue = (_defaultValues as FieldValues)[name];
+          const isPristine = deepEqual(defaultValue, value);
+          hasDirtyUpdatedValue ||= !isPristine;
+          if (_isTracked('dirtyFields')) {
+            const dirty = getDirtyFields(
+              { [name]: defaultValue },
+              { [name]: value },
+              undefined,
+              { [name]: _fields[name] },
+            );
+            if (
+              isPristine ||
+              !Object.prototype.hasOwnProperty.call(dirty, name)
+            ) {
+              delete (_formState.dirtyFields as FieldValues)[name];
+            } else {
+              (_formState.dirtyFields as FieldValues)[name] = dirty[name];
+            }
+          }
+        }
+        if (_isTracked('isDirty')) {
+          _formState.isDirty = hasDirtyUpdatedValue || _getDirty();
+        }
       }
 
       _subjects.state.next({

@@ -900,6 +900,98 @@ describe('setValues', () => {
       expect(result.current.formState.dirtyFields).toEqual({});
     },
   );
+  it.each(['isDirty', 'dirtyFields'] as const)(
+    'updates an unregistered value with only %s subscribed',
+    async (subscription) => {
+      const { result } = renderHook(() => {
+        const methods = useForm({
+          defaultValues: { draft: 'before', other: '' },
+        });
+        methods.formState[subscription];
+        return methods;
+      });
+      await act(async () => {
+        result.current.setValues({ draft: 'after' }, { shouldDirty: true });
+      });
+      expect(result.current.formState[subscription]).toEqual(
+        subscription === 'isDirty' ? true : { draft: true },
+      );
+      await act(async () => {
+        result.current.setValues({ draft: 'before' }, { shouldDirty: true });
+      });
+      expect(result.current.formState[subscription]).toEqual(
+        subscription === 'isDirty' ? false : {},
+      );
+    },
+  );
+
+  it('updates only the supplied subtree and preserves unrelated dirty fields', async () => {
+    const { result } = renderHook(() => {
+      const methods = useForm({
+        defaultValues: { profile: { city: 'before', name: 'same' }, other: '' },
+      });
+      methods.formState.isDirty;
+      methods.formState.dirtyFields;
+      return methods;
+    });
+    await act(async () => {
+      result.current.setValues({ other: 'dirty' }, { shouldDirty: true });
+      result.current.setValues(
+        { profile: { city: 'after', name: 'same' } },
+        { shouldDirty: true },
+      );
+    });
+    expect(result.current.formState.dirtyFields).toEqual({
+      profile: { city: true },
+      other: true,
+    });
+    await act(async () => {
+      result.current.setValues(
+        { profile: { city: 'before', name: 'same' } },
+        { shouldDirty: true },
+      );
+    });
+    expect(result.current.formState.dirtyFields).toEqual({ other: true });
+    expect(result.current.formState.isDirty).toBe(true);
+    await act(async () => {
+      result.current.setValues({ other: '' }, { shouldDirty: true });
+    });
+    expect(result.current.formState.dirtyFields).toEqual({});
+    expect(result.current.formState.isDirty).toBe(false);
+  });
+
+  it('tracks nested unregistered arrays and clears removed values', async () => {
+    const { result } = renderHook(() => {
+      const methods = useForm({
+        defaultValues: {
+          items: [{ value: 'before' }],
+          optional: 'before' as string | undefined,
+        },
+      });
+      methods.formState.isDirty;
+      methods.formState.dirtyFields;
+      return methods;
+    });
+    await act(async () => {
+      result.current.setValues(
+        { items: [{ value: 'after' }], optional: undefined },
+        { shouldDirty: true },
+      );
+    });
+    expect(result.current.formState.dirtyFields).toEqual({
+      items: [{ value: true }],
+      optional: true,
+    });
+    await act(async () => {
+      result.current.setValues(
+        { items: [{ value: 'before' }], optional: 'before' },
+        { shouldDirty: true },
+      );
+    });
+    expect(result.current.formState.dirtyFields).toEqual({});
+    expect(result.current.formState.isDirty).toBe(false);
+  });
+
   it('notify dirty-state subscribers once for a batch of unregistered values', () => {
     const { result } = renderHook(() =>
       useForm({ defaultValues: { first: '', second: '' } }),
