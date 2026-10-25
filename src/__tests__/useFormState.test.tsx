@@ -1115,6 +1115,63 @@ describe('useFormState', () => {
         expect(screen.getByTestId('error')).toHaveTextContent('no-error');
       },
     );
+
+    itWithActivity(
+      'should resync defaultValues updated by resetField while Activity is hidden',
+      () => {
+        type FormValues = { name: string };
+
+        const Watcher = React.memo(function Watcher({
+          control,
+        }: {
+          control: Control<FormValues>;
+        }) {
+          const { defaultValues } = useFormState({ control });
+
+          return <span data-testid="default">{defaultValues?.name}</span>;
+        });
+
+        const Component = () => {
+          const [mode, setMode] = React.useState<'hidden' | 'visible'>(
+            'visible',
+          );
+          const { register, resetField, control } = useForm<FormValues>({
+            defaultValues: { name: 'a' },
+          });
+
+          return (
+            <>
+              <input {...register('name')} />
+              <button type="button" onClick={() => setMode('hidden')}>
+                Hide
+              </button>
+              <button type="button" onClick={() => setMode('visible')}>
+                Show
+              </button>
+              <button
+                type="button"
+                onClick={() => resetField('name', { defaultValue: 'b' })}
+              >
+                Reset field
+              </button>
+              <Activity mode={mode}>
+                <Watcher control={control} />
+              </Activity>
+            </>
+          );
+        };
+
+        render(<Component />);
+
+        expect(screen.getByTestId('default')).toHaveTextContent('a');
+
+        fireEvent.click(screen.getByRole('button', { name: 'Hide' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Reset field' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Show' }));
+
+        expect(screen.getByTestId('default')).toHaveTextContent('b');
+      },
+    );
   });
 
   it('should report isReady once the form has mounted', () => {
