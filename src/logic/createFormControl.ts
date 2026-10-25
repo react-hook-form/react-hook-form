@@ -1333,6 +1333,12 @@ export function createFormControl<
         }
       }
 
+      if (options.shouldDirty && _isTracked('isDirty', 'dirtyFields')) {
+        for (const name of Object.keys(updatedFormValues)) {
+          updateTouchAndDirty(name, _formValues[name], false, true);
+        }
+      }
+
       _subjects.state.next({
         ..._formState,
         name: undefined,
