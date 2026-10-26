@@ -19,6 +19,7 @@ import type {
   UseFormRegister,
   UseFormReturn,
 } from '../types';
+import { useController } from '../useController';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
@@ -7137,4 +7138,69 @@ describe('useFieldArray with Activity', () => {
       expect(screen.getAllByRole('textbox')).toHaveLength(1);
     },
   );
+});
+
+it('should not add an array row when a frozen controlled row re-renders after reset', () => {
+  type FormValues = { cart: { name: string }[] };
+
+  let isDirty = false;
+
+  const Frozen = React.memo(
+    ({ children }: { children: React.ReactNode; open: boolean }) => (
+      <>{children}</>
+    ),
+    (_, next) => !next.open,
+  );
+
+  const Input = ({ name }: { name: `cart.${number}.name` }) => {
+    const {
+      field,
+      fieldState: { error },
+    } = useController<FormValues>({ name });
+
+    return <input {...field} aria-invalid={!!error} />;
+  };
+
+  function App() {
+    const methods = useForm<FormValues>({
+      defaultValues: { cart: [] },
+      mode: 'onBlur',
+    });
+    const [open, setOpen] = React.useState(false);
+    const { fields, append } = useFieldArray({
+      name: 'cart',
+      control: methods.control,
+    });
+
+    isDirty = methods.formState.isDirty;
+
+    return (
+      <>
+        <button onClick={() => methods.reset({ cart: [] })}>reset</button>
+        <button onClick={() => setOpen(!open)}>toggle</button>
+        <Frozen open={open}>
+          <FormProvider {...methods}>
+            {fields.map((field, index) => (
+              <Input key={field.id} name={`cart.${index}.name`} />
+            ))}
+          </FormProvider>
+          <button onClick={() => append({ name: '' })}>append</button>
+        </Frozen>
+      </>
+    );
+  }
+
+  render(<App />);
+
+  fireEvent.click(screen.getByText('toggle'));
+  fireEvent.click(screen.getByText('append'));
+  fireEvent.click(screen.getByText('toggle'));
+  fireEvent.click(screen.getByText('reset'));
+  fireEvent.click(screen.getByText('toggle'));
+
+  expect(isDirty).toBe(false);
+
+  fireEvent.click(screen.getByText('append'));
+
+  expect(screen.getAllByRole('textbox')).toHaveLength(1);
 });
