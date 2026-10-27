@@ -6644,6 +6644,72 @@ describe('useFieldArray with checkbox', () => {
       expect(screen.queryByTestId('error')?.textContent).toBe(errorAfterAppend);
     },
   );
+
+  it.each(['onChange', 'onTouched', 'all'] as const)(
+    'validate field array operations before submit when mode is %s and reValidateMode is onSubmit',
+    async (mode) => {
+      const App = () => {
+        const {
+          control,
+          handleSubmit,
+          formState: { errors },
+        } = useForm({
+          mode,
+          reValidateMode: 'onSubmit',
+          defaultValues: {
+            test: [{ name: 'a' }],
+          },
+        });
+
+        const { fields, append, remove } = useFieldArray({
+          control,
+          name: 'test',
+          rules: { required: 'Add an item' },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            {errors.test?.root?.message && (
+              <p data-testid="error">{errors.test.root.message}</p>
+            )}
+            <p>rows: {fields.length}</p>
+
+            <button type="button" onClick={() => append({ name: 'b' })}>
+              append
+            </button>
+            <button type="button" onClick={() => remove(0)}>
+              remove
+            </button>
+            <button type="submit">submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+      });
+
+      screen.getByText('rows: 0');
+      expect(await screen.findByTestId('error')).toHaveTextContent(
+        'Add an item',
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      expect(screen.getByTestId('error')).toHaveTextContent('Add an item');
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      screen.getByText('rows: 1');
+      expect(screen.getByTestId('error')).toHaveTextContent('Add an item');
+    },
+  );
 });
 
 it('not lose defaultValues when useFieldArray and watch are used together', async () => {
