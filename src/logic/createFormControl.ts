@@ -2358,7 +2358,7 @@ export function createFormControl<
         ? false
         : keepStateOptions.keepDirty
           ? _formState.isDirty
-          : keepStateOptions.keepValues
+          : keepStateOptions.keepValues || keepStateOptions.keepDirtyValues
             ? _getDirty()
             : !!(
                 keepStateOptions.keepDefaultValues &&

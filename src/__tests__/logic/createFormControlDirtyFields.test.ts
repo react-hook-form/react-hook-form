@@ -2,6 +2,68 @@ import { createFormControl } from '../../logic/createFormControl';
 
 describe('createFormControl dirtyFields', () => {
   it.each([
+    { name: 'server', isDirty: true },
+    { name: 'edited', isDirty: false },
+  ])(
+    'report isDirty=$isDirty after keeping dirty values against $name defaults',
+    ({ name, isDirty }) => {
+      const { register, setValue, reset, subscribe, getValues } =
+        createFormControl({
+          defaultValues: { name: 'initial', sibling: 'old' },
+        });
+      const callback = jest.fn();
+      const unsubscribe = subscribe({
+        formState: { isDirty: true, dirtyFields: true, values: true },
+        callback,
+      });
+      register('name');
+      register('sibling');
+      setValue('name', 'edited', { shouldDirty: true });
+
+      reset({ name, sibling: 'new' }, { keepDirtyValues: true });
+
+      expect(getValues()).toEqual({ name: 'edited', sibling: 'new' });
+      expect(callback).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          isDirty,
+          dirtyFields: { name: true },
+          values: { name: 'edited', sibling: 'new' },
+          defaultValues: { name, sibling: 'new' },
+        }),
+      );
+      unsubscribe();
+    },
+  );
+
+  it('compare retained dirty values with the original defaults when keeping both', () => {
+    const { register, setValue, reset, subscribe } = createFormControl({
+      defaultValues: { name: 'initial' },
+    });
+    const callback = jest.fn();
+    const unsubscribe = subscribe({
+      formState: { isDirty: true, dirtyFields: true, values: true },
+      callback,
+    });
+    register('name');
+    setValue('name', 'edited', { shouldDirty: true });
+
+    reset(
+      { name: 'initial' },
+      { keepDirtyValues: true, keepDefaultValues: true },
+    );
+
+    expect(callback).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        isDirty: true,
+        dirtyFields: { name: true },
+        values: { name: 'edited' },
+        defaultValues: { name: 'initial' },
+      }),
+    );
+    unsubscribe();
+  });
+
+  it.each([
     { dirtyFields: true },
     { dirtyFields: true, isDirty: true },
     { isDirty: true },
