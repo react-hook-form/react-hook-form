@@ -1,67 +1,158 @@
 import { createFormControl } from '../../logic/createFormControl';
 
 describe('createFormControl dirtyFields', () => {
-  it.each([
-    { name: 'server', isDirty: true },
-    { name: 'edited', isDirty: false },
-  ])(
-    'report isDirty=$isDirty after keeping dirty values against $name defaults',
-    ({ name, isDirty }) => {
-      const { register, setValue, reset, subscribe, getValues } =
-        createFormControl({
-          defaultValues: { name: 'initial', sibling: 'old' },
-        });
-      const callback = jest.fn();
-      const unsubscribe = subscribe({
-        formState: { isDirty: true, dirtyFields: true, values: true },
-        callback,
-      });
-      register('name');
-      register('sibling');
-      setValue('name', 'edited', { shouldDirty: true });
+  describe.each([false, true])(
+    'reset with shouldUnregister=%s',
+    (shouldUnregister) => {
+      it.each([
+        {
+          edited: false,
+          name: 'server',
+          keepDefaultValues: false,
+          isDirty: false,
+        },
+        {
+          edited: false,
+          name: 'server',
+          keepDefaultValues: true,
+          isDirty: true,
+        },
+        {
+          edited: true,
+          name: 'server',
+          keepDefaultValues: false,
+          isDirty: true,
+        },
+        {
+          edited: true,
+          name: 'edited',
+          keepDefaultValues: false,
+          isDirty: false,
+        },
+        {
+          edited: true,
+          name: 'initial',
+          keepDefaultValues: true,
+          isDirty: true,
+        },
+        {
+          edited: true,
+          name: 'edited',
+          keepDefaultValues: true,
+          isDirty: true,
+        },
+      ])(
+        'report retained-value dirtiness for %o',
+        ({ edited, name, keepDefaultValues, isDirty }) => {
+          const { register, setValue, reset, subscribe, getValues } =
+            createFormControl({
+              defaultValues: { name: 'initial', sibling: 'old' },
+              shouldUnregister,
+            });
+          const callback = jest.fn();
+          const unsubscribe = subscribe({
+            formState: { isDirty: true, dirtyFields: true, values: true },
+            callback,
+          });
+          const input = document.createElement('input');
+          register('name').ref(input);
+          register('sibling');
+          if (edited) {
+            setValue('name', 'edited', { shouldDirty: true });
+          }
 
-      reset({ name, sibling: 'new' }, { keepDirtyValues: true });
+          reset(
+            { name, sibling: keepDefaultValues ? 'old' : 'new' },
+            { keepDirtyValues: true, keepDefaultValues },
+          );
 
-      expect(getValues()).toEqual({ name: 'edited', sibling: 'new' });
-      expect(callback).toHaveBeenLastCalledWith(
-        expect.objectContaining({
-          isDirty,
-          dirtyFields: { name: true },
-          values: { name: 'edited', sibling: 'new' },
-          defaultValues: { name, sibling: 'new' },
-        }),
+          expect(input.value).toBe(edited ? 'edited' : name);
+          expect(callback).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+              isDirty,
+              defaultValues: {
+                name: keepDefaultValues ? 'initial' : name,
+                sibling: keepDefaultValues ? 'old' : 'new',
+              },
+            }),
+          );
+          if (!shouldUnregister) {
+            expect(getValues()).toEqual({
+              name: edited ? 'edited' : name,
+              sibling: keepDefaultValues ? 'old' : 'new',
+            });
+            expect(callback).toHaveBeenLastCalledWith(
+              expect.objectContaining({
+                dirtyFields: edited || keepDefaultValues ? { name: true } : {},
+              }),
+            );
+          }
+          if (!edited && !keepDefaultValues) {
+            expect(callback).toHaveBeenLastCalledWith(
+              expect.objectContaining({ dirtyFields: {} }),
+            );
+          }
+          unsubscribe();
+        },
       );
-      unsubscribe();
+
+      it.each([false, true])(
+        'reset without keeping dirty values and keepDefaultValues=%s',
+        (keepDefaultValues) => {
+          const { register, setValue, reset, subscribe } = createFormControl({
+            defaultValues: { name: 'initial' },
+            shouldUnregister,
+          });
+          const callback = jest.fn();
+          const unsubscribe = subscribe({
+            formState: { isDirty: true, dirtyFields: true },
+            callback,
+          });
+          register('name');
+          setValue('name', 'edited', { shouldDirty: true });
+
+          reset(
+            { name: 'server' },
+            { keepDirtyValues: false, keepDefaultValues },
+          );
+
+          expect(callback).toHaveBeenLastCalledWith(
+            expect.objectContaining({ isDirty: keepDefaultValues }),
+          );
+          unsubscribe();
+        },
+      );
+
+      it.each([
+        { keepDirtyValues: false, keepDefaultValues: false },
+        { keepDirtyValues: false, keepDefaultValues: true },
+        { keepDirtyValues: true, keepDefaultValues: false },
+        { keepDirtyValues: true, keepDefaultValues: true },
+      ])('preserve keepValues precedence with %o', (options) => {
+        const { register, setValue, reset, subscribe } = createFormControl({
+          defaultValues: { name: 'initial' },
+          shouldUnregister,
+        });
+        const callback = jest.fn();
+        const unsubscribe = subscribe({
+          formState: { isDirty: true, dirtyFields: true, values: true },
+          callback,
+        });
+        register('name');
+        setValue('name', 'edited', { shouldDirty: true });
+
+        reset({ name: 'server' }, { ...options, keepValues: true });
+
+        expect(callback).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            isDirty: true,
+            values: { name: 'edited' },
+          }),
+        );
+        unsubscribe();
+      });
     },
   );
-
-  it('compare retained dirty values with the original defaults when keeping both', () => {
-    const { register, setValue, reset, subscribe } = createFormControl({
-      defaultValues: { name: 'initial' },
-    });
-    const callback = jest.fn();
-    const unsubscribe = subscribe({
-      formState: { isDirty: true, dirtyFields: true, values: true },
-      callback,
-    });
-    register('name');
-    setValue('name', 'edited', { shouldDirty: true });
-
-    reset(
-      { name: 'initial' },
-      { keepDirtyValues: true, keepDefaultValues: true },
-    );
-
-    expect(callback).toHaveBeenLastCalledWith(
-      expect.objectContaining({
-        isDirty: true,
-        dirtyFields: { name: true },
-        values: { name: 'edited' },
-        defaultValues: { name: 'initial' },
-      }),
-    );
-    unsubscribe();
-  });
 
   it.each([
     { dirtyFields: true },

@@ -2358,13 +2358,15 @@ export function createFormControl<
         ? false
         : keepStateOptions.keepDirty
           ? _formState.isDirty
-          : keepStateOptions.keepValues || keepStateOptions.keepDirtyValues
+          : keepStateOptions.keepValues
             ? _getDirty()
-            : !!(
-                keepStateOptions.keepDefaultValues &&
-                formValues &&
-                !deepEqual(formValues, _defaultValues)
-              ),
+            : keepStateOptions.keepDirtyValues
+              ? !deepEqual(values, _defaultValues)
+              : !!(
+                  keepStateOptions.keepDefaultValues &&
+                  formValues &&
+                  !deepEqual(formValues, _defaultValues)
+                ),
       isSubmitted: keepStateOptions.keepIsSubmitted
         ? _formState.isSubmitted
         : false,

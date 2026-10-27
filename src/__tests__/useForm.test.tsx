@@ -2736,6 +2736,106 @@ describe('useForm', () => {
     });
   });
 
+  describe.each([
+    {
+      shouldUnregister: false,
+      keepDirtyValues: false,
+      keepDefaultValues: false,
+    },
+    {
+      shouldUnregister: false,
+      keepDirtyValues: false,
+      keepDefaultValues: true,
+    },
+    {
+      shouldUnregister: false,
+      keepDirtyValues: true,
+      keepDefaultValues: false,
+    },
+    { shouldUnregister: false, keepDirtyValues: true, keepDefaultValues: true },
+    {
+      shouldUnregister: true,
+      keepDirtyValues: false,
+      keepDefaultValues: false,
+    },
+    { shouldUnregister: true, keepDirtyValues: false, keepDefaultValues: true },
+    { shouldUnregister: true, keepDirtyValues: true, keepDefaultValues: false },
+    { shouldUnregister: true, keepDirtyValues: true, keepDefaultValues: true },
+  ])('values subscription with %o', ({ shouldUnregister, ...resetOptions }) => {
+    it.each([
+      { edited: false, name: 'server' },
+      { edited: true, name: 'server' },
+      { edited: true, name: 'edited' },
+    ])('report dirtiness for retained values with %o', ({ edited, name }) => {
+      const { result, rerender } = renderHook(
+        ({ values }) => useForm({ values, shouldUnregister, resetOptions }),
+        { initialProps: { values: { name: 'initial', sibling: 'old' } } },
+      );
+      const callback = jest.fn();
+      const unsubscribe = result.current.subscribe({
+        formState: { isDirty: true, dirtyFields: true, values: true },
+        callback,
+      });
+      result.current.register('name');
+      result.current.register('sibling');
+      if (edited) {
+        act(() =>
+          result.current.setValue('name', 'edited', { shouldDirty: true }),
+        );
+      }
+
+      rerender({ values: { name, sibling: 'old' } });
+
+      const retainedName =
+        resetOptions.keepDirtyValues && edited ? 'edited' : name;
+      expect(result.current.getValues()).toEqual({
+        name: retainedName,
+        sibling: 'old',
+      });
+      expect(callback).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          isDirty:
+            retainedName !==
+            (resetOptions.keepDefaultValues ? 'initial' : name),
+          values: { name: retainedName, sibling: 'old' },
+          defaultValues: {
+            name: resetOptions.keepDefaultValues ? 'initial' : name,
+            sibling: 'old',
+          },
+        }),
+      );
+      unsubscribe();
+    });
+  });
+
+  it('keep reactive values pristine when unregistered defaults are not stored', () => {
+    const { result, rerender } = renderHook(
+      ({ values }) =>
+        useForm({
+          values,
+          shouldUnregister: true,
+          resetOptions: { keepDirtyValues: true },
+        }),
+      {
+        initialProps: { values: { name: 'initial', unregistered: 'default' } },
+      },
+    );
+    const callback = jest.fn();
+    const unsubscribe = result.current.subscribe({
+      formState: { isDirty: true, dirtyFields: true },
+      callback,
+    });
+    result.current.register('name');
+
+    rerender({ values: { name: 'server', unregistered: 'default' } });
+
+    expect(result.current.getValues()).toEqual({ name: 'server' });
+    expect(callback).toHaveBeenLastCalledWith(
+      expect.objectContaining({ isDirty: false, dirtyFields: {} }),
+    );
+    unsubscribe();
+  });
+
   it('update form values when rerendered values reuse an object reference', async () => {
     type FormValues = {
       home: { street: string };
