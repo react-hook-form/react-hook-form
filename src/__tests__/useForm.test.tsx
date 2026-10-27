@@ -3502,6 +3502,120 @@ describe('useForm', () => {
       expect(result.current.getErrors('form.lastName')).toBeUndefined();
     });
 
+    it('keep the latest form-level errors when an older async validate resolves last', async () => {
+      const resolvers: Record<string, (result: true | string) => void> = {};
+
+      const App = () => {
+        const {
+          register,
+          formState: { errors, isValid },
+        } = useForm<{ username: string }>({
+          mode: 'onChange',
+          defaultValues: { username: '' },
+          validate: ({ formValues }) =>
+            new Promise((resolve) => {
+              resolvers[formValues.username] = resolve;
+            }),
+        });
+
+        return (
+          <form>
+            <input {...register('username')} />
+            <p>{errors.form?.message}</p>
+            <p>{isValid ? 'valid' : 'invalid'}</p>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        resolvers[''](true);
+      });
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'a' },
+      });
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'ab' },
+      });
+
+      await act(async () => {
+        resolvers.ab(true);
+      });
+      await act(async () => {
+        resolvers.a('"a" is taken');
+      });
+
+      expect(screen.queryByText('"a" is taken')).not.toBeInTheDocument();
+      expect(screen.getByText('valid')).toBeVisible();
+    });
+
+    it('ignore an older trigger form-level result that resolves after a newer one', async () => {
+      const resolvers: ((result: true | string) => void)[] = [];
+      const { result } = renderHook(() => {
+        const form = useForm<{ username: string }>({
+          validate: () =>
+            new Promise((resolve) => {
+              resolvers.push(resolve);
+            }),
+        });
+        form.formState.isValid;
+        return form;
+      });
+
+      await act(async () => {
+        resolvers.splice(0).forEach((resolve) => resolve(true));
+      });
+
+      let first!: Promise<boolean>;
+      let second!: Promise<boolean>;
+
+      act(() => {
+        first = result.current.trigger();
+        second = result.current.trigger();
+      });
+
+      await act(async () => {
+        resolvers[1](true);
+      });
+      await act(async () => {
+        resolvers[0]('stale');
+      });
+
+      expect(await first).toBe(true);
+      expect(await second).toBe(true);
+      expect(result.current.getErrors('form')).toBeUndefined();
+      expect(result.current.formState.isValid).toBe(true);
+    });
+
+    it('still apply a slow form-level validate result when no newer call started', async () => {
+      const resolvers: ((result: true | string) => void)[] = [];
+      const { result } = renderHook(() =>
+        useForm<{ username: string }>({
+          validate: () =>
+            new Promise((resolve) => {
+              resolvers.push(resolve);
+            }),
+        }),
+      );
+
+      let pending!: Promise<boolean>;
+
+      act(() => {
+        pending = result.current.trigger();
+      });
+
+      await act(async () => {
+        resolvers[0]('taken');
+      });
+
+      expect(await pending).toBe(false);
+      expect(result.current.getErrors('form')).toEqual(
+        expect.objectContaining({ message: 'taken' }),
+      );
+    });
+
     it.each([
       { description: 'an empty object', validResult: {} },
       {
