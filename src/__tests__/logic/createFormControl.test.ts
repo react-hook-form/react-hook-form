@@ -19,6 +19,52 @@ jest.mock('../../logic/getDirtyFields', () => {
 });
 
 describe('createFormControl', () => {
+  it.each([
+    { values: [] },
+    { values: [''] },
+    { values: ['other'] },
+    { values: ['', 'other'] },
+  ])('set and reset checkbox group values to $values', ({ values }) => {
+    const { register, setValue, resetField, getValues, subscribe } =
+      createFormControl<{ choices: string[] }>({
+        defaultValues: { choices: [] },
+      });
+    const unsubscribe = subscribe({
+      formState: { values: true },
+      callback: jest.fn(),
+    });
+    const inputs = ['', 'other'].map((value) => {
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.name = 'choices';
+      input.value = value;
+      document.body.append(input);
+      register('choices').ref(input);
+      return input;
+    });
+
+    try {
+      setValue('choices', values);
+
+      expect(getValues('choices')).toEqual(values);
+      expect(inputs.map((input) => input.checked)).toEqual(
+        ['', 'other'].map((value) => values.includes(value)),
+      );
+
+      setValue('choices', []);
+      expect(inputs.map((input) => input.checked)).toEqual([false, false]);
+
+      resetField('choices', { defaultValue: values });
+      expect(getValues('choices')).toEqual(values);
+      expect(inputs.map((input) => input.checked)).toEqual(
+        ['', 'other'].map((value) => values.includes(value)),
+      );
+    } finally {
+      unsubscribe();
+      inputs.forEach((input) => input.remove());
+    }
+  });
+
   it('rejects text with maxLength zero and accepts an empty value', async () => {
     const { register, trigger, setValue, getFieldState } = createFormControl({
       defaultValues: { text: 'x' },
