@@ -128,4 +128,38 @@ describe('useForm with SSR', () => {
       '<div><input required="" min="2" max="2" minLength="2" maxLength="2" name="test"/></div>',
     );
   });
+
+  it('only output the required attribute when the required rule is on with progressive', () => {
+    const App = () => {
+      const { register } = useForm<{
+        off: string;
+        on: string;
+        message: string;
+      }>({
+        progressive: true,
+      });
+
+      return (
+        <div>
+          <input
+            {...register('off', {
+              required: { value: false, message: 'off is required' },
+            })}
+          />
+          <input
+            {...register('on', {
+              required: { value: true, message: 'on is required' },
+            })}
+          />
+          <input
+            {...register('message', { required: 'message is required' })}
+          />
+        </div>
+      );
+    };
+
+    expect(renderToString(<App />)).toEqual(
+      '<div><input name="off"/><input required="" name="on"/><input required="" name="message"/></div>',
+    );
+  });
 });

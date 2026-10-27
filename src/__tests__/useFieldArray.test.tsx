@@ -12,12 +12,14 @@ import { Controller } from '../controller';
 import type {
   Control,
   FieldValues,
+  KeepStateOptions,
   ResolverResult,
   SubmitHandler,
   UseFieldArrayProps,
   UseFormRegister,
   UseFormReturn,
 } from '../types';
+import { useController } from '../useController';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
 import { FormProvider } from '../useFormContext';
@@ -2290,6 +2292,157 @@ describe('useFieldArray', () => {
       expect(fieldsLength).toBe(2);
     });
 
+    describe('when setValue targets the parent object', () => {
+      type FormValues = {
+        section: { title: string; items: { value: string }[] };
+      };
+      let setValue: UseFormReturn<FormValues>['setValue'];
+      let getValues: UseFormReturn<FormValues>['getValues'];
+
+      const renderSection = (
+        items: { value: string }[],
+        rules?: UseFieldArrayProps<FormValues, 'section.items'>['rules'],
+      ) => {
+        const Component = () => {
+          const {
+            register,
+            control,
+            formState,
+            setValue: tempSetValue,
+            getValues: tempGetValues,
+          } = useForm<FormValues>({
+            defaultValues: { section: { title: '', items } },
+          });
+          const { fields } = useFieldArray({
+            control,
+            name: 'section.items',
+            rules,
+          });
+          setValue = tempSetValue;
+          getValues = tempGetValues;
+
+          return (
+            <form>
+              <input {...register('section.title')} />
+              {fields.map((field, index) => (
+                <input
+                  key={field.id}
+                  data-testid="row"
+                  {...register(`section.items.${index}.value`)}
+                />
+              ))}
+              <p>{formState.errors.section?.items?.root?.message}</p>
+            </form>
+          );
+        };
+
+        render(<Component />);
+      };
+
+      const rows = (values: string[]) => values.map((value) => ({ value }));
+
+      it.each([
+        ['grow an array with rules', ['a'], ['x', 'y', 'z'], true],
+        ['fill an empty array with rules', [], ['x', 'y', 'z'], true],
+        ['fill an empty array without rules', [], ['x', 'y'], false],
+        ['shrink an array with rules', ['a', 'b', 'c'], ['z'], true],
+        ['keep the rows on an unchanged write', ['a'], ['a'], true],
+      ])('%s', async (_, before, after, withRules) => {
+        renderSection(rows(before), withRules ? { required: true } : undefined);
+
+        act(() => {
+          setValue('section', {
+            title: 'title',
+            items: rows(after),
+          });
+        });
+
+        await waitFor(() =>
+          expect(
+            screen
+              .getAllByTestId('row')
+              .map((row) => (row as HTMLInputElement).value),
+          ).toEqual(after),
+        );
+        expect(getValues('section.items')).toEqual(rows(after));
+      });
+
+      it('validate the array rules against the new rows with shouldValidate', async () => {
+        renderSection(rows(['a']), {
+          maxLength: { value: 2, message: 'at most 2 rows' },
+        });
+
+        act(() => {
+          setValue(
+            'section',
+            { title: 'title', items: rows(['x', 'y', 'z']) },
+            { shouldValidate: true },
+          );
+        });
+
+        expect(await screen.findByText('at most 2 rows')).toBeVisible();
+        expect(screen.getAllByTestId('row')).toHaveLength(3);
+      });
+
+      it('render the rows of an empty nested field array when its row object is set', async () => {
+        type NestedValues = {
+          rows: { name: string; tags: { label: string }[] }[];
+        };
+        let setValue: UseFormReturn<NestedValues>['setValue'];
+
+        const Tags = ({
+          control,
+          register,
+        }: {
+          control: Control<NestedValues>;
+          register: UseFormRegister<NestedValues>;
+        }) => {
+          const { fields } = useFieldArray({ control, name: 'rows.0.tags' });
+
+          return fields.map((field, index) => (
+            <input
+              key={field.id}
+              data-testid="tag"
+              {...register(`rows.0.tags.${index}.label`)}
+            />
+          ));
+        };
+
+        const Component = () => {
+          const {
+            control,
+            register,
+            setValue: tempSetValue,
+          } = useForm<NestedValues>({
+            defaultValues: { rows: [{ name: 'row', tags: [] }] },
+          });
+          useFieldArray({ control, name: 'rows' });
+          setValue = tempSetValue;
+
+          return (
+            <form>
+              <input {...register('rows.0.name')} />
+              <Tags control={control} register={register} />
+            </form>
+          );
+        };
+
+        render(<Component />);
+
+        act(() => {
+          setValue('rows.0', {
+            name: 'row',
+            tags: [{ label: 'one' }, { label: 'two' }],
+          });
+        });
+
+        await waitFor(() =>
+          expect(screen.getAllByTestId('tag')).toHaveLength(2),
+        );
+        expect(screen.getAllByTestId('tag')[1]).toHaveValue('two');
+      });
+    });
+
     it.each(['dirtyFields'])(
       'should unset name from dirtyFieldRef if array field values are not different with default value when formState.%s is defined',
       (property) => {
@@ -4510,6 +4663,187 @@ describe('useFieldArray', () => {
       expect(onValid).not.toHaveBeenCalled();
     });
 
+    describe('when the form is reset', () => {
+      type FormValues = { items: { value: string }[] };
+
+      const required = { required: 'add an item' };
+      const minLength = { minLength: { value: 2, message: 'add two items' } };
+
+      const App = ({
+        rules,
+        defaultItems,
+        resetItems,
+        resetOptions,
+        onValid,
+      }: {
+        rules: NonNullable<UseFieldArrayProps<FormValues, 'items'>['rules']>;
+        defaultItems: FormValues['items'];
+        resetItems?: FormValues['items'];
+        resetOptions?: KeepStateOptions;
+        onValid: (data: FormValues) => void;
+      }) => {
+        const { control, register, handleSubmit, reset, formState } =
+          useForm<FormValues>({
+            defaultValues: { items: defaultItems },
+          });
+        const { fields } = useFieldArray({ control, name: 'items', rules });
+
+        return (
+          <form onSubmit={handleSubmit(onValid)}>
+            {fields.map((field, index) => (
+              <input key={field.id} {...register(`items.${index}.value`)} />
+            ))}
+            <p>{formState.errors.items?.root?.message}</p>
+            <p>{formState.isValid ? 'valid' : 'invalid'}</p>
+            <p>{`submitted ${formState.submitCount}`}</p>
+            <button
+              type="button"
+              onClick={() =>
+                reset(
+                  resetItems ? { items: resetItems } : undefined,
+                  resetOptions,
+                )
+              }
+            >
+              reset
+            </button>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      const clickAndSubmit = async (name: string) => {
+        fireEvent.click(screen.getByRole('button', { name }));
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+        await screen.findByText('submitted 1');
+      };
+
+      it('keep the array rules after reset without values', async () => {
+        const onValid = jest.fn();
+        render(<App rules={required} defaultItems={[]} onValid={onValid} />);
+
+        await clickAndSubmit('reset');
+
+        expect(onValid).not.toHaveBeenCalled();
+        expect(screen.getByText('add an item')).toBeVisible();
+      });
+
+      it('keep the array rules after reset with the same number of rows', async () => {
+        const onValid = jest.fn();
+        render(
+          <App
+            rules={minLength}
+            defaultItems={[{ value: 'a' }]}
+            resetItems={[{ value: 'b' }]}
+            onValid={onValid}
+          />,
+        );
+
+        await clickAndSubmit('reset');
+
+        expect(onValid).not.toHaveBeenCalled();
+        expect(screen.getByText('add two items')).toBeVisible();
+      });
+
+      it('keep isValid false after reset when the array breaks its rules', async () => {
+        render(<App rules={required} defaultItems={[]} onValid={noop} />);
+
+        expect(await screen.findByText('invalid')).toBeVisible();
+
+        fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+
+        await act(async () => {});
+
+        expect(screen.getByText('invalid')).toBeVisible();
+      });
+
+      it('keep the array rules after reset in strict mode', async () => {
+        const onValid = jest.fn();
+        render(
+          <React.StrictMode>
+            <App rules={required} defaultItems={[]} onValid={onValid} />
+          </React.StrictMode>,
+        );
+
+        await clickAndSubmit('reset');
+
+        expect(onValid).not.toHaveBeenCalled();
+        expect(screen.getByText('add an item')).toBeVisible();
+      });
+
+      it('keep the array rules after reset with keepValues', async () => {
+        const onValid = jest.fn();
+        render(
+          <App
+            rules={required}
+            defaultItems={[]}
+            resetOptions={{ keepValues: true }}
+            onValid={onValid}
+          />,
+        );
+
+        await clickAndSubmit('reset');
+
+        expect(onValid).not.toHaveBeenCalled();
+        expect(screen.getByText('add an item')).toBeVisible();
+      });
+
+      it('keep the array rules when the values prop updates', async () => {
+        const onValid = jest.fn();
+        const Values = () => {
+          const [values, setValues] = useState<FormValues>({
+            items: [{ value: 'a' }],
+          });
+          const { control, register, handleSubmit, formState } =
+            useForm<FormValues>({ values });
+          const { fields } = useFieldArray({
+            control,
+            name: 'items',
+            rules: minLength,
+          });
+
+          return (
+            <form onSubmit={handleSubmit(onValid)}>
+              {fields.map((field, index) => (
+                <input key={field.id} {...register(`items.${index}.value`)} />
+              ))}
+              <p>{formState.errors.items?.root?.message}</p>
+              <p>{`submitted ${formState.submitCount}`}</p>
+              <button
+                type="button"
+                onClick={() => setValues({ items: [{ value: 'b' }] })}
+              >
+                update values
+              </button>
+              <button>submit</button>
+            </form>
+          );
+        };
+        render(<Values />);
+
+        await clickAndSubmit('update values');
+
+        expect(onValid).not.toHaveBeenCalled();
+        expect(screen.getByText('add two items')).toBeVisible();
+      });
+
+      it('submit after reset when the rows meet the array rules', async () => {
+        const onValid = jest.fn();
+        render(
+          <App
+            rules={minLength}
+            defaultItems={[{ value: 'a' }, { value: 'b' }]}
+            onValid={onValid}
+          />,
+        );
+
+        await clickAndSubmit('reset');
+
+        expect(onValid).toHaveBeenCalledTimes(1);
+        expect(screen.queryByText('add two items')).not.toBeInTheDocument();
+      });
+    });
+
     it('validate the maxLength of the entire field array after submit and correct accordingly', async () => {
       const App = () => {
         const {
@@ -6310,6 +6644,72 @@ describe('useFieldArray with checkbox', () => {
       expect(screen.queryByTestId('error')?.textContent).toBe(errorAfterAppend);
     },
   );
+
+  it.each(['onChange', 'onTouched', 'all'] as const)(
+    'validate field array operations before submit when mode is %s and reValidateMode is onSubmit',
+    async (mode) => {
+      const App = () => {
+        const {
+          control,
+          handleSubmit,
+          formState: { errors },
+        } = useForm({
+          mode,
+          reValidateMode: 'onSubmit',
+          defaultValues: {
+            test: [{ name: 'a' }],
+          },
+        });
+
+        const { fields, append, remove } = useFieldArray({
+          control,
+          name: 'test',
+          rules: { required: 'Add an item' },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            {errors.test?.root?.message && (
+              <p data-testid="error">{errors.test.root.message}</p>
+            )}
+            <p>rows: {fields.length}</p>
+
+            <button type="button" onClick={() => append({ name: 'b' })}>
+              append
+            </button>
+            <button type="button" onClick={() => remove(0)}>
+              remove
+            </button>
+            <button type="submit">submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'remove' }));
+      });
+
+      screen.getByText('rows: 0');
+      expect(await screen.findByTestId('error')).toHaveTextContent(
+        'Add an item',
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      expect(screen.getByTestId('error')).toHaveTextContent('Add an item');
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      screen.getByText('rows: 1');
+      expect(screen.getByTestId('error')).toHaveTextContent('Add an item');
+    },
+  );
 });
 
 it('not lose defaultValues when useFieldArray and watch are used together', async () => {
@@ -6804,4 +7204,69 @@ describe('useFieldArray with Activity', () => {
       expect(screen.getAllByRole('textbox')).toHaveLength(1);
     },
   );
+});
+
+it('should not add an array row when a frozen controlled row re-renders after reset', () => {
+  type FormValues = { cart: { name: string }[] };
+
+  let isDirty = false;
+
+  const Frozen = React.memo(
+    ({ children }: { children: React.ReactNode; open: boolean }) => (
+      <>{children}</>
+    ),
+    (_, next) => !next.open,
+  );
+
+  const Input = ({ name }: { name: `cart.${number}.name` }) => {
+    const {
+      field,
+      fieldState: { error },
+    } = useController<FormValues>({ name });
+
+    return <input {...field} aria-invalid={!!error} />;
+  };
+
+  function App() {
+    const methods = useForm<FormValues>({
+      defaultValues: { cart: [] },
+      mode: 'onBlur',
+    });
+    const [open, setOpen] = React.useState(false);
+    const { fields, append } = useFieldArray({
+      name: 'cart',
+      control: methods.control,
+    });
+
+    isDirty = methods.formState.isDirty;
+
+    return (
+      <>
+        <button onClick={() => methods.reset({ cart: [] })}>reset</button>
+        <button onClick={() => setOpen(!open)}>toggle</button>
+        <Frozen open={open}>
+          <FormProvider {...methods}>
+            {fields.map((field, index) => (
+              <Input key={field.id} name={`cart.${index}.name`} />
+            ))}
+          </FormProvider>
+          <button onClick={() => append({ name: '' })}>append</button>
+        </Frozen>
+      </>
+    );
+  }
+
+  render(<App />);
+
+  fireEvent.click(screen.getByText('toggle'));
+  fireEvent.click(screen.getByText('append'));
+  fireEvent.click(screen.getByText('toggle'));
+  fireEvent.click(screen.getByText('reset'));
+  fireEvent.click(screen.getByText('toggle'));
+
+  expect(isDirty).toBe(false);
+
+  fireEvent.click(screen.getByText('append'));
+
+  expect(screen.getAllByRole('textbox')).toHaveLength(1);
 });

@@ -9,7 +9,7 @@ import type {
 } from './types';
 import { useFormControlContext } from './useFormControlContext';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
-import { useResyncOnReconnect } from './useResyncOnReconnect';
+import { cloneFormState, useResyncOnReconnect } from './useResyncOnReconnect';
 
 /**
  * Subscribes to form state with re-renders isolated to this hook.
@@ -54,8 +54,9 @@ export function useFormState<
     errors: false,
   });
 
-  const { resyncIfNeeded, snapshot } =
-    useResyncOnReconnect<FormState<TFieldValues>>(getCurrentFormState);
+  const { resyncIfNeeded, snapshot } = useResyncOnReconnect<
+    FormState<TFieldValues>
+  >(getCurrentFormState, cloneFormState);
 
   useIsomorphicLayoutEffect(() => {
     resyncIfNeeded(!disabled, getCurrentFormState, updateFormState);

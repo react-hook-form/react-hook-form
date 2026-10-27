@@ -87,14 +87,19 @@ export function useController<
   const _props = React.useRef(props);
   const _proxyRef = React.useRef<Ref | null>(null);
 
+  const _registeredName = React.useRef<string | undefined>(undefined);
   const _registerProps = React.useRef(
     control.register(name, {
       ...props.rules,
-      value,
+      value:
+        _registeredName.current === name && !get(control._fields, name)
+          ? undefined
+          : value,
       ...(isBoolean(props.disabled) ? { disabled: props.disabled } : {}),
     }),
   );
 
+  _registeredName.current = name;
   _props.current = props;
 
   const fieldState = React.useMemo(

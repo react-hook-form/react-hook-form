@@ -299,6 +299,66 @@ describe('resolver', () => {
     expect(errorsObject).toEqual({});
   });
 
+  it('avoid a stale NaN result winning the race against a later number', async () => {
+    jest.useFakeTimers();
+
+    type FormValues = {
+      test: number;
+    };
+
+    let errorsObject: FieldErrors<FormValues> = {};
+
+    const resolver: Resolver<FormValues> = async (values) => {
+      if (Number.isNaN(values.test)) {
+        await sleep(100);
+        return {
+          errors: {
+            test: {
+              type: 'test',
+              message: 'wrong',
+            },
+          },
+          values: {},
+        };
+      }
+
+      return {
+        errors: {},
+        values,
+      };
+    };
+
+    const App = () => {
+      const {
+        register,
+        formState: { errors },
+      } = useForm<FormValues>({
+        resolver,
+        mode: 'onChange',
+      });
+      errorsObject = errors;
+
+      return (
+        <form>
+          <input {...register('test', { valueAsNumber: true })} />
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    const input = screen.getByRole('textbox');
+
+    fireEvent.change(input, { target: { value: 'abc' } });
+    fireEvent.change(input, { target: { value: '5' } });
+
+    await act(async () => {
+      jest.advanceTimersByTime(200);
+    });
+
+    expect(errorsObject).toEqual({});
+  });
+
   it('submit a transformed value on success', async () => {
     type FormValues = {
       alpha: string;

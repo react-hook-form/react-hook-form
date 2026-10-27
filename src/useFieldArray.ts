@@ -104,9 +104,9 @@ export function useFieldArray<
     () =>
       !disabled &&
       rules &&
-      fields.length >= 0 &&
+      fields &&
       control.register(name as FieldPath<TFieldValues>, rules),
-    [control, name, fields.length, rules, disabled],
+    [control, name, fields, rules, disabled],
   );
 
   useIsomorphicLayoutEffect(() => {
@@ -384,7 +384,7 @@ export function useFieldArray<
     if (
       _actioned.current &&
       (!validationModes.isOnSubmit || control._formState.isSubmitted) &&
-      !reValidateModes.isOnSubmit &&
+      !(control._formState.isSubmitted && reValidateModes.isOnSubmit) &&
       (!validationModes.isOnBlur ||
         (control._formState.isSubmitted && reValidateModes.isOnChange))
     ) {

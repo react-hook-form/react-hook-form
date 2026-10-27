@@ -19,6 +19,128 @@ jest.mock('../../logic/getDirtyFields', () => {
 });
 
 describe('createFormControl', () => {
+  it.each([
+    { values: [] },
+    { values: [''] },
+    { values: ['other'] },
+    { values: ['', 'other'] },
+  ])('set and reset checkbox group values to $values', ({ values }) => {
+    const { register, setValue, resetField, getValues, subscribe } =
+      createFormControl<{ choices: string[] }>({
+        defaultValues: { choices: [] },
+      });
+    const unsubscribe = subscribe({
+      formState: { values: true },
+      callback: jest.fn(),
+    });
+    const inputs = ['', 'other'].map((value) => {
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.name = 'choices';
+      input.value = value;
+      document.body.append(input);
+      register('choices').ref(input);
+      return input;
+    });
+
+    try {
+      setValue('choices', values);
+
+      expect(getValues('choices')).toEqual(values);
+      expect(inputs.map((input) => input.checked)).toEqual(
+        ['', 'other'].map((value) => values.includes(value)),
+      );
+
+      setValue('choices', []);
+      expect(inputs.map((input) => input.checked)).toEqual([false, false]);
+
+      resetField('choices', { defaultValue: values });
+      expect(getValues('choices')).toEqual(values);
+      expect(inputs.map((input) => input.checked)).toEqual(
+        ['', 'other'].map((value) => values.includes(value)),
+      );
+    } finally {
+      unsubscribe();
+      inputs.forEach((input) => input.remove());
+    }
+  });
+
+  describe.each([false, true])(
+    'checkbox groups with shouldUnregister=%s',
+    (shouldUnregister) => {
+      it.each([
+        { values: [undefined], options: ['other'] },
+        { values: new Array<string>(1), options: ['other'] },
+        { values: [undefined], options: ['', 'other'] },
+        { values: new Array<string>(1), options: ['', 'other'] },
+      ])(
+        'rejects $values with options $options and clears unchecked values',
+        async ({ values, options }) => {
+          const {
+            register,
+            setValue,
+            getValues,
+            getFieldState,
+            trigger,
+            handleSubmit,
+            subscribe,
+          } = createFormControl<{ choices: (string | undefined)[] }>({
+            defaultValues: { choices: [] },
+            shouldUnregister,
+          });
+          const unsubscribe = subscribe({
+            formState: { values: true },
+            callback: jest.fn(),
+          });
+          const field = register('choices', { required: true });
+          const inputs = options.map((value) => {
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            input.name = 'choices';
+            input.value = value;
+            document.body.append(input);
+            field.ref(input);
+            return input;
+          });
+
+          try {
+            setValue('choices', values);
+
+            expect(inputs.map((input) => input.checked)).toEqual(
+              options.map(() => false),
+            );
+            expect(await trigger('choices')).toBe(false);
+            expect(getFieldState('choices').error?.type).toBe('required');
+
+            inputs[0].checked = true;
+            await field.onChange({ type: 'change', target: inputs[0] });
+
+            expect(getValues('choices')).toEqual([options[0]]);
+            expect(await trigger('choices')).toBe(true);
+
+            inputs[0].checked = false;
+            await field.onChange({ type: 'change', target: inputs[0] });
+
+            expect(getValues('choices')).toEqual([]);
+            expect(await trigger('choices')).toBe(false);
+            expect(getFieldState('choices').error?.type).toBe('required');
+
+            const onValid = jest.fn();
+            const onInvalid = jest.fn();
+            await handleSubmit(onValid, onInvalid)();
+
+            expect(onValid).not.toHaveBeenCalled();
+            expect(onInvalid).toHaveBeenCalledTimes(1);
+          } finally {
+            unsubscribe();
+            field.ref(null);
+            inputs.forEach((input) => input.remove());
+          }
+        },
+      );
+    },
+  );
+
   it('rejects text with maxLength zero and accepts an empty value', async () => {
     const { register, trigger, setValue, getFieldState } = createFormControl({
       defaultValues: { text: 'x' },

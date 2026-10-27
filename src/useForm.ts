@@ -14,7 +14,7 @@ import type {
   UseFormReturn,
 } from './types';
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
-import { useResyncOnReconnect } from './useResyncOnReconnect';
+import { cloneFormState, useResyncOnReconnect } from './useResyncOnReconnect';
 
 const RESET_OPTIONS = {
   mode: defaultOptions.mode,
@@ -59,6 +59,7 @@ export function useForm<
   const _hadDisabled = React.useRef(false);
   const _hadValidate = React.useRef(!!props.validate);
   const _hadErrors = React.useRef(!!props.errors);
+  const _isMounted = React.useRef(false);
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>(
     () => ({
       ...cloneObject(DEFAULT_FORM_STATE),
@@ -123,8 +124,9 @@ export function useForm<
       control._defaultValues as FormState<TFieldValues>['defaultValues'],
   });
 
-  const { resyncIfNeeded, snapshot } =
-    useResyncOnReconnect<FormState<TFieldValues>>(getCurrentFormState);
+  const { resyncIfNeeded, snapshot } = useResyncOnReconnect<
+    FormState<TFieldValues>
+  >(getCurrentFormState, cloneFormState);
 
   useIsomorphicLayoutEffect(() => {
     resyncIfNeeded(true, getCurrentFormState, updateFormState);
@@ -227,10 +229,11 @@ export function useForm<
   }, [control, props.values]);
 
   React.useEffect(() => {
-    if (!control._state.mount) {
+    if (!control._state.mount || (!_isMounted.current && !props.values)) {
       control._setValid();
       control._state.mount = true;
     }
+    _isMounted.current = true;
 
     if (control._state.watch) {
       control._state.watch = false;

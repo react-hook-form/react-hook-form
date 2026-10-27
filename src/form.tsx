@@ -99,14 +99,21 @@ export function Form<
             ).join('');
           }
 
+          const isMultipart = (value: string) =>
+            /^\s*multipart\/form-data\s*(;|$)/i.test(value);
+
           const response = await fetch(action, {
             method,
             headers: {
-              ...headers,
+              ...Object.fromEntries(
+                Object.entries(headers || {}).filter(
+                  ([name, value]) =>
+                    name.toLowerCase() !== 'content-type' ||
+                    !isMultipart(value),
+                ),
+              ),
               ...(encType &&
-                encType !== 'multipart/form-data' && {
-                  'Content-Type': encType,
-                }),
+                !isMultipart(encType) && { 'Content-Type': encType }),
             },
             body,
           });
