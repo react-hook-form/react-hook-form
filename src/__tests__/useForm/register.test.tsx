@@ -2381,6 +2381,109 @@ describe('register', () => {
       expect(methods!.getFieldState('multiple').isDirty).toBe(true);
     });
 
+    it.each([true, false])(
+      'still set the default value into an untouched select with optgroup disabled=%s',
+      async (disabled) => {
+        let methods: UseFormReturn<{ test: string }>;
+
+        function App() {
+          methods = useForm({ defaultValues: { test: 'c' } });
+          return (
+            <select {...methods.register('test')}>
+              <optgroup label="Group" disabled={disabled}>
+                <option value="a">A</option>
+              </optgroup>
+              <option value="b">B</option>
+              <option value="c">C</option>
+            </select>
+          );
+        }
+
+        const container = document.createElement('div');
+        container.innerHTML = renderToString(<App />);
+        const select = container.querySelector('select') as HTMLSelectElement;
+
+        expect(select.value).toBe(disabled ? 'b' : 'a');
+
+        await act(async () => {
+          hydrateRoot(container, <App />);
+        });
+
+        expect(select.value).toBe('c');
+        expect(methods!.getValues('test')).toBe('c');
+        expect(methods!.getFieldState('test').isDirty).toBe(false);
+      },
+    );
+
+    it('keep a select edited before hydration when an optgroup is disabled', async () => {
+      let methods: UseFormReturn<{ test: string }>;
+
+      function App() {
+        methods = useForm({ defaultValues: { test: 'c' } });
+        return (
+          <select {...methods.register('test')}>
+            <optgroup label="Group" disabled>
+              <option value="a">A</option>
+            </optgroup>
+            <option value="b">B</option>
+            <option value="c">C</option>
+            <option value="d">D</option>
+          </select>
+        );
+      }
+
+      const container = document.createElement('div');
+      container.innerHTML = renderToString(<App />);
+      const select = container.querySelector('select') as HTMLSelectElement;
+      select.value = 'd';
+
+      await act(async () => {
+        hydrateRoot(container, <App />);
+      });
+
+      expect(select.value).toBe('d');
+      expect(methods!.getValues('test')).toBe('d');
+      expect(methods!.getFieldState('test').isDirty).toBe(true);
+    });
+
+    it.each([undefined, 'd'])(
+      'respect a select with an explicitly selected option and pre-hydration value %s',
+      async (editedValue) => {
+        let methods: UseFormReturn<{ test: string }>;
+
+        function App() {
+          methods = useForm({ defaultValues: { test: 'c' } });
+          return (
+            <select {...methods.register('test')} defaultValue="b">
+              <optgroup label="Group" disabled>
+                <option value="a">A</option>
+              </optgroup>
+              <option value="b">B</option>
+              <option value="c">C</option>
+              <option value="d">D</option>
+            </select>
+          );
+        }
+
+        const container = document.createElement('div');
+        container.innerHTML = renderToString(<App />);
+        const select = container.querySelector('select') as HTMLSelectElement;
+
+        expect(select.options[1].defaultSelected).toBe(true);
+        if (editedValue) {
+          select.value = editedValue;
+        }
+
+        await act(async () => {
+          hydrateRoot(container, <App />);
+        });
+
+        expect(select.value).toBe(editedValue || 'c');
+        expect(methods!.getValues('test')).toBe(editedValue || 'c');
+        expect(methods!.getFieldState('test').isDirty).toBe(!!editedValue);
+      },
+    );
+
     it('still set the default values into selects nobody changed', async () => {
       let methods: UseFormReturn<{
         single: string;
