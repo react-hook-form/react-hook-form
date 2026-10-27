@@ -1089,9 +1089,9 @@ export function createFormControl<
             fieldReference.refs.forEach((checkboxRef) => {
               if (!checkboxRef.defaultChecked || !checkboxRef.disabled) {
                 if (Array.isArray(fieldValue)) {
-                  checkboxRef.checked = !!fieldValue.find(
-                    (data: string) => data === checkboxRef.value,
-                  );
+                  checkboxRef.checked =
+                    !isUndefined(checkboxRef.value) &&
+                    fieldValue.includes(checkboxRef.value);
                 } else {
                   checkboxRef.checked =
                     fieldValue === checkboxRef.value || !!fieldValue;
