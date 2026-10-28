@@ -849,7 +849,8 @@ export function createFormControl<
 
       if (
         resetCallId !== _resetCallId ||
-        validateFormCallId !== _validateFormCallId
+        (eventType !== EVENTS.SUBMIT &&
+          validateFormCallId !== _validateFormCallId)
       ) {
         return true;
       }
