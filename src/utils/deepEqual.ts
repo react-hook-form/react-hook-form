@@ -2,6 +2,7 @@ import isDateObject from './isDateObject';
 import isObject from './isObject';
 import isPlainObject from './isPlainObject';
 import isPrimitive from './isPrimitive';
+import isRegex from './isRegex';
 
 const isEmptyObjectWithCustomPrototype = (object: object, keys: string[]) =>
   keys.length === 0 &&
@@ -25,6 +26,10 @@ export default function deepEqual(
 
   if (isDateObject(object1) && isDateObject(object2)) {
     return Object.is(object1.getTime(), object2.getTime());
+  }
+
+  if (isRegex(object1) && isRegex(object2)) {
+    return object1.source === object2.source && object1.flags === object2.flags;
   }
 
   if (
