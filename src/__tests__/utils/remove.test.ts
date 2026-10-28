@@ -150,4 +150,14 @@ describe('remove', () => {
 
     expect(indexes).toEqual([3, 1]);
   });
+
+  it('preserve valid falsy elements when removing items', () => {
+    expect(remove([0, 1], 1)).toEqual([0]);
+    expect(remove([1, 0], 0)).toEqual([0]);
+    expect(remove([false, true], 1)).toEqual([false]);
+    expect(remove([true, false], 0)).toEqual([false]);
+    expect(remove(['', 'hello'], 1)).toEqual(['']);
+    expect(remove(['hello', ''], 0)).toEqual(['']);
+    expect(remove([0, false, ''], 1)).toEqual([0, '']);
+  });
 });
