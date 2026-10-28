@@ -384,7 +384,7 @@ export function useFieldArray<
     if (
       _actioned.current &&
       (!validationModes.isOnSubmit || control._formState.isSubmitted) &&
-      !reValidateModes.isOnSubmit &&
+      !(control._formState.isSubmitted && reValidateModes.isOnSubmit) &&
       (!validationModes.isOnBlur ||
         (control._formState.isSubmitted && reValidateModes.isOnChange))
     ) {

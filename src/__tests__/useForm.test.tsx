@@ -3502,6 +3502,290 @@ describe('useForm', () => {
       expect(result.current.getErrors('form.lastName')).toBeUndefined();
     });
 
+    it('keep the latest form-level errors when an older async validate resolves last', async () => {
+      const resolvers: Record<string, (result: true | string) => void> = {};
+
+      const App = () => {
+        const {
+          register,
+          formState: { errors, isValid },
+        } = useForm<{ username: string }>({
+          mode: 'onChange',
+          defaultValues: { username: '' },
+          validate: ({ formValues }) =>
+            new Promise((resolve) => {
+              resolvers[formValues.username] = resolve;
+            }),
+        });
+
+        return (
+          <form>
+            <input {...register('username')} />
+            <p>{errors.form?.message}</p>
+            <p>{isValid ? 'valid' : 'invalid'}</p>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        resolvers[''](true);
+      });
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'a' },
+      });
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'ab' },
+      });
+
+      await act(async () => {
+        resolvers.ab(true);
+      });
+      await act(async () => {
+        resolvers.a('"a" is taken');
+      });
+
+      expect(screen.queryByText('"a" is taken')).not.toBeInTheDocument();
+      expect(screen.getByText('valid')).toBeVisible();
+    });
+
+    it('ignore an older trigger form-level result that resolves after a newer one', async () => {
+      const resolvers: ((result: true | string) => void)[] = [];
+      const { result } = renderHook(() => {
+        const form = useForm<{ username: string }>({
+          validate: () =>
+            new Promise((resolve) => {
+              resolvers.push(resolve);
+            }),
+        });
+        form.formState.isValid;
+        return form;
+      });
+
+      await act(async () => {
+        resolvers.splice(0).forEach((resolve) => resolve(true));
+      });
+
+      let first!: Promise<boolean>;
+      let second!: Promise<boolean>;
+
+      act(() => {
+        first = result.current.trigger();
+        second = result.current.trigger();
+      });
+
+      await act(async () => {
+        resolvers[1](true);
+      });
+      await act(async () => {
+        resolvers[0]('stale');
+      });
+
+      expect(await first).toBe(true);
+      expect(await second).toBe(true);
+      expect(result.current.getErrors('form')).toBeUndefined();
+      expect(result.current.formState.isValid).toBe(true);
+    });
+
+    it('still apply a slow form-level validate result when no newer call started', async () => {
+      const resolvers: ((result: true | string) => void)[] = [];
+      const { result } = renderHook(() =>
+        useForm<{ username: string }>({
+          validate: () =>
+            new Promise((resolve) => {
+              resolvers.push(resolve);
+            }),
+        }),
+      );
+
+      let pending!: Promise<boolean>;
+
+      act(() => {
+        pending = result.current.trigger();
+      });
+
+      await act(async () => {
+        resolvers[0]('taken');
+      });
+
+      expect(await pending).toBe(false);
+      expect(result.current.getErrors('form')).toEqual(
+        expect.objectContaining({ message: 'taken' }),
+      );
+    });
+
+    describe('when a newer validate starts while the submit validates', () => {
+      const setup = async (mode?: Mode, taken = 'taken') => {
+        const calls: {
+          username: string;
+          resolve: (result: true | string) => void;
+        }[] = [];
+        const onValid = jest.fn();
+        const onInvalid = jest.fn();
+
+        const App = () => {
+          const {
+            register,
+            handleSubmit,
+            formState: { errors, isValid },
+          } = useForm<{ username: string }>({
+            mode,
+            defaultValues: { username: '' },
+            validate: ({ formValues }) =>
+              new Promise((resolve) => {
+                calls.push({ username: formValues.username, resolve });
+              }),
+          });
+
+          return (
+            <form onSubmit={handleSubmit(onValid, onInvalid)}>
+              <input {...register('username')} />
+              <p>{errors.form ? errors.form.message : 'no form error'}</p>
+              <p>{isValid ? 'valid' : 'invalid'}</p>
+              <button>submit</button>
+            </form>
+          );
+        };
+
+        render(<App />);
+
+        const answer = (username: string) =>
+          username === taken ? `"${taken}" is taken` : true;
+
+        // Settling a change's validate starts its isValid check,
+        // so drain until none is left
+        const settleRest = async () => {
+          while (calls.length) {
+            const { username, resolve } = calls.shift()!;
+            await act(async () => {
+              resolve(answer(username));
+            });
+          }
+        };
+
+        await settleRest();
+        expect(screen.getByText('valid')).toBeVisible();
+
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'taken' },
+        });
+        fireEvent.click(screen.getByRole('button'));
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'taken1' },
+        });
+
+        expect(calls.map(({ username }) => username)).toEqual([
+          'taken',
+          'taken',
+          'taken1',
+        ]);
+        const [older, submit, newer] = calls.splice(0);
+
+        return { older, submit, newer, onValid, onInvalid, settleRest };
+      };
+
+      it('not submit the value when the submit settles before the newer validate', async () => {
+        const { older, submit, newer, onValid, onInvalid, settleRest } =
+          await setup('onChange');
+
+        await act(async () => {
+          submit.resolve('"taken" is taken');
+        });
+
+        expect(onValid).not.toHaveBeenCalled();
+        expect(onInvalid).toHaveBeenCalledTimes(1);
+        expect(screen.getByText('"taken" is taken')).toBeVisible();
+        expect(screen.getByText('invalid')).toBeVisible();
+
+        await act(async () => {
+          older.resolve('"taken" is taken');
+        });
+        await act(async () => {
+          newer.resolve(true);
+        });
+        await settleRest();
+
+        expect(screen.getByText('no form error')).toBeVisible();
+        expect(screen.getByText('valid')).toBeVisible();
+      });
+
+      it('not submit the value when the newer validate settles first', async () => {
+        const { older, submit, newer, onValid, onInvalid, settleRest } =
+          await setup('onChange');
+
+        await act(async () => {
+          newer.resolve(true);
+        });
+        await act(async () => {
+          older.resolve('"taken" is taken');
+        });
+        await act(async () => {
+          submit.resolve('"taken" is taken');
+        });
+
+        expect(onValid).not.toHaveBeenCalled();
+        expect(onInvalid).toHaveBeenCalledTimes(1);
+
+        await settleRest();
+
+        expect(screen.getByText('no form error')).toBeVisible();
+      });
+
+      it('not submit the value when an isValid check starts during the submit', async () => {
+        const { older, submit, newer, onValid, onInvalid, settleRest } =
+          await setup();
+
+        await act(async () => {
+          older.resolve('"taken" is taken');
+        });
+        await act(async () => {
+          submit.resolve('"taken" is taken');
+        });
+
+        expect(onValid).not.toHaveBeenCalled();
+        expect(onInvalid).toHaveBeenCalledTimes(1);
+        expect(screen.getByText('"taken" is taken')).toBeVisible();
+        expect(screen.getByText('invalid')).toBeVisible();
+
+        await act(async () => {
+          newer.resolve(true);
+        });
+        await settleRest();
+
+        expect(screen.getByText('no form error')).toBeVisible();
+        expect(screen.getByText('valid')).toBeVisible();
+      });
+
+      it('submit the value its own validate accepted when the newer validate rejects', async () => {
+        const { older, submit, newer, onValid, onInvalid, settleRest } =
+          await setup('onChange', 'taken1');
+
+        await act(async () => {
+          older.resolve(true);
+        });
+        await act(async () => {
+          submit.resolve(true);
+        });
+
+        expect(onValid).toHaveBeenCalledTimes(1);
+        expect(onValid).toHaveBeenCalledWith(
+          { username: 'taken' },
+          expect.anything(),
+        );
+        expect(onInvalid).not.toHaveBeenCalled();
+
+        await act(async () => {
+          newer.resolve('"taken1" is taken');
+        });
+        await settleRest();
+
+        expect(screen.getByText('"taken1" is taken')).toBeVisible();
+        expect(screen.getByText('invalid')).toBeVisible();
+      });
+    });
+
     it.each([
       { description: 'an empty object', validResult: {} },
       {
