@@ -788,6 +788,51 @@ describe('useController', () => {
     expect(data).toBeUndefined();
   });
 
+  it.each([
+    [false, true, undefined],
+    [true, false, undefined],
+    [false, false, undefined],
+    [true, true, undefined],
+    [false, true, false],
+    [true, false, false],
+    [false, true, true],
+    [true, false, true],
+  ])(
+    'use the current shouldUnregister option on unmount (%s -> %s, field: %s)',
+    (initial, next, shouldUnregister) => {
+      const form = renderHook(
+        ({ shouldUnregister }) =>
+          useForm({
+            defaultValues: { test: 'default' },
+            shouldUnregister,
+          }),
+        { initialProps: { shouldUnregister: initial } },
+      );
+      const field = renderHook(() =>
+        useController({
+          name: 'test',
+          control: form.result.current.control,
+          shouldUnregister,
+        }),
+      );
+
+      act(() => {
+        field.result.current.field.onChange('updated');
+      });
+
+      form.rerender({ shouldUnregister: next });
+      field.rerender();
+
+      expect(form.result.current.getValues()).toEqual({ test: 'updated' });
+
+      field.unmount();
+
+      expect(form.result.current.getValues()).toEqual(
+        next || shouldUnregister ? {} : { test: 'updated' },
+      );
+    },
+  );
+
   it('always get the latest value for onBlur event', async () => {
     const watchResults: unknown[] = [];
 

@@ -239,6 +239,7 @@ export function createFormControl<
   };
 
   let _setValidCallId = 0;
+  let _validateFormCallId = 0;
   let _resetCallId = 0;
   let _registerCallId = 0;
   const _registerCallIds: Record<InternalFieldName, number> = {};
@@ -838,6 +839,7 @@ export function createFormControl<
   }) => {
     if (_options.validate) {
       const resetCallId = _resetCallId;
+      const validateFormCallId = ++_validateFormCallId;
       const result = await _options.validate({
         formValues: _formValues,
         formState: _formState,
@@ -845,7 +847,11 @@ export function createFormControl<
         eventType,
       });
 
-      if (resetCallId !== _resetCallId) {
+      if (
+        resetCallId !== _resetCallId ||
+        (eventType !== EVENTS.SUBMIT &&
+          validateFormCallId !== _validateFormCallId)
+      ) {
         return true;
       }
 
