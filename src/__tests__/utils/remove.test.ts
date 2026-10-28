@@ -160,4 +160,13 @@ describe('remove', () => {
     expect(remove(['hello', ''], 0)).toEqual(['']);
     expect(remove([0, false, ''], 1)).toEqual([0, '']);
   });
+
+  it('preserve falsy elements when removing with empty indexes or from sparse arrays', () => {
+    expect(remove([0], [])).toEqual([0]);
+    expect(remove([false], [])).toEqual([false]);
+    expect(remove([''], [])).toEqual(['']);
+
+    expect(remove([, , 0, ,], 1)).toEqual([undefined, 0, undefined]);
+    expect(remove([, , false, null], [0, 1])).toEqual([false, null]);
+  });
 });
