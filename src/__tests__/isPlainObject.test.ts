@@ -19,5 +19,16 @@ describe('isPlainObject', function () {
     expect(!isPlainObject(['foo', 'bar'])).toBeTruthy();
     expect(!isPlainObject([])).toBeTruthy();
     expect(!isPlainObject(test)).toBeTruthy();
+    expect(isPlainObject({ constructor: 'Ferrari' })).toBeTruthy();
+    expect(isPlainObject({ constructor: 123 })).toBeTruthy();
+    expect(isPlainObject({ hasOwnProperty: true })).toBeTruthy();
+
+    class CustomClass {
+      a = 1;
+    }
+    expect(isPlainObject(new CustomClass())).toBeFalsy();
+    expect(
+      isPlainObject(Object.assign(new CustomClass(), { constructor: Object })),
+    ).toBeFalsy();
   });
 });
