@@ -303,5 +303,10 @@ describe('deepEqual', () => {
 
     expect(deepEqual([/a/, /b/], [/a/, /b/])).toBeTruthy();
     expect(deepEqual([/a/, /b/], [/a/, /c/])).toBeFalsy();
+
+    expect(deepEqual(/abc/, {})).toBeFalsy();
+    expect(deepEqual({}, /abc/)).toBeFalsy();
+    expect(deepEqual(/abc/, new Date())).toBeFalsy();
+    expect(deepEqual(new Date(), /abc/)).toBeFalsy();
   });
 });

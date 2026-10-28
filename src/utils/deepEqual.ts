@@ -33,6 +33,15 @@ export default function deepEqual(
   }
 
   if (
+    isDateObject(object1) ||
+    isDateObject(object2) ||
+    isRegex(object1) ||
+    isRegex(object2)
+  ) {
+    return false;
+  }
+
+  if (
     Array.isArray(object1) &&
     Array.isArray(object2) &&
     object1.length !== object2.length
