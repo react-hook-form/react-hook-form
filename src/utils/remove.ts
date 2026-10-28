@@ -11,7 +11,7 @@ function removeAtIndexes<T>(data: T[], indexes: number[]): T[] {
     i++;
   }
 
-  return temp.filter((v) => !isNullOrUndefined(v)).length ? temp : [];
+  return temp.some((v) => !isNullOrUndefined(v)) ? temp : [];
 }
 
 export default <T>(data: T[], index?: number | number[]): T[] =>
