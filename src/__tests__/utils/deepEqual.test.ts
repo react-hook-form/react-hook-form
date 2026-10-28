@@ -281,4 +281,27 @@ describe('deepEqual', () => {
       ),
     ).toBeFalsy();
   });
+
+  it('compare regular expressions by pattern source and flags', () => {
+    expect(deepEqual(/abc/i, /abc/i)).toBeTruthy();
+    expect(deepEqual(new RegExp('test', 'g'), /test/g)).toBeTruthy();
+
+    expect(deepEqual(/abc/i, /abc/g)).toBeFalsy();
+    expect(deepEqual(/abc/i, /def/i)).toBeFalsy();
+    expect(deepEqual(/abc/, /abc/i)).toBeFalsy();
+
+    expect(
+      deepEqual(
+        { pattern: /^[a-z]+$/i, flags: 1 },
+        { pattern: /^[a-z]+$/i, flags: 1 },
+      ),
+    ).toBeTruthy();
+
+    expect(
+      deepEqual({ pattern: /^[a-z]+$/i }, { pattern: /^[a-z]+$/ }),
+    ).toBeFalsy();
+
+    expect(deepEqual([/a/, /b/], [/a/, /b/])).toBeTruthy();
+    expect(deepEqual([/a/, /b/], [/a/, /c/])).toBeFalsy();
+  });
 });
