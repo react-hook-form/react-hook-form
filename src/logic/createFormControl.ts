@@ -238,6 +238,8 @@ export function createFormControl<
     state: createSubject(),
   };
 
+  const _schemaValidationOwners = new Map<InternalFieldName, symbol>();
+
   let _setValidCallId = 0;
   let _validateFormCallId = 0;
   let _resetCallId = 0;
@@ -298,8 +300,17 @@ export function createFormControl<
   const _updateValidatingFields = (
     names: Iterable<string>,
     isValidating?: boolean,
+    schemaOwner?: symbol,
   ) => {
     const fieldNames = [...names];
+
+    for (const name of fieldNames) {
+      if (schemaOwner) {
+        _schemaValidationOwners.set(name, schemaOwner);
+      } else {
+        _schemaValidationOwners.delete(name);
+      }
+    }
 
     if (
       !fieldNames.some(
@@ -328,9 +339,13 @@ export function createFormControl<
     }
   };
 
-  const _updateIsValidating = (names?: string[], isValidating?: boolean) => {
+  const _updateIsValidating = (
+    names?: string[],
+    isValidating?: boolean,
+    schemaOwner?: symbol,
+  ) => {
     if (!_options.disabled && _isTracked('isValidating', 'validatingFields')) {
-      _updateValidatingFields(names || _names.mount, isValidating);
+      _updateValidatingFields(names || _names.mount, isValidating, schemaOwner);
 
       _subjects.state.next({
         validatingFields: _formState.validatingFields,
@@ -762,17 +777,37 @@ export function createFormControl<
   };
 
   const _runSchema = async (name?: InternalFieldName[]) => {
-    _updateIsValidating(name, true);
-    return await _options.resolver!(
-      _formValues,
-      _options.context,
-      getResolverOptions(
-        name || _names.mount,
-        _fields,
-        _options.criteriaMode,
-        _options.shouldUseNativeValidation,
-      ),
-    );
+    const names = [...(name || _names.mount)];
+    const owner = Symbol();
+    const resetCallId = _resetCallId;
+
+    _updateIsValidating(names, true, owner);
+    try {
+      return await _options.resolver!(
+        _formValues,
+        _options.context,
+        getResolverOptions(
+          names,
+          _fields,
+          _options.criteriaMode,
+          _options.shouldUseNativeValidation,
+        ),
+      );
+    } catch (error) {
+      if (resetCallId === _resetCallId) {
+        const ownedNames = names.filter(
+          (fieldName) => _schemaValidationOwners.get(fieldName) === owner,
+        );
+        ownedNames.length && _updateIsValidating(ownedNames);
+      }
+      throw error;
+    } finally {
+      for (const fieldName of names) {
+        if (_schemaValidationOwners.get(fieldName) === owner) {
+          _schemaValidationOwners.delete(fieldName);
+        }
+      }
+    }
   };
 
   const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
