@@ -256,7 +256,9 @@ export type FieldError = {
 // @public (undocumented)
 export type FieldErrors<T extends FieldValues = FieldValues> = Partial<FieldErrorsImpl<DeepRequired<T>>> & {
     root?: Record<string, GlobalError> & GlobalError;
-    form?: Record<string, GlobalError> & GlobalError;
+    form?: GlobalError & (string extends keyof T ? unknown : {
+        [K in keyof T]?: GlobalError;
+    });
 };
 
 // @public (undocumented)
