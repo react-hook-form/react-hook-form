@@ -670,6 +670,38 @@ describe('handleSubmit', () => {
     },
   );
 
+  describe.each(['throws', 'rejects'] as const)(
+    'when onValid %s',
+    (failureType) => {
+      it.each([undefined, null, false, 0, ''])(
+        'preserves a falsy failure reason (%s) and marks submission unsuccessful',
+        async (failure) => {
+          const { result } = renderHook(() => useFormWithSubmitState());
+          const onValid =
+            failureType === 'throws'
+              ? () => {
+                  throw failure;
+                }
+              : () => Promise.reject(failure);
+          const settled = await act(async () =>
+            Promise.allSettled([
+              result.current.methods.handleSubmit(onValid)(),
+            ]),
+          );
+
+          expect(result.current.state).toEqual({
+            isSubmitting: false,
+            isSubmitted: true,
+            isSubmitSuccessful: false,
+            submitCount: 1,
+            errors: {},
+          });
+          expect(settled).toEqual([{ status: 'rejected', reason: failure }]);
+        },
+      );
+    },
+  );
+
   it('preserve a falsy value thrown by onInvalid', async () => {
     const { result } = renderHook(() => useFormWithSubmitState());
 
