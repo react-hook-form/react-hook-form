@@ -24,6 +24,18 @@ import { _ } from './__fixtures__';
     type _t4 = Expect<Equal<typeof formType, string | number | undefined>>;
   }
 
+  /** it should accept a form-level error object */
+  {
+    const errors: FieldErrors = { form: { type: 'server', message: 'Failed' } };
+    const typedErrors: FieldErrors<{ firstName: string }> = {
+      form: {
+        type: 'server',
+        message: 'Failed',
+        firstName: { type: 'validate', message: 'Invalid' },
+      },
+    };
+  }
+
   /** it should support optional record fields */
   {
     const actual = _ as FieldErrors<{
@@ -49,7 +61,11 @@ import { _ } from './__fixtures__';
           >;
         } & {
           root?: Record<string, GlobalError> & GlobalError;
-          form?: Record<string, GlobalError> & GlobalError;
+          form?: GlobalError & {
+            test?: GlobalError;
+            test1?: GlobalError;
+            attachment?: GlobalError;
+          };
         }
       >
     >;
@@ -80,7 +96,11 @@ import { _ } from './__fixtures__';
           >;
         } & {
           root?: Record<string, GlobalError> & GlobalError;
-          form?: Record<string, GlobalError> & GlobalError;
+          form?: GlobalError & {
+            test?: GlobalError;
+            test1?: GlobalError;
+            attachment?: GlobalError;
+          };
         }
       >
     >;
