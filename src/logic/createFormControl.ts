@@ -1305,7 +1305,10 @@ export function createFormControl<
       });
 
       for (const itemName of fieldArrayItemNames) {
-        _subjects.state.next({ name: itemName, values });
+        _subjects.state.next({
+          name: itemName,
+          values: values && cloneObject(_formValues),
+        });
       }
     }
   };

@@ -13,6 +13,7 @@ import { Controller } from '../../controller';
 import type { Control } from '../../types';
 import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
+import { useWatch } from '../../useWatch';
 import get from '../../utils/get';
 import isFunction from '../../utils/isFunction';
 import noop from '../../utils/noop';
@@ -1404,6 +1405,164 @@ describe('setValue', () => {
     await waitFor(() =>
       expect(screen.getByTestId('note').textContent).toEqual('5'),
     );
+  });
+
+  it('show the value a values subscriber sets on a sibling field in the same field array row', () => {
+    type FormValues = { rows: { a: string; b: string }[] };
+
+    const App = () => {
+      const { control, setValue, subscribe } = useForm<FormValues>({
+        defaultValues: { rows: [{ a: '1', b: '1!' }] },
+      });
+      const { fields } = useFieldArray({ control, name: 'rows' });
+
+      React.useEffect(() => {
+        return subscribe({
+          name: 'rows.0.a',
+          exact: true,
+          formState: { values: true },
+          callback: ({ name, values }) => {
+            if (name === 'rows.0.a') {
+              setValue('rows.0.b', `${values.rows[0].a}!`);
+            }
+          },
+        });
+      }, [setValue, subscribe]);
+
+      return (
+        <div>
+          {fields.map((field, index) => (
+            <div key={field.id}>
+              <Controller
+                control={control}
+                name={`rows.${index}.b` as const}
+                render={({ field }) => <input aria-label="b" {...field} />}
+              />
+              <Controller
+                control={control}
+                name={`rows.${index}` as const}
+                render={({ field: { value } }) => (
+                  <p data-testid="row">{value.b}</p>
+                )}
+              />
+            </div>
+          ))}
+          <button onClick={() => setValue('rows.0.a', '2')}>update</button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByLabelText('b')).toHaveValue('1!');
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(screen.getByLabelText('b')).toHaveValue('2!');
+    expect(screen.getByTestId('row').textContent).toEqual('2!');
+  });
+
+  it('show the value a values subscriber sets in a field array row to a useWatch of the whole array', () => {
+    type FormValues = { rows: { a: number; b: number }[] };
+
+    const WatchedRows = ({ control }: { control: Control<FormValues> }) => {
+      const rows = useWatch({ control, name: 'rows' });
+
+      return <p data-testid="rows">{rows[0].b}</p>;
+    };
+
+    const App = () => {
+      const { control, setValue, subscribe } = useForm<FormValues>({
+        defaultValues: { rows: [{ a: 1, b: 2 }] },
+      });
+      useFieldArray({ control, name: 'rows' });
+
+      React.useEffect(() => {
+        return subscribe({
+          name: 'rows.0.a',
+          exact: true,
+          formState: { values: true },
+          callback: ({ name, values }) => {
+            if (name === 'rows.0.a') {
+              setValue('rows.0.b', values.rows[0].a * 2);
+            }
+          },
+        });
+      }, [setValue, subscribe]);
+
+      return (
+        <div>
+          <WatchedRows control={control} />
+          <button onClick={() => setValue('rows.0.a', 5)}>update</button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByTestId('rows').textContent).toEqual('2');
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(screen.getByTestId('rows').textContent).toEqual('10');
+  });
+
+  it('show the value a values subscriber sets on a sibling field in a nested field array row', () => {
+    type FormValues = { rows: { items: { x: string; y: string }[] }[] };
+
+    const Items = ({ control }: { control: Control<FormValues> }) => {
+      const { fields } = useFieldArray({ control, name: 'rows.0.items' });
+
+      return (
+        <div>
+          {fields.map((field, index) => (
+            <Controller
+              key={field.id}
+              control={control}
+              name={`rows.0.items.${index}.y` as const}
+              render={({ field }) => <input aria-label="y" {...field} />}
+            />
+          ))}
+        </div>
+      );
+    };
+
+    const App = () => {
+      const { control, setValue, subscribe } = useForm<FormValues>({
+        defaultValues: { rows: [{ items: [{ x: '1', y: '1!' }] }] },
+      });
+      useFieldArray({ control, name: 'rows' });
+
+      React.useEffect(() => {
+        return subscribe({
+          name: 'rows.0.items.0.x',
+          exact: true,
+          formState: { values: true },
+          callback: ({ name, values }) => {
+            if (name === 'rows.0.items.0.x') {
+              setValue('rows.0.items.0.y', `${values.rows[0].items[0].x}!`);
+            }
+          },
+        });
+      }, [setValue, subscribe]);
+
+      return (
+        <div>
+          <Items control={control} />
+          <button onClick={() => setValue('rows.0.items.0.x', '2')}>
+            update
+          </button>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    expect(screen.getByLabelText('y')).toHaveValue('1!');
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(screen.getByLabelText('y')).toHaveValue('2!');
   });
 
   it('set field array correctly without affect the parent field array', async () => {
