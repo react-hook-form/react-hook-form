@@ -3616,6 +3616,35 @@ describe('useForm', () => {
       );
     });
 
+    it('run a form-level validate added after mount on field change', async () => {
+      const App = ({ validate }: { validate?: () => string | true }) => {
+        const {
+          register,
+          formState: { errors },
+        } = useForm<{ username: string }>({
+          mode: 'onChange',
+          validate,
+        });
+
+        return (
+          <>
+            <input {...register('username')} />
+            <p>{errors.form && errors.form.message}</p>
+          </>
+        );
+      };
+
+      const { rerender } = render(<App />);
+
+      rerender(<App validate={() => 'taken'} />);
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'bill' },
+      });
+
+      expect(await screen.findByText('taken')).toBeVisible();
+    });
+
     describe('when a newer validate starts while the submit validates', () => {
       const setup = async (mode?: Mode, taken = 'taken') => {
         const calls: {
