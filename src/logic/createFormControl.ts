@@ -2089,6 +2089,7 @@ export function createFormControl<
     ): Promise<Awaited<TResult> | undefined> => {
       let result: Awaited<TResult> | undefined = undefined;
       let onValidError = undefined;
+      let onValidFailed = false;
       if (e) {
         e.preventDefault && e.preventDefault();
         e.persist && e.persist();
@@ -2159,6 +2160,7 @@ export function createFormControl<
         try {
           result = await onValid(fieldValues as TTransformedValues, e);
         } catch (error) {
+          onValidFailed = true;
           onValidError = error;
         }
       } else {
@@ -2177,11 +2179,11 @@ export function createFormControl<
       _subjects.state.next({
         isSubmitted: true,
         isSubmitting: false,
-        isSubmitSuccessful: isEmptyObject(_formState.errors) && !onValidError,
+        isSubmitSuccessful: isEmptyObject(_formState.errors) && !onValidFailed,
         submitCount: _formState.submitCount + 1,
         errors: _formState.errors,
       });
-      if (onValidError) {
+      if (onValidFailed) {
         throw onValidError;
       }
       return result;
