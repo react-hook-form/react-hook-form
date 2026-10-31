@@ -1,7 +1,7 @@
 import type React from 'react';
 
 import type { VALIDATION_MODE } from '../constants';
-import type { Subject, Subscription } from '../utils/createSubject';
+import type { Subject } from '../utils/createSubject';
 
 import type {
   ErrorOption,
@@ -24,12 +24,7 @@ import type {
   FieldPathValues,
 } from './path';
 import type { Resolver } from './resolvers';
-import type {
-  DeepMap,
-  DeepPartial,
-  DeepPartialSkipArrayKey,
-  Noop,
-} from './utils';
+import type { BivariantCallback, DeepMap, DeepPartial, Noop } from './utils';
 import type { RegisterOptions, ValidateForm } from './validator';
 
 declare const $NestedValue: unique symbol;
@@ -103,8 +98,8 @@ export type ResetFieldConfig<
 }>;
 
 export type ChangeHandler = (event: {
-  target: any;
-  type?: any;
+  target: unknown;
+  type?: unknown;
 }) => Promise<void | boolean>;
 
 export type DelayCallback = (wait: number) => void;
@@ -115,7 +110,7 @@ type AsyncDefaultValues<TFieldValues> = (
 
 export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
+  TContext = unknown,
   TTransformedValues = TFieldValues,
 > = Partial<{
   mode: Mode;
@@ -198,7 +193,7 @@ export type KeepStateOptions = Partial<{
 export type SetFieldValue<TFieldValues extends FieldValues> =
   FieldValue<TFieldValues>;
 
-export type RefCallBack = (instance: any) => void;
+export type RefCallBack = BivariantCallback<[instance: unknown]>;
 
 export type UseFormRegisterReturn<
   TFieldName extends InternalFieldName = InternalFieldName,
@@ -559,31 +554,6 @@ export type UseFormWatch<TFieldValues extends FieldValues> = {
     name: TFieldName,
     defaultValue?: FieldPathValue<TFieldValues, TFieldName>,
   ): FieldPathValue<TFieldValues, TFieldName>;
-  /**
-   * Subscribe to field updates and changes without triggering a re-render.
-   *
-   * @remarks
-   * [API](https://react-hook-form.com/docs/useform/watch) • [Demo](https://codesandbox.io/s/react-hook-form-watch-v7-ts-8et1d) • [Video](https://www.youtube.com/watch?v=3qLd69WMqKk)
-   *
-   * @param callback - Callback function to subscribe to all field changes and return an unsubscribe function.
-   * @param defaultValues - DefaultValues for the entire form.
-   *
-   * @returns Unsubscribe function.
-   *
-   * @example
-   * ```tsx
-   * useEffect(() => {
-   *   const { unsubscribe } = watch((value) => {
-   *     console.log(value);
-   *   });
-   *   return () => unsubscribe();
-   * }, [watch])
-   * ```
-   */
-  (
-    callback: WatchObserver<TFieldValues>,
-    defaultValues?: DeepPartial<TFieldValues>,
-  ): Subscription;
 };
 
 /**
@@ -939,7 +909,7 @@ export type FromSubscribe<TFieldValues extends FieldValues> = <
 
 export type Control<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
+  TContext = unknown,
   TTransformedValues = TFieldValues,
 > = {
   _subjects: Subjects<TFieldValues>;
@@ -986,18 +956,9 @@ export type Control<
   setError: UseFormSetError<TFieldValues>;
 };
 
-export type WatchObserver<TFieldValues extends FieldValues> = (
-  value: DeepPartialSkipArrayKey<TFieldValues>,
-  info: {
-    name?: FieldPath<TFieldValues>;
-    type?: EventType;
-    values?: unknown;
-  },
-) => void;
-
 export type UseFormReturn<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
+  TContext = unknown,
   TTransformedValues = TFieldValues,
 > = {
   watch: UseFormWatch<TFieldValues>;
@@ -1025,7 +986,7 @@ export type UseFormStateProps<
   TFieldValues extends FieldValues,
   TTransformedValues = TFieldValues,
 > = Partial<{
-  control?: Control<TFieldValues, any, TTransformedValues>;
+  control?: Control<TFieldValues, unknown, TTransformedValues>;
   disabled?: boolean;
   name?:
     | FieldPath<TFieldValues>
@@ -1039,7 +1000,7 @@ export type UseFormStateReturn<TFieldValues extends FieldValues> =
 
 export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
+  TContext = unknown,
   TTransformedValues = TFieldValues,
 > = {
   children: React.ReactNode | React.ReactNode[];
@@ -1050,7 +1011,7 @@ export type FormProps<
   TTransformedValues = TFieldValues,
 > = Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onError' | 'onSubmit'> &
   Partial<{
-    control: Control<TFieldValues, any, TTransformedValues>;
+    control: Control<TFieldValues, unknown, TTransformedValues>;
     headers: Record<string, string>;
     validateStatus: (status: number) => boolean;
     onError: ({

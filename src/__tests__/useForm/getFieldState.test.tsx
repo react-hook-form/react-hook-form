@@ -54,21 +54,15 @@ describe('getFieldState', () => {
     describe('when input is primitive data type', () => {
       it('display error state', async () => {
         const App = () => {
-          const {
-            trigger,
-            register,
-            getFieldState,
-            formState: { errors },
-          } = useForm({
+          const { trigger, register, getFieldState, formState } = useForm({
             defaultValues: {
               test: '',
             },
           });
 
-          errors;
-
           return (
             <form>
+              {!!formState.errors.test?.message}
               <input {...register('test', { required: 'This is required' })} />
               <button type={'button'} onClick={() => trigger()}>
                 trigger
@@ -89,21 +83,15 @@ describe('getFieldState', () => {
 
       it('display isValid state', async () => {
         const App = () => {
-          const {
-            trigger,
-            register,
-            getFieldState,
-            formState: { errors },
-          } = useForm({
+          const { trigger, register, getFieldState, formState } = useForm({
             defaultValues: {
               test: '',
             },
           });
 
-          errors;
-
           return (
             <form>
+              {!!formState.errors.test?.message}
               <input {...register('test', { required: 'This is required' })} />
               <button type={'button'} onClick={() => trigger()}>
                 trigger
@@ -124,20 +112,15 @@ describe('getFieldState', () => {
 
       it('display isTouched state', async () => {
         const App = () => {
-          const {
-            register,
-            getFieldState,
-            formState: { touchedFields },
-          } = useForm({
+          const { register, getFieldState, formState } = useForm({
             defaultValues: {
               test: '',
             },
           });
 
-          touchedFields;
-
           return (
             <form>
+              {!!formState.touchedFields.test}
               <input {...register('test')} />
               <p>{getFieldState('test')?.isTouched ? 'touched' : ''}</p>
             </form>
@@ -154,20 +137,15 @@ describe('getFieldState', () => {
 
       it('display isDirty state', async () => {
         const App = () => {
-          const {
-            register,
-            getFieldState,
-            formState: { dirtyFields },
-          } = useForm({
+          const { register, getFieldState, formState } = useForm({
             defaultValues: {
               test: '',
             },
           });
 
-          dirtyFields;
-
           return (
             <form>
+              {!!formState.dirtyFields.test}
               <input {...register('test')} />
               <p>{getFieldState('test')?.isDirty ? 'dirty' : ''}</p>
             </form>
@@ -218,24 +196,19 @@ describe('getFieldState', () => {
     describe('when input is nested data type', () => {
       it('display error state', async () => {
         const App = () => {
-          const {
-            trigger,
-            getFieldState,
-            control,
-            formState: { errors },
-          } = useForm<FormValues>({
-            defaultValues: {
-              nested: {
-                first: '',
-                last: '',
+          const { trigger, getFieldState, formState, control } =
+            useForm<FormValues>({
+              defaultValues: {
+                nested: {
+                  first: '',
+                  last: '',
+                },
               },
-            },
-          });
-
-          errors;
+            });
 
           return (
             <form>
+              <p>{formState.errors.nested?.first?.message || ' '}</p>
               <NestedInput control={control} />
               <button type={'button'} onClick={() => trigger()}>
                 trigger
@@ -256,24 +229,19 @@ describe('getFieldState', () => {
 
       it('display isValid state', async () => {
         const App = () => {
-          const {
-            trigger,
-            control,
-            getFieldState,
-            formState: { errors },
-          } = useForm<FormValues>({
-            defaultValues: {
-              nested: {
-                first: '',
-                last: '',
+          const { trigger, control, getFieldState, formState } =
+            useForm<FormValues>({
+              defaultValues: {
+                nested: {
+                  first: '',
+                  last: '',
+                },
               },
-            },
-          });
-
-          errors;
+            });
 
           return (
             <form>
+              <p>{formState.errors.nested?.first?.message || ' '}</p>
               <NestedInput control={control} />
               <button type={'button'} onClick={() => trigger()}>
                 trigger
@@ -294,11 +262,7 @@ describe('getFieldState', () => {
 
       it('display isTouched state', async () => {
         const App = () => {
-          const {
-            control,
-            getFieldState,
-            formState: { touchedFields },
-          } = useForm<FormValues>({
+          const { control, getFieldState, formState } = useForm<FormValues>({
             defaultValues: {
               nested: {
                 first: '',
@@ -307,10 +271,9 @@ describe('getFieldState', () => {
             },
           });
 
-          touchedFields;
-
           return (
             <form>
+              <p>{formState.touchedFields.nested?.first}</p>
               <NestedInput control={control} />
               <p>{getFieldState('nested')?.isTouched ? 'touched' : ''}</p>
             </form>
@@ -327,11 +290,7 @@ describe('getFieldState', () => {
 
       it('display isDirty state', async () => {
         const App = () => {
-          const {
-            control,
-            getFieldState,
-            formState: { dirtyFields },
-          } = useForm<FormValues>({
+          const { control, getFieldState, formState } = useForm<FormValues>({
             defaultValues: {
               nested: {
                 first: '',
@@ -340,10 +299,9 @@ describe('getFieldState', () => {
             },
           });
 
-          dirtyFields;
-
           return (
             <form>
+              {formState.dirtyFields.nested?.first}
               <NestedInput control={control} />
               <p>{getFieldState('nested')?.isDirty ? 'dirty' : ''}</p>
             </form>

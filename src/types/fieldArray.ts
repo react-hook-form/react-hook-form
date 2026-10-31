@@ -1,18 +1,17 @@
 import type { FieldValues } from './fields';
 import type { Control } from './form';
 import type { FieldArrayPath, FieldArrayPathValue } from './path';
+import type { Primitive } from './utils';
 import type { RegisterOptions, Validate } from './validator';
 
 export type UseFieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> =
     FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
   TTransformedValues = TFieldValues,
 > = {
   name: TFieldArrayName;
-  keyName?: TKeyName;
-  control?: Control<TFieldValues, any, TTransformedValues>;
+  control?: Control<TFieldValues, unknown, TTransformedValues>;
   rules?: {
     validate?:
       | Validate<FieldArray<TFieldValues, TFieldArrayName>[], TFieldValues>
@@ -29,14 +28,20 @@ export type UseFieldArrayProps<
 };
 
 /**
- * `useFieldArray` returned `fields` with unique id
+ * `useFieldArray` returned `fields` with unique keys. Primitive rows are
+ * wrapped in `value`; object and function rows keep their spread properties.
  */
 export type FieldArrayWithId<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> =
     FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
-> = FieldArray<TFieldValues, TFieldArrayName> & Record<TKeyName, string>;
+  TKeyName extends string = 'key',
+> = (FieldArray<TFieldValues, TFieldArrayName> extends infer TRow
+  ? TRow extends Primitive
+    ? { value: TRow }
+    : TRow
+  : never) &
+  Record<TKeyName, string>;
 
 export type FieldArray<
   TFieldValues extends FieldValues = FieldValues,
@@ -268,7 +273,7 @@ export type UseFieldArrayReturn<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> =
     FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
+  TKeyName extends string = 'key',
 > = {
   swap: UseFieldArraySwap;
   move: UseFieldArrayMove;
@@ -305,9 +310,8 @@ export type FieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> =
     FieldArrayPath<TFieldValues>,
-  TKeyName extends string = 'id',
 > = {
   render: (
-    fieldArray: UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName>,
+    fieldArray: UseFieldArrayReturn<TFieldValues, TFieldArrayName>,
   ) => React.ReactElement;
-} & UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>;
+} & UseFieldArrayProps<TFieldValues, TFieldArrayName>;
