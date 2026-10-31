@@ -81,4 +81,30 @@ describe('getFieldValue', () => {
       }),
     ).toEqual(undefined);
   });
+
+  it('return array of values for select multiple', () => {
+    expect(
+      getFieldValue({
+        name: 'test',
+        ref: {
+          type: 'select-multiple',
+          name: 'test',
+          selectedOptions: [{ value: 'a' }, { value: 'b' }],
+        },
+      } as any),
+    ).toEqual(['a', 'b']);
+  });
+
+  it('return empty array when nothing is selected in select multiple', () => {
+    expect(
+      getFieldValue({
+        name: 'test',
+        ref: {
+          type: 'select-multiple',
+          name: 'test',
+          selectedOptions: [],
+        },
+      } as any),
+    ).toEqual([]);
+  });
 });
