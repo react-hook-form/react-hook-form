@@ -256,6 +256,31 @@ describe('clone', () => {
     expect(data.nested.value).toBe(1);
   });
 
+  it('clone Date as an independent instance', () => {
+    const date = new Date('2020-10-15T00:00:00.000Z');
+    const originalTime = date.getTime();
+    const copy = cloneObject(date);
+
+    expect(copy).toBeInstanceOf(Date);
+    expect(copy).not.toBe(date);
+    expect(copy.getTime()).toBe(originalTime);
+
+    copy.setFullYear(2030);
+
+    expect(date.getTime()).toBe(originalTime);
+    expect(copy.getTime()).not.toBe(originalTime);
+  });
+
+  it('clone invalid Date as an independent invalid Date', () => {
+    const date = new Date('invalid');
+    const copy = cloneObject(date);
+
+    expect(copy).toBeInstanceOf(Date);
+    expect(copy).not.toBe(date);
+    expect(Number.isNaN(date.getTime())).toBe(true);
+    expect(Number.isNaN(copy.getTime())).toBe(true);
+  });
+
   it('skip clone if a class instance has a constructor key', () => {
     class Foo {
       a = 1;
