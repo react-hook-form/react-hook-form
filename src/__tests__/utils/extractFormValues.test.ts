@@ -52,6 +52,28 @@ describe('extractFormValues', () => {
       records: [undefined, { name: 'test1' }],
     });
   });
+
+  it('preserves selected falsy values', () => {
+    const formData = {
+      boolean: false,
+      number: 0,
+      string: '',
+      null: null,
+      undefined: undefined,
+      nan: NaN,
+    };
+
+    const dirtyFields = {
+      boolean: true,
+      number: true,
+      string: true,
+      null: true,
+      undefined: true,
+      nan: true,
+    };
+
+    expect(extractFormValues(dirtyFields, formData)).toEqual(formData);
+  });
 });
 
 describe('extractFormValues own-property safety', () => {
