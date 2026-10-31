@@ -44,6 +44,8 @@ import DisabledFields from './disabledFields';
 import ResetKeepDirty from './resetKeepDirty';
 import ChangeInputType from './changeInputType';
 
+const DevTool = React.lazy(() => import('./devtool'));
+
 const App = () => {
   return (
     <BrowserRouter>
@@ -123,6 +125,14 @@ const App = () => {
         <Route path="/form" element={<FormComponent />} />
         <Route path="/disabled" element={<DisabledFields />} />
         <Route path="/changeInputType" element={<ChangeInputType />} />
+        <Route
+          path="/devtool"
+          element={
+            <React.Suspense>
+              <DevTool />
+            </React.Suspense>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
