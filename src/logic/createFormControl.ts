@@ -2420,7 +2420,10 @@ export function createFormControl<
 
     if (fieldReference) {
       const fieldRef = (
-        fieldReference.refs ? fieldReference.refs[0] : fieldReference.ref
+        fieldReference.refs
+          ? fieldReference.refs.find((ref) => !ref.disabled) ||
+            fieldReference.refs[0]
+          : fieldReference.ref
       ) as HTMLInputElement;
 
       if (fieldRef.focus) {
