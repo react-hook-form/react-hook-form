@@ -4,6 +4,13 @@ import getResolverOptions from '../../logic/getResolverOptions';
 describe('getFielfs', () => {
   it('return fields from `fieldsNames` and `fieldsRef`', () => {
     const fieldNames: Set<InternalFieldName> = new Set(['test.sub', 'test1']);
+
+    for (const fieldName of fieldNames) {
+      if (!(typeof fieldName === 'string')) {
+        fail('fieldName must be a string value.');
+      }
+    }
+
     const fieldsRef: any = {
       test: {
         sub: {
