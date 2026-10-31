@@ -1483,7 +1483,7 @@ export function createFormControl<
           _subjects.state.next({ name, ...(watched ? {} : fieldState) })
         );
       }
-      if (!_options.resolver && !isFormScope && props.validate) {
+      if (!_options.resolver && !isFormScope && _options.validate) {
         await validateForm({
           name: name as FieldPath<TFieldValues>,
           eventType: event.type,
