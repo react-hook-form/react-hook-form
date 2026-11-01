@@ -1867,9 +1867,19 @@ export function createFormControl<
   };
 
   const unregister: UseFormUnregister<TFieldValues> = (name, options = {}) => {
-    const fieldNames = name
+    const requestedNames = name
       ? (convertToArrayPayload(name) as InternalFieldName[])
-      : _names.mount;
+      : [..._names.mount];
+    const fieldNames = new Set(requestedNames);
+    if (name) {
+      for (const fieldName of _names.mount) {
+        if (
+          requestedNames.some((parent) => fieldName.startsWith(`${parent}.`))
+        ) {
+          fieldNames.add(fieldName);
+        }
+      }
+    }
 
     if (!options.keepIsValidating) {
       _updateValidatingFields(fieldNames);
