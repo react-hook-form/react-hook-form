@@ -1264,6 +1264,32 @@ describe('trigger', () => {
     });
   });
 
+  it('preserve an already nested resolver field-array root error on trigger', async () => {
+    type FormValues = { items: { name: string }[] };
+    const resolverErrors: FieldErrors<FormValues> = {
+      items: { root: { type: 'min', message: 'at_least_2_items' } },
+    };
+    const { result } = renderHook(() => {
+      const form = useForm<FormValues>({
+        defaultValues: { items: [{ name: 'test' }] },
+        resolver: async () => ({ values: {}, errors: resolverErrors }),
+      });
+      useFieldArray({ control: form.control, name: 'items' });
+      form.register('items.0.name');
+      return { ...form, errors: form.formState.errors };
+    });
+
+    await act(async () => {
+      await result.current.trigger();
+    });
+    expect(result.current.errors.items?.root?.message).toBe('at_least_2_items');
+
+    await act(async () => {
+      await result.current.trigger(['items', 'items.0.name']);
+    });
+    expect(result.current.errors.items?.root?.message).toBe('at_least_2_items');
+  });
+
   it('preserve resolver nested field-array item errors on trigger', async () => {
     type FormValues = { items: { name: string }[] };
 
