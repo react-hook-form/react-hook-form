@@ -772,6 +772,25 @@ describe('trigger', () => {
     });
   });
 
+  it('mark names that are Object.prototype members as touched when shouldTouch is true', async () => {
+    const { result } = renderHook(() =>
+      useForm({ defaultValues: { valueOf: '', hasOwnProperty: '' } }),
+    );
+
+    result.current.formState.touchedFields;
+
+    await act(async () => {
+      await result.current.trigger(['valueOf', 'hasOwnProperty'], {
+        shouldTouch: true,
+      });
+    });
+
+    expect(result.current.formState.touchedFields).toEqual({
+      valueOf: true,
+      hasOwnProperty: true,
+    });
+  });
+
   it('mark every mounted field as touched when shouldTouch is true and no name is provided', async () => {
     const { result } = renderHook(() =>
       useForm<{ test1: string; test2: string }>({
@@ -893,6 +912,36 @@ describe('trigger', () => {
     });
 
     expect(result.current.form.formState.touchedFields.test).not.toBe(true);
+    expect(result.current.form.formState.touchedFields.test?.[0]?.value).toBe(
+      true,
+    );
+  });
+
+  it('mark the fields of a field array row as touched when shouldTouch is true with a row name', async () => {
+    type FormValues = { test: { value: string }[] };
+
+    const { result } = renderHook(() => {
+      const form = useForm<FormValues>({
+        defaultValues: { test: [{ value: 'a' }, { value: 'b' }] },
+      });
+      const fieldArray = useFieldArray({
+        control: form.control,
+        name: 'test',
+      });
+      return { form, fieldArray };
+    });
+
+    result.current.form.register('test.0.value');
+    result.current.form.register('test.1.value');
+    result.current.form.formState.touchedFields;
+
+    await act(async () => {
+      await result.current.form.trigger('test.1', { shouldTouch: true });
+    });
+
+    expect(result.current.form.formState.touchedFields.test?.[1]).toEqual({
+      value: true,
+    });
   });
 
   it('not mark the field as touched when shouldTouch is not supplied', async () => {

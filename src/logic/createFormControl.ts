@@ -1623,7 +1623,9 @@ export function createFormControl<
       };
 
       for (const fieldName of name ? fieldNames : _names.mount) {
-        get(_fields, fieldName)
+        const field = get(_fields, fieldName);
+
+        isObject(field) || Array.isArray(field)
           ? iterateFieldsByAction(_fields, (_, key) => touchField(key), [
               fieldName,
             ])
