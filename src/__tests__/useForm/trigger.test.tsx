@@ -751,6 +751,27 @@ describe('trigger', () => {
     expect(result.current.formState.touchedFields.test3).toBeUndefined();
   });
 
+  it('mark the nested fields as touched when shouldTouch is true with a parent name', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ address: { street: string; city: string } }>({
+        defaultValues: { address: { street: '', city: '' } },
+      }),
+    );
+
+    result.current.register('address.street');
+    result.current.register('address.city');
+    result.current.formState.touchedFields;
+
+    await act(async () => {
+      await result.current.trigger('address', { shouldTouch: true });
+    });
+
+    expect(result.current.formState.touchedFields.address).toEqual({
+      street: true,
+      city: true,
+    });
+  });
+
   it('mark every mounted field as touched when shouldTouch is true and no name is provided', async () => {
     const { result } = renderHook(() =>
       useForm<{ test1: string; test2: string }>({
