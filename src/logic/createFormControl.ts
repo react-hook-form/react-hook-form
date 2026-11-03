@@ -1617,9 +1617,19 @@ export function createFormControl<
     }
 
     if (options.shouldTouch) {
-      for (const fieldName of name ? fieldNames : _names.mount) {
+      const touchField = (fieldName: InternalFieldName) => {
         !_names.array.has(fieldName) &&
           set(_formState.touchedFields, fieldName, true);
+      };
+
+      for (const fieldName of name ? fieldNames : _names.mount) {
+        const field = get(_fields, fieldName);
+
+        isObject(field) || Array.isArray(field)
+          ? iterateFieldsByAction(_fields, (_, key) => touchField(key), [
+              fieldName,
+            ])
+          : touchField(fieldName);
       }
     }
 
