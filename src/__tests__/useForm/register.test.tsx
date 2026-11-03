@@ -2542,6 +2542,134 @@ describe('register', () => {
       expect(methods!.formState.dirtyFields).toEqual({});
     });
 
+    it('still set the default values into range and color inputs nobody changed', async () => {
+      let methods: UseFormReturn<{
+        text: string;
+        range: string;
+        color: string;
+      }>;
+
+      function App() {
+        methods = useForm({
+          defaultValues: { text: 'default', range: '35', color: '#ff0000' },
+        });
+        return (
+          <>
+            <input {...methods.register('text')} />
+            <input type="range" {...methods.register('range')} />
+            <input type="color" {...methods.register('color')} />
+          </>
+        );
+      }
+
+      const container = document.createElement('div');
+      container.innerHTML = renderToString(<App />);
+      const [text, range, color] = container.querySelectorAll('input');
+
+      await act(async () => {
+        hydrateRoot(container, <App />);
+      });
+
+      expect(text.value).toBe('default');
+      expect(range.value).toBe('35');
+      expect(color.value).toBe('#ff0000');
+      expect(methods!.getValues()).toEqual({
+        text: 'default',
+        range: '35',
+        color: '#ff0000',
+      });
+      expect(methods!.formState.dirtyFields).toEqual({});
+    });
+
+    it.each([
+      ['value=20', { defaultValue: '20' }],
+      ['min=10 and value=5', { min: '10', defaultValue: '5' }],
+      ['max=80 and value=150', { max: '80', defaultValue: '150' }],
+    ])(
+      'still set the default value into an untouched range with %s',
+      async (_, attributes) => {
+        let methods: UseFormReturn<{ test: string }>;
+
+        function App() {
+          methods = useForm({ defaultValues: { test: '40' } });
+          return (
+            <input type="range" {...attributes} {...methods.register('test')} />
+          );
+        }
+
+        const container = document.createElement('div');
+        container.innerHTML = renderToString(<App />);
+        const range = container.querySelector('input') as HTMLInputElement;
+
+        await act(async () => {
+          hydrateRoot(container, <App />);
+        });
+
+        expect(range.value).toBe('40');
+        expect(methods!.getValues('test')).toBe('40');
+        expect(methods!.getFieldState('test').isDirty).toBe(false);
+      },
+    );
+
+    it('still set the default value into an untouched color with an upper case value', async () => {
+      let methods: UseFormReturn<{ test: string }>;
+
+      function App() {
+        methods = useForm({ defaultValues: { test: '#ff0000' } });
+        return (
+          <input
+            type="color"
+            defaultValue="#00FF00"
+            {...methods.register('test')}
+          />
+        );
+      }
+
+      const container = document.createElement('div');
+      container.innerHTML = renderToString(<App />);
+      const color = container.querySelector('input') as HTMLInputElement;
+
+      expect(color.value).toBe('#00ff00');
+
+      await act(async () => {
+        hydrateRoot(container, <App />);
+      });
+
+      expect(color.value).toBe('#ff0000');
+      expect(methods!.getValues('test')).toBe('#ff0000');
+      expect(methods!.getFieldState('test').isDirty).toBe(false);
+    });
+
+    it('keep the range and color values picked before hydration', async () => {
+      let methods: UseFormReturn<{ range: string; color: string }>;
+
+      function App() {
+        methods = useForm({ defaultValues: { range: '35', color: '#ff0000' } });
+        return (
+          <>
+            <input type="range" {...methods.register('range')} />
+            <input type="color" {...methods.register('color')} />
+          </>
+        );
+      }
+
+      const container = document.createElement('div');
+      container.innerHTML = renderToString(<App />);
+      const [range, color] = container.querySelectorAll('input');
+      range.value = '80';
+      color.value = '#123456';
+
+      await act(async () => {
+        hydrateRoot(container, <App />);
+      });
+
+      expect(range.value).toBe('80');
+      expect(color.value).toBe('#123456');
+      expect(methods!.getValues()).toEqual({ range: '80', color: '#123456' });
+      expect(methods!.getFieldState('range').isDirty).toBe(true);
+      expect(methods!.getFieldState('color').isDirty).toBe(true);
+    });
+
     it('still set a reset value into an input edited after the form is ready', async () => {
       let methods: UseFormReturn<{ test: string }>;
 
