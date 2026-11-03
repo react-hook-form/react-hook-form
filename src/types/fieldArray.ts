@@ -211,23 +211,17 @@ export type UseFieldArrayInsert<
 ) => void;
 
 /**
- * Update field/fields at particular position.
+ * Update a field at a particular position.
  *
  * @remarks
  * [API](https://react-hook-form.com/docs/usefieldarray) • [Demo](https://codesandbox.io/s/calc-i231d)
  *
- * @param index - insert position
- * @param value - insert field or fields
+ * @param index - update position
+ * @param value - the full field value to replace the item with (partial values are not supported)
  *
  * @example
  * ```tsx
  * <button type="button" onClick={() => update(1, { name: "data" })}>Update</button>
- * <button
- *   type="button"
- *   onClick={() => update(1, [{ name: "data" }, { name: "data" }])}
- * >
- *   Update
- * </button>
  * ```
  */
 export type UseFieldArrayUpdate<

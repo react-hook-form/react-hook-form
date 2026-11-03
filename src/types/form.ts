@@ -445,7 +445,7 @@ export type UseFormGetErrors<TFieldValues extends FieldValues> = {
  * @example
  * ```tsx
  * // those formState has to be subscribed
- * const { formState: { dirtyFields, errors, touchedFields } } = formState();
+ * const { getFieldState, formState: { dirtyFields, errors, touchedFields } } = useForm();
  * getFieldState('name')
  * // Get field state when form state is not subscribed yet
  * getFieldState('name', formState)
