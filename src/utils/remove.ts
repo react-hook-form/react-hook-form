@@ -1,5 +1,5 @@
-import compact from './compact';
 import convertToArrayPayload from './convertToArrayPayload';
+import isNullOrUndefined from './isNullOrUndefined';
 import isUndefined from './isUndefined';
 
 function removeAtIndexes<T>(data: T[], indexes: number[]): T[] {
@@ -11,7 +11,7 @@ function removeAtIndexes<T>(data: T[], indexes: number[]): T[] {
     i++;
   }
 
-  return compact(temp).length ? temp : [];
+  return temp.some((value) => !isNullOrUndefined(value)) ? temp : [];
 }
 
 export default <T>(data: T[], index?: number | number[]): T[] =>

@@ -31,12 +31,14 @@ export interface ResolverOptions<TFieldValues extends FieldValues> {
 
 export type Resolver<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
+  TContext = unknown,
   TTransformedValues = TFieldValues,
-> = (
-  values: TFieldValues,
-  context: TContext | undefined,
-  options: ResolverOptions<TFieldValues>,
-) =>
-  | Promise<ResolverResult<TFieldValues, TTransformedValues>>
-  | ResolverResult<TFieldValues, TTransformedValues>;
+> = {
+  bivarianceHack(
+    values: TFieldValues,
+    context: TContext | undefined,
+    options: ResolverOptions<TFieldValues>,
+  ):
+    | Promise<ResolverResult<TFieldValues, TTransformedValues>>
+    | ResolverResult<TFieldValues, TTransformedValues>;
+}['bivarianceHack'];

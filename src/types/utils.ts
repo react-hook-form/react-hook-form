@@ -11,6 +11,10 @@ If you want type definitions for various properties, you need to add `--lib DOM`
 
 export type Noop = () => void;
 
+export type BivariantCallback<TArgs extends unknown[], TReturn = void> = {
+  bivarianceHack(...args: TArgs): TReturn;
+}['bivarianceHack'];
+
 interface File extends Blob {
   readonly lastModified: number;
   readonly name: string;
@@ -139,7 +143,7 @@ export type IsEqual<T1, T2> = T1 extends T2
 
 export type DeepMap<T, TValue> =
   IsAny<T> extends true
-    ? any
+    ? unknown
     : T extends BrowserNativeObject | NestedValue | OpaqueType
       ? TValue
       : T extends ReadonlyArray<infer U>

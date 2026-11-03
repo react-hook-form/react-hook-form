@@ -1,6 +1,15 @@
 import remove from '../../utils/remove';
 
 describe('remove', () => {
+  it.each(['', 0, false])('keep falsy value %p after removal', (value) => {
+    expect(remove([value, 'remove'], 1)).toEqual([value]);
+    expect(remove([undefined, value, null, 'remove'], 3)).toEqual([
+      undefined,
+      value,
+      null,
+    ]);
+  });
+
   it('remove item accordingly', () => {
     expect(
       remove([, , { type: 'required', message: '', ref: 'test' }], 1),

@@ -4,6 +4,7 @@ import type { Message } from './errors';
 import type { FieldValues } from './fields';
 import type { FormState } from './form';
 import type { FieldPath, FieldPathValue } from './path';
+import type { BivariantCallback } from './utils';
 
 export type ValidationValue = boolean | number | string | RegExp;
 
@@ -68,10 +69,10 @@ export type RegisterOptions<
         Validate<FieldPathValue<TFieldValues, TFieldName>, TFieldValues>
       >;
   value: FieldPathValue<TFieldValues, TFieldName>;
-  setValueAs: (value: any) => any;
+  setValueAs: BivariantCallback<[value: unknown], unknown>;
   shouldUnregister?: boolean;
-  onChange?: (event: any) => void;
-  onBlur?: (event: any) => void;
+  onChange?: BivariantCallback<[event: unknown]>;
+  onBlur?: BivariantCallback<[event: unknown]>;
   disabled: boolean;
   deps: FieldPath<TFieldValues> | FieldPath<TFieldValues>[];
 }> &

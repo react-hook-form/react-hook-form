@@ -12,7 +12,7 @@ export type CustomElement<TFieldValues extends FieldValues> =
   Partial<HTMLElement> & {
     name: FieldName<TFieldValues>;
     type?: string;
-    value?: any;
+    value?: unknown;
     disabled?: boolean;
     checked?: boolean;
     options?: HTMLOptionsCollection;

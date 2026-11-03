@@ -2637,5 +2637,33 @@ describe('register', () => {
       expect(await screen.findByText('invalid')).toBeVisible();
       expect(screen.getByText('[]')).toBeVisible();
     });
+    it('return null when input value is empty with valueAsDate', async () => {
+      let submitData: unknown;
+
+      const App = () => {
+        const { register, handleSubmit } = useForm<{ date: Date | null }>();
+
+        return (
+          <form
+            onSubmit={handleSubmit((data) => {
+              submitData = data;
+            })}
+          >
+            <input type="date" {...register('date', { valueAsDate: true })} />
+            <button>Submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      fireEvent.click(screen.getByRole('button'));
+
+      await waitFor(() =>
+        expect(submitData).toEqual({
+          date: null,
+        }),
+      );
+    });
   });
 });

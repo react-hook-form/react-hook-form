@@ -1,6 +1,7 @@
 import type React from 'react';
 
 import type {
+  BivariantCallback,
   Control,
   FieldError,
   FieldPath,
@@ -24,7 +25,7 @@ export type ControllerRenderProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
-  onChange: (...event: any[]) => void;
+  onChange: BivariantCallback<unknown[]>;
   onBlur: Noop;
   value: FieldPathValue<TFieldValues, TName>;
   disabled?: boolean;
@@ -44,7 +45,7 @@ export type UseControllerProps<
   >;
   shouldUnregister?: boolean;
   defaultValue?: FieldPathValue<TFieldValues, TName>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
+  control?: Control<TFieldValues, unknown, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
 };

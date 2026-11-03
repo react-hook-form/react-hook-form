@@ -24,7 +24,7 @@ export function useWatch<
 >(props: {
   name?: undefined;
   defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
+  control?: Control<TFieldValues, unknown, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
   compute?: undefined;
@@ -37,7 +37,7 @@ export function useWatch<
 >(props: {
   name: TFieldName;
   defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
+  control?: Control<TFieldValues, unknown, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
   compute?: undefined;
@@ -50,7 +50,7 @@ export function useWatch<
 >(props: {
   name?: undefined;
   defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
+  control?: Control<TFieldValues, unknown, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
   compute: (formValues: TFieldValues) => TComputeValue;
@@ -64,7 +64,7 @@ export function useWatch<
 >(props: {
   name: TFieldName;
   defaultValue?: FieldPathValue<TFieldValues, TFieldName>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
+  control?: Control<TFieldValues, unknown, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
   compute: (
@@ -80,7 +80,7 @@ export function useWatch<
 >(props: {
   name: readonly [...TFieldNames];
   defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
+  control?: Control<TFieldValues, unknown, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
   compute?: undefined;
@@ -95,7 +95,7 @@ export function useWatch<
 >(props: {
   name: readonly [...TFieldNames];
   defaultValue?: DeepPartialSkipArrayKey<TFieldValues>;
-  control?: Control<TFieldValues, any, TTransformedValues>;
+  control?: Control<TFieldValues, unknown, TTransformedValues>;
   disabled?: boolean;
   exact?: boolean;
   compute: (

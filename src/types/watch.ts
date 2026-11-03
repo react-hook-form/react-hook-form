@@ -51,16 +51,11 @@ export type WatchRenderValue<
 export type WatchProps<
   TFieldName extends WatchName<TFieldValues>,
   TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
+  TContext = unknown,
   TTransformedValues = TFieldValues,
   TComputeValue = undefined,
 > = {
   control?: Control<TFieldValues, TContext, TTransformedValues>;
-  /**
-   * @deprecated This prop will be renamed to `name` in the next major release.
-   * Use `name` instead.
-   */
-  names?: TFieldName;
   name?: TFieldName;
   disabled?: boolean;
   exact?: boolean;

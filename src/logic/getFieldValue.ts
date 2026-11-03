@@ -1,4 +1,4 @@
-import type { Field } from '../types';
+import type { Field, NativeFieldValue } from '../types';
 import isCheckBox from '../utils/isCheckBoxInput';
 import isFileInput from '../utils/isFileInput';
 import isMultipleSelect from '../utils/isMultipleSelect';
@@ -27,5 +27,5 @@ export default function getFieldValue(_f: Field['_f']) {
     return getCheckboxValue(_f.refs).value;
   }
 
-  return getFieldValueAs(ref.value, _f);
+  return getFieldValueAs(ref.value as NativeFieldValue, _f);
 }
