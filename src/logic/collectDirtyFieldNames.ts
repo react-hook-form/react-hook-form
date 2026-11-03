@@ -21,7 +21,7 @@ export default function collectDirtyFieldNames(
       isDirtyContainer(get(cachedDirtyFields, path))
     ) {
       collectDirtyFieldNames(value, cachedDirtyFields, path, names);
-    } else {
+    } else if (value) {
       names.push(path);
     }
   }
