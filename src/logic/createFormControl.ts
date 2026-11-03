@@ -1766,7 +1766,13 @@ export function createFormControl<
       isValid: false,
     });
 
-    options && options.shouldFocus && ref && ref.focus && ref.focus();
+    if (options && options.shouldFocus) {
+      const fieldRef = field._f?.refs
+        ? field._f.refs.find((ref) => !ref.disabled) || field._f.refs[0]
+        : ref;
+
+      fieldRef && fieldRef.focus && fieldRef.focus();
+    }
   };
 
   const watch: UseFormWatch<TFieldValues> = (
