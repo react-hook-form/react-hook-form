@@ -2,6 +2,11 @@ name: Package Size
 
 on: [pull_request]
 
+permissions:
+  contents: read
+  # The size report is posted as a comment on the pull request.
+  pull-requests: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
