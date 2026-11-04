@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.1.0
         with:
           persist-credentials: false
 
       - name: Install Dependencies
-        uses: ./.github/actions/install-dependencies
+        uses: $/.github/actions/install-dependencies
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
@@ -25,7 +25,7 @@ jobs:
 
       - name: Upload Playwright report
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: playwright-report
           path: playwright-report/
