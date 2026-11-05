@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  act,
   fireEvent,
   render,
   renderHook,
@@ -21,6 +22,7 @@ import { useForm } from '../useForm';
 import { FormProvider, useFormContext } from '../useFormContext';
 import { useWatch } from '../useWatch';
 import noop from '../utils/noop';
+import { Watch } from '../watch';
 
 let i = 0;
 
@@ -2410,6 +2412,52 @@ describe('useWatch', () => {
   });
 
   describe('compute ', () => {
+    it.each([
+      {
+        label: 'a string',
+        compute: (value: string) => value.toUpperCase(),
+        expected: 'A',
+      },
+      {
+        label: 'undefined',
+        compute: () => undefined,
+        expected: undefined,
+      },
+    ])(
+      'update to $label after compute is disabled and re-enabled',
+      ({ compute, expected }) => {
+        let watched: unknown;
+        let setValue: UseFormReturn<{ test: string }>['setValue'];
+        const Component = ({ computed }: { computed: boolean }) => {
+          const form = useForm({ defaultValues: { test: 'a' } });
+          setValue = form.setValue;
+
+          return (
+            <Watch
+              control={form.control}
+              names="test"
+              compute={computed ? compute : undefined}
+              render={(value) => {
+                watched = value;
+                return null;
+              }}
+            />
+          );
+        };
+        const { rerender } = render(<Component computed />);
+
+        expect(watched).toBe(expected);
+
+        rerender(<Component computed={false} />);
+        act(() => setValue('test', 'b'));
+        expect(watched).toBe('b');
+
+        rerender(<Component computed />);
+        act(() => setValue('test', 'a'));
+        expect(watched).toBe(expected);
+      },
+    );
+
     it('update to undefined on the first computed value change', () => {
       const Form = () => {
         const { control, register } = useForm({
