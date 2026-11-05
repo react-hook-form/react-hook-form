@@ -189,6 +189,7 @@ export function useWatch<TFieldValues extends FieldValues>(
           }
         } else {
           updateValue(formValues);
+          _computeFormValues.current = formValues;
         }
       }
     },
