@@ -21,8 +21,8 @@ importers:
         specifier: ^5.16.13
         version: 5.16.13(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@19.0.2)(react@19.0.0))(@types/react@19.0.2)(react@19.0.0))(@types/react@19.0.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       joi:
-        specifier: ^18.2.9
-        version: 18.2.9
+        specifier: ^18.3.1
+        version: 18.3.1
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -796,8 +796,8 @@ packages:
     resolution: {integrity: sha512-UfoeMA6fIJ8wTYFEUjelnaGI67v6+N7qXJEvQuIGa99l4xsCruSYOVSQ0uPANn4dAzm8lkYPaKLrrijLq7x23w==}
     engines: {node: '>= 0.4'}
 
-  joi@18.2.9:
-    resolution: {integrity: sha512-2mD929bUVKUhOLQQEVhlf6EZ0Mlo0DeRb5MO7cViR9AXLtBauuccEtB1py9Ocxpo/P7ucnh442iY/iOwrh3IQw==}
+  joi@18.3.1:
+    resolution: {integrity: sha512-mV9M4Llh4va3NT90p7KBtQhoZqjs8xLX7EWYE4y/GG3yLF6REbIBEHSUb0UX1JXRht2w5tiLSsvmpYc5akiqIw==}
     engines: {node: '>= 20'}
 
   js-tokens@4.0.0:
@@ -1710,7 +1710,7 @@ snapshots:
     dependencies:
       hasown: 2.0.2
 
-  joi@18.2.9:
+  joi@18.3.1:
     dependencies:
       '@hapi/address': 5.1.1
       '@hapi/formula': 3.0.2
