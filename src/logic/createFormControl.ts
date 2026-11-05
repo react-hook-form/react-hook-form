@@ -1324,7 +1324,12 @@ export function createFormControl<
       ? formValues(_formValues)
       : formValues;
 
-    if (!deepEqual(_formValues, updatedFormValues)) {
+    if (
+      !deepEqual(_formValues, updatedFormValues) ||
+      options.shouldValidate ||
+      options.shouldDirty ||
+      options.shouldTouch
+    ) {
       _formValues = {
         ..._formValues,
         ...updatedFormValues,
