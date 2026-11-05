@@ -13,6 +13,60 @@ import { useFieldArray } from '../../useFieldArray';
 import { useForm } from '../../useForm';
 
 describe('setValues', () => {
+  it('validate unchanged values when shouldValidate is enabled', async () => {
+    const { result } = renderHook(() =>
+      useForm({ defaultValues: { email: '' } }),
+    );
+    result.current.register('email', { required: 'Email is required' });
+    expect(result.current.formState.errors).toEqual({});
+
+    await act(async () => {
+      result.current.setValues({ email: '' }, { shouldValidate: true });
+    });
+
+    expect(result.current.formState.errors.email?.message).toBe(
+      'Email is required',
+    );
+  });
+
+  it('touch unchanged values when shouldTouch is enabled', async () => {
+    const { result } = renderHook(() =>
+      useForm({ defaultValues: { email: '' } }),
+    );
+    result.current.register('email');
+    expect(result.current.formState.touchedFields).toEqual({});
+
+    await act(async () => {
+      result.current.setValues({ email: '' }, { shouldTouch: true });
+    });
+
+    expect(result.current.formState.touchedFields).toEqual({ email: true });
+  });
+
+  it('update dirty state for unchanged values when shouldDirty is enabled', async () => {
+    const { result } = renderHook(() =>
+      useForm({ defaultValues: { email: '' } }),
+    );
+    result.current.register('email');
+    expect(result.current.formState.isDirty).toBe(false);
+    expect(result.current.formState.dirtyFields).toEqual({});
+
+    await act(async () => {
+      result.current.setValue('email', 'user@example.com');
+    });
+    expect(result.current.formState.isDirty).toBe(false);
+
+    await act(async () => {
+      result.current.setValues(
+        { email: 'user@example.com' },
+        { shouldDirty: true },
+      );
+    });
+
+    expect(result.current.formState.isDirty).toBe(true);
+    expect(result.current.formState.dirtyFields).toEqual({ email: true });
+  });
+
   it('batch update multiple values', async () => {
     const { result } = renderHook(() =>
       useForm<{ a: string; b: string }>({
