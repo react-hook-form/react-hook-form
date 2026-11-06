@@ -6,7 +6,7 @@ import isUndefined from './isUndefined';
 function jsonToFormData(json: unknown) {
   const result = new FormData();
 
-  const flattenFormValues = flatten(json as FieldValues);
+  const flattenFormValues = flatten((json ?? {}) as FieldValues);
 
   for (const key in flattenFormValues) {
     const value = flattenFormValues[key];
