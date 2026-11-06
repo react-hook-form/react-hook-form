@@ -85,6 +85,7 @@ export function useController<
   });
 
   const _props = React.useRef(props);
+  const _shouldUnregister = React.useRef(shouldUnregister);
   const _proxyRef = React.useRef<Ref | null>(null);
 
   const _registeredName = React.useRef<string | undefined>(undefined);
@@ -214,8 +215,12 @@ export function useController<
   );
 
   React.useEffect(() => {
+    _shouldUnregister.current = shouldUnregister;
+  }, [shouldUnregister]);
+
+  React.useEffect(() => {
     const _shouldUnregisterField =
-      control._options.shouldUnregister || shouldUnregister;
+      control._options.shouldUnregister || _shouldUnregister.current;
 
     _registerProps.current = control.register(name, {
       ..._props.current.rules,
@@ -238,7 +243,7 @@ export function useController<
     if (_shouldUnregisterField) {
       const value = cloneObject(
         get(
-          shouldUnregister
+          _shouldUnregister.current
             ? control._defaultValues
             : control._options.values || control._defaultValues,
           name,
@@ -272,7 +277,7 @@ export function useController<
 
     return () => {
       const shouldUnregisterField =
-        control._options.shouldUnregister || shouldUnregister;
+        control._options.shouldUnregister || _shouldUnregister.current;
 
       (
         isArrayField
@@ -282,7 +287,7 @@ export function useController<
         ? control.unregister(name)
         : updateMounted(name, false);
     };
-  }, [name, control, isArrayField, shouldUnregister]);
+  }, [name, control, isArrayField]);
 
   React.useEffect(() => {
     control._setDisabledField({
