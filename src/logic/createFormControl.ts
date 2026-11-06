@@ -1254,6 +1254,38 @@ export function createFormControl<
         }
       }
 
+      if (options.shouldTouch) {
+        let shouldUpdateTouchedFields = false;
+
+        iterateFieldsByAction(
+          _fields,
+          (_, fieldName) => {
+            if (!_names.array.has(fieldName) && has(_formValues, fieldName)) {
+              const fieldState = updateTouchAndDirty(
+                fieldName,
+                get(_formValues, fieldName),
+                true,
+                false,
+              );
+              shouldUpdateTouchedFields =
+                !!fieldState.touchedFields || shouldUpdateTouchedFields;
+            }
+          },
+          [name],
+        );
+
+        if (
+          shouldUpdateTouchedFields &&
+          _isTracked('touchedFields') &&
+          !skipStateEmit
+        ) {
+          _subjects.state.next({
+            name,
+            touchedFields: _formState.touchedFields,
+          });
+        }
+      }
+
       options.shouldValidate &&
         trigger(name, {
           delayError: options.delayError,
