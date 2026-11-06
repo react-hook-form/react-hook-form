@@ -1041,6 +1041,172 @@ describe('setValue', () => {
   });
 
   describe('with touched', () => {
+    it.each([false, true])(
+      'touch registered field array items (changed value: %s)',
+      (changed) => {
+        const defaultValues = {
+          items: [{ value: 'a' }, { value: 'b' }],
+          other: 'untouched',
+        };
+        const { result } = renderHook(() => {
+          const form = useForm({ defaultValues });
+          const fieldArray = useFieldArray({
+            control: form.control,
+            name: 'items',
+            rules: { minLength: 1 },
+          });
+          form.register('items.0.value');
+          form.register('items.1.value');
+          form.register('other');
+          form.formState.touchedFields;
+          form.formState.dirtyFields;
+          form.formState.isDirty;
+          return { form, fieldArray };
+        });
+        const items = changed
+          ? [{ value: 'updated' }, { value: 'next' }]
+          : defaultValues.items;
+
+        act(() => {
+          result.current.form.setValue('items', items, { shouldTouch: true });
+        });
+
+        expect(result.current.form.formState.touchedFields).toEqual({
+          items: [{ value: true }, { value: true }],
+        });
+        expect(result.current.form.formState.dirtyFields).toEqual({});
+        expect(result.current.form.formState.isDirty).toBe(false);
+        expect(result.current.form.getValues('items')).toEqual(items);
+
+        act(() => {
+          result.current.fieldArray.remove(0);
+        });
+
+        expect(result.current.form.formState.touchedFields.items).toEqual([
+          { value: true },
+        ]);
+      },
+    );
+
+    it.each([undefined, false])(
+      'not touch field array items with shouldTouch set to %s',
+      (shouldTouch) => {
+        const { result } = renderHook(() => {
+          const form = useForm({
+            defaultValues: { items: [{ value: 'a' }] },
+          });
+          useFieldArray({ control: form.control, name: 'items' });
+          form.register('items.0.value');
+          form.formState.touchedFields;
+          return form;
+        });
+
+        act(() => {
+          result.current.setValue('items', [{ value: 'updated' }], {
+            shouldTouch,
+          });
+        });
+
+        expect(result.current.formState.touchedFields).toEqual({});
+      },
+    );
+
+    it('not touch removed items or overwrite an empty field array container', () => {
+      const { result } = renderHook(() => {
+        const form = useForm({
+          defaultValues: { items: [{ value: 'a' }, { value: 'b' }] },
+        });
+        useFieldArray({
+          control: form.control,
+          name: 'items',
+          rules: { minLength: 1 },
+        });
+        form.register('items.0.value');
+        form.register('items.1.value');
+        form.formState.touchedFields;
+        return form;
+      });
+
+      act(() => {
+        result.current.setValue('items', [], { shouldTouch: true });
+      });
+
+      expect(result.current.formState.touchedFields).toEqual({});
+    });
+
+    it.each(['items', 'items.0.value'] as const)(
+      'notify an exact %s subscription when touching the array',
+      (name) => {
+        const { result } = renderHook(() => {
+          const form = useForm({
+            defaultValues: { items: [{ value: 'a' }] },
+          });
+          useFieldArray({ control: form.control, name: 'items' });
+          form.register('items.0.value');
+          return form;
+        });
+        const callback = jest.fn();
+        const unsubscribe = result.current.subscribe({
+          name,
+          exact: true,
+          formState: { touchedFields: true },
+          callback,
+        });
+
+        act(() => {
+          result.current.setValue('items', [{ value: 'a' }], {
+            shouldTouch: true,
+          });
+        });
+
+        expect(callback).toHaveBeenCalledWith(
+          expect.objectContaining({
+            touchedFields: { items: [{ value: true }] },
+          }),
+        );
+        unsubscribe();
+      },
+    );
+
+    it('touch nested array fields and explicit undefined values without touching removed items', () => {
+      type FormValues = {
+        items: { value: string | undefined; nested: { value: string }[] }[];
+      };
+      const { result } = renderHook(() => {
+        const form = useForm<FormValues>({
+          defaultValues: {
+            items: [
+              { value: 'a', nested: [{ value: 'nested' }] },
+              { value: 'b', nested: [] },
+            ],
+          },
+        });
+        useFieldArray({ control: form.control, name: 'items' });
+        useFieldArray({
+          control: form.control,
+          name: 'items.0.nested',
+          rules: { minLength: 1 },
+        });
+        form.register('items.0.value');
+        form.register('items.0.nested.0.value');
+        form.register('items.1.value');
+        form.formState.touchedFields;
+        return form;
+      });
+
+      act(() => {
+        result.current.setValue(
+          'items',
+          [{ value: undefined, nested: [{ value: 'updated' }] }],
+          { shouldTouch: true },
+        );
+      });
+
+      expect(result.current.formState.touchedFields).toEqual({
+        items: [{ value: true, nested: [{ value: true }] }],
+      });
+    });
+
     it('update touched with shouldTouched config', () => {
       const App = () => {
         const {
