@@ -253,6 +253,16 @@ export function useController<
       if (isUndefined(get(control._formValues, name))) {
         set(control._formValues, name, value);
       }
+    } else if (
+      !isArrayField &&
+      !isUndefined(_props.current.defaultValue) &&
+      isUndefined(get(control._defaultValues, name))
+    ) {
+      set(
+        control._defaultValues,
+        name,
+        cloneObject(_props.current.defaultValue),
+      );
     }
 
     !isArrayField &&
