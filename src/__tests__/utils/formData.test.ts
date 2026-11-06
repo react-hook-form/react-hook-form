@@ -12,6 +12,30 @@ const createFileList = (files: File[]) => {
 };
 
 describe('jsonToFormData', () => {
+  it.each([null, undefined])(
+    'return empty FormData for a top-level %s value',
+    (value) => {
+      expect(Array.from(jsonToFormData(value))).toEqual([]);
+    },
+  );
+
+  it('preserve null leaf values while omitting undefined values', () => {
+    const formData = jsonToFormData({
+      name: 'bill',
+      empty: null,
+      omitted: undefined,
+      nested: { empty: null, omitted: undefined },
+      values: [null, undefined],
+    });
+
+    expect(Array.from(formData)).toEqual([
+      ['name', 'bill'],
+      ['empty', 'null'],
+      ['nested.empty', 'null'],
+      ['values.0', 'null'],
+    ]);
+  });
+
   it('skip undefined values instead of stringifying them', () => {
     const formData = jsonToFormData({ name: 'bill', nick: undefined });
 
