@@ -122,6 +122,66 @@ import { _ } from '../__fixtures__';
     type _t = Expect<Equal<typeof actual, boolean>>;
   }
 
+  /** it should preserve undefined when traversing array elements */ {
+    void (_ as Expect<
+      Equal<
+        PathValue<{ rows: ({ name: string } | undefined)[] }, 'rows.0.name'>,
+        string | undefined
+      >
+    >);
+  }
+
+  /** it should preserve undefined through nested array element paths */ {
+    void (_ as Expect<
+      Equal<
+        PathValue<
+          { rows: readonly ({ details: { name: string } } | undefined)[] },
+          'rows.0.details.name'
+        >,
+        string | undefined
+      >
+    >);
+  }
+
+  /** it should preserve leaf unions when array elements may be undefined */ {
+    void (_ as Expect<
+      Equal<
+        PathValue<
+          { rows: ({ name: string | null } | { name: number } | undefined)[] },
+          'rows.0.name'
+        >,
+        string | number | null | undefined
+      >
+    >);
+  }
+
+  /** it should preserve optional tuple elements */ {
+    void (_ as Expect<
+      Equal<
+        PathValue<{ rows: [{ name: string }?] }, 'rows.0.name'>,
+        string | undefined
+      >
+    >);
+  }
+
+  /** it should not widen defined rest elements from a variadic tuple prefix */ {
+    void (_ as Expect<
+      Equal<
+        PathValue<{ rows: [undefined, ...{ name: string }[]] }, 'rows.1.name'>,
+        string
+      >
+    >);
+    void (_ as Expect<
+      Equal<
+        PathValue<
+          { rows: [{ unrelated: number }?, ...{ name: string }[]] },
+          'rows.1.name'
+        >,
+        string
+      >
+    >);
+  }
+
   /** it should apply optional type for optional arrays */ {
     const actual = _ as PathValue<Depth3Type<string[] | undefined>, 'value.1'>;
     type _t = Expect<Equal<typeof actual, string | undefined>>;
