@@ -1,7 +1,13 @@
 import 'whatwg-fetch';
 
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 
 import { Form } from '../form';
 import { useForm } from '../useForm';
@@ -532,6 +538,101 @@ describe('Form', () => {
     const formData = actionFn.mock.calls[0][0];
     expect(formData.get('name')).toBe('bill');
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it.each([null, undefined])(
+    'submit a transformed %s value to onSubmit and a function action',
+    async (transformed) => {
+      const onSubmit = jest.fn();
+      const action = jest
+        .fn<(formData: FormData) => Promise<void>>()
+        .mockResolvedValue(undefined);
+      let submit!: () => Promise<void>;
+
+      const App = () => {
+        const { control } = useForm<
+          { name: string },
+          unknown,
+          null | undefined
+        >({
+          defaultValues: { name: 'bill' },
+          resolver: () => ({ values: transformed, errors: {} }),
+        });
+
+        return (
+          <Form
+            control={control}
+            action={action}
+            onSubmit={onSubmit}
+            render={(props) => {
+              submit = props.submit;
+              return null;
+            }}
+          />
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        await submit();
+      });
+
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: transformed,
+          formDataJson: JSON.stringify(transformed),
+        }),
+      );
+      expect(action).toHaveBeenCalledTimes(1);
+      expect(action.mock.calls[0][0]).toBeInstanceOf(FormData);
+      expect(Array.from(action.mock.calls[0][0])).toEqual([]);
+    },
+  );
+
+  it('send a JSON null body for a null resolver result', async () => {
+    const fetchSpy = jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+    const onSubmit = jest.fn();
+    let submit!: () => Promise<void>;
+
+    const App = () => {
+      const { control } = useForm<{ name: string }, unknown, null>({
+        defaultValues: { name: 'bill' },
+        resolver: () => ({ values: null, errors: {} }),
+      });
+
+      return (
+        <Form
+          control={control}
+          action="/api"
+          encType="application/json"
+          onSubmit={onSubmit}
+          render={(props) => {
+            submit = props.submit;
+            return null;
+          }}
+        />
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      await submit();
+    });
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ data: null, formDataJson: 'null' }),
+    );
+    expect(fetchSpy).toHaveBeenCalledWith(
+      '/api',
+      expect.objectContaining({ body: 'null' }),
+    );
+    expect(
+      new Headers(fetchSpy.mock.calls[0][1]?.headers).get('content-type'),
+    ).toBe('application/json');
   });
 
   it('include file values in the submitted FormData', async () => {
