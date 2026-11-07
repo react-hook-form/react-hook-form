@@ -243,6 +243,8 @@ export function createFormControl<
   let _resetCallId = 0;
   let _registerCallId = 0;
   const _registerCallIds: Record<InternalFieldName, number> = {};
+  let _resolverCallId = 0;
+  const _resolverCallIds = new Map<InternalFieldName, number>();
 
   let shouldDisplayAllAssociatedErrors =
     _options.criteriaMode === VALIDATION_MODE.all;
@@ -769,17 +771,48 @@ export function createFormControl<
   };
 
   const _runSchema = async (name?: InternalFieldName[]) => {
+    const resetCallId = _resetCallId;
+    const fieldNames = [...(name || _names.mount)];
+    const callId = ++_resolverCallId;
+    fieldNames.forEach((name) => _resolverCallIds.set(name, callId));
     _updateIsValidating(name, true);
-    return await _options.resolver!(
-      _formValues,
-      _options.context,
-      getResolverOptions(
-        name || _names.mount,
-        _fields,
-        _options.criteriaMode,
-        _options.shouldUseNativeValidation,
-      ),
-    );
+    try {
+      return await _options.resolver!(
+        _formValues,
+        _options.context,
+        getResolverOptions(
+          name || _names.mount,
+          _fields,
+          _options.criteriaMode,
+          _options.shouldUseNativeValidation,
+        ),
+      );
+    } catch (error) {
+      if (resetCallId === _resetCallId) {
+        const newerFieldNames = [..._resolverCallIds]
+          .filter(([, id]) => id > callId)
+          .map(([name]) => name);
+        const failedNames = fieldNames.filter(
+          (name) =>
+            _resolverCallIds.get(name) === callId &&
+            !newerFieldNames.some(
+              (newerName) =>
+                newerName.startsWith(`${name}.`) ||
+                name.startsWith(`${newerName}.`),
+            ),
+        );
+        if (failedNames.length) {
+          _updateIsValidating(failedNames);
+        }
+      }
+      throw error;
+    } finally {
+      fieldNames.forEach((name) => {
+        if (_resolverCallIds.get(name) === callId) {
+          _resolverCallIds.delete(name);
+        }
+      });
+    }
   };
 
   const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
