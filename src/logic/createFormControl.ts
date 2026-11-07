@@ -2205,17 +2205,22 @@ export function createFormControl<
           }
         }
 
-        _focusError();
-        setTimeout(_focusError);
+        if (resetCallId === _resetCallId) {
+          _focusError();
+          setTimeout(_focusError);
+        }
       }
 
-      _subjects.state.next({
-        isSubmitted: true,
-        isSubmitting: false,
-        isSubmitSuccessful: isEmptyObject(_formState.errors) && !onValidFailed,
-        submitCount: _formState.submitCount + 1,
-        errors: _formState.errors,
-      });
+      if (resetCallId === _resetCallId) {
+        _subjects.state.next({
+          isSubmitted: true,
+          isSubmitting: false,
+          isSubmitSuccessful:
+            isEmptyObject(_formState.errors) && !onValidFailed,
+          submitCount: _formState.submitCount + 1,
+          errors: _formState.errors,
+        });
+      }
       if (onValidFailed) {
         throw onValidError;
       }

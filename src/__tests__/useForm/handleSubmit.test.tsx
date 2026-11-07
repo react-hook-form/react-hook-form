@@ -60,6 +60,111 @@ describe('handleSubmit', () => {
   afterEach(() => {
     jest.useRealTimers();
   });
+
+  it.each(['resolve', 'reject'] as const)(
+    'not settle a new submission when an old onValid callback %s after reset',
+    async (outcome) => {
+      const { result } = renderHook(() =>
+        useFormWithSubmitState({ defaultValues: { test: 'before' } }),
+      );
+      let resolveFirst!: (value: string) => void;
+      let rejectFirst!: (reason: Error) => void;
+      let resolveSecond!: () => void;
+      const firstCallback = jest.fn(
+        () =>
+          new Promise<string>((resolve, reject) => {
+            resolveFirst = resolve;
+            rejectFirst = reject;
+          }),
+      );
+      const secondCallback = jest.fn(
+        () =>
+          new Promise<void>((resolve) => {
+            resolveSecond = resolve;
+          }),
+      );
+      let firstSubmit!: Promise<string | undefined>;
+      let secondSubmit!: Promise<void>;
+
+      await act(async () => {
+        firstSubmit = result.current.methods.handleSubmit(firstCallback)();
+      });
+      expect(firstCallback).toHaveBeenCalledTimes(1);
+
+      act(() => result.current.methods.reset({ test: 'after' }));
+      await act(async () => {
+        secondSubmit = result.current.methods.handleSubmit(secondCallback)();
+      });
+      expect(secondCallback).toHaveBeenCalledTimes(1);
+
+      const failure = new Error('old request failed');
+      await act(async () => {
+        outcome === 'resolve' ? resolveFirst('saved') : rejectFirst(failure);
+        const settled = await Promise.allSettled([firstSubmit]);
+        expect(settled).toEqual([
+          outcome === 'resolve'
+            ? { status: 'fulfilled', value: 'saved' }
+            : { status: 'rejected', reason: failure },
+        ]);
+      });
+
+      expect(result.current.state).toEqual({
+        ...exceptionalSubmitState,
+        isSubmitting: true,
+        errors: {},
+      });
+      expect(result.current.methods.getValues()).toEqual({ test: 'after' });
+
+      await act(async () => {
+        resolveSecond();
+        await secondSubmit;
+      });
+      expect(result.current.state).toEqual({
+        isSubmitting: false,
+        isSubmitted: true,
+        isSubmitSuccessful: true,
+        submitCount: 1,
+        errors: {},
+      });
+    },
+  );
+
+  it('not publish submit state or focus new errors when reset runs during onInvalid', async () => {
+    const { result } = renderHook(() =>
+      useFormWithSubmitState({ defaultValues: { test: '' } }),
+    );
+    result.current.methods.register('test', { required: true });
+    let resolveInvalid!: () => void;
+    const onInvalid = jest.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveInvalid = resolve;
+        }),
+    );
+    let submission!: Promise<void>;
+
+    await act(async () => {
+      submission = result.current.methods.handleSubmit(noop, onInvalid)();
+    });
+    expect(onInvalid).toHaveBeenCalledTimes(1);
+
+    const input = document.createElement('input');
+    const focus = jest.spyOn(input, 'focus');
+    act(() => {
+      result.current.methods.reset({ test: 'after' });
+      result.current.methods.register('test').ref(input);
+      result.current.methods.setError('test', { type: 'server' });
+    });
+    const stateAfterReset = result.current.state;
+    await act(async () => {
+      resolveInvalid();
+      await submission;
+    });
+
+    expect(result.current.state).toEqual(stateAfterReset);
+    expect(focus).not.toHaveBeenCalled();
+  });
+
   it('invoke the callback when validation pass', async () => {
     const { result } = renderHook(() => useForm());
     const callback = jest.fn();
