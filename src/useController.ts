@@ -246,7 +246,7 @@ export function useController<
         cloneObject(_props.current.defaultValue),
       );
     }
-  }, [control, name, shouldUnregister]);
+  }, [control, name, isArrayField, shouldUnregister]);
 
   React.useEffect(() => {
     _registerProps.current = control.register(name, {
