@@ -502,6 +502,173 @@ describe('Form', () => {
     },
   );
 
+  it.each([
+    ['application/json', 'Content-Type', 'application/json', '{"name":"bill"}'],
+    ['application/json', 'content-type', 'application/json', '{"name":"bill"}'],
+    ['application/json', 'CoNtEnT-TyPe', 'application/json', '{"name":"bill"}'],
+    [
+      'application/x-www-form-urlencoded',
+      'content-type',
+      'application/x-www-form-urlencoded',
+      'name=bill',
+    ],
+    ['text/plain', 'CoNtEnT-TyPe', 'text/plain', 'name=bill\r\n'],
+    [
+      'application/x-www-form-urlencoded',
+      'Content-Type',
+      'application/json',
+      'name=bill',
+    ],
+    [
+      'application/json',
+      'content-type',
+      'application/x-www-form-urlencoded',
+      '{"name":"bill"}',
+    ],
+    ['text/plain', 'Content-Type', 'application/json', 'name=bill\r\n'],
+    ['application/json', 'CoNtEnT-TyPe', 'text/plain', '{"name":"bill"}'],
+    [
+      'text/plain',
+      'Content-Type',
+      'application/x-www-form-urlencoded',
+      'name=bill\r\n',
+    ],
+    [
+      'application/x-www-form-urlencoded',
+      'content-type',
+      'text/plain',
+      'name=bill',
+    ],
+    [
+      'application/json',
+      'content-type',
+      'multipart/form-data; boundary=custom',
+      '{"name":"bill"}',
+    ],
+    [
+      'application/x-www-form-urlencoded',
+      'Content-Type',
+      'multipart/form-data',
+      'name=bill',
+    ],
+    ['text/plain', 'CoNtEnT-TyPe', 'multipart/form-data', 'name=bill\r\n'],
+  ])(
+    'use encType %s instead of header %s: %s for both the body and content type',
+    async (encType, headerName, headerValue, expectedBody) => {
+      const fetchSpy = jest
+        .spyOn(global, 'fetch')
+        .mockResolvedValueOnce(new Response(null, { status: 200 }));
+      const headers = { [headerName]: headerValue, Authorization: 'token' };
+
+      const App = () => {
+        const { control } = useForm({ defaultValues: { name: 'bill' } });
+
+        return (
+          <Form
+            action="/api"
+            control={control}
+            headers={headers}
+            encType={encType}
+          >
+            <button>Submit</button>
+          </Form>
+        );
+      };
+
+      render(<App />);
+      fireEvent.click(screen.getByRole('button'));
+
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(1));
+
+      const init = fetchSpy.mock.calls[0][1];
+      const requestHeaders = new Headers(init?.headers);
+
+      expect(requestHeaders.get('content-type')).toBe(encType);
+      expect(requestHeaders.get('authorization')).toBe('token');
+      expect(headers).toEqual({
+        [headerName]: headerValue,
+        Authorization: 'token',
+      });
+
+      if (encType === 'application/x-www-form-urlencoded') {
+        expect(init?.body).toBeInstanceOf(URLSearchParams);
+        expect(String(init?.body)).toBe(expectedBody);
+      } else {
+        expect(init?.body).toBe(expectedBody);
+      }
+    },
+  );
+
+  it.each([
+    ['application/json', '{"name":"bill"}'],
+    ['application/x-www-form-urlencoded', 'name=bill'],
+    ['text/plain', 'name=bill\r\n'],
+  ])(
+    'preserve an explicit %s header when encType is multipart/form-data',
+    async (contentType, expectedBody) => {
+      const fetchSpy = jest
+        .spyOn(global, 'fetch')
+        .mockResolvedValueOnce(new Response(null, { status: 200 }));
+
+      const App = () => {
+        const { control } = useForm({ defaultValues: { name: 'bill' } });
+
+        return (
+          <Form
+            action="/api"
+            control={control}
+            headers={{ 'content-type': contentType }}
+            encType="multipart/form-data"
+          >
+            <button>Submit</button>
+          </Form>
+        );
+      };
+
+      render(<App />);
+      fireEvent.click(screen.getByRole('button'));
+
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(1));
+
+      const init = fetchSpy.mock.calls[0][1];
+
+      expect(new Headers(init?.headers).get('content-type')).toBe(contentType);
+      expect(String(init?.body)).toBe(expectedBody);
+    },
+  );
+
+  it('leave the multipart boundary to fetch when both encType and headers specify multipart', async () => {
+    const fetchSpy = jest
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+
+    const App = () => {
+      const { control } = useForm({ defaultValues: { name: 'bill' } });
+
+      return (
+        <Form
+          action="/api"
+          control={control}
+          headers={{ 'Content-Type': 'multipart/form-data; boundary=custom' }}
+          encType="multipart/form-data"
+        >
+          <button>Submit</button>
+        </Form>
+      );
+    };
+
+    render(<App />);
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(1));
+
+    const init = fetchSpy.mock.calls[0][1];
+
+    expect(new Headers(init?.headers).has('content-type')).toBe(false);
+    expect(init?.body).toBeInstanceOf(FormData);
+    expect((init?.body as FormData).get('name')).toBe('bill');
+  });
+
   it('call a function action with FormData instead of fetching', async () => {
     const fetchSpy = jest.spyOn(global, 'fetch');
     const actionFn = jest.fn<(formData: FormData) => Promise<void>>(
