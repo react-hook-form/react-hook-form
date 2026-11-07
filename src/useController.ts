@@ -16,6 +16,7 @@ import type {
   FieldPath,
   FieldPathValue,
   FieldValues,
+  FormState,
   InternalFieldName,
   Ref,
   UseControllerProps,
@@ -235,8 +236,22 @@ export function useController<
       if (isUndefined(get(control._formValues, name))) {
         set(control._formValues, name, value);
       }
+    } else if (
+      !isArrayField &&
+      !isUndefined(_props.current.defaultValue) &&
+      isUndefined(get(control._defaultValues, name))
+    ) {
+      set(
+        control._defaultValues,
+        name,
+        cloneObject(_props.current.defaultValue),
+      );
+      control._subjects.state.next({
+        defaultValues:
+          control._defaultValues as FormState<TFieldValues>['defaultValues'],
+      });
     }
-  }, [control, name, shouldUnregister]);
+  }, [control, name, isArrayField, shouldUnregister]);
 
   React.useEffect(() => {
     _registerProps.current = control.register(name, {
