@@ -19,6 +19,66 @@ import noop from '../../utils/noop';
 import sleep from '../../utils/sleep';
 
 describe('resolver', () => {
+  it('disables and re-enables overlapping object controls without corrupting their values', async () => {
+    type FormValues = {
+      requester: { name: string };
+    };
+    const onSubmit = jest.fn();
+    const App = () => {
+      const [disabled, setDisabled] = React.useState(false);
+      const {
+        control,
+        handleSubmit,
+        formState: { isValid },
+      } = useForm<FormValues>({
+        defaultValues: { requester: { name: 'Saved requester' } },
+        disabled,
+        resolver: (values) => ({ values, errors: {} }),
+      });
+      useController({ control, name: 'requester' });
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <p>{isValid ? 'Ready' : 'Checking'}</p>
+          <Controller
+            control={control}
+            name="requester.name"
+            render={({ field }) => (
+              <input {...field} aria-label="Requester name" />
+            )}
+          />
+          <button type="button" onClick={() => setDisabled((value) => !value)}>
+            {disabled ? 'Enable form' : 'Disable form'}
+          </button>
+          <button type="submit">Save</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+    await screen.findByText('Ready');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Disable form' }));
+    expect(
+      screen.getByRole('textbox', { name: 'Requester name' }),
+    ).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Enable form' }));
+    expect(
+      screen.getByRole('textbox', { name: 'Requester name' }),
+    ).toBeEnabled();
+    expect(screen.getByRole('textbox', { name: 'Requester name' })).toHaveValue(
+      'Saved requester',
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(
+        { requester: { name: 'Saved requester' } },
+        expect.anything(),
+      ),
+    );
+  });
+
   it('not update useFormState subscribers while Controller is rendering after reset', async () => {
     const consoleError = jest.spyOn(console, 'error').mockImplementation(noop);
 
