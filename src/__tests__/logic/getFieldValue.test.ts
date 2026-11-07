@@ -16,6 +16,18 @@ jest.mock('../../logic/getCheckboxValue', () => ({
 }));
 
 describe('getFieldValue', () => {
+  it('read selected values from a custom select ref without DOM methods', () => {
+    expect(
+      getFieldValue({
+        name: 'test',
+        ref: {
+          name: 'test',
+          type: 'select-multiple',
+          selectedOptions: [{ value: 'a' }],
+        },
+      } as Field['_f']),
+    ).toEqual(['a']);
+  });
   it('return correct value when type is radio', () => {
     expect(
       getFieldValue({
