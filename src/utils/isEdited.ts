@@ -25,5 +25,7 @@ export default (ref: Ref): boolean =>
     : ref.type === 'select-one' || isMultipleSelect(ref)
       ? isSelectEdited(ref as HTMLSelectElement)
       : !isRadioInput(ref) &&
+        ref.type !== 'range' &&
+        ref.type !== 'color' &&
         'defaultValue' in ref &&
         ref.value !== ref.defaultValue;
