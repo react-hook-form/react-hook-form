@@ -413,14 +413,24 @@ export function useFieldArray<
             existingError &&
             (existingError.message ||
               (existingError.root && existingError.root.message));
+          const isRowError =
+            Array.isArray(error) ||
+            (isObject(error) &&
+              Object.keys(error).some((key) => !Number.isNaN(+key)));
+          const isExistingRowError =
+            Array.isArray(existingError) ||
+            (isObject(existingError) &&
+              Object.keys(existingError).some((key) => !Number.isNaN(+key)));
 
           if (
-            existingError
-              ? (!error && existingErrorType) ||
-                (error &&
-                  (existingErrorType !== error.type ||
-                    existingErrorMessage !== error.message))
-              : error && error.type
+            isRowError || isExistingRowError
+              ? !deepEqual(existingError, error, true)
+              : existingError
+                ? (!error && existingErrorType) ||
+                  (error &&
+                    (existingErrorType !== error.type ||
+                      existingErrorMessage !== error.message))
+                : error && error.type
           ) {
             if (error) {
               isObject(error) &&
