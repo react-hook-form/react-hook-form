@@ -95,19 +95,25 @@ export function useFieldArray<
     useResyncOnReconnect(getCurrentFieldArray);
   const _prevControl = React.useRef(control);
   const _prevName = React.useRef(name);
+  const _rules = React.useRef({ control, name, rules });
 
   if (!disabled) {
     control._names.array.add(name);
   }
 
-  React.useMemo(
-    () =>
-      !disabled &&
-      rules &&
-      fields &&
-      control.register(name as FieldPath<TFieldValues>, rules),
-    [control, name, fields, rules, disabled],
-  );
+  React.useMemo(() => {
+    if (!disabled && fields) {
+      if (
+        rules ||
+        (_rules.current.rules &&
+          _rules.current.control === control &&
+          _rules.current.name === name)
+      ) {
+        control.register(name as FieldPath<TFieldValues>, rules);
+      }
+      _rules.current = { control, name, rules };
+    }
+  }, [control, name, fields, rules, disabled]);
 
   useIsomorphicLayoutEffect(() => {
     if (disabled) {
