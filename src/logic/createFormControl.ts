@@ -276,6 +276,7 @@ export function createFormControl<
     }
     if (!_options.disabled && (_isTracked('isValid') || shouldUpdateValid)) {
       const callId = ++_setValidCallId;
+      const resetCallId = _resetCallId;
       let isValid: boolean;
       if (_options.resolver) {
         isValid = isEmptyObject((await _runSchema()).errors);
@@ -287,7 +288,13 @@ export function createFormControl<
           eventType: EVENTS.VALID,
         });
       }
-      if (callId === _setValidCallId && isValid !== _formState.isValid) {
+      if (callId !== _setValidCallId) {
+        return;
+      }
+      if (resetCallId !== _resetCallId) {
+        return _setValid(shouldUpdateValid);
+      }
+      if (isValid !== _formState.isValid) {
         _subjects.state.next({
           isValid,
         });
@@ -2257,7 +2264,6 @@ export function createFormControl<
     keepStateOptions = {},
   ) => {
     _resetCallId++;
-    _setValidCallId++;
     const updatedValues = formValues ? cloneObject(formValues) : _defaultValues;
     const cloneUpdatedValues = cloneObject(updatedValues);
     const isEmptyResetValues = isEmptyObject(formValues);
