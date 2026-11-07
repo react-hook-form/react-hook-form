@@ -28,6 +28,111 @@ import isString from '../../utils/isString';
 import noop from '../../utils/noop';
 
 describe('register', () => {
+  it('omit disabled multiple-select options on change and submit', async () => {
+    let methods: UseFormReturn<{ choices: string[] }>;
+    const onSubmit = jest.fn();
+    const Component = () => {
+      methods = useForm({ defaultValues: { choices: [] as string[] } });
+      return (
+        <select multiple {...methods.register('choices')}>
+          <option value="enabled">Enabled</option>
+          <option value="disabled" disabled>
+            Disabled
+          </option>
+          <optgroup label="disabled group" disabled>
+            <option value="group-disabled">Group disabled</option>
+          </optgroup>
+          <optgroup label="enabled group">
+            <option value="group-enabled">Group enabled</option>
+          </optgroup>
+        </select>
+      );
+    };
+
+    render(<Component />);
+    const select = screen.getByRole('listbox') as HTMLSelectElement;
+    for (const option of select.options) option.selected = true;
+    fireEvent.change(select);
+
+    expect(methods!.getValues('choices')).toEqual(['enabled', 'group-enabled']);
+    await act(async () => {
+      await methods.handleSubmit(onSubmit)();
+    });
+    expect(onSubmit).toHaveBeenCalledWith(
+      { choices: ['enabled', 'group-enabled'] },
+      undefined,
+    );
+  });
+
+  it('preserve explicit disabled multiple-select default values and setValue assignments', async () => {
+    let methods: UseFormReturn<{ choices: string[] }>;
+    const onSubmit = jest.fn();
+    const Component = () => {
+      methods = useForm({
+        defaultValues: { choices: ['disabled', 'group-disabled'] },
+      });
+      return (
+        <select multiple {...methods.register('choices')}>
+          <option value="enabled">Enabled</option>
+          <option value="disabled" disabled>
+            Disabled
+          </option>
+          <optgroup label="disabled group" disabled>
+            <option value="group-disabled">Group disabled</option>
+          </optgroup>
+        </select>
+      );
+    };
+
+    render(<Component />);
+    expect(methods!.getValues('choices')).toEqual([
+      'disabled',
+      'group-disabled',
+    ]);
+    act(() =>
+      methods.setValue('choices', ['enabled', 'disabled', 'group-disabled']),
+    );
+    expect(methods!.getValues('choices')).toEqual([
+      'enabled',
+      'disabled',
+      'group-disabled',
+    ]);
+    await act(async () => {
+      await methods.handleSubmit(onSubmit)();
+    });
+    expect(onSubmit).toHaveBeenCalledWith(
+      { choices: ['enabled', 'disabled', 'group-disabled'] },
+      undefined,
+    );
+  });
+
+  it('fail required validation when only disabled multiple-select options remain selected', async () => {
+    let methods: UseFormReturn<{ choices: string[] }>;
+    const Component = () => {
+      methods = useForm({
+        defaultValues: { choices: ['disabled', 'group-disabled'] },
+      });
+      return (
+        <select multiple {...methods.register('choices', { required: true })}>
+          <option value="enabled">Enabled</option>
+          <option value="disabled" disabled>
+            Disabled
+          </option>
+          <optgroup label="disabled group" disabled>
+            <option value="group-disabled">Group disabled</option>
+          </optgroup>
+        </select>
+      );
+    };
+
+    render(<Component />);
+    fireEvent.change(screen.getByRole('listbox'));
+    expect(methods!.getValues('choices')).toEqual([]);
+    await act(async () => {
+      expect(await methods.trigger('choices')).toBe(false);
+    });
+    expect(methods!.getFieldState('choices').error?.type).toBe('required');
+  });
   it('support register passed to ref', async () => {
     const { result } = renderHook(() =>
       useForm<{ test: string }>({

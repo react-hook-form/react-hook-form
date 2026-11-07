@@ -20,7 +20,11 @@ export default function getFieldValue(_f: Field['_f']) {
   }
 
   if (isMultipleSelect(ref)) {
-    return [...ref.selectedOptions].map(({ value }) => value);
+    return [...ref.selectedOptions]
+      .filter(
+        (option) => !option.disabled && !option.closest?.('optgroup[disabled]'),
+      )
+      .map(({ value }) => value);
   }
 
   if (isCheckBox(ref)) {
