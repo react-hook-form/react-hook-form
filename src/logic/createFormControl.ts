@@ -1591,12 +1591,16 @@ export function createFormControl<
         ? !fieldNames.some((name) => get(errors, name))
         : isValid;
     } else if (name) {
+      const context = { valid: true, runRootValidation: false };
+      const validationName = isString(name) ? name : [...name];
       validationResult = (
         await Promise.all(
           fieldNames.map(async (fieldName) => {
             const field: FieldRefs = get(_fields, fieldName);
             return await executeBuiltInValidation({
               fields: field && field._f ? { [fieldName]: field } : field,
+              name: validationName,
+              context,
               eventType: EVENTS.TRIGGER,
             });
           }),
