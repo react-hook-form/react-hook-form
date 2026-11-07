@@ -10,6 +10,7 @@ import {
 import type { Control, UseFormProps, UseFormReturn } from '../types';
 import { useController } from '../useController';
 import { useForm } from '../useForm';
+import { useFormState } from '../useFormState';
 import noop from '../utils/noop';
 
 type FormValues = {
@@ -40,6 +41,16 @@ function Input({
       <input aria-label={name} {...field} />
       <span data-testid={`${name}-dirty`}>{String(fieldState.isDirty)}</span>
     </label>
+  );
+}
+
+function DefaultValuesView({ control }: { control: Control<FormValues> }) {
+  const { defaultValues } = useFormState({ control });
+
+  return (
+    <pre data-testid="subscriber-defaultValues">
+      {JSON.stringify(defaultValues)}
+    </pre>
   );
 }
 
@@ -82,6 +93,10 @@ const renderForm = (
         <button type="button" onClick={() => setShowNickname((v) => !v)}>
           toggle
         </button>
+        <pre data-testid="root-defaultValues">
+          {JSON.stringify(state.defaultValues)}
+        </pre>
+        <DefaultValuesView control={control} />
       </>
     );
   }
@@ -282,6 +297,30 @@ describe('useController defaultValue without useForm defaultValues', () => {
   });
 
   describe('conditional Controller mounting', () => {
+    it('should notify formState.defaultValues subscribers when a Controller mounts after the form is ready', () => {
+      const form = renderForm();
+      const renderedDefaults = (testId: string) =>
+        JSON.parse(screen.getByTestId(testId).textContent || 'null');
+
+      expect(form.methods!.formState.isReady).toBe(true);
+      expect(renderedDefaults('root-defaultValues')).toEqual({
+        firstName: '',
+        lastName: '',
+        email: '',
+      });
+
+      toggleNickname();
+
+      const expected = {
+        firstName: '',
+        lastName: '',
+        email: '',
+        nickname: 'foo',
+      };
+      expect(renderedDefaults('root-defaultValues')).toEqual(expected);
+      expect(renderedDefaults('subscriber-defaultValues')).toEqual(expected);
+    });
+
     it('should not be dirty when a Controller mounts after the initial render', () => {
       const form = renderForm();
 

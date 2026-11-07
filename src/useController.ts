@@ -16,6 +16,7 @@ import type {
   FieldPath,
   FieldPathValue,
   FieldValues,
+  FormState,
   InternalFieldName,
   Ref,
   UseControllerProps,
@@ -245,6 +246,10 @@ export function useController<
         name,
         cloneObject(_props.current.defaultValue),
       );
+      control._subjects.state.next({
+        defaultValues:
+          control._defaultValues as FormState<TFieldValues>['defaultValues'],
+      });
     }
   }, [control, name, isArrayField, shouldUnregister]);
 
