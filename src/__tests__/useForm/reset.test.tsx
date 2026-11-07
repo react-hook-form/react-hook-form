@@ -3977,4 +3977,111 @@ describe('reset', () => {
       'error:stale error',
     );
   });
+
+  it.each(['a resolver', 'a required rule', 'a form level validate'])(
+    'update isValid after reset() in a mount effect when the field is memoised, with %s',
+    async (validation) => {
+      const record = { title: 'Loaded record' };
+      const rules = { required: validation === 'a required rule' };
+
+      const TitleField = React.memo(function TitleField({
+        control,
+      }: {
+        control: Control<{ title: string }>;
+      }) {
+        const { field } = useController({ control, name: 'title', rules });
+        return <input {...field} />;
+      });
+
+      const App = () => {
+        const {
+          control,
+          reset,
+          formState: { isValid },
+        } = useForm<{ title: string }>({
+          defaultValues: record,
+          resolver:
+            validation === 'a resolver'
+              ? async (values) => ({ values, errors: {} })
+              : undefined,
+          validate:
+            validation === 'a form level validate'
+              ? async () => true
+              : undefined,
+        });
+
+        React.useEffect(() => {
+          reset(record);
+        }, [reset]);
+
+        return (
+          <div>
+            <TitleField control={control} />
+            <p>{`valid:${isValid}`}</p>
+          </div>
+        );
+      };
+
+      render(<App />);
+
+      expect(await screen.findByText('valid:true')).toBeVisible();
+    },
+  );
+
+  it('keep isValid false after reset() in a mount effect sets an invalid value the memoised fields do not show', async () => {
+    const settles: Array<() => void> = [];
+
+    const TitleField = React.memo(function TitleField({
+      control,
+    }: {
+      control: Control<{ title: string; id: string }>;
+    }) {
+      const { field } = useController({ control, name: 'title' });
+      return <input {...field} />;
+    });
+
+    const App = () => {
+      const {
+        control,
+        reset,
+        formState: { isValid },
+      } = useForm<{ title: string; id: string }>({
+        defaultValues: { title: 'Loaded record', id: '1' },
+        resolver: (values) => {
+          const result = values.id
+            ? { values, errors: {} }
+            : {
+                values: {},
+                errors: { id: { type: 'required', message: 'required' } },
+              };
+          return new Promise((resolve) => {
+            settles.push(() => resolve(result));
+          });
+        },
+      });
+
+      React.useEffect(() => {
+        reset({ title: 'Loaded record', id: '' });
+      }, [reset]);
+
+      return (
+        <div>
+          <TitleField control={control} />
+          <p>{`valid:${isValid}`}</p>
+        </div>
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      settles.splice(0).forEach((settle) => settle());
+    });
+    // The pass run again for the reset values settles here.
+    await act(async () => {
+      settles.splice(0).forEach((settle) => settle());
+    });
+
+    expect(screen.getByText('valid:false')).toBeVisible();
+  });
 });

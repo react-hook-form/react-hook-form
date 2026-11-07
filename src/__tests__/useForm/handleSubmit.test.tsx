@@ -914,6 +914,73 @@ describe('handleSubmit', () => {
     });
   });
 
+  describe('with disabled fields and transformed values', () => {
+    it.each([null, undefined])(
+      'submit a transformed %s value when a field is disabled',
+      async (transformed) => {
+        const { result } = renderHook(() => {
+          const methods = useForm<TestFormValues, unknown, typeof transformed>({
+            defaultValues: { test: 'disabled' },
+            resolver: () => ({ values: transformed, errors: {} }),
+          });
+          methods.register('test', { disabled: true });
+          return methods;
+        });
+        result.current.formState.isSubmitting;
+        result.current.formState.isSubmitted;
+        result.current.formState.isSubmitSuccessful;
+        result.current.formState.submitCount;
+        const callback = jest.fn(() => 'submitted');
+        let returned: string | undefined;
+
+        await act(async () => {
+          returned = await result.current.handleSubmit(callback)();
+        });
+
+        expect(callback).toHaveBeenCalledTimes(1);
+        expect(callback).toHaveBeenCalledWith(transformed, undefined);
+        expect(returned).toBe('submitted');
+        expect(result.current.formState).toMatchObject({
+          isSubmitting: false,
+          isSubmitted: true,
+          isSubmitSuccessful: true,
+          submitCount: 1,
+        });
+      },
+    );
+
+    it('still remove disabled fields from an object returned by the resolver', async () => {
+      const transformed = {
+        test: 'disabled',
+        enabled: 'retained',
+        nested: { test: 'disabled', enabled: 'retained' },
+      };
+      const { result } = renderHook(() => {
+        const methods = useForm<typeof transformed>({
+          resolver: () => ({ values: transformed, errors: {} }),
+        });
+        methods.register('test', { disabled: true });
+        methods.register('nested.test', { disabled: true });
+        return methods;
+      });
+      const callback = jest.fn();
+
+      await act(async () => {
+        await result.current.handleSubmit(callback)();
+      });
+
+      expect(callback).toHaveBeenCalledWith(
+        { enabled: 'retained', nested: { enabled: 'retained' } },
+        undefined,
+      );
+      expect(transformed).toEqual({
+        test: 'disabled',
+        enabled: 'retained',
+        nested: { test: 'disabled', enabled: 'retained' },
+      });
+    });
+  });
+
   describe('with onInvalid callback', () => {
     it('invoke the onValid callback when validation pass', async () => {
       const { result } = renderHook(() => useForm());
