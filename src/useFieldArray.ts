@@ -402,26 +402,7 @@ export function useFieldArray<
             return;
           }
           const error: FieldError | undefined = get(result.errors, name);
-          const existingError:
-            | (FieldError & { root?: FieldError })
-            | undefined = get(control._formState.errors, name);
-          const existingErrorType =
-            existingError &&
-            (existingError.type ||
-              (existingError.root && existingError.root.type));
-          const existingErrorMessage =
-            existingError &&
-            (existingError.message ||
-              (existingError.root && existingError.root.message));
-
-          if (
-            existingError
-              ? (!error && existingErrorType) ||
-                (error &&
-                  (existingErrorType !== error.type ||
-                    existingErrorMessage !== error.message))
-              : error && error.type
-          ) {
+          if (!deepEqual(get(control._formState.errors, name), error, true)) {
             if (error) {
               isObject(error) &&
               !Object.keys(error).some((key) => !Number.isNaN(+key))
