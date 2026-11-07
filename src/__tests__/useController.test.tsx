@@ -833,6 +833,172 @@ describe('useController', () => {
     },
   );
 
+  it.each([
+    [true, false, undefined],
+    [true, undefined, undefined],
+    [false, true, undefined],
+    [undefined, true, undefined],
+    [undefined, false, undefined],
+    [true, false, true],
+    [false, true, true],
+  ])(
+    'preserve a mounted field when shouldUnregister changes (%s -> %s, form: %s)',
+    (initial, next, shouldUnregister) => {
+      const form = renderHook(() =>
+        useForm({
+          defaultValues: { test: 'default' },
+          shouldUnregister,
+        }),
+      );
+      const field = renderHook(
+        ({ shouldUnregister }) =>
+          useController({
+            name: 'test',
+            control: form.result.current.control,
+            shouldUnregister,
+          }),
+        { initialProps: { shouldUnregister: initial } },
+      );
+
+      act(() => {
+        field.result.current.field.onChange('updated');
+      });
+
+      field.rerender({ shouldUnregister: next });
+
+      expect(form.result.current.getValues()).toEqual({ test: 'updated' });
+      expect(field.result.current.field.value).toBe('updated');
+
+      field.unmount();
+
+      expect(form.result.current.getValues()).toEqual(
+        shouldUnregister || next ? {} : { test: 'updated' },
+      );
+    },
+  );
+
+  it('preserve field defaults when shouldUnregister is enabled', () => {
+    const form = renderHook(() => useForm<{ test: string }>());
+    const field = renderHook(
+      ({ shouldUnregister }) =>
+        useController({
+          control: form.result.current.control,
+          name: 'test',
+          defaultValue: 'default',
+          shouldUnregister,
+        }),
+      { initialProps: { shouldUnregister: false } },
+    );
+
+    act(() => {
+      field.result.current.field.onChange('updated');
+    });
+
+    field.rerender({ shouldUnregister: true });
+
+    expect(form.result.current.getValues('test')).toBe('updated');
+    expect(field.result.current.field.value).toBe('updated');
+
+    act(() => {
+      form.result.current.reset();
+    });
+
+    expect(form.result.current.getValues('test')).toBe('default');
+    expect(field.result.current.field.value).toBe('default');
+  });
+
+  it.each([true, false])(
+    'preserve the previous unregistration option when name changes from %s',
+    (initial) => {
+      const form = renderHook(() =>
+        useForm({
+          defaultValues: {
+            first: 'first default',
+            second: 'second default',
+          },
+        }),
+      );
+      const field = renderHook(
+        ({ name, shouldUnregister }) =>
+          useController({
+            name,
+            control: form.result.current.control,
+            shouldUnregister,
+          }),
+        {
+          initialProps: {
+            name: 'first' as 'first' | 'second',
+            shouldUnregister: initial,
+          },
+        },
+      );
+
+      act(() => {
+        field.result.current.field.onChange('first updated');
+      });
+
+      field.rerender({ name: 'second', shouldUnregister: !initial });
+
+      expect(form.result.current.getValues()).toEqual(
+        initial
+          ? { second: 'second default' }
+          : { first: 'first updated', second: 'second default' },
+      );
+      expect(field.result.current.field.value).toBe('second default');
+
+      field.unmount();
+
+      expect(form.result.current.getValues()).toEqual(
+        initial ? { second: 'second default' } : { first: 'first updated' },
+      );
+    },
+  );
+
+  it.each([true, false])(
+    'preserve the previous unregistration option when control changes from %s',
+    (initial) => {
+      const firstForm = renderHook(() =>
+        useForm({ defaultValues: { test: 'first default' } }),
+      );
+      const secondForm = renderHook(() =>
+        useForm({ defaultValues: { test: 'second default' } }),
+      );
+      const field = renderHook(
+        ({ control, shouldUnregister }) =>
+          useController({ name: 'test', control, shouldUnregister }),
+        {
+          initialProps: {
+            control: firstForm.result.current.control,
+            shouldUnregister: initial,
+          },
+        },
+      );
+
+      act(() => {
+        field.result.current.field.onChange('first updated');
+      });
+
+      field.rerender({
+        control: secondForm.result.current.control,
+        shouldUnregister: !initial,
+      });
+
+      expect(firstForm.result.current.getValues()).toEqual(
+        initial ? {} : { test: 'first updated' },
+      );
+      expect(secondForm.result.current.getValues()).toEqual({
+        test: 'second default',
+      });
+      expect(field.result.current.field.value).toBe('second default');
+
+      field.unmount();
+
+      expect(secondForm.result.current.getValues()).toEqual(
+        initial ? { test: 'second default' } : {},
+      );
+    },
+  );
+
   it('always get the latest value for onBlur event', async () => {
     const watchResults: unknown[] = [];
 

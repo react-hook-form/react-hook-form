@@ -85,6 +85,7 @@ export function useController<
   });
 
   const _props = React.useRef(props);
+  const _shouldUnregister = React.useRef(shouldUnregister);
   const _proxyRef = React.useRef<Ref | null>(null);
 
   const _registeredName = React.useRef<string | undefined>(undefined);
@@ -214,28 +215,9 @@ export function useController<
   );
 
   React.useEffect(() => {
-    const _shouldUnregisterField =
-      control._options.shouldUnregister || shouldUnregister;
+    _shouldUnregister.current = shouldUnregister;
 
-    _registerProps.current = control.register(name, {
-      ..._props.current.rules,
-      ...(isBoolean(_props.current.disabled)
-        ? { disabled: _props.current.disabled }
-        : {}),
-    });
-
-    const updateMounted = (name: InternalFieldName, value: boolean) => {
-      const field: Field = get(control._fields, name);
-
-      if (field && field._f) {
-        field._f.mount = value;
-        field._f._c = value;
-      }
-    };
-
-    updateMounted(name, true);
-
-    if (_shouldUnregisterField) {
+    if (control._options.shouldUnregister || shouldUnregister) {
       const value = cloneObject(
         get(
           shouldUnregister
@@ -254,6 +236,26 @@ export function useController<
         set(control._formValues, name, value);
       }
     }
+  }, [control, name, shouldUnregister]);
+
+  React.useEffect(() => {
+    _registerProps.current = control.register(name, {
+      ..._props.current.rules,
+      ...(isBoolean(_props.current.disabled)
+        ? { disabled: _props.current.disabled }
+        : {}),
+    });
+
+    const updateMounted = (name: InternalFieldName, value: boolean) => {
+      const field: Field = get(control._fields, name);
+
+      if (field && field._f) {
+        field._f.mount = value;
+        field._f._c = value;
+      }
+    };
+
+    updateMounted(name, true);
 
     !isArrayField &&
       control.register(name, {
@@ -272,7 +274,7 @@ export function useController<
 
     return () => {
       const shouldUnregisterField =
-        control._options.shouldUnregister || shouldUnregister;
+        control._options.shouldUnregister || _shouldUnregister.current;
 
       (
         isArrayField
@@ -282,7 +284,7 @@ export function useController<
         ? control.unregister(name)
         : updateMounted(name, false);
     };
-  }, [name, control, isArrayField, shouldUnregister]);
+  }, [name, control, isArrayField]);
 
   React.useEffect(() => {
     control._setDisabledField({
