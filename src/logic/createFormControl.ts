@@ -763,7 +763,6 @@ export function createFormControl<
   };
 
   const shouldRenderByFormErrors = (
-    name: InternalFieldName,
     previousErrors: FieldErrors<TFieldValues>,
     isValid?: boolean,
     fieldState?: {
@@ -786,7 +785,6 @@ export function createFormControl<
         ...fieldState,
         ...(shouldUpdateValid && isBoolean(isValid) ? { isValid } : {}),
         errors: _formState.errors,
-        name,
       };
 
       _formState = {
@@ -1421,6 +1419,7 @@ export function createFormControl<
       const isBlurEvent =
         event.type === EVENTS.BLUR || event.type === EVENTS.FOCUS_OUT;
       const hasNoValidationEffect =
+        !isFormScope &&
         !hasValidation(field._f) &&
         !_options.validate &&
         !_options.resolver &&
@@ -1517,7 +1516,7 @@ export function createFormControl<
               | FieldPath<TFieldValues>[],
           );
 
-        shouldRenderByFormErrors(name, previousErrors, isValid, fieldState);
+        shouldRenderByFormErrors(previousErrors, isValid, fieldState);
         return;
       }
 

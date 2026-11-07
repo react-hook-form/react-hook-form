@@ -1,7 +1,9 @@
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
+import type { Control } from '../types';
 import { useForm } from '../useForm';
+import { useFormState } from '../useFormState';
 
 describe('validationScope', () => {
   describe('field (default)', () => {
@@ -136,6 +138,82 @@ describe('validationScope', () => {
       });
 
       await waitFor(() => expect(screen.getByText('valid')).toBeVisible());
+    });
+
+    it('should populate errors for other fields when the changed field has no rules', async () => {
+      function Component() {
+        const {
+          register,
+          formState: { errors },
+        } = useForm<{ firstName: string; lastName: string }>({
+          mode: 'onChange',
+          validationScope: 'form',
+        });
+
+        return (
+          <div>
+            <input data-testid="firstName" {...register('firstName')} />
+            <input
+              data-testid="lastName"
+              {...register('lastName', { required: 'Last name required' })}
+            />
+            {errors.lastName && <span>{errors.lastName.message}</span>}
+          </div>
+        );
+      }
+
+      render(<Component />);
+
+      fireEvent.input(screen.getByTestId('firstName'), {
+        target: { value: 'John' },
+      });
+
+      await waitFor(() =>
+        expect(screen.getByText('Last name required')).toBeVisible(),
+      );
+    });
+
+    it('should notify named error subscribers for other fields', async () => {
+      type FormValues = { firstName: string; lastName: string };
+
+      function LastNameError({ control }: { control: Control<FormValues> }) {
+        const { errors } = useFormState({ control, name: 'lastName' });
+
+        return errors.lastName ? <span>{errors.lastName.message}</span> : null;
+      }
+
+      const MemoLastNameError = React.memo(LastNameError);
+
+      function Component() {
+        const { register, control } = useForm<FormValues>({
+          mode: 'onChange',
+          validationScope: 'form',
+        });
+
+        return (
+          <div>
+            <input
+              data-testid="firstName"
+              {...register('firstName', { required: 'First name required' })}
+            />
+            <input
+              data-testid="lastName"
+              {...register('lastName', { required: 'Last name required' })}
+            />
+            <MemoLastNameError control={control} />
+          </div>
+        );
+      }
+
+      render(<Component />);
+
+      fireEvent.input(screen.getByTestId('firstName'), {
+        target: { value: 'John' },
+      });
+
+      await waitFor(() =>
+        expect(screen.getByText('Last name required')).toBeVisible(),
+      );
     });
   });
 });
