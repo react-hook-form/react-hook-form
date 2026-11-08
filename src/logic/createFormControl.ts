@@ -2185,7 +2185,10 @@ export function createFormControl<
         _formState.errors = { ..._formState.errors };
       }
 
-      if (_names.disabled.size && !isNullOrUndefined(fieldValues)) {
+      if (
+        _names.disabled.size &&
+        (isObject(fieldValues) || Array.isArray(fieldValues))
+      ) {
         for (const name of _names.disabled) {
           unset(fieldValues, name);
         }
