@@ -22,7 +22,7 @@ describe('hasValidation', () => {
     );
   });
 
-  it('return false when validation rules are explicity falsy', () => {
+  it('return false when validation rules are explicitly falsy', () => {
     expect(hasValidation({ ...base, required: false })).toBeFalsy();
     expect(hasValidation({ ...base, validate: undefined })).toBeFalsy();
   });
