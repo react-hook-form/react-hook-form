@@ -37,9 +37,6 @@ export default function unset<T>(
   object: T,
   path: string | (string | number)[],
 ): T {
-  // Nothing can be removed from a primitive value (e.g. a resolver that
-  // transformed the form values into a string), and attempting to delete
-  // an indexed property of one throws in strict mode.
   if (!isObject(object) && !Array.isArray(object)) {
     return object;
   }
