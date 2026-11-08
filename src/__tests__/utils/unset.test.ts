@@ -8,6 +8,13 @@ describe('unset', () => {
     expect(unset(test, '[2]')).toEqual([undefined, undefined, undefined]);
   });
 
+  it('return primitive values unchanged instead of throwing', () => {
+    expect(unset('test', '0')).toBe('test');
+    expect(unset(42, '0')).toBe(42);
+    expect(unset(true, '0')).toBe(true);
+    expect(unset({ test: 'test' }, 'test.0')).toEqual({ test: 'test' });
+  });
+
   it('return original object when path is not defined', () => {
     const test = {
       test: 'test',

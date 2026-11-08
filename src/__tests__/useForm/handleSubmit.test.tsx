@@ -949,6 +949,29 @@ describe('handleSubmit', () => {
       },
     );
 
+    it.each(['slug-value', 42, true])(
+      'submit a transformed primitive %s when a field is disabled',
+      async (transformed) => {
+        const { result } = renderHook(() => {
+          const methods = useForm<{ '0': string }, unknown, typeof transformed>(
+            {
+              resolver: () => ({ values: transformed, errors: {} }),
+            },
+          );
+          methods.register('0', { disabled: true });
+          return methods;
+        });
+        const callback = jest.fn();
+
+        await act(async () => {
+          await result.current.handleSubmit(callback)();
+        });
+
+        expect(callback).toHaveBeenCalledTimes(1);
+        expect(callback).toHaveBeenCalledWith(transformed, undefined);
+      },
+    );
+
     it('still remove disabled fields from an object returned by the resolver', async () => {
       const transformed = {
         test: 'disabled',
