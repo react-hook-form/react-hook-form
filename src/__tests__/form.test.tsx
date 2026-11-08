@@ -637,6 +637,38 @@ describe('Form', () => {
     },
   );
 
+  it.each([
+    ['text/plain; profile="json"', 'name=bill\r\n'],
+    ['application/vnd.api+json; charset=utf-8', '{"name":"bill"}'],
+  ])(
+    'serialize the body according to the media type in %s',
+    async (contentType, body) => {
+      const fetchSpy = jest
+        .spyOn(global, 'fetch')
+        .mockResolvedValueOnce(new Response(null, { status: 200 }));
+
+      const App = () => {
+        const { control } = useForm({ defaultValues: { name: 'bill' } });
+
+        return (
+          <Form
+            action="/api"
+            control={control}
+            headers={{ 'Content-Type': contentType }}
+          >
+            <button>Submit</button>
+          </Form>
+        );
+      };
+
+      render(<App />);
+      fireEvent.click(screen.getByRole('button'));
+
+      await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(1));
+      expect(fetchSpy.mock.calls[0][1]?.body).toBe(body);
+    },
+  );
+
   it('leave the multipart boundary to fetch when both encType and headers specify multipart', async () => {
     const fetchSpy = jest
       .spyOn(global, 'fetch')

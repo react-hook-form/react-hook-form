@@ -86,7 +86,7 @@ export function Form<
 
           let body: BodyInit = formData;
 
-          if (hasContentType(/json/i)) {
+          if (hasContentType(/^\s*[^/;\s]+\/(?:[^/;\s]+\+)?json\s*(?:;|$)/i)) {
             body = formDataJson;
           } else if (
             hasContentType(/^\s*application\/x-www-form-urlencoded\s*(;|$)/i)
