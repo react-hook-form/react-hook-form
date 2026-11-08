@@ -28,6 +28,25 @@ afterEach(() => {
 });
 
 describe('setValue', () => {
+  it.each(['01', '-1', '1e2', '4294967295'])(
+    'keep a non-index field key %s in an object',
+    (key) => {
+      const { result } = renderHook(() =>
+        useForm<{ codes: Record<string, string>; items: string[] }>(),
+      );
+
+      act(() => {
+        result.current.setValue(`codes.${key}`, 'value');
+        result.current.setValue('items.0', 'first');
+      });
+
+      expect(result.current.getValues()).toStrictEqual({
+        codes: { [key]: 'value' },
+        items: ['first'],
+      });
+    },
+  );
+
   it('not setValue for unmounted state with shouldUnregister', () => {
     const { result } = renderHook(() => useForm<{ test1: string }>());
 

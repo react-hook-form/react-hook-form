@@ -5,6 +5,16 @@ import isKey from './isKey';
 import isObject from './isObject';
 import stringToPath from './stringToPath';
 
+const isArrayIndex = (key: string) => {
+  const index = Number(key);
+  return (
+    Number.isInteger(index) &&
+    index >= 0 &&
+    index < 2 ** 32 - 1 &&
+    String(index) === key
+  );
+};
+
 export default (
   object: FieldValues,
   path: FieldPath<FieldValues>,
@@ -24,7 +34,7 @@ export default (
       newValue =
         isObject(objValue) || Array.isArray(objValue)
           ? objValue
-          : !isNaN(+tempPath[index + 1])
+          : isArrayIndex(tempPath[index + 1])
             ? []
             : {};
     }
