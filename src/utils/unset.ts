@@ -37,6 +37,13 @@ export default function unset<T>(
   object: T,
   path: string | (string | number)[],
 ): T {
+  // Nothing can be removed from a primitive value (e.g. a resolver that
+  // transformed the form values into a string), and attempting to delete
+  // an indexed property of one throws in strict mode.
+  if (!isObject(object) && !Array.isArray(object)) {
+    return object;
+  }
+
   if (isString(path) && Object.prototype.hasOwnProperty.call(object, path)) {
     delete (object as Record<string, unknown>)[path];
     return object;
@@ -55,7 +62,7 @@ export default function unset<T>(
   const index = paths.length - 1;
   const key = paths[index];
 
-  if (childObject) {
+  if (childObject && (isObject(childObject) || Array.isArray(childObject))) {
     delete (childObject as Record<string | number, unknown>)[key];
   }
 
