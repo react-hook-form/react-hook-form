@@ -979,6 +979,32 @@ describe('handleSubmit', () => {
         nested: { test: 'disabled', enabled: 'retained' },
       });
     });
+
+    it.each([
+      ['string', 'transformed-primitive'],
+      ['number', 42],
+      ['boolean', true],
+    ])(
+      'submit a transformed %s value when a field with numeric name is disabled',
+      async (_, transformed) => {
+        type TestFormValues = { '0': string };
+        const { result } = renderHook(() => {
+          const methods = useForm<TestFormValues, unknown, typeof transformed>({
+            defaultValues: { '0': 'disabled' },
+            resolver: () => ({ values: transformed, errors: {} }),
+          });
+          methods.register('0', { disabled: true });
+          return methods;
+        });
+        const callback = jest.fn();
+
+        await act(async () => {
+          await result.current.handleSubmit(callback)();
+        });
+
+        expect(callback).toHaveBeenCalledWith(transformed, undefined);
+      },
+    );
   });
 
   describe('with onInvalid callback', () => {
