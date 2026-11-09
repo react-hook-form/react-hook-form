@@ -840,9 +840,11 @@ export function createFormControl<
   const validateForm = async ({
     name,
     eventType,
+    onlyCheckValid,
   }: {
     name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[] | undefined;
     eventType: ValidateFormEventType;
+    onlyCheckValid?: boolean;
   }) => {
     if (_options.validate) {
       const resetCallId = _resetCallId;
@@ -860,6 +862,15 @@ export function createFormControl<
           validateFormCallId !== _validateFormCallId)
       ) {
         return true;
+      }
+
+      if (
+        onlyCheckValid &&
+        (isObject(result)
+          ? Object.values(result).some(Boolean)
+          : isString(result) || !result)
+      ) {
+        return false;
       }
 
       if (isObject(result)) {
@@ -922,6 +933,7 @@ export function createFormControl<
       const result = await validateForm({
         name,
         eventType,
+        onlyCheckValid,
       });
 
       if (!result) {
