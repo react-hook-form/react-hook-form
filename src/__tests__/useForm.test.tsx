@@ -3502,6 +3502,41 @@ describe('useForm', () => {
       expect(result.current.getErrors('form.lastName')).toBeUndefined();
     });
 
+    it('drop previous form-level field errors when validate returns a message', async () => {
+      let returnMessage = false;
+      const { result } = renderHook(() =>
+        useForm<{ firstName: string }>({
+          validate: () =>
+            returnMessage
+              ? 'Form is invalid'
+              : {
+                  firstName: {
+                    message: 'First name is invalid',
+                    type: 'validate',
+                  },
+                },
+        }),
+      );
+
+      await act(async () => {
+        expect(await result.current.trigger()).toBe(false);
+      });
+
+      expect(result.current.getErrors('form.firstName')).toBeDefined();
+
+      returnMessage = true;
+
+      await act(async () => {
+        expect(await result.current.trigger()).toBe(false);
+      });
+
+      expect(result.current.getErrors('form')).toMatchObject({
+        message: 'Form is invalid',
+        type: 'validate',
+      });
+      expect(result.current.getErrors('form.firstName')).toBeUndefined();
+    });
+
     it('keep the latest form-level errors when an older async validate resolves last', async () => {
       const resolvers: Record<string, (result: true | string) => void> = {};
 
