@@ -31,3 +31,51 @@ test('getEventValue return files for a file input target', () => {
 
   expect(getEventValue({ target: { type: 'file', files: [] } })).toEqual([]);
 });
+
+test('getEventValue return selected options for a multiple select target', () => {
+  expect(
+    getEventValue({
+      target: {
+        type: 'select-multiple',
+        selectedOptions: [
+          { value: 'react', disabled: false },
+          { value: 'vue', disabled: false },
+        ],
+        value: 'react',
+      },
+    }),
+  ).toEqual(['react', 'vue']);
+
+  expect(
+    getEventValue({
+      target: {
+        type: 'select-multiple',
+        selectedOptions: [
+          { value: 'react', disabled: false },
+          { value: 'angular', disabled: true },
+          { value: 'vue', disabled: false },
+        ],
+        value: 'react',
+      },
+    }),
+  ).toEqual(['react', 'vue']);
+
+  expect(
+    getEventValue({
+      target: {
+        type: 'select-multiple',
+        selectedOptions: [],
+        value: '',
+      },
+    }),
+  ).toEqual([]);
+
+  expect(
+    getEventValue({
+      target: {
+        type: 'select-multiple',
+        value: 'fallback',
+      },
+    }),
+  ).toEqual('fallback');
+});

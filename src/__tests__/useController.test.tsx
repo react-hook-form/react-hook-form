@@ -2507,4 +2507,51 @@ describe('useController', () => {
       ),
     );
   });
+
+  it('should update value with all selected options for select-multiple element', () => {
+    type FormValues = {
+      skills: string[];
+    };
+
+    function Component() {
+      const { control, watch } = useForm<FormValues>({
+        defaultValues: {
+          skills: [],
+        },
+      });
+      const { field } = useController({
+        name: 'skills',
+        control,
+      });
+      const watched = watch('skills');
+
+      return (
+        <div>
+          <select
+            multiple
+            aria-label="skills-select"
+            value={field.value}
+            onChange={field.onChange}
+          >
+            <option value="react">React</option>
+            <option value="vue">Vue</option>
+            <option value="angular">Angular</option>
+          </select>
+          <span data-testid="result">{JSON.stringify(watched)}</span>
+        </div>
+      );
+    }
+
+    render(<Component />);
+
+    const select = screen.getByLabelText('skills-select') as HTMLSelectElement;
+    select.options[0].selected = true;
+    select.options[1].selected = true;
+
+    fireEvent.change(select);
+
+    expect(screen.getByTestId('result').textContent).toEqual(
+      JSON.stringify(['react', 'vue']),
+    );
+  });
 });
