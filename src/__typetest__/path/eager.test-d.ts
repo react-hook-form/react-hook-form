@@ -210,6 +210,48 @@ import { _ } from '../__fixtures__';
     >;
     type _t = Expect<Equal<typeof actual, string | undefined>>;
   }
+  /** it should apply null for a nullable object parent */ {
+    const actual = _ as PathValue<{ a: { b: number } | null }, 'a.b'>;
+    type _t = Expect<Equal<typeof actual, number | null>>;
+  }
+
+  /** it should apply undefined for an optional object parent */ {
+    const actual = _ as PathValue<{ a?: { b: number } }, 'a.b'>;
+    type _t = Expect<Equal<typeof actual, number | undefined>>;
+  }
+
+  /** it should apply undefined for an object parent unioned with undefined */ {
+    const actual = _ as PathValue<{ a: { b: number } | undefined }, 'a.b'>;
+    type _t = Expect<Equal<typeof actual, number | undefined>>;
+  }
+
+  /** it should apply null and undefined for a nullish object parent */ {
+    const actual = _ as PathValue<{ a?: { b: number } | null }, 'a.b'>;
+    type _t = Expect<Equal<typeof actual, number | null | undefined>>;
+  }
+
+  /** it should apply null through a chain of nullable object parents */ {
+    const actual = _ as PathValue<{ a: { b: { c: number } | null } }, 'a.b.c'>;
+    type _t = Expect<Equal<typeof actual, number | null>>;
+  }
+
+  /** it should apply null from any parent in a chain */ {
+    const actual = _ as PathValue<{ a: { b: { c: number } } | null }, 'a.b.c'>;
+    type _t = Expect<Equal<typeof actual, number | null>>;
+  }
+
+  /** it should apply null for a nullable object parent inside an array element */ {
+    const actual = _ as PathValue<
+      { rows: { a: { b: number } | null }[] },
+      'rows.0.a.b'
+    >;
+    type _t = Expect<Equal<typeof actual, number | null>>;
+  }
+
+  /** it should not apply null or undefined for non-nullable object parents */ {
+    const actual = _ as PathValue<{ a: { b: { c: number } } }, 'a.b.c'>;
+    type _t = Expect<Equal<typeof actual, number>>;
+  }
 }
 
 /** {@link FieldPathValues} */ {

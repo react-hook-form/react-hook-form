@@ -171,9 +171,7 @@ export type PathValue<T, P extends Path<T> | ArrayPath<T>> = PathValueImpl<
 type PathValueImpl<T, P extends string> = T extends unknown
   ? P extends `${infer K}.${infer R}`
     ? K extends keyof T
-      ? undefined extends T[K]
-        ? PathValueImpl<T[K], R> | undefined
-        : PathValueImpl<T[K], R>
+      ? PathValueImpl<T[K], R> | Extract<T[K], null | undefined>
       : K extends `${ArrayKey}`
         ? T extends ReadonlyArray<infer V>
           ?
