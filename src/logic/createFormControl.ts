@@ -881,6 +881,7 @@ export function createFormControl<
 
         return isValid;
       } else if (isString(result) || !result) {
+        clearErrors(FORM_ERROR_TYPE);
         setError(FORM_ERROR_TYPE, {
           message: result || '',
           type: INPUT_VALIDATION_RULES.validate,
