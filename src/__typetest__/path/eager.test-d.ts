@@ -154,6 +154,52 @@ import { _ } from '../__fixtures__';
     >;
     type _t = Expect<Equal<typeof actual, string | undefined>>;
   }
+
+  /** it should apply undefined for a nullable object parent */ {
+    const actual = _ as PathValue<{ a: { b: number } | null }, 'a.b'>;
+    type _t = Expect<Equal<typeof actual, number | undefined>>;
+  }
+
+  /** it should apply undefined for a nullish object parent */ {
+    const actual = _ as PathValue<{ a?: { b: number } | null }, 'a.b'>;
+    type _t = Expect<Equal<typeof actual, number | undefined>>;
+  }
+
+  /** it should keep a nullable leaf value as is */ {
+    const actual = _ as PathValue<{ a: { b: number | null } }, 'a.b'>;
+    type _t = Expect<Equal<typeof actual, number | null>>;
+  }
+
+  /** it should apply undefined from a nullable parent anywhere in a chain */ {
+    const actual = _ as PathValue<{ a: { b: { c: number } } | null }, 'a.b.c'>;
+    type _t = Expect<Equal<typeof actual, number | undefined>>;
+  }
+
+  /** it should apply undefined for a nullable object parent inside an array element */ {
+    const actual = _ as PathValue<
+      { rows: { a: { b: number } | null }[] },
+      'rows.0.a.b'
+    >;
+    type _t = Expect<Equal<typeof actual, number | undefined>>;
+  }
+
+  /** it should apply undefined for a nullable array element */ {
+    const actual = _ as PathValue<
+      { rows: ({ name: string } | null)[] },
+      'rows.0.name'
+    >;
+    type _t = Expect<Equal<typeof actual, string | undefined>>;
+  }
+
+  /** it should apply undefined for a nullable array parent */ {
+    const actual = _ as PathValue<{ rows: string[] | null }, 'rows.0'>;
+    type _t = Expect<Equal<typeof actual, string | undefined>>;
+  }
+
+  /** it should not apply undefined for non-nullable parents */ {
+    const actual = _ as PathValue<{ a: { b: { c: number } } }, 'a.b.c'>;
+    type _t = Expect<Equal<typeof actual, number>>;
+  }
 }
 
 /** {@link FieldPathValues} */ {

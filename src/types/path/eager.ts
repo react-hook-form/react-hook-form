@@ -175,10 +175,18 @@ type PathValueImpl<T, P extends string> = T extends unknown
     ? K extends keyof T
       ? undefined extends T[K]
         ? PathValueImpl<T[K], R> | undefined
-        : PathValueImpl<T[K], R>
+        : null extends T[K]
+          ? PathValueImpl<T[K], R> | undefined
+          : PathValueImpl<T[K], R>
       : K extends `${ArrayKey}`
         ? T extends ReadonlyArray<infer V>
-          ? PathValueImpl<V, R>
+          ?
+              | PathValueImpl<V, R>
+              | (TupleKeys<T> extends never
+                  ? null extends V
+                    ? undefined
+                    : never
+                  : never)
           : never
         : never
     : P extends keyof T
