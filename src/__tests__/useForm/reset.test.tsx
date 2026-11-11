@@ -4084,4 +4084,60 @@ describe('reset', () => {
 
     expect(screen.getByText('valid:false')).toBeVisible();
   });
+
+  describe('with keepFieldsRef and an input that does not re-render', () => {
+    // A cached element, as useMemo or the React Compiler leaves it, never re-runs
+    // register()'s ref callback, so it never re-adds its name to the mounted fields.
+    const App = () => {
+      const { register, reset, handleSubmit } = useForm<{ name: string }>({
+        defaultValues: { name: 'Saved' },
+        resetOptions: { keepFieldsRef: true },
+      });
+      const input = React.useMemo(
+        () => (
+          <input aria-label="name" {...register('name', { required: true })} />
+        ),
+        [register],
+      );
+
+      return (
+        <form onSubmit={handleSubmit(noop)}>
+          {input}
+          <button type="button" onClick={() => reset()}>
+            cancel
+          </button>
+          <button>save</button>
+        </form>
+      );
+    };
+
+    it('restore the input on every reset(), not only the first', () => {
+      render(<App />);
+      const input = screen.getByRole('textbox', { name: 'name' });
+      const cancel = screen.getByRole('button', { name: 'cancel' });
+
+      fireEvent.change(input, { target: { value: 'Edited' } });
+      fireEvent.click(cancel);
+      expect(input).toHaveValue('Saved');
+
+      fireEvent.change(input, { target: { value: 'Edited again' } });
+      fireEvent.click(cancel);
+      expect(input).toHaveValue('Saved');
+    });
+
+    it('focus the invalid input on a failed submit after reset()', async () => {
+      render(<App />);
+      const input = screen.getByRole('textbox', { name: 'name' });
+
+      fireEvent.change(input, { target: { value: 'Edited' } });
+      fireEvent.click(screen.getByRole('button', { name: 'cancel' }));
+      fireEvent.change(input, { target: { value: '' } });
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'save' }));
+      });
+
+      expect(input).toHaveFocus();
+    });
+  });
 });

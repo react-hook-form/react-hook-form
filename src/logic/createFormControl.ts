@@ -2383,7 +2383,10 @@ export function createFormControl<
     }
 
     _names = {
-      mount: keepStateOptions.keepDirtyValues ? _names.mount : new Set(),
+      mount:
+        keepStateOptions.keepDirtyValues || keepStateOptions.keepFieldsRef
+          ? _names.mount
+          : new Set(),
       unMount: new Set(),
       array: new Set(),
       registerName: new Set(),
