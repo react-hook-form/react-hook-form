@@ -505,6 +505,66 @@ describe('handleSubmit', () => {
     expect(result.current.control._formState.errors.lastName).toBeUndefined();
   });
 
+  it('stop at the first invalid nested field with native validation', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ user: { firstName: string }; lastName: string }>({
+        shouldUseNativeValidation: true,
+      }),
+    );
+
+    const firstNameReportValidity = jest.fn();
+    const lastNameReportValidity = jest.fn();
+
+    result.current.register('user.firstName', { required: 'first name' }).ref({
+      name: 'user.firstName',
+      setCustomValidity: noop,
+      reportValidity: firstNameReportValidity,
+    });
+    result.current.register('lastName', { required: 'last name' }).ref({
+      name: 'lastName',
+      setCustomValidity: noop,
+      reportValidity: lastNameReportValidity,
+    });
+
+    await act(async () => {
+      await result.current.handleSubmit(noop)({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    expect(firstNameReportValidity).toHaveBeenCalled();
+    expect(lastNameReportValidity).not.toHaveBeenCalled();
+    expect(result.current.control._formState.errors.user?.firstName?.type).toBe(
+      'required',
+    );
+    expect(result.current.control._formState.errors.lastName).toBeUndefined();
+  });
+
+  it('keep validating after a valid nested field with native validation', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ user: { firstName: string }; lastName: string }>({
+        shouldUseNativeValidation: true,
+        defaultValues: { user: { firstName: 'bill' } },
+      }),
+    );
+
+    result.current.register('user.firstName', { required: true });
+    result.current.register('lastName', { required: true });
+
+    await act(async () => {
+      await result.current.handleSubmit(noop)({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    expect(result.current.control._formState.errors.user).toBeUndefined();
+    expect(result.current.control._formState.errors.lastName?.type).toBe(
+      'required',
+    );
+  });
+
   it('stop at the first invalid field when native validation is set on useForm with a formControl', async () => {
     const { formControl } = createFormControl<{
       firstName: string;
