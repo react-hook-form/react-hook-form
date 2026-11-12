@@ -109,6 +109,52 @@ describe('reset', () => {
     });
   });
 
+  it('omit a disabled useController field after reset (#14027)', async () => {
+    type FormValues = { a: string; b: string };
+    const onSubmit = jest.fn();
+
+    function Input({
+      control,
+      name,
+      disabled,
+    }: {
+      control: Control<FormValues>;
+      name: keyof FormValues;
+      disabled?: boolean;
+    }) {
+      const { field } = useController({ control, name, disabled });
+      return <input {...field} />;
+    }
+
+    function App() {
+      const { control, reset, handleSubmit } = useForm<FormValues>({
+        defaultValues: { a: 'x', b: 'y' },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Input control={control} name="a" disabled />
+          <Input control={control} name="b" />
+          <button type="button" onClick={() => reset({ a: 'x2', b: 'y2' })}>
+            reset
+          </button>
+          <button>submit</button>
+        </form>
+      );
+    }
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    expect(onSubmit.mock.calls[0][0]).toEqual({ b: 'y' });
+
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(2));
+    expect(onSubmit.mock.calls[1][0]).toEqual({ b: 'y2' });
+  });
+
   it('reset the form and re-render the form', async () => {
     const { result } = renderHook(() => useForm<{ test: string }>());
 
