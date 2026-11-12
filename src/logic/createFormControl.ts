@@ -2015,14 +2015,14 @@ export function createFormControl<
       }
     }
 
-    if (field && !shouldRevalidateRemount) {
-      _setDisabledField({
-        disabled: isBoolean(options.disabled)
-          ? options.disabled
-          : _options.disabled,
-        name,
-      });
-    } else {
+    _setDisabledField({
+      disabled: isBoolean(options.disabled)
+        ? options.disabled
+        : _options.disabled,
+      name,
+    });
+
+    if (!field || shouldRevalidateRemount) {
       updateValidAndValue(name, true, options.value);
     }
 
