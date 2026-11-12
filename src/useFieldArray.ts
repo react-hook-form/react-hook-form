@@ -397,7 +397,6 @@ export function useFieldArray<
       const fieldArrayValues = get(control._formValues, name);
       if (control._options.resolver) {
         control._runSchema([name]).then((result) => {
-          control._updateIsValidating([name]);
           if (fieldArrayValues !== get(control._formValues, name)) {
             return;
           }

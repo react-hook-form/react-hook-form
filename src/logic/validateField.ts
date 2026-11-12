@@ -38,6 +38,7 @@ export default async <T extends FieldValues>(
   validateAllFieldCriteria: boolean,
   shouldUseNativeValidation?: boolean,
   isFieldArray?: boolean,
+  isCurrent = () => true,
 ): Promise<InternalFieldErrors> => {
   const {
     ref,
@@ -60,7 +61,7 @@ export default async <T extends FieldValues>(
   }
   const inputRef: HTMLInputElement = refs ? refs[0] : (ref as HTMLInputElement);
   const setCustomValidity = (message?: string | boolean) => {
-    if (shouldUseNativeValidation && inputRef.reportValidity) {
+    if (shouldUseNativeValidation && inputRef.reportValidity && isCurrent()) {
       const validityMessage = isBoolean(message) ? '' : message || '';
       if (refs) {
         refs.forEach(

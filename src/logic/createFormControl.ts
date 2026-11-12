@@ -239,8 +239,19 @@ export function createFormControl<
   };
 
   let _setValidCallId = 0;
+  let _setValidCleanup: (() => void) | undefined;
+  let _pendingValidatingUpdate = false;
   let _validateFormCallId = 0;
   let _resetCallId = 0;
+  let _resetFieldCallId = 0;
+  const _resetFieldCallIds: Record<InternalFieldName, number> = {};
+  const isFieldValidationCurrent = (name: string, callId: number) =>
+    !Object.keys(_resetFieldCallIds).some(
+      (resetName) =>
+        _resetFieldCallIds[resetName] > callId &&
+        (name === resetName || name.startsWith(`${resetName}.`)),
+    );
+  const _pendingResolverFields = new Map<string, Set<object>>();
   let _registerCallId = 0;
   const _registerCallIds: Record<InternalFieldName, number> = {};
 
@@ -270,17 +281,29 @@ export function createFormControl<
     }
   };
 
+  const invalidateIsValid = () => {
+    _setValidCallId++;
+    _setValidCleanup?.();
+    _setValidCleanup = undefined;
+    return _setValidCallId;
+  };
+
   const _setValid = async (shouldUpdateValid?: boolean) => {
     if (_state.keepIsValid) {
       return;
     }
     if (!_options.disabled && (_isTracked('isValid') || shouldUpdateValid)) {
-      const callId = ++_setValidCallId;
+      const callId = invalidateIsValid();
       const resetCallId = _resetCallId;
       let isValid: boolean;
       if (_options.resolver) {
-        isValid = isEmptyObject((await _runSchema()).errors);
-        callId === _setValidCallId && _updateIsValidating();
+        const updateValidating = createValidationCleanup();
+        // The incoming validation or reset publishes superseded pending state.
+        _setValidCleanup = () => updateValidating(undefined, false);
+        isValid = isEmptyObject(
+          (await _runSchema(undefined, updateValidating)).errors,
+        );
+        updateValidating();
       } else {
         isValid = await executeBuiltInValidation({
           fields: _fields,
@@ -344,6 +367,60 @@ export function createFormControl<
         isValidating: !isEmptyObject(_formState.validatingFields),
       });
     }
+  };
+
+  const clearResolverValidation = (names: Iterable<string>) => {
+    for (const name of names) {
+      for (const fieldName of _pendingResolverFields.keys()) {
+        if (fieldName === name || fieldName.startsWith(`${name}.`)) {
+          _pendingResolverFields.delete(fieldName);
+        }
+      }
+    }
+  };
+
+  // Parent requests own their registered children independently.
+  const createValidationCleanup = (names?: InternalFieldName[]) => {
+    const fieldNames = new Set(
+      names
+        ? names.flatMap((name) => {
+            const children = [..._names.mount].filter((fieldName) =>
+              fieldName.startsWith(`${name}.`),
+            );
+            return children.length ? children : [name];
+          })
+        : _names.mount,
+    );
+    const validation = {};
+
+    return (isValidating?: boolean, shouldPublish = true) => {
+      const updatedNames: string[] = [];
+      for (const name of fieldNames) {
+        const pending = _pendingResolverFields.get(name);
+        if (isValidating) {
+          const validations = pending || new Set<object>();
+          validations.add(validation);
+          _pendingResolverFields.set(name, validations);
+          updatedNames.push(name);
+        } else if (pending?.delete(validation) && !pending.size) {
+          _pendingResolverFields.delete(name);
+          updatedNames.push(name);
+        }
+      }
+      if (
+        (updatedNames.length || _pendingValidatingUpdate) &&
+        !_options.disabled &&
+        _isTracked('isValidating', 'validatingFields')
+      ) {
+        _updateValidatingFields(updatedNames, isValidating);
+        if (shouldPublish) {
+          _updateIsValidating([..._pendingResolverFields.keys()], true);
+        } else {
+          _updateValidatingFields(_pendingResolverFields.keys(), true);
+          _pendingValidatingUpdate = true;
+        }
+      }
+    };
   };
 
   const _updateDirtyFields = () => {
@@ -768,36 +845,72 @@ export function createFormControl<
     }
   };
 
-  const _runSchema = async (name?: InternalFieldName[]) => {
-    _updateIsValidating(name, true);
-    return await _options.resolver!(
-      _formValues,
-      _options.context,
-      getResolverOptions(
-        name || _names.mount,
-        _fields,
-        _options.criteriaMode,
-        _options.shouldUseNativeValidation,
-      ),
-    );
+  const _runSchema = async (
+    name?: InternalFieldName[],
+    deferredCleanup?: (isValidating?: boolean) => void,
+  ) => {
+    const resetCallId = _resetCallId;
+    const resetFieldCallId = _resetFieldCallId;
+    const updateValidating = deferredCleanup || createValidationCleanup(name);
+    updateValidating(true);
+    try {
+      let result = await _options.resolver!(
+        _formValues,
+        _options.context,
+        getResolverOptions(
+          name || _names.mount,
+          _fields,
+          _options.criteriaMode,
+          _options.shouldUseNativeValidation,
+        ),
+      );
+
+      if (resetCallId === _resetCallId) {
+        const resetNames = Object.keys(_resetFieldCallIds).filter(
+          (name) => _resetFieldCallIds[name] > resetFieldCallId,
+        );
+        if (resetNames.length) {
+          // Preserve newer field errors without mutating resolver-owned results.
+          result = { ...result };
+          result.errors = cloneObject(result.errors);
+          for (const resetName of resetNames) {
+            const error = get(_formState.errors, resetName);
+            error
+              ? set(result.errors, resetName, error)
+              : unset(result.errors, resetName);
+          }
+        }
+        !deferredCleanup && updateValidating();
+      }
+
+      return result;
+    } catch (error) {
+      updateValidating();
+      throw error;
+    }
   };
 
   const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
     const resetCallId = _resetCallId;
     const registerCallId = _registerCallId;
+    const resetFieldCallId = _resetFieldCallId;
     const registeredNames = names
       ? names.filter((name) => get(_fields, name))
       : [];
-    const { errors } = await _runSchema(names);
+    const updateValidating = createValidationCleanup(names);
+    const { errors } = await _runSchema(names, updateValidating);
 
     if (resetCallId !== _resetCallId) {
       return errors;
     }
 
-    _updateIsValidating(names);
+    updateValidating();
 
     if (names) {
       for (const name of names) {
+        if (!isFieldValidationCurrent(name, resetFieldCallId)) {
+          continue;
+        }
         if (
           registeredNames.includes(name) &&
           (!get(_fields, name) || _registerCallIds[name] > registerCallId)
@@ -848,6 +961,7 @@ export function createFormControl<
   }) => {
     if (_options.validate) {
       const resetCallId = _resetCallId;
+      const resetFieldCallId = _resetFieldCallId;
       const validateFormCallId = ++_validateFormCallId;
       const result = await _options.validate({
         formValues: _formValues,
@@ -858,6 +972,7 @@ export function createFormControl<
 
       if (
         resetCallId !== _resetCallId ||
+        resetFieldCallId !== _resetFieldCallId ||
         (eventType !== EVENTS.SUBMIT &&
           validateFormCallId !== _validateFormCallId)
       ) {
@@ -966,6 +1081,10 @@ export function createFormControl<
           }
 
           const registerCallId = _registerCallId;
+          const resetFieldCallId = _resetFieldCallId;
+          const isCurrent = () =>
+            resetCallId === _resetCallId &&
+            isFieldValidationCurrent(_f.name, resetFieldCallId);
           const fieldError = await validateField(
             field as Field,
             _names.disabled,
@@ -973,21 +1092,23 @@ export function createFormControl<
             shouldDisplayAllAssociatedErrors,
             _options.shouldUseNativeValidation && !onlyCheckValid,
             isFieldArrayRoot,
+            isCurrent,
           );
 
           if (resetCallId !== _resetCallId) {
             return context.valid;
           }
 
-          if (isPromiseFunction && shouldTrackIsValidatingState) {
-            _updateIsValidating([_f.name]);
-          }
-
           if (
+            !isCurrent() ||
             !get(_fields, _f.name) ||
             _registerCallIds[_f.name] > registerCallId
           ) {
             continue;
+          }
+
+          if (isPromiseFunction && shouldTrackIsValidatingState) {
+            _updateIsValidating([_f.name]);
           }
 
           if (fieldError[_f.name]) {
@@ -1393,9 +1514,11 @@ export function createFormControl<
     let isFieldValueUpdated = true;
     const field: Field = get(_fields, name);
     const registerCallId = _registerCallId;
+    const resetFieldCallId = _resetFieldCallId;
     const _updateIsFieldValueUpdated = (fieldValue: unknown) => {
       isFieldValueUpdated =
         !!get(_fields, name) &&
+        isFieldValidationCurrent(name, resetFieldCallId) &&
         !(_registerCallIds[name] > registerCallId) &&
         deepEqual(fieldValue, get(_formValues, name, fieldValue));
     };
@@ -1484,15 +1607,19 @@ export function createFormControl<
       !isBlurEvent && watched && _subjects.state.next({ ..._formState });
 
       if (_options.resolver) {
+        invalidateIsValid();
         const resetCallId = _resetCallId;
-        const { errors } = await _runSchema([name]);
+        const updateValidating = createValidationCleanup([name]);
+        const { errors } = await _runSchema([name], updateValidating);
 
-        if (resetCallId !== _resetCallId) {
+        if (
+          resetCallId !== _resetCallId ||
+          !isFieldValidationCurrent(name, resetFieldCallId)
+        ) {
           return;
         }
 
-        _updateIsValidating([name]);
-
+        updateValidating();
         _updateIsFieldValueUpdated(fieldValue);
 
         if (!isFieldValueUpdated) {
@@ -1517,7 +1644,7 @@ export function createFormControl<
         isValid = isEmptyObject(errors);
       } else {
         const resetCallId = _resetCallId;
-        const setValidCallId = ++_setValidCallId;
+        const setValidCallId = invalidateIsValid();
         _updateIsValidating([name], true);
         error = (
           await validateField(
@@ -1526,10 +1653,17 @@ export function createFormControl<
             _formValues,
             shouldDisplayAllAssociatedErrors,
             _options.shouldUseNativeValidation,
+            false,
+            () =>
+              resetCallId === _resetCallId &&
+              isFieldValidationCurrent(name, resetFieldCallId),
           )
         )[name];
 
-        if (resetCallId !== _resetCallId) {
+        if (
+          resetCallId !== _resetCallId ||
+          !isFieldValidationCurrent(name, resetFieldCallId)
+        ) {
           return;
         }
 
@@ -1594,8 +1728,10 @@ export function createFormControl<
     let validationResult;
     const fieldNames = convertToArrayPayload(name) as InternalFieldName[];
     const resetCallId = _resetCallId;
+    const resetFieldCallId = _resetFieldCallId;
 
     if (_options.resolver) {
+      invalidateIsValid();
       const errors = await executeSchemaAndUpdateState(
         isUndefined(name) ? name : fieldNames,
       );
@@ -1665,7 +1801,9 @@ export function createFormControl<
       (_isTracked('isValid') && isValid !== _formState.isValid)
         ? {}
         : { name }),
-      ...(_options.resolver || !name ? { isValid } : {}),
+      ...((_options.resolver || !name) && resetFieldCallId === _resetFieldCallId
+        ? { isValid }
+        : {}),
       ...(options.shouldTouch && _isTracked('touchedFields')
         ? { touchedFields: _formState.touchedFields }
         : {}),
@@ -1923,7 +2061,9 @@ export function createFormControl<
     }
 
     if (!options.keepIsValidating) {
+      clearResolverValidation(fieldNames);
       _updateValidatingFields(fieldNames);
+      _updateValidatingFields(_pendingResolverFields.keys(), true);
     }
 
     for (const fieldName of fieldNames) {
@@ -2164,9 +2304,10 @@ export function createFormControl<
       };
 
       if (_options.resolver) {
+        const updateValidating = createValidationCleanup();
         let validationResult!: Awaited<ReturnType<typeof _runSchema>>;
         try {
-          validationResult = await _runSchema();
+          validationResult = await _runSchema(undefined, updateValidating);
         } catch (error) {
           onSubmitError(error);
         }
@@ -2176,7 +2317,7 @@ export function createFormControl<
           return;
         }
 
-        _updateIsValidating();
+        updateValidating();
         Object.keys(delayErrorCallbacks).forEach(cancelDelayedError);
         _formState.errors = errors;
         fieldValues = cloneObject(values);
@@ -2250,7 +2391,11 @@ export function createFormControl<
 
   const resetField: UseFormResetField<TFieldValues> = (name, options = {}) => {
     if (get(_fields, name)) {
+      _resetFieldCallIds[name] = ++_resetFieldCallId;
+      invalidateIsValid();
+      clearResolverValidation([name]);
       _updateValidatingFields([name]);
+      _updateValidatingFields(_pendingResolverFields.keys(), true);
 
       if (isUndefined(options.defaultValue)) {
         setValue(name, cloneObject(get(_defaultValues, name)));
@@ -2290,6 +2435,11 @@ export function createFormControl<
     keepStateOptions = {},
   ) => {
     _resetCallId++;
+    _pendingResolverFields.clear();
+    _pendingValidatingUpdate = false;
+    for (const name of Object.keys(_resetFieldCallIds)) {
+      delete _resetFieldCallIds[name];
+    }
     const updatedValues = formValues ? cloneObject(formValues) : _defaultValues;
     const cloneUpdatedValues = cloneObject(updatedValues);
     const isEmptyResetValues = isEmptyObject(formValues);
@@ -2517,6 +2667,9 @@ export function createFormControl<
         ..._formState,
         ...formState,
       };
+      if ('isValidating' in formState || 'validatingFields' in formState) {
+        _pendingValidatingUpdate = false;
+      }
     }
   };
 
