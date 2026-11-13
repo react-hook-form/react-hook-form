@@ -1604,7 +1604,7 @@ export function createFormControl<
         ? !fieldNames.some((name) => get(errors, name))
         : isValid;
     } else if (name) {
-      const formValidationResult = _options.validate
+      const formValid = _options.validate
         ? await validateForm({
             name: isString(name) ? name : [...name],
             eventType: EVENTS.TRIGGER,
@@ -1612,22 +1612,20 @@ export function createFormControl<
         : true;
 
       if (resetCallId !== _resetCallId) {
-        return formValidationResult;
+        return formValid;
       }
 
-      validationResult =
-        (
-          await Promise.all(
-            fieldNames.map(async (fieldName) => {
-              const field: FieldRefs = get(_fields, fieldName);
-              return await executeBuiltInValidation({
-                fields: field && field._f ? { [fieldName]: field } : field,
-                context: { valid: true, runRootValidation: true },
-                eventType: EVENTS.TRIGGER,
-              });
-            }),
-          )
-        ).every(Boolean) && formValidationResult;
+      const fieldResults = await Promise.all(
+        fieldNames.map((fieldName) => {
+          const field: FieldRefs = get(_fields, fieldName);
+          return executeBuiltInValidation({
+            fields: field && field._f ? { [fieldName]: field } : field,
+            context: { valid: true, runRootValidation: true },
+            eventType: EVENTS.TRIGGER,
+          });
+        }),
+      );
+      validationResult = fieldResults.every(Boolean) && formValid;
       !(!validationResult && !_formState.isValid) && _setValid();
     } else {
       validationResult = isValid = await executeBuiltInValidation({
