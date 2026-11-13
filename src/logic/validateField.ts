@@ -60,7 +60,10 @@ export default async <T extends FieldValues>(
   }
   const inputRef: HTMLInputElement = refs ? refs[0] : (ref as HTMLInputElement);
   const setCustomValidity = (message?: string | boolean) => {
-    if (shouldUseNativeValidation && inputRef.reportValidity) {
+    if (shouldUseNativeValidation && isFunction(inputRef.reportValidity)) {
+      const validationRef =
+        refs?.find((ref) => !ref.disabled && isFunction(ref.reportValidity)) ||
+        inputRef;
       const validityMessage = isBoolean(message) ? '' : message || '';
       if (refs) {
         refs.forEach(
@@ -71,7 +74,7 @@ export default async <T extends FieldValues>(
       } else {
         inputRef.setCustomValidity(validityMessage);
       }
-      inputRef.reportValidity();
+      validationRef.reportValidity();
     }
   };
   const error: InternalFieldErrors = {};
