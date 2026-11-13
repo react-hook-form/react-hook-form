@@ -926,6 +926,7 @@ export function createFormControl<
     context?: {
       valid: boolean;
       runRootValidation?: boolean;
+      hasNativeError?: boolean;
     };
   }) => {
     const resetCallId = _resetCallId;
@@ -1012,6 +1013,7 @@ export function createFormControl<
           }
 
           if (_options.shouldUseNativeValidation && fieldError[_f.name]) {
+            context.hasNativeError = true;
             break;
           }
         }
@@ -1024,6 +1026,10 @@ export function createFormControl<
             name: name as FieldPath<TFieldValues>,
             eventType,
           }));
+
+        if (context.hasNativeError) {
+          break;
+        }
       }
     }
 
