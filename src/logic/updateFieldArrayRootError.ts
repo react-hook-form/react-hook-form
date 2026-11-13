@@ -15,7 +15,11 @@ export default <T extends FieldValues = FieldValues>(
 ): FieldErrors<T> => {
   const existingErrors = get(errors, name);
   const fieldArrayErrors = Array.isArray(existingErrors) ? existingErrors : [];
-  set(fieldArrayErrors, ROOT_ERROR_TYPE, error[name]);
+  set(
+    fieldArrayErrors,
+    ROOT_ERROR_TYPE,
+    get(error[name], ROOT_ERROR_TYPE, error[name]),
+  );
   set(errors, name, fieldArrayErrors);
   return errors;
 };

@@ -95,19 +95,25 @@ export function useFieldArray<
     useResyncOnReconnect(getCurrentFieldArray);
   const _prevControl = React.useRef(control);
   const _prevName = React.useRef(name);
+  const _rules = React.useRef({ control, name, rules });
 
   if (!disabled) {
     control._names.array.add(name);
   }
 
-  React.useMemo(
-    () =>
-      !disabled &&
-      rules &&
-      fields &&
-      control.register(name as FieldPath<TFieldValues>, rules),
-    [control, name, fields, rules, disabled],
-  );
+  React.useMemo(() => {
+    if (!disabled && fields) {
+      if (
+        rules ||
+        (_rules.current.rules &&
+          _rules.current.control === control &&
+          _rules.current.name === name)
+      ) {
+        control.register(name as FieldPath<TFieldValues>, rules);
+      }
+      _rules.current = { control, name, rules };
+    }
+  }, [control, name, fields, rules, disabled]);
 
   useIsomorphicLayoutEffect(() => {
     if (disabled) {
@@ -396,26 +402,7 @@ export function useFieldArray<
             return;
           }
           const error: FieldError | undefined = get(result.errors, name);
-          const existingError:
-            | (FieldError & { root?: FieldError })
-            | undefined = get(control._formState.errors, name);
-          const existingErrorType =
-            existingError &&
-            (existingError.type ||
-              (existingError.root && existingError.root.type));
-          const existingErrorMessage =
-            existingError &&
-            (existingError.message ||
-              (existingError.root && existingError.root.message));
-
-          if (
-            existingError
-              ? (!error && existingErrorType) ||
-                (error &&
-                  (existingErrorType !== error.type ||
-                    existingErrorMessage !== error.message))
-              : error && error.type
-          ) {
+          if (!deepEqual(get(control._formState.errors, name), error, true)) {
             if (error) {
               isObject(error) &&
               !Object.keys(error).some((key) => !Number.isNaN(+key))

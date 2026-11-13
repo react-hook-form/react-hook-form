@@ -12,6 +12,7 @@ import type {
 import { useForm } from '../useForm';
 
 import type { Equal, Expect } from './__fixtures__';
+import { _ } from './__fixtures__';
 
 /** {@link ValidateForm} */ {
   /** it should allow errors that use the default validation type */ {
@@ -122,6 +123,18 @@ const schema = z.object({
     type _t2 = Expect<Equal<typeof data, { test1: number }>>;
     type _t3 = Expect<Equal<typeof data, { test: string } | { test1: number }>>;
   });
+}
+
+/** {@link UseFormGetValues} */ {
+  /** it should preserve undefined when reading a nested array element */ {
+    const { getValues } = useForm<{
+      rows: ({ name: string } | undefined)[];
+    }>();
+
+    const value = getValues('rows.0.name');
+    void value;
+    void (_ as Expect<Equal<typeof value, string | undefined>>);
+  }
 }
 
 /** {@link UseFormGetFieldState} */ {

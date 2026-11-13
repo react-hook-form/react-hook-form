@@ -60,6 +60,111 @@ describe('handleSubmit', () => {
   afterEach(() => {
     jest.useRealTimers();
   });
+
+  it.each(['resolve', 'reject'] as const)(
+    'not settle a new submission when an old onValid callback %s after reset',
+    async (outcome) => {
+      const { result } = renderHook(() =>
+        useFormWithSubmitState({ defaultValues: { test: 'before' } }),
+      );
+      let resolveFirst!: (value: string) => void;
+      let rejectFirst!: (reason: Error) => void;
+      let resolveSecond!: () => void;
+      const firstCallback = jest.fn(
+        () =>
+          new Promise<string>((resolve, reject) => {
+            resolveFirst = resolve;
+            rejectFirst = reject;
+          }),
+      );
+      const secondCallback = jest.fn(
+        () =>
+          new Promise<void>((resolve) => {
+            resolveSecond = resolve;
+          }),
+      );
+      let firstSubmit!: Promise<string | undefined>;
+      let secondSubmit!: Promise<void>;
+
+      await act(async () => {
+        firstSubmit = result.current.methods.handleSubmit(firstCallback)();
+      });
+      expect(firstCallback).toHaveBeenCalledTimes(1);
+
+      act(() => result.current.methods.reset({ test: 'after' }));
+      await act(async () => {
+        secondSubmit = result.current.methods.handleSubmit(secondCallback)();
+      });
+      expect(secondCallback).toHaveBeenCalledTimes(1);
+
+      const failure = new Error('old request failed');
+      await act(async () => {
+        outcome === 'resolve' ? resolveFirst('saved') : rejectFirst(failure);
+        const settled = await Promise.allSettled([firstSubmit]);
+        expect(settled).toEqual([
+          outcome === 'resolve'
+            ? { status: 'fulfilled', value: 'saved' }
+            : { status: 'rejected', reason: failure },
+        ]);
+      });
+
+      expect(result.current.state).toEqual({
+        ...exceptionalSubmitState,
+        isSubmitting: true,
+        errors: {},
+      });
+      expect(result.current.methods.getValues()).toEqual({ test: 'after' });
+
+      await act(async () => {
+        resolveSecond();
+        await secondSubmit;
+      });
+      expect(result.current.state).toEqual({
+        isSubmitting: false,
+        isSubmitted: true,
+        isSubmitSuccessful: true,
+        submitCount: 1,
+        errors: {},
+      });
+    },
+  );
+
+  it('not publish submit state or focus new errors when reset runs during onInvalid', async () => {
+    const { result } = renderHook(() =>
+      useFormWithSubmitState({ defaultValues: { test: '' } }),
+    );
+    result.current.methods.register('test', { required: true });
+    let resolveInvalid!: () => void;
+    const onInvalid = jest.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveInvalid = resolve;
+        }),
+    );
+    let submission!: Promise<void>;
+
+    await act(async () => {
+      submission = result.current.methods.handleSubmit(noop, onInvalid)();
+    });
+    expect(onInvalid).toHaveBeenCalledTimes(1);
+
+    const input = document.createElement('input');
+    const focus = jest.spyOn(input, 'focus');
+    act(() => {
+      result.current.methods.reset({ test: 'after' });
+      result.current.methods.register('test').ref(input);
+      result.current.methods.setError('test', { type: 'server' });
+    });
+    const stateAfterReset = result.current.state;
+    await act(async () => {
+      resolveInvalid();
+      await submission;
+    });
+
+    expect(result.current.state).toEqual(stateAfterReset);
+    expect(focus).not.toHaveBeenCalled();
+  });
+
   it('invoke the callback when validation pass', async () => {
     const { result } = renderHook(() => useForm());
     const callback = jest.fn();
@@ -400,6 +505,66 @@ describe('handleSubmit', () => {
     expect(result.current.control._formState.errors.lastName).toBeUndefined();
   });
 
+  it('stop at the first invalid nested field with native validation', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ user: { firstName: string }; lastName: string }>({
+        shouldUseNativeValidation: true,
+      }),
+    );
+
+    const firstNameReportValidity = jest.fn();
+    const lastNameReportValidity = jest.fn();
+
+    result.current.register('user.firstName', { required: 'first name' }).ref({
+      name: 'user.firstName',
+      setCustomValidity: noop,
+      reportValidity: firstNameReportValidity,
+    });
+    result.current.register('lastName', { required: 'last name' }).ref({
+      name: 'lastName',
+      setCustomValidity: noop,
+      reportValidity: lastNameReportValidity,
+    });
+
+    await act(async () => {
+      await result.current.handleSubmit(noop)({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    expect(firstNameReportValidity).toHaveBeenCalled();
+    expect(lastNameReportValidity).not.toHaveBeenCalled();
+    expect(result.current.control._formState.errors.user?.firstName?.type).toBe(
+      'required',
+    );
+    expect(result.current.control._formState.errors.lastName).toBeUndefined();
+  });
+
+  it('keep validating after a valid nested field with native validation', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ user: { firstName: string }; lastName: string }>({
+        shouldUseNativeValidation: true,
+        defaultValues: { user: { firstName: 'bill' } },
+      }),
+    );
+
+    result.current.register('user.firstName', { required: true });
+    result.current.register('lastName', { required: true });
+
+    await act(async () => {
+      await result.current.handleSubmit(noop)({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    expect(result.current.control._formState.errors.user).toBeUndefined();
+    expect(result.current.control._formState.errors.lastName?.type).toBe(
+      'required',
+    );
+  });
+
   it('stop at the first invalid field when native validation is set on useForm with a formControl', async () => {
     const { formControl } = createFormControl<{
       firstName: string;
@@ -670,6 +835,38 @@ describe('handleSubmit', () => {
     },
   );
 
+  describe.each(['throws', 'rejects'] as const)(
+    'when onValid %s',
+    (failureType) => {
+      it.each([undefined, null, false, 0, ''])(
+        'preserves a falsy failure reason (%s) and marks submission unsuccessful',
+        async (failure) => {
+          const { result } = renderHook(() => useFormWithSubmitState());
+          const onValid =
+            failureType === 'throws'
+              ? () => {
+                  throw failure;
+                }
+              : () => Promise.reject(failure);
+          const settled = await act(async () =>
+            Promise.allSettled([
+              result.current.methods.handleSubmit(onValid)(),
+            ]),
+          );
+
+          expect(result.current.state).toEqual({
+            isSubmitting: false,
+            isSubmitted: true,
+            isSubmitSuccessful: false,
+            submitCount: 1,
+            errors: {},
+          });
+          expect(settled).toEqual([{ status: 'rejected', reason: failure }]);
+        },
+      );
+    },
+  );
+
   it('preserve a falsy value thrown by onInvalid', async () => {
     const { result } = renderHook(() => useFormWithSubmitState());
 
@@ -775,6 +972,122 @@ describe('handleSubmit', () => {
       });
       expect(callback.mock.calls[0][0]).toEqual({ test: 'test' });
     });
+  });
+
+  describe('with disabled fields and transformed values', () => {
+    it.each([null, undefined])(
+      'submit a transformed %s value when a field is disabled',
+      async (transformed) => {
+        const { result } = renderHook(() => {
+          const methods = useForm<TestFormValues, unknown, typeof transformed>({
+            defaultValues: { test: 'disabled' },
+            resolver: () => ({ values: transformed, errors: {} }),
+          });
+          methods.register('test', { disabled: true });
+          return methods;
+        });
+        result.current.formState.isSubmitting;
+        result.current.formState.isSubmitted;
+        result.current.formState.isSubmitSuccessful;
+        result.current.formState.submitCount;
+        const callback = jest.fn(() => 'submitted');
+        let returned: string | undefined;
+
+        await act(async () => {
+          returned = await result.current.handleSubmit(callback)();
+        });
+
+        expect(callback).toHaveBeenCalledTimes(1);
+        expect(callback).toHaveBeenCalledWith(transformed, undefined);
+        expect(returned).toBe('submitted');
+        expect(result.current.formState).toMatchObject({
+          isSubmitting: false,
+          isSubmitted: true,
+          isSubmitSuccessful: true,
+          submitCount: 1,
+        });
+      },
+    );
+
+    it.each(['slug-value', 42, true])(
+      'submit a transformed primitive %s when a field is disabled',
+      async (transformed) => {
+        const { result } = renderHook(() => {
+          const methods = useForm<{ '0': string }, unknown, typeof transformed>(
+            {
+              resolver: () => ({ values: transformed, errors: {} }),
+            },
+          );
+          methods.register('0', { disabled: true });
+          return methods;
+        });
+        const callback = jest.fn();
+
+        await act(async () => {
+          await result.current.handleSubmit(callback)();
+        });
+
+        expect(callback).toHaveBeenCalledTimes(1);
+        expect(callback).toHaveBeenCalledWith(transformed, undefined);
+      },
+    );
+
+    it('still remove disabled fields from an object returned by the resolver', async () => {
+      const transformed = {
+        test: 'disabled',
+        enabled: 'retained',
+        nested: { test: 'disabled', enabled: 'retained' },
+      };
+      const { result } = renderHook(() => {
+        const methods = useForm<typeof transformed>({
+          resolver: () => ({ values: transformed, errors: {} }),
+        });
+        methods.register('test', { disabled: true });
+        methods.register('nested.test', { disabled: true });
+        return methods;
+      });
+      const callback = jest.fn();
+
+      await act(async () => {
+        await result.current.handleSubmit(callback)();
+      });
+
+      expect(callback).toHaveBeenCalledWith(
+        { enabled: 'retained', nested: { enabled: 'retained' } },
+        undefined,
+      );
+      expect(transformed).toEqual({
+        test: 'disabled',
+        enabled: 'retained',
+        nested: { test: 'disabled', enabled: 'retained' },
+      });
+    });
+
+    it.each([
+      ['string', 'transformed-primitive'],
+      ['number', 42],
+      ['boolean', true],
+    ])(
+      'submit a transformed %s value when a field with numeric name is disabled',
+      async (_, transformed) => {
+        type TestFormValues = { '0': string };
+        const { result } = renderHook(() => {
+          const methods = useForm<TestFormValues, unknown, typeof transformed>({
+            defaultValues: { '0': 'disabled' },
+            resolver: () => ({ values: transformed, errors: {} }),
+          });
+          methods.register('0', { disabled: true });
+          return methods;
+        });
+        const callback = jest.fn();
+
+        await act(async () => {
+          await result.current.handleSubmit(callback)();
+        });
+
+        expect(callback).toHaveBeenCalledWith(transformed, undefined);
+      },
+    );
   });
 
   describe('with onInvalid callback', () => {

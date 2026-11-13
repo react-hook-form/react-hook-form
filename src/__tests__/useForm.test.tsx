@@ -3502,6 +3502,41 @@ describe('useForm', () => {
       expect(result.current.getErrors('form.lastName')).toBeUndefined();
     });
 
+    it('drop previous form-level field errors when validate returns a message', async () => {
+      let returnMessage = false;
+      const { result } = renderHook(() =>
+        useForm<{ firstName: string }>({
+          validate: () =>
+            returnMessage
+              ? 'Form is invalid'
+              : {
+                  firstName: {
+                    message: 'First name is invalid',
+                    type: 'validate',
+                  },
+                },
+        }),
+      );
+
+      await act(async () => {
+        expect(await result.current.trigger()).toBe(false);
+      });
+
+      expect(result.current.getErrors('form.firstName')).toBeDefined();
+
+      returnMessage = true;
+
+      await act(async () => {
+        expect(await result.current.trigger()).toBe(false);
+      });
+
+      expect(result.current.getErrors('form')).toMatchObject({
+        message: 'Form is invalid',
+        type: 'validate',
+      });
+      expect(result.current.getErrors('form.firstName')).toBeUndefined();
+    });
+
     it('keep the latest form-level errors when an older async validate resolves last', async () => {
       const resolvers: Record<string, (result: true | string) => void> = {};
 
@@ -3916,6 +3951,53 @@ describe('useForm', () => {
 
       expect(validateForm).toHaveBeenCalledTimes(4);
       expect(validateField).toHaveBeenCalledTimes(400);
+    });
+
+    it('not show form level errors before submit when only isValid is checked', async () => {
+      const App = () => {
+        const {
+          register,
+          formState: { errors, isValid },
+          handleSubmit,
+        } = useForm({
+          validate: ({ formValues }) =>
+            formValues.firstName ? true : 'required',
+          defaultValues: {
+            firstName: '',
+          },
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <input {...register('firstName')} />
+            <p>{isValid ? 'valid' : 'invalid'}</p>
+            <p>{errors.form?.message}</p>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      expect(await screen.findByText('invalid')).toBeVisible();
+      expect(screen.queryByText('required')).not.toBeInTheDocument();
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'test' },
+      });
+
+      expect(await screen.findByText('valid')).toBeVisible();
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: '' },
+      });
+
+      expect(await screen.findByText('invalid')).toBeVisible();
+      expect(screen.queryByText('required')).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      expect(await screen.findByText('required')).toBeVisible();
     });
 
     it('return form level error', async () => {

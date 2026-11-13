@@ -70,13 +70,19 @@ export function Form<
 
       if (isString(action)) {
         try {
+          const isMultipart = (value: string) =>
+            /^\s*multipart\/form-data\s*(;|$)/i.test(value);
+          const contentType =
+            encType && !isMultipart(encType) ? encType : undefined;
           const hasContentType = (type: RegExp) =>
-            (headers &&
-              Object.entries(headers).some(
-                ([name, value]) =>
-                  name.toLowerCase() === 'content-type' && type.test(value),
-              )) ||
-            (encType && type.test(encType));
+            contentType
+              ? type.test(contentType)
+              : (headers &&
+                  Object.entries(headers).some(
+                    ([name, value]) =>
+                      name.toLowerCase() === 'content-type' && type.test(value),
+                  )) ||
+                (encType && type.test(encType));
 
           let body: BodyInit = formData;
 
@@ -99,9 +105,6 @@ export function Form<
             ).join('');
           }
 
-          const isMultipart = (value: string) =>
-            /^\s*multipart\/form-data\s*(;|$)/i.test(value);
-
           const response = await fetch(action, {
             method,
             headers: {
@@ -109,11 +112,10 @@ export function Form<
                 Object.entries(headers || {}).filter(
                   ([name, value]) =>
                     name.toLowerCase() !== 'content-type' ||
-                    !isMultipart(value),
+                    (!contentType && !isMultipart(value)),
                 ),
               ),
-              ...(encType &&
-                !isMultipart(encType) && { 'Content-Type': encType }),
+              ...(contentType && { 'Content-Type': contentType }),
             },
             body,
           });

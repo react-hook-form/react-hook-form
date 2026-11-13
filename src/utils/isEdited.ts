@@ -10,7 +10,12 @@ const isSelectEdited = (select: HTMLSelectElement) => {
   return !select.multiple &&
     select.size < 2 &&
     !options.some((option) => option.defaultSelected)
-    ? select.selectedIndex !== options.findIndex((option) => !option.disabled)
+    ? select.selectedIndex !==
+        options.findIndex(
+          (option) =>
+            !option.disabled &&
+            !option.parentElement?.matches('optgroup[disabled]'),
+        )
     : options.some((option) => option.selected !== option.defaultSelected);
 };
 
@@ -20,5 +25,7 @@ export default (ref: Ref): boolean =>
     : ref.type === 'select-one' || isMultipleSelect(ref)
       ? isSelectEdited(ref as HTMLSelectElement)
       : !isRadioInput(ref) &&
+        ref.type !== 'range' &&
+        ref.type !== 'color' &&
         'defaultValue' in ref &&
         ref.value !== ref.defaultValue;

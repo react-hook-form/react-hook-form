@@ -13,7 +13,7 @@
     "@emotion/styled": "^11.14.0",
     "@hookform/resolvers": "3.9.0",
     "@mui/material": "^5.16.13",
-    "joi": "^18.2.9",
+    "joi": "^18.3.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "file:..",
@@ -27,6 +27,6 @@
     "@types/yup": "^0.29.14",
     "@vitejs/plugin-react": "^4.3.4",
     "typescript": "^5.7.2",
-    "vite": "^6.4.4"
+    "vite": "^6.4.5"
   }
 }

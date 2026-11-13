@@ -1051,6 +1051,86 @@ describe('useFieldArray', () => {
       );
     });
 
+    it('should update formState.errors when resolver returns row errors after array operations', async () => {
+      type FormValues = {
+        test: { value: string }[];
+      };
+
+      const App = () => {
+        const {
+          register,
+          control,
+          formState: { errors },
+        } = useForm<FormValues>({
+          mode: 'onChange',
+          resolver: async (data): Promise<ResolverResult<FormValues>> => {
+            const fieldErrors: { test?: any } = {};
+            for (const [index, item] of data.test.entries()) {
+              if (item.value === '') {
+                fieldErrors.test = fieldErrors.test || [];
+                fieldErrors.test[index] = {
+                  value: {
+                    type: 'required',
+                    message: `Item ${index} is required`,
+                  },
+                };
+              }
+            }
+
+            if (Object.keys(fieldErrors).length === 0) {
+              return { values: data, errors: {} };
+            }
+
+            return { values: {}, errors: fieldErrors };
+          },
+          defaultValues: {
+            test: [],
+          },
+        });
+        const { fields, append, remove } = useFieldArray({
+          name: 'test',
+          control,
+        });
+
+        return (
+          <form>
+            {fields.map((item, i) => (
+              <div key={item.id}>
+                <input {...register(`test.${i}.value` as const)} />
+                <button type="button" onClick={() => remove(i)}>
+                  remove {i}
+                </button>
+                {errors.test?.[i]?.value && (
+                  <span>{errors.test[i]?.value?.message}</span>
+                )}
+              </div>
+            ))}
+            <button type="button" onClick={() => append({ value: '' })}>
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      expect(screen.queryByText(/is required/)).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: 'append' }));
+
+      await waitFor(() =>
+        expect(screen.getByText('Item 0 is required')).toBeInTheDocument(),
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: 'remove 0' }));
+
+      await waitFor(() =>
+        expect(
+          screen.queryByText('Item 0 is required'),
+        ).not.toBeInTheDocument(),
+      );
+    });
+
     describe('with an async resolver', () => {
       type FormValues = { test: { value: string }[] };
 
@@ -4459,6 +4539,105 @@ describe('useFieldArray', () => {
   });
 
   describe('with rules', () => {
+    it('preserve separately registered rules when switching to another array without rules', async () => {
+      type FormValues = {
+        first: { value: string }[];
+        second: { value: string }[];
+      };
+      const { result, rerender } = renderHook(
+        ({ name }: { name: 'first' | 'second' }) => {
+          const methods = useForm<FormValues>({
+            defaultValues: {
+              first: [{ value: 'first' }],
+              second: [{ value: 'second' }],
+            },
+          });
+          methods.register('second', { minLength: 2 });
+          useFieldArray({
+            control: methods.control,
+            name,
+            rules: name === 'first' ? { minLength: 2 } : undefined,
+          });
+          return methods;
+        },
+        { initialProps: { name: 'first' } },
+      );
+
+      rerender({ name: 'second' });
+      await act(async () => {
+        expect(await result.current.trigger('second')).toBe(false);
+      });
+      expect(result.current.getFieldState('second').error?.root?.type).toBe(
+        'minLength',
+      );
+    });
+
+    it.each(['omitted', 'undefined'] as const)(
+      'stop applying rules when the rules prop is %s',
+      async (removedRules) => {
+        type FormValues = { items: { value: string }[] };
+        const rules = { minLength: { value: 2, message: 'add two items' } };
+        const { result, rerender } = renderHook(
+          ({ enabled }) => {
+            const methods = useForm<FormValues>({
+              defaultValues: { items: [{ value: 'kept' }] },
+            });
+            methods.register('items.0.value', { required: true });
+            const fieldArray = useFieldArray({
+              control: methods.control,
+              name: 'items',
+              ...(enabled
+                ? { rules }
+                : removedRules === 'undefined'
+                  ? { rules: undefined }
+                  : {}),
+            });
+
+            return { ...methods, fieldArray };
+          },
+          { initialProps: { enabled: true } },
+        );
+        const initialFields = result.current.fieldArray.fields;
+
+        await act(async () => {
+          expect(await result.current.trigger('items')).toBe(false);
+        });
+        expect(result.current.getFieldState('items').error?.root?.message).toBe(
+          'add two items',
+        );
+
+        rerender({ enabled: false });
+        await act(async () => {
+          expect(await result.current.trigger('items')).toBe(true);
+        });
+        expect(result.current.getFieldState('items').error).toBeUndefined();
+        expect(result.current.fieldArray.fields).toEqual(initialFields);
+
+        const onValid = jest.fn();
+        await act(async () => {
+          await result.current.handleSubmit(onValid)();
+        });
+        expect(onValid).toHaveBeenCalledWith(
+          { items: [{ value: 'kept' }] },
+          undefined,
+        );
+
+        act(() => result.current.setValue('items.0.value', ''));
+        await act(async () => {
+          expect(await result.current.trigger('items')).toBe(false);
+        });
+        expect(result.current.getFieldState('items.0.value').error?.type).toBe(
+          'required',
+        );
+
+        act(() => result.current.setValue('items.0.value', 'kept'));
+        rerender({ enabled: true });
+        await act(async () => {
+          expect(await result.current.trigger('items')).toBe(false);
+        });
+      },
+    );
+
     it('validate the minLength of the entire field array after submit and correct accordingly', async () => {
       const App = () => {
         const {

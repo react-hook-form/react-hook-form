@@ -751,6 +751,46 @@ describe('trigger', () => {
     expect(result.current.formState.touchedFields.test3).toBeUndefined();
   });
 
+  it('mark the nested fields as touched when shouldTouch is true with a parent name', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ address: { street: string; city: string } }>({
+        defaultValues: { address: { street: '', city: '' } },
+      }),
+    );
+
+    result.current.register('address.street');
+    result.current.register('address.city');
+    result.current.formState.touchedFields;
+
+    await act(async () => {
+      await result.current.trigger('address', { shouldTouch: true });
+    });
+
+    expect(result.current.formState.touchedFields.address).toEqual({
+      street: true,
+      city: true,
+    });
+  });
+
+  it('mark names that are Object.prototype members as touched when shouldTouch is true', async () => {
+    const { result } = renderHook(() =>
+      useForm({ defaultValues: { valueOf: '', hasOwnProperty: '' } }),
+    );
+
+    result.current.formState.touchedFields;
+
+    await act(async () => {
+      await result.current.trigger(['valueOf', 'hasOwnProperty'], {
+        shouldTouch: true,
+      });
+    });
+
+    expect(result.current.formState.touchedFields).toEqual({
+      valueOf: true,
+      hasOwnProperty: true,
+    });
+  });
+
   it('mark every mounted field as touched when shouldTouch is true and no name is provided', async () => {
     const { result } = renderHook(() =>
       useForm<{ test1: string; test2: string }>({
@@ -872,6 +912,36 @@ describe('trigger', () => {
     });
 
     expect(result.current.form.formState.touchedFields.test).not.toBe(true);
+    expect(result.current.form.formState.touchedFields.test?.[0]?.value).toBe(
+      true,
+    );
+  });
+
+  it('mark the fields of a field array row as touched when shouldTouch is true with a row name', async () => {
+    type FormValues = { test: { value: string }[] };
+
+    const { result } = renderHook(() => {
+      const form = useForm<FormValues>({
+        defaultValues: { test: [{ value: 'a' }, { value: 'b' }] },
+      });
+      const fieldArray = useFieldArray({
+        control: form.control,
+        name: 'test',
+      });
+      return { form, fieldArray };
+    });
+
+    result.current.form.register('test.0.value');
+    result.current.form.register('test.1.value');
+    result.current.form.formState.touchedFields;
+
+    await act(async () => {
+      await result.current.form.trigger('test.1', { shouldTouch: true });
+    });
+
+    expect(result.current.form.formState.touchedFields.test?.[1]).toEqual({
+      value: true,
+    });
   });
 
   it('not mark the field as touched when shouldTouch is not supplied', async () => {
@@ -1262,6 +1332,32 @@ describe('trigger', () => {
     await waitFor(() => {
       expect(triggerErrors?.items?.root?.message).toBe('at_least_1_item');
     });
+  });
+
+  it('preserve an already nested resolver field-array root error on trigger', async () => {
+    type FormValues = { items: { name: string }[] };
+    const resolverErrors: FieldErrors<FormValues> = {
+      items: { root: { type: 'min', message: 'at_least_2_items' } },
+    };
+    const { result } = renderHook(() => {
+      const form = useForm<FormValues>({
+        defaultValues: { items: [{ name: 'test' }] },
+        resolver: async () => ({ values: {}, errors: resolverErrors }),
+      });
+      useFieldArray({ control: form.control, name: 'items' });
+      form.register('items.0.name');
+      return { ...form, errors: form.formState.errors };
+    });
+
+    await act(async () => {
+      await result.current.trigger();
+    });
+    expect(result.current.errors.items?.root?.message).toBe('at_least_2_items');
+
+    await act(async () => {
+      await result.current.trigger(['items', 'items.0.name']);
+    });
+    expect(result.current.errors.items?.root?.message).toBe('at_least_2_items');
   });
 
   it('preserve resolver nested field-array item errors on trigger', async () => {

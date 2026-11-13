@@ -16,6 +16,7 @@ import type {
   FieldPath,
   FieldPathValue,
   FieldValues,
+  FormState,
   InternalFieldName,
   Ref,
   UseControllerProps,
@@ -85,6 +86,7 @@ export function useController<
   });
 
   const _props = React.useRef(props);
+  const _shouldUnregister = React.useRef(shouldUnregister);
   const _proxyRef = React.useRef<Ref | null>(null);
 
   const _registeredName = React.useRef<string | undefined>(undefined);
@@ -214,9 +216,44 @@ export function useController<
   );
 
   React.useEffect(() => {
-    const _shouldUnregisterField =
-      control._options.shouldUnregister || shouldUnregister;
+    _shouldUnregister.current = shouldUnregister;
 
+    if (control._options.shouldUnregister || shouldUnregister) {
+      const value = cloneObject(
+        get(
+          shouldUnregister
+            ? control._defaultValues
+            : control._options.values || control._defaultValues,
+          name,
+          get(
+            control._options.defaultValues,
+            name,
+            _props.current.defaultValue,
+          ),
+        ),
+      );
+      set(control._defaultValues, name, value);
+      if (isUndefined(get(control._formValues, name))) {
+        set(control._formValues, name, value);
+      }
+    } else if (
+      !isArrayField &&
+      !isUndefined(_props.current.defaultValue) &&
+      isUndefined(get(control._defaultValues, name))
+    ) {
+      set(
+        control._defaultValues,
+        name,
+        cloneObject(_props.current.defaultValue),
+      );
+      control._subjects.state.next({
+        defaultValues:
+          control._defaultValues as FormState<TFieldValues>['defaultValues'],
+      });
+    }
+  }, [control, name, isArrayField, shouldUnregister]);
+
+  React.useEffect(() => {
     _registerProps.current = control.register(name, {
       ..._props.current.rules,
       ...(isBoolean(_props.current.disabled)
@@ -235,26 +272,6 @@ export function useController<
 
     updateMounted(name, true);
 
-    if (_shouldUnregisterField) {
-      const value = cloneObject(
-        get(
-          shouldUnregister
-            ? control._defaultValues
-            : control._options.values || control._defaultValues,
-          name,
-          get(
-            control._options.defaultValues,
-            name,
-            _props.current.defaultValue,
-          ),
-        ),
-      );
-      set(control._defaultValues, name, value);
-      if (isUndefined(get(control._formValues, name))) {
-        set(control._formValues, name, value);
-      }
-    }
-
     !isArrayField &&
       control.register(name, {
         ..._props.current.rules,
@@ -272,7 +289,7 @@ export function useController<
 
     return () => {
       const shouldUnregisterField =
-        control._options.shouldUnregister || shouldUnregister;
+        control._options.shouldUnregister || _shouldUnregister.current;
 
       (
         isArrayField
@@ -282,7 +299,7 @@ export function useController<
         ? control.unregister(name)
         : updateMounted(name, false);
     };
-  }, [name, control, isArrayField, shouldUnregister]);
+  }, [name, control, isArrayField]);
 
   React.useEffect(() => {
     control._setDisabledField({

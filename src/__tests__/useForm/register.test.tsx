@@ -28,6 +28,111 @@ import isString from '../../utils/isString';
 import noop from '../../utils/noop';
 
 describe('register', () => {
+  it('omit disabled multiple-select options on change and submit', async () => {
+    let methods: UseFormReturn<{ choices: string[] }>;
+    const onSubmit = jest.fn();
+    const Component = () => {
+      methods = useForm({ defaultValues: { choices: [] as string[] } });
+      return (
+        <select multiple {...methods.register('choices')}>
+          <option value="enabled">Enabled</option>
+          <option value="disabled" disabled>
+            Disabled
+          </option>
+          <optgroup label="disabled group" disabled>
+            <option value="group-disabled">Group disabled</option>
+          </optgroup>
+          <optgroup label="enabled group">
+            <option value="group-enabled">Group enabled</option>
+          </optgroup>
+        </select>
+      );
+    };
+
+    render(<Component />);
+    const select = screen.getByRole('listbox') as HTMLSelectElement;
+    for (const option of select.options) option.selected = true;
+    fireEvent.change(select);
+
+    expect(methods!.getValues('choices')).toEqual(['enabled', 'group-enabled']);
+    await act(async () => {
+      await methods.handleSubmit(onSubmit)();
+    });
+    expect(onSubmit).toHaveBeenCalledWith(
+      { choices: ['enabled', 'group-enabled'] },
+      undefined,
+    );
+  });
+
+  it('preserve explicit disabled multiple-select default values and setValue assignments', async () => {
+    let methods: UseFormReturn<{ choices: string[] }>;
+    const onSubmit = jest.fn();
+    const Component = () => {
+      methods = useForm({
+        defaultValues: { choices: ['disabled', 'group-disabled'] },
+      });
+      return (
+        <select multiple {...methods.register('choices')}>
+          <option value="enabled">Enabled</option>
+          <option value="disabled" disabled>
+            Disabled
+          </option>
+          <optgroup label="disabled group" disabled>
+            <option value="group-disabled">Group disabled</option>
+          </optgroup>
+        </select>
+      );
+    };
+
+    render(<Component />);
+    expect(methods!.getValues('choices')).toEqual([
+      'disabled',
+      'group-disabled',
+    ]);
+    act(() =>
+      methods.setValue('choices', ['enabled', 'disabled', 'group-disabled']),
+    );
+    expect(methods!.getValues('choices')).toEqual([
+      'enabled',
+      'disabled',
+      'group-disabled',
+    ]);
+    await act(async () => {
+      await methods.handleSubmit(onSubmit)();
+    });
+    expect(onSubmit).toHaveBeenCalledWith(
+      { choices: ['enabled', 'disabled', 'group-disabled'] },
+      undefined,
+    );
+  });
+
+  it('fail required validation when only disabled multiple-select options remain selected', async () => {
+    let methods: UseFormReturn<{ choices: string[] }>;
+    const Component = () => {
+      methods = useForm({
+        defaultValues: { choices: ['disabled', 'group-disabled'] },
+      });
+      return (
+        <select multiple {...methods.register('choices', { required: true })}>
+          <option value="enabled">Enabled</option>
+          <option value="disabled" disabled>
+            Disabled
+          </option>
+          <optgroup label="disabled group" disabled>
+            <option value="group-disabled">Group disabled</option>
+          </optgroup>
+        </select>
+      );
+    };
+
+    render(<Component />);
+    fireEvent.change(screen.getByRole('listbox'));
+    expect(methods!.getValues('choices')).toEqual([]);
+    await act(async () => {
+      expect(await methods.trigger('choices')).toBe(false);
+    });
+    expect(methods!.getFieldState('choices').error?.type).toBe('required');
+  });
   it('support register passed to ref', async () => {
     const { result } = renderHook(() =>
       useForm<{ test: string }>({
@@ -2381,6 +2486,109 @@ describe('register', () => {
       expect(methods!.getFieldState('multiple').isDirty).toBe(true);
     });
 
+    it.each([true, false])(
+      'still set the default value into an untouched select with optgroup disabled=%s',
+      async (disabled) => {
+        let methods: UseFormReturn<{ test: string }>;
+
+        function App() {
+          methods = useForm({ defaultValues: { test: 'c' } });
+          return (
+            <select {...methods.register('test')}>
+              <optgroup label="Group" disabled={disabled}>
+                <option value="a">A</option>
+              </optgroup>
+              <option value="b">B</option>
+              <option value="c">C</option>
+            </select>
+          );
+        }
+
+        const container = document.createElement('div');
+        container.innerHTML = renderToString(<App />);
+        const select = container.querySelector('select') as HTMLSelectElement;
+
+        expect(select.value).toBe(disabled ? 'b' : 'a');
+
+        await act(async () => {
+          hydrateRoot(container, <App />);
+        });
+
+        expect(select.value).toBe('c');
+        expect(methods!.getValues('test')).toBe('c');
+        expect(methods!.getFieldState('test').isDirty).toBe(false);
+      },
+    );
+
+    it('keep a select edited before hydration when an optgroup is disabled', async () => {
+      let methods: UseFormReturn<{ test: string }>;
+
+      function App() {
+        methods = useForm({ defaultValues: { test: 'c' } });
+        return (
+          <select {...methods.register('test')}>
+            <optgroup label="Group" disabled>
+              <option value="a">A</option>
+            </optgroup>
+            <option value="b">B</option>
+            <option value="c">C</option>
+            <option value="d">D</option>
+          </select>
+        );
+      }
+
+      const container = document.createElement('div');
+      container.innerHTML = renderToString(<App />);
+      const select = container.querySelector('select') as HTMLSelectElement;
+      select.value = 'd';
+
+      await act(async () => {
+        hydrateRoot(container, <App />);
+      });
+
+      expect(select.value).toBe('d');
+      expect(methods!.getValues('test')).toBe('d');
+      expect(methods!.getFieldState('test').isDirty).toBe(true);
+    });
+
+    it.each([undefined, 'd'])(
+      'respect a select with an explicitly selected option and pre-hydration value %s',
+      async (editedValue) => {
+        let methods: UseFormReturn<{ test: string }>;
+
+        function App() {
+          methods = useForm({ defaultValues: { test: 'c' } });
+          return (
+            <select {...methods.register('test')} defaultValue="b">
+              <optgroup label="Group" disabled>
+                <option value="a">A</option>
+              </optgroup>
+              <option value="b">B</option>
+              <option value="c">C</option>
+              <option value="d">D</option>
+            </select>
+          );
+        }
+
+        const container = document.createElement('div');
+        container.innerHTML = renderToString(<App />);
+        const select = container.querySelector('select') as HTMLSelectElement;
+
+        expect(select.options[1].defaultSelected).toBe(true);
+        if (editedValue) {
+          select.value = editedValue;
+        }
+
+        await act(async () => {
+          hydrateRoot(container, <App />);
+        });
+
+        expect(select.value).toBe(editedValue || 'c');
+        expect(methods!.getValues('test')).toBe(editedValue || 'c');
+        expect(methods!.getFieldState('test').isDirty).toBe(!!editedValue);
+      },
+    );
+
     it('still set the default values into selects nobody changed', async () => {
       let methods: UseFormReturn<{
         single: string;
@@ -2437,6 +2645,104 @@ describe('register', () => {
         placeholder: 'b',
       });
       expect(methods!.formState.dirtyFields).toEqual({});
+    });
+
+    it('still set the default values into range and color inputs nobody changed', async () => {
+      let methods: UseFormReturn<{
+        text: string;
+        range: string;
+        color: string;
+      }>;
+
+      function App() {
+        methods = useForm({
+          defaultValues: { text: 'default', range: '35', color: '#ff0000' },
+        });
+        return (
+          <>
+            <input {...methods.register('text')} />
+            <input type="range" {...methods.register('range')} />
+            <input type="color" {...methods.register('color')} />
+          </>
+        );
+      }
+
+      const container = document.createElement('div');
+      container.innerHTML = renderToString(<App />);
+      const [text, range, color] = container.querySelectorAll('input');
+
+      await act(async () => {
+        hydrateRoot(container, <App />);
+      });
+
+      expect(text.value).toBe('default');
+      expect(range.value).toBe('35');
+      expect(color.value).toBe('#ff0000');
+      expect(methods!.getValues()).toEqual({
+        text: 'default',
+        range: '35',
+        color: '#ff0000',
+      });
+      expect(methods!.formState.dirtyFields).toEqual({});
+    });
+
+    it.each([
+      ['value=20', { defaultValue: '20' }],
+      ['min=10 and value=5', { min: '10', defaultValue: '5' }],
+      ['max=80 and value=150', { max: '80', defaultValue: '150' }],
+    ])(
+      'still set the default value into an untouched range with %s',
+      async (_, attributes) => {
+        let methods: UseFormReturn<{ test: string }>;
+
+        function App() {
+          methods = useForm({ defaultValues: { test: '40' } });
+          return (
+            <input type="range" {...attributes} {...methods.register('test')} />
+          );
+        }
+
+        const container = document.createElement('div');
+        container.innerHTML = renderToString(<App />);
+        const range = container.querySelector('input') as HTMLInputElement;
+
+        await act(async () => {
+          hydrateRoot(container, <App />);
+        });
+
+        expect(range.value).toBe('40');
+        expect(methods!.getValues('test')).toBe('40');
+        expect(methods!.getFieldState('test').isDirty).toBe(false);
+      },
+    );
+
+    it('still set the default value into an untouched color with an upper case value', async () => {
+      let methods: UseFormReturn<{ test: string }>;
+
+      function App() {
+        methods = useForm({ defaultValues: { test: '#ff0000' } });
+        return (
+          <input
+            type="color"
+            defaultValue="#00FF00"
+            {...methods.register('test')}
+          />
+        );
+      }
+
+      const container = document.createElement('div');
+      container.innerHTML = renderToString(<App />);
+      const color = container.querySelector('input') as HTMLInputElement;
+
+      expect(color.value).toBe('#00ff00');
+
+      await act(async () => {
+        hydrateRoot(container, <App />);
+      });
+
+      expect(color.value).toBe('#ff0000');
+      expect(methods!.getValues('test')).toBe('#ff0000');
+      expect(methods!.getFieldState('test').isDirty).toBe(false);
     });
 
     it('still set a reset value into an input edited after the form is ready', async () => {

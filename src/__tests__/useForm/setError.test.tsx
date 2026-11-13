@@ -20,6 +20,77 @@ import { useForm } from '../../useForm';
 import { FormProvider, useFormContext } from '../../useFormContext';
 
 describe('setError', () => {
+  it.each(['radio', 'checkbox'] as const)(
+    'should focus enabled %s options only when requested',
+    (type) => {
+      const App = () => {
+        const { register, setError } = useForm<{ choice: string }>();
+        return (
+          <>
+            <input
+              aria-label="disabled"
+              type={type}
+              value="first"
+              disabled
+              {...register('choice')}
+            />
+            <input
+              aria-label="enabled"
+              type={type}
+              value="second"
+              {...register('choice')}
+            />
+            <button onClick={() => setError('choice', { type: 'manual' })}>
+              no focus
+            </button>
+            <button
+              onClick={() =>
+                setError('choice', { type: 'manual' }, { shouldFocus: true })
+              }
+            >
+              focus
+            </button>
+          </>
+        );
+      };
+      render(<App />);
+      const enabled = screen.getByLabelText('enabled');
+      fireEvent.click(screen.getByRole('button', { name: 'no focus' }));
+      expect(enabled).not.toHaveFocus();
+      fireEvent.click(screen.getByRole('button', { name: 'focus' }));
+      expect(enabled).toHaveFocus();
+    },
+  );
+
+  it.each(['radio', 'checkbox'] as const)(
+    'should not focus an entirely disabled %s group',
+    (type) => {
+      const App = () => {
+        const { register, setError } = useForm<{ choice: string }>();
+        return (
+          <>
+            <input
+              aria-label="disabled"
+              type={type}
+              disabled
+              {...register('choice')}
+            />
+            <button
+              onClick={() =>
+                setError('choice', { type: 'manual' }, { shouldFocus: true })
+              }
+            >
+              focus
+            </button>
+          </>
+        );
+      };
+      render(<App />);
+      fireEvent.click(screen.getByRole('button'));
+      expect(screen.getByLabelText('disabled')).not.toHaveFocus();
+    },
+  );
+
   const tests: [string, ErrorOption, DeepMap<any, FieldError>][] = [
     [
       'should only set an error when it is not existed',
