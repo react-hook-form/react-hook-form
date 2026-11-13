@@ -7,6 +7,7 @@ import {
   REGISTER_VALIDATION_RULES,
   ROOT_ERROR_TYPE,
   VALIDATION_MODE,
+  VALIDATION_SCOPE,
 } from '../constants';
 import type {
   BatchFieldArrayUpdate,
@@ -240,6 +241,7 @@ export function createFormControl<
 
   let _setValidCallId = 0;
   let _validateFormCallId = 0;
+  let _validationScopeCallId = 0;
   let _resetCallId = 0;
   let _registerCallId = 0;
   const _registerCallIds: Record<InternalFieldName, number> = {};
@@ -768,6 +770,40 @@ export function createFormControl<
     }
   };
 
+  const shouldRenderByFormErrors = (
+    previousErrors: FieldErrors<TFieldValues>,
+    isValid?: boolean,
+    fieldState?: {
+      dirty?: FieldNamesMarkedBoolean<TFieldValues>;
+      isDirty?: boolean;
+      touched?: FieldNamesMarkedBoolean<TFieldValues>;
+    },
+  ) => {
+    const shouldUpdateValid =
+      (_proxyFormState.isValid || _proxySubscribeFormState.isValid) &&
+      isBoolean(isValid) &&
+      _formState.isValid !== isValid;
+
+    if (
+      !deepEqual(previousErrors, _formState.errors) ||
+      !isEmptyObject(fieldState) ||
+      shouldUpdateValid
+    ) {
+      const updatedFormState = {
+        ...fieldState,
+        ...(shouldUpdateValid && isBoolean(isValid) ? { isValid } : {}),
+        errors: _formState.errors,
+      };
+
+      _formState = {
+        ..._formState,
+        ...updatedFormState,
+      };
+
+      _subjects.state.next(updatedFormState);
+    }
+  };
+
   const _runSchema = async (name?: InternalFieldName[]) => {
     _updateIsValidating(name, true);
     return await _options.resolver!(
@@ -782,7 +818,10 @@ export function createFormControl<
     );
   };
 
-  const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
+  const executeSchemaAndUpdateState = async (
+    names?: InternalFieldName[],
+    validationScopeCallId?: number,
+  ) => {
     const resetCallId = _resetCallId;
     const registerCallId = _registerCallId;
     const registeredNames = names
@@ -790,7 +829,11 @@ export function createFormControl<
       : [];
     const { errors } = await _runSchema(names);
 
-    if (resetCallId !== _resetCallId) {
+    if (
+      resetCallId !== _resetCallId ||
+      (validationScopeCallId &&
+        validationScopeCallId !== _validationScopeCallId)
+    ) {
       return errors;
     }
 
@@ -927,6 +970,7 @@ export function createFormControl<
       valid: boolean;
       runRootValidation?: boolean;
       hasNativeError?: boolean;
+      validationScopeCallId?: number;
     };
   }) => {
     const resetCallId = _resetCallId;
@@ -976,7 +1020,11 @@ export function createFormControl<
             isFieldArrayRoot,
           );
 
-          if (resetCallId !== _resetCallId) {
+          if (
+            resetCallId !== _resetCallId ||
+            (context.validationScopeCallId &&
+              context.validationScopeCallId !== _validationScopeCallId)
+          ) {
             return context.valid;
           }
 
@@ -1411,12 +1459,14 @@ export function createFormControl<
       let error;
       let isValid;
       let shouldFlushError = false;
+      const isFormScope = _options.validationScope === VALIDATION_SCOPE.form;
       const fieldValue = target.type
         ? getFieldValue(field._f)
         : getEventValue(event);
       const isBlurEvent =
         event.type === EVENTS.BLUR || event.type === EVENTS.FOCUS_OUT;
       const hasNoValidationEffect =
+        !isFormScope &&
         !hasValidation(field._f) &&
         !_options.validate &&
         !_options.resolver &&
@@ -1479,8 +1529,7 @@ export function createFormControl<
           _subjects.state.next({ name, ...(watched ? {} : fieldState) })
         );
       }
-
-      if (!_options.resolver && _options.validate) {
+      if (!_options.resolver && !isFormScope && _options.validate) {
         await validateForm({
           name: name as FieldPath<TFieldValues>,
           eventType: event.type,
@@ -1488,6 +1537,45 @@ export function createFormControl<
       }
 
       !isBlurEvent && watched && _subjects.state.next({ ..._formState });
+
+      if (isFormScope) {
+        const previousErrors = cloneObject(_formState.errors);
+        const validationScopeCallId = ++_validationScopeCallId;
+
+        isValid = _options.resolver
+          ? isEmptyObject(
+              await executeSchemaAndUpdateState(
+                undefined,
+                validationScopeCallId,
+              ),
+            )
+          : await executeBuiltInValidation({
+              fields: _fields,
+              eventType: event.type,
+              context: { valid: true, validationScopeCallId },
+            });
+
+        _updateIsFieldValueUpdated(fieldValue);
+
+        if (
+          !isFieldValueUpdated ||
+          validationScopeCallId !== _validationScopeCallId
+        ) {
+          !isEmptyObject(fieldState) && _subjects.state.next(fieldState);
+          return;
+        }
+
+        field._f.deps &&
+          (!Array.isArray(field._f.deps) || field._f.deps.length > 0) &&
+          trigger(
+            field._f.deps as
+              | FieldPath<TFieldValues>
+              | FieldPath<TFieldValues>[],
+          );
+
+        shouldRenderByFormErrors(previousErrors, isValid, fieldState);
+        return;
+      }
 
       if (_options.resolver) {
         const resetCallId = _resetCallId;

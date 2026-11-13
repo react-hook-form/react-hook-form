@@ -25,6 +25,11 @@ export const INPUT_VALIDATION_RULES = {
   validate: 'validate',
 } as const;
 
+export const VALIDATION_SCOPE = {
+  field: 'field',
+  form: 'form',
+} as const;
+
 export const REGISTER_VALIDATION_RULES = [
   INPUT_VALIDATION_RULES.required,
   INPUT_VALIDATION_RULES.min,
