@@ -1,5 +1,11 @@
 import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 
 import type { Control } from '../types';
 import { useForm } from '../useForm';
@@ -214,6 +220,117 @@ describe('validationScope', () => {
       await waitFor(() =>
         expect(screen.getByText('Last name required')).toBeVisible(),
       );
+    });
+
+    it('should keep errors from the latest change when an earlier schema validation resolves last', async () => {
+      const pending: (() => void)[] = [];
+      const resolver = jest.fn(
+        (data: any) =>
+          new Promise<any>((resolve) => {
+            const errors: Record<string, { type: string; message: string }> =
+              {};
+
+            if (!data.lastName) {
+              errors.lastName = {
+                type: 'required',
+                message: 'Last name required',
+              };
+            }
+
+            pending.push(() => resolve({ values: data, errors }));
+          }),
+      );
+
+      function Component() {
+        const {
+          register,
+          formState: { errors },
+        } = useForm<{ firstName: string; lastName: string }>({
+          mode: 'onChange',
+          validationScope: 'form',
+          resolver,
+        });
+
+        return (
+          <div>
+            <input data-testid="firstName" {...register('firstName')} />
+            <input data-testid="lastName" {...register('lastName')} />
+            {errors.lastName && <span>{errors.lastName.message}</span>}
+          </div>
+        );
+      }
+
+      render(<Component />);
+
+      fireEvent.input(screen.getByTestId('firstName'), {
+        target: { value: 'John' },
+      });
+      fireEvent.input(screen.getByTestId('lastName'), {
+        target: { value: 'Doe' },
+      });
+
+      await waitFor(() => expect(pending).toHaveLength(2));
+
+      await act(async () => {
+        pending[1]();
+      });
+      await act(async () => {
+        pending[0]();
+      });
+
+      expect(screen.queryByText('Last name required')).not.toBeInTheDocument();
+    });
+
+    it('should keep errors from the latest change when an earlier built-in validation resolves last', async () => {
+      const pending: (() => void)[] = [];
+
+      function Component() {
+        const {
+          register,
+          formState: { errors },
+        } = useForm<{ firstName: string; lastName: string }>({
+          mode: 'onChange',
+          validationScope: 'form',
+        });
+
+        return (
+          <div>
+            <input
+              data-testid="lastName"
+              {...register('lastName', {
+                validate: (value) =>
+                  new Promise<string | true>((resolve) =>
+                    pending.push(() =>
+                      resolve(value ? true : 'Last name required'),
+                    ),
+                  ),
+              })}
+            />
+            <input data-testid="firstName" {...register('firstName')} />
+            {errors.lastName && <span>{errors.lastName.message}</span>}
+          </div>
+        );
+      }
+
+      render(<Component />);
+
+      fireEvent.input(screen.getByTestId('firstName'), {
+        target: { value: 'John' },
+      });
+      fireEvent.input(screen.getByTestId('lastName'), {
+        target: { value: 'Doe' },
+      });
+
+      await waitFor(() => expect(pending).toHaveLength(2));
+
+      await act(async () => {
+        pending[1]();
+      });
+      await act(async () => {
+        pending[0]();
+      });
+
+      expect(screen.queryByText('Last name required')).not.toBeInTheDocument();
     });
   });
 });

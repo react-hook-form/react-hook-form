@@ -241,6 +241,7 @@ export function createFormControl<
 
   let _setValidCallId = 0;
   let _validateFormCallId = 0;
+  let _validationScopeCallId = 0;
   let _resetCallId = 0;
   let _registerCallId = 0;
   const _registerCallIds: Record<InternalFieldName, number> = {};
@@ -817,7 +818,10 @@ export function createFormControl<
     );
   };
 
-  const executeSchemaAndUpdateState = async (names?: InternalFieldName[]) => {
+  const executeSchemaAndUpdateState = async (
+    names?: InternalFieldName[],
+    validationScopeCallId?: number,
+  ) => {
     const resetCallId = _resetCallId;
     const registerCallId = _registerCallId;
     const registeredNames = names
@@ -825,7 +829,11 @@ export function createFormControl<
       : [];
     const { errors } = await _runSchema(names);
 
-    if (resetCallId !== _resetCallId) {
+    if (
+      resetCallId !== _resetCallId ||
+      (validationScopeCallId &&
+        validationScopeCallId !== _validationScopeCallId)
+    ) {
       return errors;
     }
 
@@ -962,6 +970,7 @@ export function createFormControl<
       valid: boolean;
       runRootValidation?: boolean;
       hasNativeError?: boolean;
+      validationScopeCallId?: number;
     };
   }) => {
     const resetCallId = _resetCallId;
@@ -1011,7 +1020,11 @@ export function createFormControl<
             isFieldArrayRoot,
           );
 
-          if (resetCallId !== _resetCallId) {
+          if (
+            resetCallId !== _resetCallId ||
+            (context.validationScopeCallId &&
+              context.validationScopeCallId !== _validationScopeCallId)
+          ) {
             return context.valid;
           }
 
@@ -1527,17 +1540,27 @@ export function createFormControl<
 
       if (isFormScope) {
         const previousErrors = cloneObject(_formState.errors);
+        const validationScopeCallId = ++_validationScopeCallId;
 
         isValid = _options.resolver
-          ? isEmptyObject(await executeSchemaAndUpdateState())
+          ? isEmptyObject(
+              await executeSchemaAndUpdateState(
+                undefined,
+                validationScopeCallId,
+              ),
+            )
           : await executeBuiltInValidation({
               fields: _fields,
               eventType: event.type,
+              context: { valid: true, validationScopeCallId },
             });
 
         _updateIsFieldValueUpdated(fieldValue);
 
-        if (!isFieldValueUpdated) {
+        if (
+          !isFieldValueUpdated ||
+          validationScopeCallId !== _validationScopeCallId
+        ) {
           !isEmptyObject(fieldState) && _subjects.state.next(fieldState);
           return;
         }
