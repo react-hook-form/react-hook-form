@@ -926,6 +926,7 @@ export function createFormControl<
     context?: {
       valid: boolean;
       runRootValidation?: boolean;
+      hasNativeError?: boolean;
     };
   }) => {
     const resetCallId = _resetCallId;
@@ -1012,6 +1013,7 @@ export function createFormControl<
           }
 
           if (_options.shouldUseNativeValidation && fieldError[_f.name]) {
+            context.hasNativeError = true;
             break;
           }
         }
@@ -1024,6 +1026,10 @@ export function createFormControl<
             name: name as FieldPath<TFieldValues>,
             eventType,
           }));
+
+        if (context.hasNativeError) {
+          break;
+        }
       }
     }
 
@@ -2026,14 +2032,14 @@ export function createFormControl<
       }
     }
 
-    if (field && !shouldRevalidateRemount) {
-      _setDisabledField({
-        disabled: isBoolean(options.disabled)
-          ? options.disabled
-          : _options.disabled,
-        name,
-      });
-    } else {
+    _setDisabledField({
+      disabled: isBoolean(options.disabled)
+        ? options.disabled
+        : _options.disabled,
+      name,
+    });
+
+    if (!field || shouldRevalidateRemount) {
       updateValidAndValue(name, true, options.value);
     }
 

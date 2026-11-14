@@ -397,6 +397,74 @@ describe('handleSubmit', () => {
     );
   });
 
+  it.each(['radio', 'checkbox'] as const)(
+    'report native validation on an enabled %s when the first option is disabled',
+    async (type) => {
+      const onSubmit = jest.fn();
+      const message = 'Choose an available option';
+
+      const App = () => {
+        const { register, handleSubmit } = useForm<{
+          choice: string | string[];
+        }>({
+          defaultValues: { choice: type === 'checkbox' ? [] : '' },
+          shouldUseNativeValidation: true,
+        });
+
+        return (
+          <form noValidate onSubmit={handleSubmit(onSubmit)}>
+            <input
+              aria-label="Unavailable"
+              type={type}
+              value="unavailable"
+              disabled
+              {...register('choice', { required: message })}
+            />
+            <input
+              aria-label="Available"
+              type={type}
+              value="available"
+              {...register('choice', { required: message })}
+            />
+            <button>Submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      const disabled = screen.getByRole(type, {
+        name: 'Unavailable',
+      }) as HTMLInputElement;
+      const enabled = screen.getByRole(type, {
+        name: 'Available',
+      }) as HTMLInputElement;
+      const disabledReport = jest.spyOn(disabled, 'reportValidity');
+      const enabledReport = jest.spyOn(enabled, 'reportValidity');
+
+      fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+      await waitFor(() => expect(enabledReport).toHaveBeenCalledTimes(1));
+
+      expect(disabledReport).not.toHaveBeenCalled();
+      expect(enabled.validationMessage).toBe(message);
+      expect(disabled.validity.customError).toBe(true);
+      expect(onSubmit).not.toHaveBeenCalled();
+
+      fireEvent.click(enabled);
+      fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+      await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+
+      expect(onSubmit.mock.calls[0][0]).toEqual({
+        choice: type === 'checkbox' ? ['available'] : 'available',
+      });
+      expect(enabled.validationMessage).toBe('');
+      expect(disabled.validity.customError).toBe(false);
+      expect(disabledReport).not.toHaveBeenCalled();
+    },
+  );
+
   it('submit a checkbox group with array default values and native validation', async () => {
     const onSubmit = jest.fn();
 
@@ -503,6 +571,66 @@ describe('handleSubmit', () => {
       'required',
     );
     expect(result.current.control._formState.errors.lastName).toBeUndefined();
+  });
+
+  it('stop at the first invalid nested field with native validation', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ user: { firstName: string }; lastName: string }>({
+        shouldUseNativeValidation: true,
+      }),
+    );
+
+    const firstNameReportValidity = jest.fn();
+    const lastNameReportValidity = jest.fn();
+
+    result.current.register('user.firstName', { required: 'first name' }).ref({
+      name: 'user.firstName',
+      setCustomValidity: noop,
+      reportValidity: firstNameReportValidity,
+    });
+    result.current.register('lastName', { required: 'last name' }).ref({
+      name: 'lastName',
+      setCustomValidity: noop,
+      reportValidity: lastNameReportValidity,
+    });
+
+    await act(async () => {
+      await result.current.handleSubmit(noop)({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    expect(firstNameReportValidity).toHaveBeenCalled();
+    expect(lastNameReportValidity).not.toHaveBeenCalled();
+    expect(result.current.control._formState.errors.user?.firstName?.type).toBe(
+      'required',
+    );
+    expect(result.current.control._formState.errors.lastName).toBeUndefined();
+  });
+
+  it('keep validating after a valid nested field with native validation', async () => {
+    const { result } = renderHook(() =>
+      useForm<{ user: { firstName: string }; lastName: string }>({
+        shouldUseNativeValidation: true,
+        defaultValues: { user: { firstName: 'bill' } },
+      }),
+    );
+
+    result.current.register('user.firstName', { required: true });
+    result.current.register('lastName', { required: true });
+
+    await act(async () => {
+      await result.current.handleSubmit(noop)({
+        preventDefault: noop,
+        persist: noop,
+      } as React.SyntheticEvent);
+    });
+
+    expect(result.current.control._formState.errors.user).toBeUndefined();
+    expect(result.current.control._formState.errors.lastName?.type).toBe(
+      'required',
+    );
   });
 
   it('stop at the first invalid field when native validation is set on useForm with a formControl', async () => {
