@@ -19,6 +19,130 @@ jest.mock('../../logic/getDirtyFields', () => {
 });
 
 describe('createFormControl', () => {
+  it('pass the trigger name to form-level validation', async () => {
+    const validate = jest.fn(({ name }: { name?: string | string[] }) =>
+      name === 'email' ? 'Email is required' : true,
+    );
+    const form = createFormControl({
+      defaultValues: { email: '' },
+      validate,
+    });
+    form.register('email');
+
+    expect(await form.trigger('email')).toBe(false);
+    expect(validate).toHaveBeenCalledTimes(1);
+    expect(validate).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'email', eventType: 'trigger' }),
+    );
+    expect(form.getErrors().form?.message).toBe('Email is required');
+  });
+
+  it('run form-level validation once for each trigger of multiple fields', async () => {
+    let valid = false;
+    const validate = jest.fn(async () => valid || 'Invalid account');
+    const validateEmail = jest.fn(() => true);
+    const validatePassword = jest.fn(() => true);
+    const form = createFormControl({
+      defaultValues: { email: '', password: '' },
+      validate,
+    });
+    form.register('email', { validate: validateEmail });
+    form.register('password', { validate: validatePassword });
+
+    expect(await form.trigger(['email', 'password'] as const)).toBe(false);
+    expect(validate).toHaveBeenCalledTimes(1);
+    expect(validate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: ['email', 'password'],
+        eventType: 'trigger',
+      }),
+    );
+    expect(validateEmail).toHaveBeenCalledTimes(1);
+    expect(validatePassword).toHaveBeenCalledTimes(1);
+    expect(form.getErrors().form?.message).toBe('Invalid account');
+
+    valid = true;
+    expect(await form.trigger(['email', 'password'])).toBe(true);
+    expect(validate).toHaveBeenCalledTimes(2);
+    expect(validateEmail).toHaveBeenCalledTimes(2);
+    expect(validatePassword).toHaveBeenCalledTimes(2);
+    expect(form.getErrors()).toEqual({});
+  });
+
+  it.each([true, false])(
+    'wait for async form validation before validating named fields: %s',
+    async (formValid) => {
+      let resolveForm!: (valid: boolean) => void;
+      const validate = jest.fn(
+        () =>
+          new Promise<boolean>((resolve) => {
+            resolveForm = resolve;
+          }),
+      );
+      const validateEmail = jest.fn(async () => true);
+      const validatePassword = jest.fn(async () => true);
+      const form = createFormControl({
+        defaultValues: { email: '', password: '' },
+        validate,
+      });
+      form.register('email', { validate: validateEmail });
+      form.register('password', { validate: validatePassword });
+
+      const result = form.trigger(['email', 'password']);
+      expect(validate).toHaveBeenCalledTimes(1);
+      expect(validateEmail).not.toHaveBeenCalled();
+      expect(validatePassword).not.toHaveBeenCalled();
+
+      resolveForm(formValid);
+      expect(await result).toBe(formValid);
+      expect(validate).toHaveBeenCalledTimes(1);
+      expect(validateEmail).toHaveBeenCalledTimes(1);
+      expect(validatePassword).toHaveBeenCalledTimes(1);
+      expect(!!form.getErrors().form).toBe(!formValid);
+    },
+  );
+
+  it('not validate reset fields after pending form validation settles', async () => {
+    let resolveForm!: (valid: boolean) => void;
+    const form = createFormControl({
+      defaultValues: { email: '' },
+      validate: () =>
+        new Promise<boolean>((resolve) => {
+          resolveForm = resolve;
+        }),
+    });
+    form.register('email');
+    const result = form.trigger('email');
+    form.reset({ email: 'new@example.com' });
+    const validateEmail = jest.fn(() => 'New field error');
+    form.register('email', { validate: validateEmail });
+
+    resolveForm(false);
+    await result;
+    expect(validateEmail).not.toHaveBeenCalled();
+    expect(form.getErrors()).toEqual({});
+  });
+
+  it('keep field errors when sharing form validation across trigger names', async () => {
+    const validate = jest.fn(async () => true);
+    const form = createFormControl({
+      defaultValues: { profile: { email: '' }, password: 'password' },
+      validate,
+    });
+    form.register('profile.email', { required: 'Email is required' });
+    form.register('password', { required: true });
+
+    expect(await form.trigger(['profile', 'password'])).toBe(false);
+    expect(validate).toHaveBeenCalledTimes(1);
+    expect(validate).toHaveBeenCalledWith(
+      expect.objectContaining({ name: ['profile', 'password'] }),
+    );
+    expect(form.getFieldState('profile.email').error?.message).toBe(
+      'Email is required',
+    );
+    expect(form.getFieldState('password').error).toBeUndefined();
+  });
+
   it.each([
     { values: [] },
     { values: [''] },
