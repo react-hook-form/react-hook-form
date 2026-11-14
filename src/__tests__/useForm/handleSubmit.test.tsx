@@ -397,6 +397,74 @@ describe('handleSubmit', () => {
     );
   });
 
+  it.each(['radio', 'checkbox'] as const)(
+    'report native validation on an enabled %s when the first option is disabled',
+    async (type) => {
+      const onSubmit = jest.fn();
+      const message = 'Choose an available option';
+
+      const App = () => {
+        const { register, handleSubmit } = useForm<{
+          choice: string | string[];
+        }>({
+          defaultValues: { choice: type === 'checkbox' ? [] : '' },
+          shouldUseNativeValidation: true,
+        });
+
+        return (
+          <form noValidate onSubmit={handleSubmit(onSubmit)}>
+            <input
+              aria-label="Unavailable"
+              type={type}
+              value="unavailable"
+              disabled
+              {...register('choice', { required: message })}
+            />
+            <input
+              aria-label="Available"
+              type={type}
+              value="available"
+              {...register('choice', { required: message })}
+            />
+            <button>Submit</button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      const disabled = screen.getByRole(type, {
+        name: 'Unavailable',
+      }) as HTMLInputElement;
+      const enabled = screen.getByRole(type, {
+        name: 'Available',
+      }) as HTMLInputElement;
+      const disabledReport = jest.spyOn(disabled, 'reportValidity');
+      const enabledReport = jest.spyOn(enabled, 'reportValidity');
+
+      fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+      await waitFor(() => expect(enabledReport).toHaveBeenCalledTimes(1));
+
+      expect(disabledReport).not.toHaveBeenCalled();
+      expect(enabled.validationMessage).toBe(message);
+      expect(disabled.validity.customError).toBe(true);
+      expect(onSubmit).not.toHaveBeenCalled();
+
+      fireEvent.click(enabled);
+      fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+      await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+
+      expect(onSubmit.mock.calls[0][0]).toEqual({
+        choice: type === 'checkbox' ? ['available'] : 'available',
+      });
+      expect(enabled.validationMessage).toBe('');
+      expect(disabled.validity.customError).toBe(false);
+      expect(disabledReport).not.toHaveBeenCalled();
+    },
+  );
+
   it('submit a checkbox group with array default values and native validation', async () => {
     const onSubmit = jest.fn();
 
