@@ -6,7 +6,7 @@ describe('isRadioOrCheckbox', () => {
     expect(isRadioOrCheckbox({ name: 'test', type: 'checkbox' })).toBeTruthy();
   });
 
-  it('shoudl return false when type is neither radio nor checkbox', () => {
+  it('should return false when type is neither radio nor checkbox', () => {
     expect(isRadioOrCheckbox({ name: 'test', type: 'text' })).toBeFalsy();
     expect(isRadioOrCheckbox({ name: 'test', type: 'email' })).toBeFalsy();
     expect(isRadioOrCheckbox({ name: 'test', type: 'date' })).toBeFalsy();
