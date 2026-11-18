@@ -1,0 +1,65 @@
+import filterTouchedErrors from '../../logic/filterTouchedErrors';
+
+const required = { type: 'required', message: 'required' };
+const custom = { type: 'custom', message: 'end must be after start' };
+
+describe('filterTouchedErrors', () => {
+  it('should keep the errors of touched fields only', () => {
+    expect(
+      filterTouchedErrors(
+        [{ value: required }, { value: required }, { value: required }],
+        [undefined, { value: true }],
+      ),
+    ).toEqual([undefined, { value: required }]);
+  });
+
+  it('should return undefined when no field with an error is touched', () => {
+    expect(filterTouchedErrors([{ value: required }], undefined)).toBe(
+      undefined,
+    );
+    expect(filterTouchedErrors([{ value: required }], [{ other: true }])).toBe(
+      undefined,
+    );
+  });
+
+  it('should keep every error when the whole array is touched', () => {
+    const error = [{ value: required }, { value: required }];
+
+    expect(filterTouchedErrors(error, true)).toBe(error);
+  });
+
+  it('should keep a row-level error once a field of the row is touched', () => {
+    expect(filterTouchedErrors([custom, custom], [{ start: true }])).toEqual([
+      custom,
+    ]);
+  });
+
+  it('should filter nested field arrays', () => {
+    expect(
+      filterTouchedErrors(
+        [{ nested: [{ name: required }, { name: required }] }],
+        [{ nested: [undefined, { name: true }] }],
+      ),
+    ).toEqual([{ nested: [undefined, { name: required }] }]);
+  });
+
+  it('should keep the array-level root error', () => {
+    const result = filterTouchedErrors(
+      Object.assign([{ value: required }], { root: custom }),
+      undefined,
+    );
+
+    expect(Array.isArray(result)).toBe(true);
+    expect(result.root).toEqual(custom);
+    expect(result[0]).toBeUndefined();
+  });
+
+  it('should treat a field named type as a field', () => {
+    expect(
+      filterTouchedErrors(
+        [{ type: required }, { type: required }],
+        [undefined, { type: true }],
+      ),
+    ).toEqual([undefined, { type: required }]);
+  });
+});
