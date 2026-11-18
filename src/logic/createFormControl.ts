@@ -2343,7 +2343,11 @@ export function createFormControl<
               if (isHTMLElement(fieldReference)) {
                 const form = fieldReference.closest('form');
                 if (form) {
-                  form.reset();
+                  if (isFunction(form.reset)) {
+                    form.reset();
+                  } else {
+                    HTMLFormElement.prototype.reset.call(form);
+                  }
                   break;
                 }
               }

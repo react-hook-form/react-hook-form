@@ -315,6 +315,71 @@ describe('reset', () => {
     expect(mockReset).not.toHaveBeenCalled();
   });
 
+  it.each([false, true])(
+    'resets when a form control shadows the native reset method (iframe: %s)',
+    (insideFrame) => {
+      const App = () => {
+        const { register, reset, watch } = useForm({
+          defaultValues: { reset: 'initial' },
+        });
+
+        return (
+          <form>
+            <input {...register('reset')} />
+            <button type="button" onClick={() => reset()}>
+              Reset
+            </button>
+            <output>{watch('reset')}</output>
+          </form>
+        );
+      };
+      const iframe = document.createElement('iframe');
+      if (insideFrame) {
+        document.body.append(iframe);
+      }
+      const { container, getByRole, unmount } = render(<App />, {
+        container: insideFrame ? iframe.contentDocument!.body : undefined,
+      });
+      const input = getByRole('textbox');
+
+      // jsdom does not implement named properties on forms.
+      Object.defineProperty(container.querySelector('form'), 'reset', {
+        value: input,
+      });
+
+      for (const value of ['edited', 'edited again']) {
+        fireEvent.change(input, { target: { value } });
+        expect(getByRole('status')).toHaveTextContent(value);
+
+        fireEvent.click(getByRole('button', { name: 'Reset' }));
+
+        expect(input).toHaveValue('initial');
+        expect(getByRole('status')).toHaveTextContent('initial');
+      }
+
+      unmount();
+      iframe.remove();
+    },
+  );
+
+  it('preserves a callable reset method on the form', () => {
+    const { register, reset } = createFormControl();
+    const form = document.createElement('form');
+    const input = document.createElement('input');
+    form.append(input);
+    register('test').ref(input);
+    const nativeReset = form.reset;
+    const resetMethod = jest.fn(function (this: HTMLFormElement) {
+      nativeReset.call(this);
+    });
+    form.reset = resetMethod;
+
+    reset();
+
+    expect(resetMethod).toHaveBeenCalledTimes(1);
+    expect(resetMethod.mock.contexts[0]).toBe(form);
+  });
+
   it('set default value if values is specified to first argument', async () => {
     const { result } = renderHook(() =>
       useForm<{
