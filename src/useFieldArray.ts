@@ -396,9 +396,13 @@ export function useFieldArray<
     ) {
       const fieldArrayValues = get(control._formValues, name);
       if (control._options.resolver) {
+        const fieldArrayValuesSnapshot = cloneObject(fieldArrayValues);
         control._runSchema([name]).then((result) => {
           control._updateIsValidating([name]);
-          if (fieldArrayValues !== get(control._formValues, name)) {
+          if (
+            fieldArrayValues !== get(control._formValues, name) ||
+            !deepEqual(fieldArrayValuesSnapshot, fieldArrayValues)
+          ) {
             return;
           }
           const error: FieldError | undefined = get(result.errors, name);
@@ -424,6 +428,7 @@ export function useFieldArray<
       } else {
         const field: Field = get(control._fields, name);
         if (field && field._f) {
+          const fieldArrayValuesSnapshot = cloneObject(fieldArrayValues);
           validateField(
             field,
             control._names.disabled,
@@ -432,7 +437,10 @@ export function useFieldArray<
             control._options.shouldUseNativeValidation,
             true,
           ).then((error) => {
-            if (fieldArrayValues !== get(control._formValues, name)) {
+            if (
+              fieldArrayValues !== get(control._formValues, name) ||
+              !deepEqual(fieldArrayValuesSnapshot, fieldArrayValues)
+            ) {
               return;
             }
             if (!isEmptyObject(error)) {
