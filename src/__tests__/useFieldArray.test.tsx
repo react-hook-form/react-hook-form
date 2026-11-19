@@ -1131,6 +1131,133 @@ describe('useFieldArray', () => {
       );
     });
 
+    it('should only publish resolver row errors for touched fields after array operations with mode onTouched', async () => {
+      type FormValues = {
+        test: { value: string; root?: string }[];
+      };
+
+      const resolver = jest.fn(
+        async (data: FormValues): Promise<ResolverResult<FormValues>> => {
+          const fieldErrors: { test?: any } = {};
+          for (const [index, item] of data.test.entries()) {
+            if (item.value === '') {
+              fieldErrors.test = fieldErrors.test || [];
+              fieldErrors.test[index] = fieldErrors.test[index] || {};
+              fieldErrors.test[index].value = {
+                type: 'required',
+                message: `Item ${index} is required`,
+              };
+            }
+            if (item.root === '') {
+              fieldErrors.test = fieldErrors.test || [];
+              fieldErrors.test[index] = fieldErrors.test[index] || {};
+              fieldErrors.test[index].root = {
+                type: 'required',
+                message: `Item ${index} root is required`,
+              };
+            }
+          }
+
+          if (Object.keys(fieldErrors).length === 0) {
+            return { values: data, errors: {} };
+          }
+
+          return { values: {}, errors: fieldErrors };
+        },
+      );
+
+      const App = () => {
+        const {
+          register,
+          control,
+          handleSubmit,
+          formState: { errors },
+        } = useForm<FormValues>({
+          mode: 'onTouched',
+          resolver,
+          defaultValues: {
+            test: [],
+          },
+        });
+        const { fields, append, remove } = useFieldArray({
+          name: 'test',
+          control,
+        });
+
+        return (
+          <form onSubmit={handleSubmit(noop)}>
+            {fields.map((item, i) => (
+              <div key={item.id}>
+                <input {...register(`test.${i}.value` as const)} />
+                <input
+                  aria-label={`root ${i}`}
+                  {...register(`test.${i}.root` as const)}
+                />
+                <button type="button" onClick={() => remove(i)}>
+                  remove {i}
+                </button>
+                {errors.test?.[i]?.value && (
+                  <span>{errors.test[i]?.value?.message}</span>
+                )}
+                {errors.test?.[i]?.root && (
+                  <span>{errors.test[i]?.root?.message}</span>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => append({ value: '', root: '' })}
+            >
+              append
+            </button>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      const clickAndSettle = async (name: string) => {
+        const calls = resolver.mock.calls.length;
+        fireEvent.click(screen.getByRole('button', { name }));
+        await waitFor(() =>
+          expect(resolver.mock.calls.length).toBeGreaterThan(calls),
+        );
+      };
+
+      render(<App />);
+
+      await clickAndSettle('append');
+
+      expect(screen.queryByText(/is required/)).not.toBeInTheDocument();
+
+      fireEvent.blur(screen.getByRole('textbox', { name: '' }));
+
+      await waitFor(() =>
+        expect(screen.getByText('Item 0 is required')).toBeInTheDocument(),
+      );
+      expect(
+        screen.queryByText('Item 0 root is required'),
+      ).not.toBeInTheDocument();
+
+      await clickAndSettle('append');
+
+      expect(screen.getByText('Item 0 is required')).toBeInTheDocument();
+      expect(screen.queryByText('Item 1 is required')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('Item 1 root is required'),
+      ).not.toBeInTheDocument();
+
+      await clickAndSettle('remove 0');
+
+      expect(screen.queryByText('Item 0 is required')).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+      await waitFor(() => {
+        expect(screen.getByText('Item 0 is required')).toBeInTheDocument();
+        expect(screen.getByText('Item 0 root is required')).toBeInTheDocument();
+      });
+    });
+
     describe('with an async resolver', () => {
       type FormValues = { test: { value: string }[] };
 
