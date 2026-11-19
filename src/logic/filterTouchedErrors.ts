@@ -9,12 +9,13 @@ const filterTouchedErrors = (error: any, touched: any): any => {
     return touched && error;
   }
 
-  const result: any = Array.isArray(error) ? [] : {};
+  const isArray: boolean = Array.isArray(error);
+  const result: any = isArray ? [] : {};
   let hasError;
 
   for (const key in error) {
     const value =
-      key === ROOT_ERROR_TYPE
+      isArray && key === ROOT_ERROR_TYPE
         ? error[key]
         : touched &&
           error[key] &&

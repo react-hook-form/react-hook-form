@@ -54,6 +54,23 @@ describe('filterTouchedErrors', () => {
     expect(result[0]).toBeUndefined();
   });
 
+  it('should treat a row field named root as a field', () => {
+    const result = filterTouchedErrors(
+      Object.assign(
+        [
+          { value: required, root: required },
+          { value: required, root: required },
+        ],
+        { root: custom },
+      ),
+      [{ value: true }],
+    );
+
+    expect(result.root).toEqual(custom);
+    expect(result[0]).toEqual({ value: required });
+    expect(result[1]).toBeUndefined();
+  });
+
   it('should treat a field named type as a field', () => {
     expect(
       filterTouchedErrors(
