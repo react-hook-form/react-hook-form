@@ -26,10 +26,8 @@ export default function cloneObject<T>(data: T): T {
 
   const copy = isArray ? new Array(data.length) : Object.create(prototype);
 
-  for (const key in data) {
-    if (Object.prototype.hasOwnProperty.call(data, key)) {
-      copy[key] = cloneObject(data[key]);
-    }
+  for (const key of Object.keys(data)) {
+    copy[key] = cloneObject((data as Record<string, unknown>)[key]);
   }
 
   return copy;
