@@ -26,7 +26,7 @@ Version 7 | [Version 6(日本語)](/docs/README.ja-JP.md)
 - パフォーマンスと UX/DX を念頭に構築
 - 非制御フォームバリデーション
 - [UIライブラリ](https://codesandbox.io/s/react-hook-form-v7-controller-5h1q5)と統合し、すぐに利用が可能
-- [依存関係](./package.json)がなく、[小さいサイズ](https://bundlephobia.com/result?p=react-hook-form@latest)
+- [依存関係](../package.json)がなく、[小さいサイズ](https://bundlephobia.com/result?p=react-hook-form@latest)
 - ブラウザのネイティブ[バリデーション](https://react-hook-form.com/get-started#Applyvalidation)をサポート
 - [Yup](https://github.com/jquense/yup), [Zod](https://github.com/vriad/zod), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi), [Vest](https://github.com/ealush/vest), [class-validator](https://github.com/typestack/class-validator), [io-ts](https://github.com/gcanti/io-ts), [nope](https://github.com/bvego/nope-validator) また custom をサポート
 
