@@ -2412,6 +2412,116 @@ describe('useWatch', () => {
   });
 
   describe('compute ', () => {
+    it.each(['2026-01-01', ''])(
+      'should not recompute a removed field-array value on unmount: %j',
+      (date) => {
+        type FormValues = { items: { date: string }[] };
+
+        const Row = ({ control }: { control: Control<FormValues> }) => {
+          const length = useWatch({
+            control,
+            name: 'items.0.date',
+            compute: (value) => value.length,
+          });
+
+          return <p data-testid="length">{length}</p>;
+        };
+
+        const Component = () => {
+          const { control } = useForm<FormValues>({
+            defaultValues: { items: [] },
+          });
+          const { fields, append, replace } = useFieldArray({
+            control,
+            name: 'items',
+          });
+
+          return (
+            <>
+              <button onClick={() => append({ date })}>Add</button>
+              <button onClick={() => replace([])}>Clear</button>
+              {fields.length > 0 && <Row control={control} />}
+            </>
+          );
+        };
+
+        render(<Component />);
+        expect(screen.queryByTestId('length')).not.toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole('button', { name: 'Add' }));
+        expect(screen.getByTestId('length')).toHaveTextContent(
+          String(date.length),
+        );
+
+        fireEvent.click(screen.getByRole('button', { name: 'Clear' }));
+        expect(screen.queryByTestId('length')).not.toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole('button', { name: 'Add' }));
+        expect(screen.getByTestId('length')).toHaveTextContent(
+          String(date.length),
+        );
+      },
+    );
+
+    it('should not call compute when unmounting a watcher', () => {
+      const compute = jest.fn((value: string) => value.length);
+      const { unmount } = renderHook(() => {
+        const { control } = useForm({ defaultValues: { test: 'value' } });
+
+        return useWatch({ control, name: 'test', compute });
+      });
+
+      compute.mockClear();
+      unmount();
+
+      expect(compute).not.toHaveBeenCalled();
+    });
+
+    itWithActivity(
+      'should resynchronize a computed value after an Activity reconnects',
+      () => {
+        type FormValues = { test: string };
+        let setValue: UseFormReturn<FormValues>['setValue'];
+        const Child = React.memo(function Child({
+          control,
+        }: {
+          control: Control<FormValues>;
+        }) {
+          const length = useWatch({
+            control,
+            name: 'test',
+            compute: (value) => value.length,
+          });
+
+          return <p data-testid="length">{length}</p>;
+        });
+        const Component = ({ mode }: { mode: 'hidden' | 'visible' }) => {
+          const form = useForm<FormValues>({
+            defaultValues: { test: 'initial' },
+          });
+          setValue = form.setValue;
+
+          return (
+            <Activity mode={mode}>
+              <Child control={form.control} />
+            </Activity>
+          );
+        };
+
+        const { rerender } = render(<Component mode="visible" />);
+        expect(screen.getByTestId('length')).toHaveTextContent('7');
+
+        act(() => setValue('test', 'updated value'));
+        expect(screen.getByTestId('length')).toHaveTextContent('13');
+
+        rerender(<Component mode="hidden" />);
+        act(() => setValue('test', ''));
+        rerender(<Component mode="visible" />);
+
+        expect(screen.getByTestId('length')).toHaveTextContent('0');
+      },
+    );
+
     it.each([
       {
         label: 'a string',
