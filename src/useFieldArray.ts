@@ -1,5 +1,6 @@
 import React from 'react';
 
+import filterTouchedErrors from './logic/filterTouchedErrors';
 import generateId from './logic/generateId';
 import getFocusFieldName from './logic/getFocusFieldName';
 import getValidationModes from './logic/getValidationModes';
@@ -401,7 +402,20 @@ export function useFieldArray<
           if (fieldArrayValues !== get(control._formValues, name)) {
             return;
           }
-          const error: FieldError | undefined = get(result.errors, name);
+          let error: FieldError | undefined = get(result.errors, name);
+          if (
+            validationModes.isOnTouch &&
+            !control._formState.isSubmitted &&
+            error &&
+            Object.keys(error).some((key) => !Number.isNaN(+key))
+          ) {
+            // onTouched validates a field once it is touched, so row errors
+            // of fields that were not touched yet are not published.
+            error = filterTouchedErrors(
+              error,
+              get(control._formState.touchedFields, name),
+            );
+          }
           if (!deepEqual(get(control._formState.errors, name), error, true)) {
             if (error) {
               isObject(error) &&
