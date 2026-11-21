@@ -164,6 +164,64 @@ describe('formState', () => {
       expect(result.current.formState.isValid).toBeFalsy();
     });
 
+    it('stop checking validity at the first invalid field', async () => {
+      const validate = jest.fn(() => true);
+      const { result } = renderHook(() =>
+        useForm<{ first: string; second: string }>({
+          mode: VALIDATION_MODE.onChange,
+        }),
+      );
+
+      result.current.formState.isValid;
+
+      await act(async () => {
+        result.current.register('first', { required: true });
+        result.current.register('second', { validate });
+      });
+
+      expect(result.current.formState.isValid).toBeFalsy();
+      expect(validate).not.toHaveBeenCalled();
+    });
+
+    it('stop checking validity at the first invalid nested field', async () => {
+      const validate = jest.fn(() => true);
+      const { result } = renderHook(() =>
+        useForm<{ nested: { first: string }; second: string }>({
+          mode: VALIDATION_MODE.onChange,
+        }),
+      );
+
+      result.current.formState.isValid;
+
+      await act(async () => {
+        result.current.register('nested.first', { required: true });
+        result.current.register('second', { validate });
+      });
+
+      expect(result.current.formState.isValid).toBeFalsy();
+      expect(validate).not.toHaveBeenCalled();
+    });
+
+    it('keep checking validity after a valid nested field', async () => {
+      const validate = jest.fn(() => false);
+      const { result } = renderHook(() =>
+        useForm<{ nested: { first: string }; second: string }>({
+          mode: VALIDATION_MODE.onChange,
+          defaultValues: { nested: { first: 'value' }, second: '' },
+        }),
+      );
+
+      result.current.formState.isValid;
+
+      await act(async () => {
+        result.current.register('nested.first', { required: true });
+        result.current.register('second', { validate });
+      });
+
+      expect(result.current.formState.isValid).toBeFalsy();
+      expect(validate).toHaveBeenCalled();
+    });
+
     it('update valid when toggle Controller', async () => {
       const App = () => {
         const {
