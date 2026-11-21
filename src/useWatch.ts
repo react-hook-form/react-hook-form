@@ -237,7 +237,11 @@ export function useWatch<TFieldValues extends FieldValues>(
 
     return () => {
       unsubscribe();
-      snapshot(!disabled, () => _getCurrentOutput.current());
+      snapshot(!disabled, () =>
+        _compute.current
+          ? _computeFormValues.current
+          : _getCurrentOutput.current(),
+      );
     };
   }, [control, exact, name, disabled, resyncIfNeeded, snapshot]);
 
