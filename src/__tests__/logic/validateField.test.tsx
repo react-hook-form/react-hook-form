@@ -1232,6 +1232,34 @@ describe('validateField', () => {
     });
   });
 
+  it('return min and max error for time and week values when the ref has no type', async () => {
+    const ref = { name: 'test' };
+    const validate = (value: string, rules: Record<string, string>) =>
+      validateField(
+        { _f: { mount: true, name: 'test', ref, _c: true, ...rules } },
+        new Set(),
+        { test: value },
+        false,
+      );
+
+    expect(await validate('14:00', { max: '13:00' })).toEqual({
+      test: { type: 'max', message: '', ref },
+    });
+    expect(await validate('08:30', { min: '09:00' })).toEqual({
+      test: { type: 'min', message: '', ref },
+    });
+    expect(await validate('2024-W30', { max: '2024-W10' })).toEqual({
+      test: { type: 'max', message: '', ref },
+    });
+    expect(await validate('2024-W05', { min: '2024-W10' })).toEqual({
+      test: { type: 'min', message: '', ref },
+    });
+    expect(await validate('10:00', { min: '09:00', max: '13:00' })).toEqual({});
+    expect(
+      await validate('2024-W20', { min: '2024-W10', max: '2024-W30' }),
+    ).toEqual({});
+  });
+
   it('return max length error ', async () => {
     expect(
       await validateField(

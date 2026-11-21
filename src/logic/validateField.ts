@@ -31,6 +31,11 @@ import getRadioValue from './getRadioValue';
 import getValidateError from './getValidateError';
 import getValueAndMessage from './getValueAndMessage';
 
+// Value formats of `<input type="time">` and `<input type="week">`, used when
+// the field ref doesn't expose a `type` (e.g. a Controller).
+const TIME_VALUE_RE = /^\d{2}:\d{2}(:\d{2}(\.\d+)?)?$/;
+const WEEK_VALUE_RE = /^\d{4,}-W\d{2}$/;
+
 export default async <T extends FieldValues>(
   field: Field,
   disabledFieldNames: InternalNameSet,
@@ -163,8 +168,12 @@ export default async <T extends FieldValues>(
         new Date(inputValue as string);
       const convertTimeToDate = (time: unknown) =>
         new Date(new Date().toDateString() + ' ' + time);
-      const isTime = ref.type == 'time';
-      const isWeek = ref.type == 'week';
+      const isTime = ref.type
+        ? ref.type == 'time'
+        : isString(inputValue) && TIME_VALUE_RE.test(inputValue);
+      const isWeek = ref.type
+        ? ref.type == 'week'
+        : isString(inputValue) && WEEK_VALUE_RE.test(inputValue);
 
       if (isString(maxOutput.value) && inputValue) {
         exceedMax = isTime

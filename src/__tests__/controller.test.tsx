@@ -1855,4 +1855,43 @@ describe('Controller', () => {
       expect(onValid).toHaveBeenCalledWith({ test: '' }, expect.anything()),
     );
   });
+
+  it('validate min and max rules for time and week values', async () => {
+    const App = () => {
+      const {
+        control,
+        handleSubmit,
+        formState: { errors },
+      } = useForm<{ time: string; week: string }>({
+        defaultValues: { time: '13:30', week: '2024-W30' },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(noop)}>
+          <Controller
+            control={control}
+            name="time"
+            rules={{ max: { value: '12:00', message: 'time too late' } }}
+            render={({ field }) => <input type="time" {...field} />}
+          />
+          <Controller
+            control={control}
+            name="week"
+            rules={{ max: { value: '2024-W10', message: 'week too late' } }}
+            render={({ field }) => <input type="week" {...field} />}
+          />
+          <p>{errors.time?.message}</p>
+          <p>{errors.week?.message}</p>
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(await screen.findByText('time too late')).toBeVisible();
+    expect(screen.getByText('week too late')).toBeVisible();
+  });
 });
