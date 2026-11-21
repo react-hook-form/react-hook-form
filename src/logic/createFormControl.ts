@@ -1027,7 +1027,7 @@ export function createFormControl<
             eventType,
           }));
 
-        if (context.hasNativeError) {
+        if (context.hasNativeError || (onlyCheckValid && !context.valid)) {
           break;
         }
       }
@@ -1399,6 +1399,7 @@ export function createFormControl<
     let isFieldValueUpdated = true;
     const field: Field = get(_fields, name);
     const registerCallId = _registerCallId;
+    const changeResetCallId = _resetCallId;
     const _updateIsFieldValueUpdated = (fieldValue: unknown) => {
       isFieldValueUpdated =
         !!get(_fields, name) &&
@@ -1485,6 +1486,9 @@ export function createFormControl<
           name: name as FieldPath<TFieldValues>,
           eventType: event.type,
         });
+        if (changeResetCallId !== _resetCallId) {
+          return;
+        }
       }
 
       !isBlurEvent && watched && _subjects.state.next({ ..._formState });
