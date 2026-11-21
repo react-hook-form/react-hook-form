@@ -28,6 +28,7 @@ const RESET_OPTIONS = {
   context: undefined,
   progressive: undefined,
   resetOptions: undefined,
+  validate: undefined,
 } as const;
 
 /**
@@ -56,6 +57,7 @@ export function useForm<
   >(undefined);
   const _values = React.useRef<typeof props.values>(undefined);
   const _formControlProp = React.useRef(props.formControl);
+  const _previousProps = React.useRef(props);
   const _hadDisabled = React.useRef(false);
   const _hadValidate = React.useRef(!!props.validate);
   const _hadErrors = React.useRef(!!props.errors);
@@ -77,6 +79,7 @@ export function useForm<
     (props.formControl && _formControlProp.current !== props.formControl)
   ) {
     _formControlProp.current = props.formControl;
+    _previousProps.current = props;
     _hadDisabled.current = false;
     if (props.formControl) {
       _formControl.current = {
@@ -99,11 +102,10 @@ export function useForm<
 
   const control = _formControl.current.control;
 
-  const previousOptions = control._options;
   const removedOptions: Record<string, unknown> = {};
 
   for (const key in RESET_OPTIONS) {
-    if (key in previousOptions && !(key in props)) {
+    if (key in _previousProps.current && !(key in props)) {
       removedOptions[key] = RESET_OPTIONS[key as keyof typeof RESET_OPTIONS];
     }
   }
@@ -115,8 +117,8 @@ export function useForm<
   control._options = {
     ...removedOptions,
     ...props,
-    validate: props.validate,
   };
+  _previousProps.current = props;
 
   const getCurrentFormState = () => ({
     ...control._formState,
