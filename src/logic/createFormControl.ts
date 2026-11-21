@@ -1027,7 +1027,7 @@ export function createFormControl<
             eventType,
           }));
 
-        if (context.hasNativeError) {
+        if (context.hasNativeError || (onlyCheckValid && !context.valid)) {
           break;
         }
       }
