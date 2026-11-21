@@ -204,6 +204,69 @@ describe('useForm options removed on re-render', () => {
     expect(screen.getByRole('textbox', { name: 'test' })).toBeDisabled();
   });
 
+  it('should keep the mode and resolver a formControl was created with', async () => {
+    const resolver = jest.fn(async () => ({
+      values: {},
+      errors: { test: { type: 'custom', message: 'from resolver' } },
+    }));
+    const { formControl } = createFormControl<{ test: string }>({
+      mode: 'onChange',
+      resolver: resolver as never,
+    });
+
+    const App = () => {
+      const {
+        register,
+        formState: { errors },
+      } = useForm({ formControl });
+
+      return (
+        <>
+          <input {...register('test')} />
+          {errors.test && <p role="alert">{errors.test.message}</p>}
+        </>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'a' } });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('from resolver');
+  });
+
+  it('should keep the form level validate a formControl was created with', async () => {
+    const onSubmit = jest.fn();
+    const { formControl } = createFormControl<{ test: string }>({
+      validate: () => 'form is invalid',
+    });
+
+    const App = () => {
+      const {
+        register,
+        handleSubmit,
+        formState: { errors },
+      } = useForm({ formControl });
+
+      return (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <input {...register('test')} />
+          {errors.form && <p role="alert">{errors.form.message}</p>}
+          <button>submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'form is invalid',
+    );
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
   describe('when switching formControl', () => {
     type Props = Pick<UseFormProps<{ test: string }>, 'formControl'> & {
       disabled?: boolean;
@@ -244,6 +307,38 @@ describe('useForm options removed on re-render', () => {
       rerender(<App formControl={second} />);
 
       expect(screen.getByRole('textbox', { name: 'test' })).toBeEnabled();
+    });
+
+    it('should keep the mode of the new formControl when the previous props passed a mode', async () => {
+      const validate = jest.fn(() => true);
+      const first = createFormControl<{ test: string }>().formControl;
+      const second = createFormControl<{ test: string }>({
+        mode: 'onChange',
+      }).formControl;
+
+      const ModeApp = ({
+        formControl,
+        mode,
+      }: Pick<UseFormProps<{ test: string }>, 'formControl' | 'mode'>) => {
+        const { register } = useForm({
+          formControl,
+          ...(mode ? { mode } : {}),
+        });
+
+        return <input {...register('test', { validate })} />;
+      };
+
+      const { rerender } = render(
+        <ModeApp formControl={first} mode="onBlur" />,
+      );
+
+      rerender(<ModeApp formControl={second} />);
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: { value: 'a' },
+      });
+
+      await waitFor(() => expect(validate).toHaveBeenCalledTimes(1));
     });
   });
 
