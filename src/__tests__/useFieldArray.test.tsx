@@ -1131,6 +1131,77 @@ describe('useFieldArray', () => {
       );
     });
 
+    it('should not publish resolver row errors after append until the field is touched when mode is onTouched', async () => {
+      type FormValues = {
+        test: { value: string }[];
+      };
+
+      const App = () => {
+        const {
+          register,
+          control,
+          formState: { errors },
+        } = useForm<FormValues>({
+          mode: 'onTouched',
+          resolver: async (data): Promise<ResolverResult<FormValues>> => {
+            const fieldErrors: { test?: any } = {};
+            for (const [index, item] of data.test.entries()) {
+              if (item.value === '') {
+                fieldErrors.test = fieldErrors.test || [];
+                fieldErrors.test[index] = {
+                  value: {
+                    type: 'required',
+                    message: `Item ${index} is required`,
+                  },
+                };
+              }
+            }
+
+            if (Object.keys(fieldErrors).length === 0) {
+              return { values: data, errors: {} };
+            }
+
+            return { values: {}, errors: fieldErrors };
+          },
+          defaultValues: {
+            test: [],
+          },
+        });
+        const { fields, append } = useFieldArray({
+          name: 'test',
+          control,
+        });
+
+        return (
+          <form>
+            {fields.map((item, i) => (
+              <div key={item.id}>
+                <input {...register(`test.${i}.value` as const)} />
+                {errors.test?.[i]?.value && (
+                  <span>{errors.test[i]?.value?.message}</span>
+                )}
+              </div>
+            ))}
+            <button type="button" onClick={() => append({ value: '' })}>
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<App />);
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      expect(screen.queryByText('Item 0 is required')).not.toBeInTheDocument();
+
+      fireEvent.blur(screen.getByRole('textbox'));
+
+      expect(await screen.findByText('Item 0 is required')).toBeVisible();
+    });
+
     describe('with an async resolver', () => {
       type FormValues = { test: { value: string }[] };
 
