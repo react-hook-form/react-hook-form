@@ -46,6 +46,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues, TContext = a
         mount: boolean;
         action: boolean;
         actionArrayLengths: Map<InternalFieldName, number>;
+        fieldArrayVersions: Map<InternalFieldName, number>;
         watch: boolean;
     };
     _reset: UseFormReset<TFieldValues>;

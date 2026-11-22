@@ -1,5 +1,6 @@
 import React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
+
 import type { Resolver, UseFormReturn } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
@@ -24,7 +25,6 @@ describe('field array pending result mutation tokens', () => {
       async (action) => {
         const pending: (() => void)[] = [];
         let methods!: UseFormReturn<Values>;
-        let replaceRows!: (value: Values['rows']) => void;
         const resolver: Resolver<Values> = (values) => {
           const invalid = values.rows.some((row) => row.value === 'bad');
           return new Promise((resolve) =>
@@ -52,7 +52,7 @@ describe('field array pending result mutation tokens', () => {
             },
             resolver: kind === 'resolver' ? resolver : undefined,
           });
-          const { fields, append, replace } = useFieldArray({
+          const { fields, append } = useFieldArray({
             control: methods.control,
             name: 'rows',
             rules:
@@ -70,7 +70,6 @@ describe('field array pending result mutation tokens', () => {
                 : undefined,
           });
           useFieldArray({ control: methods.control, name: 'others' });
-          replaceRows = replace;
           const { errors, isValidating } = methods.formState;
           return (
             <>

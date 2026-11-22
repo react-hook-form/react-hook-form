@@ -1,5 +1,6 @@
 import React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
+
 import type { Resolver, UseFormReturn } from '../types';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
@@ -110,12 +111,10 @@ describe('field array pending result mutation tokens', () => {
               methods.setValue('rows.0.value', 'good');
               methods.setValue('rows.0.value', 'bad');
             } else if (action === 'equal onChange') {
-              void methods
-                .register('rows.0.value')
-                .onChange({
-                  target: { name: 'rows.0.value', value: 'bad' },
-                  type: 'change',
-                });
+              void methods.register('rows.0.value').onChange({
+                target: { name: 'rows.0.value', value: 'bad' },
+                type: 'change',
+              });
             } else if (action === 'equal write')
               methods.setValue('rows.0.value', 'bad');
             else if (action === 'equal array write')
