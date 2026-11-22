@@ -55,8 +55,8 @@ function App() {
       <input {...register('firstName')} />
       <input {...register('lastName', { required: true })} />
       {errors.lastName && <p>Last name is required.</p>}
-      <input {...register('age', { pattern: /\d+/ })} />
-      {errors.age && <p>Please enter a number for age.</p>}
+      <input {...register('age', { pattern: /^\d+$/ })} />
+      {errors.age && <p>Please enter a whole number for age.</p>}
       <input type="submit" />
     </form>
   );
