@@ -186,6 +186,7 @@ export function createFormControl<
   let _state = {
     action: false,
     actionArrayLengths: new Map<InternalFieldName, number>(),
+    fieldArrayVersion: 0,
     mount: false,
     watch: false,
     keepIsValid: false,
@@ -353,6 +354,15 @@ export function createFormControl<
       undefined,
       _fields,
     ) as typeof _formState.dirtyFields;
+  };
+
+  const _bumpFieldArrayVersion = (name: InternalFieldName) => {
+    for (const arrayName of _names.array) {
+      if (name.startsWith(`${arrayName}.`)) {
+        _state.fieldArrayVersion++;
+        return;
+      }
+    }
   };
 
   const _setFieldArray: BatchFieldArrayUpdate = (
@@ -1258,6 +1268,7 @@ export function createFormControl<
     const isValueUnchanged = deepEqual(previousValue, cloneValue);
 
     if (!isValueUnchanged) {
+      _bumpFieldArrayVersion(name);
       set(_formValues, name, cloneValue);
     }
 
@@ -1434,6 +1445,7 @@ export function createFormControl<
         );
       const watched = isWatched(name, _names, isBlurEvent);
 
+      !isBlurEvent && _bumpFieldArrayVersion(name);
       set(_formValues, name, cloneObject(fieldValue));
 
       if (isBlurEvent) {
