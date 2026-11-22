@@ -186,6 +186,7 @@ export function createFormControl<
   let _state = {
     action: false,
     actionArrayLengths: new Map<InternalFieldName, number>(),
+    fieldArrayVersions: new Map<InternalFieldName, number>(),
     mount: false,
     watch: false,
     keepIsValid: false,
@@ -355,6 +356,22 @@ export function createFormControl<
     ) as typeof _formState.dirtyFields;
   };
 
+  const bumpFieldArrayVersions = (name?: InternalFieldName) => {
+    for (const arrayName of _names.array) {
+      if (
+        !name ||
+        name === arrayName ||
+        name.startsWith(`${arrayName}.`) ||
+        arrayName.startsWith(`${name}.`)
+      ) {
+        _state.fieldArrayVersions.set(
+          arrayName,
+          (_state.fieldArrayVersions.get(arrayName) || 0) + 1,
+        );
+      }
+    }
+  };
+
   const _setFieldArray: BatchFieldArrayUpdate = (
     name,
     values = [],
@@ -363,6 +380,7 @@ export function createFormControl<
     shouldSetValues = true,
     shouldUpdateFieldsAndState = true,
   ) => {
+    bumpFieldArrayVersions(name);
     if (args && method && !_options.disabled) {
       _state.action = true;
       _state.keepIsValid = false;
@@ -1250,14 +1268,16 @@ export function createFormControl<
     options: SetValueConfig,
     skipClone: boolean,
     skipStateEmit = false,
+    previousValues?: TFieldValues,
   ) => {
     const field: FieldRefs | undefined = get(_fields, name);
     const isFieldArray = _names.array.has(name);
     const cloneValue = skipClone ? value : cloneObject(value);
-    const previousValue = get(_formValues, name);
+    const previousValue = get(previousValues || _formValues, name);
     const isValueUnchanged = deepEqual(previousValue, cloneValue);
 
     if (!isValueUnchanged) {
+      bumpFieldArrayVersions(name);
       set(_formValues, name, cloneValue);
     }
 
@@ -1356,6 +1376,7 @@ export function createFormControl<
       options.shouldDirty ||
       options.shouldTouch
     ) {
+      const previousValues = _formValues;
       _formValues = {
         ..._formValues,
         ...updatedFormValues,
@@ -1369,6 +1390,7 @@ export function createFormControl<
             options,
             true,
             true,
+            previousValues,
           );
         }
       }
@@ -1434,6 +1456,13 @@ export function createFormControl<
         );
       const watched = isWatched(name, _names, isBlurEvent);
 
+      if (
+        !isBlurEvent &&
+        (_names.array.has(name) ||
+          !deepEqual(get(_formValues, name), fieldValue))
+      ) {
+        bumpFieldArrayVersions(name);
+      }
       set(_formValues, name, cloneObject(fieldValue));
 
       if (isBlurEvent) {
@@ -1938,11 +1967,19 @@ export function createFormControl<
 
     for (const fieldName of fieldNames) {
       _names.mount.delete(fieldName);
-      _names.array.delete(fieldName);
       _names.disabled.delete(fieldName);
 
       unset(_fields, fieldName);
-      !options.keepValue && unset(_formValues, fieldName);
+      if (!options.keepValue) {
+        let didInvalidateFieldArrays = false;
+        unset(_formValues, fieldName, () => {
+          if (!didInvalidateFieldArrays) {
+            bumpFieldArrayVersions(fieldName);
+            didInvalidateFieldArrays = true;
+          }
+        });
+      }
+      _names.array.delete(fieldName);
 
       if (!options.keepError) {
         cancelDelayedErrorTree(fieldName);
@@ -2300,6 +2337,7 @@ export function createFormControl<
     keepStateOptions = {},
   ) => {
     _resetCallId++;
+    bumpFieldArrayVersions();
     const updatedValues = formValues ? cloneObject(formValues) : _defaultValues;
     const cloneUpdatedValues = cloneObject(updatedValues);
     const isEmptyResetValues = isEmptyObject(formValues);

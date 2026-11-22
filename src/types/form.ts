@@ -949,6 +949,7 @@ export type Control<
     mount: boolean;
     action: boolean;
     actionArrayLengths: Map<InternalFieldName, number>;
+    fieldArrayVersions: Map<InternalFieldName, number>;
     watch: boolean;
   };
   _reset: UseFormReset<TFieldValues>;

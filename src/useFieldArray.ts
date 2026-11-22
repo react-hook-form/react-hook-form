@@ -396,12 +396,14 @@ export function useFieldArray<
     ) {
       const fieldArrayValues = get(control._formValues, name);
       if (control._options.resolver) {
-        const fieldArrayValuesSnapshot = cloneObject(fieldArrayValues);
+        const fieldArrayVersion =
+          control._state.fieldArrayVersions.get(name) || 0;
         control._runSchema([name]).then((result) => {
           control._updateIsValidating([name]);
           if (
             fieldArrayValues !== get(control._formValues, name) ||
-            !deepEqual(fieldArrayValuesSnapshot, fieldArrayValues)
+            fieldArrayVersion !==
+              (control._state.fieldArrayVersions.get(name) || 0)
           ) {
             return;
           }
@@ -428,7 +430,8 @@ export function useFieldArray<
       } else {
         const field: Field = get(control._fields, name);
         if (field && field._f) {
-          const fieldArrayValuesSnapshot = cloneObject(fieldArrayValues);
+          const fieldArrayVersion =
+            control._state.fieldArrayVersions.get(name) || 0;
           validateField(
             field,
             control._names.disabled,
@@ -439,7 +442,8 @@ export function useFieldArray<
           ).then((error) => {
             if (
               fieldArrayValues !== get(control._formValues, name) ||
-              !deepEqual(fieldArrayValuesSnapshot, fieldArrayValues)
+              fieldArrayVersion !==
+                (control._state.fieldArrayVersions.get(name) || 0)
             ) {
               return;
             }

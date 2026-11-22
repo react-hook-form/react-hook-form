@@ -36,6 +36,7 @@ function isEmptyArray(obj: unknown[]) {
 export default function unset<T>(
   object: T,
   path: string | (string | number)[],
+  onValueRemoved?: () => void,
 ): T {
   if (!isObject(object) && !Array.isArray(object)) {
     return object;
@@ -43,6 +44,9 @@ export default function unset<T>(
 
   if (isString(path) && Object.prototype.hasOwnProperty.call(object, path)) {
     delete (object as Record<string, unknown>)[path];
+    if (onValueRemoved && !Object.prototype.hasOwnProperty.call(object, path)) {
+      onValueRemoved();
+    }
     return object;
   }
 
@@ -60,7 +64,15 @@ export default function unset<T>(
   const key = paths[index];
 
   if (childObject && (isObject(childObject) || Array.isArray(childObject))) {
+    const hadOwnValue =
+      onValueRemoved && Object.prototype.hasOwnProperty.call(childObject, key);
     delete (childObject as Record<string | number, unknown>)[key];
+    if (
+      hadOwnValue &&
+      !Object.prototype.hasOwnProperty.call(childObject, key)
+    ) {
+      onValueRemoved?.();
+    }
   }
 
   if (
@@ -68,7 +80,7 @@ export default function unset<T>(
     ((isObject(childObject) && isEmptyObject(childObject)) ||
       (Array.isArray(childObject) && isEmptyArray(childObject)))
   ) {
-    unset(object, paths.slice(0, -1));
+    unset(object, paths.slice(0, -1), onValueRemoved);
   }
 
   return object;
