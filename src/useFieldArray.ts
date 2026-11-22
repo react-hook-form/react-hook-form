@@ -406,7 +406,15 @@ export function useFieldArray<
             return;
           }
           const error: FieldError | undefined = get(result.errors, name);
-          if (!deepEqual(get(control._formState.errors, name), error, true)) {
+          const isUntouchedRowError =
+            validationModes.isOnTouch &&
+            !control._formState.isSubmitted &&
+            error &&
+            Object.keys(error).some((key) => !Number.isNaN(+key));
+          if (
+            !isUntouchedRowError &&
+            !deepEqual(get(control._formState.errors, name), error, true)
+          ) {
             if (error) {
               isObject(error) &&
               !Object.keys(error).some((key) => !Number.isNaN(+key))
