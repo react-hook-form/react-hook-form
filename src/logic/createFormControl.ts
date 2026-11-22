@@ -1626,17 +1626,28 @@ export function createFormControl<
         ? !fieldNames.some((name) => get(errors, name))
         : isValid;
     } else if (name) {
-      validationResult = (
-        await Promise.all(
-          fieldNames.map(async (fieldName) => {
-            const field: FieldRefs = get(_fields, fieldName);
-            return await executeBuiltInValidation({
-              fields: field && field._f ? { [fieldName]: field } : field,
-              eventType: EVENTS.TRIGGER,
-            });
-          }),
-        )
-      ).every(Boolean);
+      const fields = fieldNames.map((fieldName) => {
+        const field: FieldRefs = get(_fields, fieldName);
+        return field && field._f ? { [fieldName]: field } : field;
+      });
+      const formValid =
+        !_options.validate ||
+        (await validateForm({
+          name: name as FieldPath<TFieldValues>,
+          eventType: EVENTS.TRIGGER,
+        }));
+      validationResult =
+        (
+          await Promise.all(
+            fields.map((field) =>
+              executeBuiltInValidation({
+                fields: field,
+                context: { valid: true, runRootValidation: true },
+                eventType: EVENTS.TRIGGER,
+              }),
+            ),
+          )
+        ).every(Boolean) && formValid;
       !(!validationResult && !_formState.isValid) && _setValid();
     } else {
       validationResult = isValid = await executeBuiltInValidation({
