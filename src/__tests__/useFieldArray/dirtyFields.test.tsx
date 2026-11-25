@@ -65,6 +65,51 @@ describe('useFieldArray dirtyFields isolation', () => {
     });
   });
 
+  it('keep dirtyFields per row when the field array has rules', async () => {
+    let dirtyResult = {};
+    const Component = () => {
+      const {
+        register,
+        control,
+        formState: { dirtyFields },
+      } = useForm<{
+        items: { value: string }[];
+      }>({
+        defaultValues: {
+          items: [{ value: 'a' }],
+        },
+      });
+      const { fields, append } = useFieldArray({
+        control,
+        name: 'items',
+        rules: { required: true },
+      });
+
+      dirtyResult = dirtyFields;
+
+      return (
+        <form>
+          {fields.map((field, i) => (
+            <input key={field.id} {...register(`items.${i}.value` as const)} />
+          ))}
+          <button type="button" onClick={() => append({ value: 'new' })}>
+            append
+          </button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByRole('button', { name: /append/ }));
+
+    await waitFor(() => {
+      expect(dirtyResult).toEqual({
+        items: [undefined, { value: true }],
+      });
+    });
+  });
+
   it('mark both name and items dirty when both are modified', async () => {
     let dirtyResult = {};
     const Component = () => {
