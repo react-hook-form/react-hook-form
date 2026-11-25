@@ -353,6 +353,7 @@ export function createFormControl<
       _formValues,
       undefined,
       _fields,
+      _names.array,
     ) as typeof _formState.dirtyFields;
   };
 
@@ -674,7 +675,13 @@ export function createFormControl<
           const dirtyValue =
             !(field && field._f) &&
             (isObject(defaultFieldValue) || Array.isArray(defaultFieldValue))
-              ? getDirtyFields(defaultFieldValue, fieldValue, undefined, field)
+              ? getDirtyFields(
+                  defaultFieldValue,
+                  fieldValue,
+                  undefined,
+                  field,
+                  _names.array,
+                )
               : true;
 
           set(_formState.dirtyFields, name, dirtyValue);
@@ -694,6 +701,7 @@ export function createFormControl<
             _formValues,
             undefined,
             _fields,
+            _names.array,
           );
 
           if (!deepEqual(_formState.dirtyFields, nextDirtyFields)) {
@@ -2327,6 +2335,7 @@ export function createFormControl<
     const isEmptyResetValues = isEmptyObject(formValues);
     const values = cloneUpdatedValues;
     const fieldRefs = _fields;
+    const fieldArrayNames = _names.array;
 
     Object.keys(delayErrorCallbacks).forEach(cancelDelayedError);
 
@@ -2339,7 +2348,13 @@ export function createFormControl<
         const fieldsToCheck = new Set([
           ..._names.mount,
           ...collectDirtyFieldNames(
-            getDirtyFields(_defaultValues, _formValues, undefined, fieldRefs),
+            getDirtyFields(
+              _defaultValues,
+              _formValues,
+              undefined,
+              fieldRefs,
+              fieldArrayNames,
+            ),
             _formState.dirtyFields,
           ),
         ]);
@@ -2475,10 +2490,22 @@ export function createFormControl<
         ? {}
         : keepStateOptions.keepDirtyValues
           ? keepStateOptions.keepDefaultValues && _formValues
-            ? getDirtyFields(_defaultValues, _formValues, undefined, fieldRefs)
+            ? getDirtyFields(
+                _defaultValues,
+                _formValues,
+                undefined,
+                fieldRefs,
+                fieldArrayNames,
+              )
             : _formState.dirtyFields
           : keepStateOptions.keepDefaultValues && formValues
-            ? getDirtyFields(_defaultValues, formValues, undefined, fieldRefs)
+            ? getDirtyFields(
+                _defaultValues,
+                formValues,
+                undefined,
+                fieldRefs,
+                fieldArrayNames,
+              )
             : keepStateOptions.keepDirty
               ? _formState.dirtyFields
               : keepStateOptions.keepValues
@@ -2487,6 +2514,7 @@ export function createFormControl<
                     _formValues,
                     undefined,
                     fieldRefs,
+                    fieldArrayNames,
                   )
                 : {}) as typeof _formState.dirtyFields,
       touchedFields: keepStateOptions.keepTouched
@@ -2579,6 +2607,7 @@ export function createFormControl<
         _formValues,
         undefined,
         _fields,
+        _names.array,
       );
       _formState.dirtyFields = newDirtyFields as typeof _formState.dirtyFields;
       _formState.isDirty = !isEmptyObject(newDirtyFields);
