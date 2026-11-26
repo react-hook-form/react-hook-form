@@ -87,7 +87,10 @@ export default async <T extends FieldValues>(
       isUndefined(inputValue)) ||
     (isHTMLElement(ref) && ref.value === '' && !_c) ||
     inputValue === '' ||
-    (Array.isArray(inputValue) && !inputValue.length);
+    (Array.isArray(inputValue) && !inputValue.length) ||
+    (typeof FileList !== 'undefined' &&
+      inputValue instanceof FileList &&
+      !inputValue.length);
   const appendErrorsCurry = appendErrors.bind(
     null,
     name,
