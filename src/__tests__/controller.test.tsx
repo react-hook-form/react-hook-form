@@ -809,6 +809,45 @@ describe('Controller', () => {
     expect(await screen.findByText('Input is invalid.')).toBeVisible();
   });
 
+  it('show invalid input when a required file input has no files', async () => {
+    const Component = () => {
+      const { control } = useForm({
+        mode: 'onChange',
+      });
+
+      return (
+        <Controller
+          name="test"
+          render={({ field: { name, onBlur, onChange, ref }, fieldState }) => (
+            <>
+              <input
+                type="file"
+                data-testid="file"
+                name={name}
+                onBlur={onBlur}
+                onChange={onChange}
+                ref={ref}
+              />
+              {fieldState.invalid && <p>Input is invalid.</p>}
+            </>
+          )}
+          control={control}
+          rules={{
+            required: true,
+          }}
+        />
+      );
+    };
+
+    render(<Component />);
+
+    // jsdom gives the input an empty FileList, as a browser does when the
+    // user clears the selection.
+    fireEvent.change(screen.getByTestId('file'));
+
+    expect(await screen.findByText('Input is invalid.')).toBeVisible();
+  });
+
   it('show input has been touched.', async () => {
     const Component = () => {
       const { control } = useForm();
