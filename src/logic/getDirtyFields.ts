@@ -10,8 +10,6 @@ function isTraversable<T>(value: T): boolean {
   return Array.isArray(value) || (isObject(value) && !objectHasFunction(value));
 }
 
-// A field array registered with `rules` has `_f` too, but its rows still need
-// to be compared one by one, so it is not a leaf.
 function isRegisteredLeaf(
   fieldRef: unknown,
   fieldArrayNames?: InternalNameSet,
@@ -19,7 +17,7 @@ function isRegisteredLeaf(
   return !!(
     fieldRef &&
     '_f' in (fieldRef as object) &&
-    !fieldArrayNames?.has((fieldRef as Field)._f.name)
+    !(fieldArrayNames && fieldArrayNames.has((fieldRef as Field)._f.name))
   );
 }
 
