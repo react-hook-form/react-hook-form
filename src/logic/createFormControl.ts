@@ -280,7 +280,7 @@ export function createFormControl<
       const resetCallId = _resetCallId;
       let isValid: boolean;
       if (_options.resolver) {
-        isValid = isEmptyObject((await _runSchema()).errors);
+        isValid = isEmptyObject((await _runSchema(undefined, true)).errors);
         callId === _setValidCallId && _updateIsValidating();
       } else {
         isValid = await executeBuiltInValidation({
@@ -778,7 +778,10 @@ export function createFormControl<
     }
   };
 
-  const _runSchema = async (name?: InternalFieldName[]) => {
+  const _runSchema = async (
+    name?: InternalFieldName[],
+    onlyCheckValid?: boolean,
+  ) => {
     _updateIsValidating(name, true);
     return await _options.resolver!(
       _formValues,
@@ -787,7 +790,7 @@ export function createFormControl<
         name || _names.mount,
         _fields,
         _options.criteriaMode,
-        _options.shouldUseNativeValidation,
+        _options.shouldUseNativeValidation && !onlyCheckValid,
       ),
     );
   };
