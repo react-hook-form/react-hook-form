@@ -16,6 +16,7 @@ import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDateObject from '../utils/isDateObject';
 import isEmptyObject from '../utils/isEmptyObject';
 import isFileInput from '../utils/isFileInput';
+import isFileList from '../utils/isFileList';
 import isFunction from '../utils/isFunction';
 import isHTMLElement from '../utils/isHTMLElement';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
@@ -87,9 +88,7 @@ export default async <T extends FieldValues>(
       isUndefined(inputValue)) ||
     (isHTMLElement(ref) && ref.value === '' && !_c) ||
     inputValue === '' ||
-    (Array.isArray(inputValue) && !inputValue.length) ||
-    (typeof FileList !== 'undefined' &&
-      inputValue instanceof FileList &&
+    ((Array.isArray(inputValue) || isFileList(inputValue)) &&
       !inputValue.length);
   const appendErrorsCurry = appendErrors.bind(
     null,

@@ -1,3 +1,4 @@
+import isFileList from './isFileList';
 import isWeb from './isWeb';
 
 export default function cloneObject<T>(data: T): T {
@@ -11,8 +12,7 @@ export default function cloneObject<T>(data: T): T {
 
   if (
     isWeb &&
-    ((typeof Blob !== 'undefined' && data instanceof Blob) ||
-      (typeof FileList !== 'undefined' && data instanceof FileList))
+    ((typeof Blob !== 'undefined' && data instanceof Blob) || isFileList(data))
   ) {
     return data;
   }
