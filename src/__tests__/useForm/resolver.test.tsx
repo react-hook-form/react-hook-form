@@ -283,6 +283,52 @@ describe('resolver', () => {
     );
   });
 
+  it('be called with shouldUseNativeValidation false when only checking isValid', async () => {
+    const test = jest.fn();
+    const resolver = (a: any, b: any, c: any) => {
+      test(a, b, c);
+      return {
+        errors: {},
+        values: {},
+      };
+    };
+
+    const App = () => {
+      const {
+        register,
+        handleSubmit,
+        formState: { isValid },
+      } = useForm({
+        resolver: async (data, context, options) =>
+          resolver(data, context, options),
+        shouldUseNativeValidation: true,
+      });
+
+      return (
+        <form onSubmit={handleSubmit(noop)}>
+          <input {...register('test')} />
+          <p>{isValid ? 'valid' : 'invalid'}</p>
+          <button>Submit</button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    expect(await screen.findByText('valid')).toBeVisible();
+    expect(test.mock.calls[0][2]).toEqual(
+      expect.objectContaining({ shouldUseNativeValidation: false }),
+    );
+
+    fireEvent.click(screen.getByRole('button'));
+
+    await waitFor(() =>
+      expect(test.mock.calls.at(-1)?.[2]).toEqual(
+        expect.objectContaining({ shouldUseNativeValidation: true }),
+      ),
+    );
+  });
+
   it('avoid the problem of race condition', async () => {
     jest.useFakeTimers();
 
