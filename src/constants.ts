@@ -33,6 +33,7 @@ export const REGISTER_VALIDATION_RULES = [
   INPUT_VALIDATION_RULES.maxLength,
   INPUT_VALIDATION_RULES.pattern,
   INPUT_VALIDATION_RULES.validate,
+  'deps',
 ] as const;
 
 export const FORM_ERROR_TYPE = 'form';
