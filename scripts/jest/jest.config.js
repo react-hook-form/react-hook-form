@@ -52,6 +52,7 @@ const getProjects = () => {
 };
 
 module.exports = {
+  rootDir: '../..',
   collectCoverageFrom: [
     '**/**/*.{ts,tsx}',
     '!**/**/*.test.{ts,tsx}',
@@ -59,6 +60,7 @@ module.exports = {
     '!**/node_modules/**',
     '!**/dist/**',
     '!**/__tests__/**',
+    '!**/__typetest__/**',
   ],
   projects: getProjects(),
 };
