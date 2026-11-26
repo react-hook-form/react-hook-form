@@ -461,6 +461,27 @@ describe('getDirtyFields', () => {
     });
   });
 
+  it('still diff a field array element-by-element when it is registered with rules', () => {
+    const fieldRefs = {
+      test: {
+        _f: { name: 'test', ref: { name: 'test' } },
+        0: { value: { _f: { name: 'test.0.value', ref: {} } } },
+      },
+    };
+
+    expect(
+      getDirtyFields(
+        { test: [{ value: 'a' }] },
+        { test: [{ value: 'a' }, { value: 'b' }] },
+        undefined,
+        fieldRefs,
+        new Set(['test']),
+      ),
+    ).toEqual({
+      test: [undefined, { value: true }],
+    });
+  });
+
   it('diff nested arrays element-by-element', () => {
     expect(
       getDirtyFields(

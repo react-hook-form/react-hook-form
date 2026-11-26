@@ -1,4 +1,4 @@
-import type { FieldRefs } from '../types';
+import type { Field, FieldRefs, InternalNameSet } from '../types';
 import deepEqual from '../utils/deepEqual';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isObject from '../utils/isObject';
@@ -10,8 +10,15 @@ function isTraversable<T>(value: T): boolean {
   return Array.isArray(value) || (isObject(value) && !objectHasFunction(value));
 }
 
-function isRegisteredLeaf(fieldRef: unknown): boolean {
-  return !!(fieldRef && '_f' in (fieldRef as object));
+function isRegisteredLeaf(
+  fieldRef: unknown,
+  fieldArrayNames?: InternalNameSet,
+): boolean {
+  return !!(
+    fieldRef &&
+    '_f' in (fieldRef as object) &&
+    !(fieldArrayNames && fieldArrayNames.has((fieldRef as Field)._f.name))
+  );
 }
 
 type DirtyFieldsTree = Record<string, unknown>;
@@ -34,6 +41,7 @@ function markFieldsDirty<T>(
   data: T,
   fields: DirtyFieldsTree = {},
   fieldRefs?: FieldRefs,
+  fieldArrayNames?: InternalNameSet,
 ): DirtyFieldsTree {
   for (const key in data) {
     const value = data[key];
@@ -41,10 +49,15 @@ function markFieldsDirty<T>(
 
     if (
       isTraversable(value) &&
-      (!Array.isArray(value) || !isRegisteredLeaf(fieldRef))
+      (!Array.isArray(value) || !isRegisteredLeaf(fieldRef, fieldArrayNames))
     ) {
       fields[key] = Array.isArray(value) ? [] : {};
-      markFieldsDirty(value, fields[key] as DirtyFieldsTree, fieldRef);
+      markFieldsDirty(
+        value,
+        fields[key] as DirtyFieldsTree,
+        fieldRef,
+        fieldArrayNames,
+      );
 
       if (isEmptyDirtyContainer(fields[key])) {
         clearDirtyField(fields, key);
@@ -62,6 +75,7 @@ export default function getDirtyFields<T>(
   formValues: T,
   dirtyFieldsFromValues?: DirtyFieldsTree,
   fieldRefs?: FieldRefs,
+  fieldArrayNames?: InternalNameSet,
 ): DirtyFieldsTree {
   if (!dirtyFieldsFromValues) {
     dirtyFieldsFromValues = markFieldsDirty(
@@ -70,6 +84,7 @@ export default function getDirtyFields<T>(
         ? []
         : {}) as DirtyFieldsTree,
       fieldRefs,
+      fieldArrayNames,
     );
   }
 
@@ -79,13 +94,14 @@ export default function getDirtyFields<T>(
 
     if (
       isTraversable(value) &&
-      (!Array.isArray(value) || !isRegisteredLeaf(fieldRef))
+      (!Array.isArray(value) || !isRegisteredLeaf(fieldRef, fieldArrayNames))
     ) {
       if (isUndefined(formValues) || isPrimitive(dirtyFieldsFromValues[key])) {
         dirtyFieldsFromValues[key] = markFieldsDirty(
           value,
           (Array.isArray(value) ? [] : {}) as DirtyFieldsTree,
           fieldRef,
+          fieldArrayNames,
         );
       } else {
         getDirtyFields(
@@ -93,6 +109,7 @@ export default function getDirtyFields<T>(
           isNullOrUndefined(formValues) ? {} : formValues[key],
           dirtyFieldsFromValues[key] as DirtyFieldsTree,
           fieldRef,
+          fieldArrayNames,
         );
       }
 
