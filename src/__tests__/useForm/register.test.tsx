@@ -2375,6 +2375,39 @@ describe('register', () => {
     });
   });
 
+  it('stop triggering deps removed at runtime', async () => {
+    const App = ({ withDeps }: { withDeps: boolean }) => {
+      const {
+        register,
+        formState: { errors },
+      } = useForm<{ password: string; confirm: string }>({
+        mode: 'onChange',
+      });
+
+      return (
+        <div>
+          <input
+            {...register('password', withDeps ? { deps: ['confirm'] } : {})}
+          />
+          <input {...register('confirm', { required: 'required' })} />
+          {errors.confirm && <p>{errors.confirm.message}</p>}
+        </div>
+      );
+    };
+
+    const { rerender } = render(<App withDeps={true} />);
+
+    rerender(<App withDeps={false} />);
+
+    fireEvent.change(screen.getAllByRole('textbox')[0], {
+      target: { value: 'test' },
+    });
+
+    await act(async () => {});
+
+    expect(screen.queryByText('required')).not.toBeInTheDocument();
+  });
+
   describe('when a server-rendered input is edited before hydration', () => {
     it('keep the typed text as the field value', async () => {
       let methods: UseFormReturn<{ test: string }>;
