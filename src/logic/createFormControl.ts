@@ -1262,6 +1262,27 @@ export function createFormControl<
             skipRender,
             skipValueRender,
           );
+
+      // A registered field that was walked into because other fields are
+      // registered below it still gets its own value, touch, dirty and
+      // validation handled.
+      if (
+        field &&
+        field._f &&
+        isObject(fieldValue) &&
+        !isDateObject(fieldValue) &&
+        !_names.array.has(name) &&
+        Object.keys(field).some((key) => key !== '_f')
+      ) {
+        setFieldValue(
+          fieldName,
+          fieldValue,
+          options,
+          skipClone,
+          skipRender,
+          skipValueRender,
+        );
+      }
     }
   };
 

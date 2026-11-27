@@ -1983,6 +1983,38 @@ describe('setValue', () => {
     expect(screen.getByRole('textbox')).toHaveValue('5');
   });
 
+  it('validate a registered object field and update its registered children when its parent is set', async () => {
+    type FormValues = { location: { coords: { lat: number } } };
+    let form!: ReturnType<typeof useForm<FormValues>>;
+
+    const App = () => {
+      form = useForm<FormValues>({
+        defaultValues: { location: { coords: { lat: 1 } } },
+      });
+      form.formState.errors;
+      form.register('location.coords', {
+        validate: (coords) => coords.lat >= 0 || 'Invalid latitude',
+      });
+
+      return <input {...form.register('location.coords.lat')} />;
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      form.setValue(
+        'location',
+        { coords: { lat: -1 } },
+        { shouldValidate: true },
+      );
+    });
+
+    expect(screen.getByRole('textbox')).toHaveValue('-1');
+    expect(form.formState.errors.location?.coords?.message).toBe(
+      'Invalid latitude',
+    );
+  });
+
   it('update both dirty and touched state', () => {
     const App = () => {
       const {
