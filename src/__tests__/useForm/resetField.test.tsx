@@ -5,6 +5,7 @@ import {
   render,
   renderHook,
   screen,
+  waitFor,
 } from '@testing-library/react';
 
 import { useForm } from '../../useForm';
@@ -773,4 +774,38 @@ describe('resetField', () => {
       expect(result.current.formState.isDirty).toBe(false);
     },
   );
+
+  it('clear the native validation message', async () => {
+    const App = () => {
+      const { register, handleSubmit, resetField } = useForm({
+        shouldUseNativeValidation: true,
+        defaultValues: {
+          test: 'test',
+        },
+      });
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <input {...register('test', { required: 'required' })} />
+          <button>submit</button>
+          <button type="button" onClick={() => resetField('test')}>
+            reset
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    const input = screen.getByRole<HTMLInputElement>('textbox');
+
+    fireEvent.change(input, { target: { value: '' } });
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() => expect(input.validationMessage).toBe('required'));
+
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+
+    expect(input.validationMessage).toBe('');
+  });
 });

@@ -4287,4 +4287,108 @@ describe('reset', () => {
       expect(input).toHaveFocus();
     });
   });
+
+  it('clear the native validation message of every input', async () => {
+    const onValid = jest.fn();
+
+    const App = () => {
+      const { register, handleSubmit, reset } = useForm({
+        shouldUseNativeValidation: true,
+      });
+
+      return (
+        <form onSubmit={handleSubmit(onValid)}>
+          <input
+            type="radio"
+            value="a"
+            {...register('test', { required: 'required' })}
+          />
+          <input
+            type="radio"
+            value="b"
+            {...register('test', { required: 'required' })}
+          />
+          <button>submit</button>
+          <button type="button" onClick={() => reset()}>
+            reset
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    const radios = screen.getAllByRole<HTMLInputElement>('radio');
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() => expect(radios[1].validationMessage).toBe('required'));
+
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+
+    radios.forEach((radio) => expect(radio.validationMessage).toBe(''));
+
+    fireEvent.click(radios[0]);
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() => expect(onValid).toHaveBeenCalledTimes(1));
+  });
+
+  it('clear the native validation message when reset follows a field array remove', async () => {
+    const App = () => {
+      const { register, control, handleSubmit, reset } = useForm({
+        shouldUseNativeValidation: true,
+        defaultValues: {
+          test: [{ value: 'a' }, { value: '' }],
+        },
+      });
+      const { fields, remove } = useFieldArray({ control, name: 'test' });
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          {fields.map((field, index) => (
+            <div key={field.id}>
+              <input
+                type="radio"
+                value="a"
+                {...register(`test.${index}.value`, { required: 'required' })}
+              />
+              <input
+                type="radio"
+                value="b"
+                {...register(`test.${index}.value`, { required: 'required' })}
+              />
+            </div>
+          ))}
+          <button>submit</button>
+          <button
+            type="button"
+            onClick={() => {
+              remove(0);
+              reset(undefined, { keepValues: true });
+            }}
+          >
+            reset
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    const getRadios = () => screen.getAllByRole<HTMLInputElement>('radio');
+
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() =>
+      expect(getRadios()[3].validationMessage).toBe('required'),
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+
+    expect(getRadios().map((radio) => radio.validationMessage)).toEqual([
+      '',
+      '',
+    ]);
+  });
 });
