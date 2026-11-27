@@ -1240,8 +1240,11 @@ export function createFormControl<
       }
 
       (_names.array.has(name) ||
-        isObject(fieldValue) ||
-        (field && !field._f)) &&
+        (field && !field._f) ||
+        // A registered field holding an object is set as one value, unless
+        // other fields are registered below it.
+        (isObject(fieldValue) &&
+          (!field || Object.keys(field).some((key) => key !== '_f')))) &&
       !isDateObject(fieldValue)
         ? setFieldValues(
             fieldName,
