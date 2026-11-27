@@ -1175,6 +1175,17 @@ export function createFormControl<
       }
     }
 
+    updateFieldState(name, field, value, fieldValue, options, skipRender);
+  };
+
+  const updateFieldState = (
+    name: InternalFieldName,
+    field: Field | undefined,
+    value: SetFieldValue<TFieldValues>,
+    fieldValue: unknown,
+    options: SetValueConfig,
+    skipRender: boolean,
+  ) => {
     (options.shouldDirty || options.shouldTouch) &&
       updateTouchAndDirty(
         name,
@@ -1239,12 +1250,39 @@ export function createFormControl<
         });
       }
 
+      if (
+        field &&
+        field._f &&
+        isObject(fieldValue) &&
+        !isDateObject(fieldValue) &&
+        Object.keys(field).some((key) => key !== '_f')
+      ) {
+        // A registered field holding an object, with fields registered below it:
+        // set those so their inputs update, then update the state of this field.
+        // Its validation covers the fields below it, so they don't validate twice.
+        setFieldValues(
+          fieldName,
+          fieldValue,
+          { ...options, shouldValidate: false },
+          skipClone,
+          skipRender,
+          skipValueRender,
+        );
+        updateFieldState(
+          fieldName,
+          get(_fields, fieldName),
+          fieldValue,
+          fieldValue,
+          options,
+          skipRender,
+        );
+        continue;
+      }
+
       (_names.array.has(name) ||
         (field && !field._f) ||
-        // A registered field holding an object is set as one value, unless
-        // other fields are registered below it.
-        (isObject(fieldValue) &&
-          (!field || Object.keys(field).some((key) => key !== '_f')))) &&
+        // A registered field holding an object is set as one value.
+        (isObject(fieldValue) && !field)) &&
       !isDateObject(fieldValue)
         ? setFieldValues(
             fieldName,
@@ -1262,27 +1300,6 @@ export function createFormControl<
             skipRender,
             skipValueRender,
           );
-
-      // A registered field that was walked into because other fields are
-      // registered below it still gets its own value, touch, dirty and
-      // validation handled.
-      if (
-        field &&
-        field._f &&
-        isObject(fieldValue) &&
-        !isDateObject(fieldValue) &&
-        !_names.array.has(name) &&
-        Object.keys(field).some((key) => key !== '_f')
-      ) {
-        setFieldValue(
-          fieldName,
-          fieldValue,
-          options,
-          skipClone,
-          skipRender,
-          skipValueRender,
-        );
-      }
     }
   };
 

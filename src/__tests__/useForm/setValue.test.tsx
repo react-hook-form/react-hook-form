@@ -1986,6 +1986,7 @@ describe('setValue', () => {
   it('validate a registered object field and update its registered children when its parent is set', async () => {
     type FormValues = { location: { coords: { lat: number } } };
     let form!: ReturnType<typeof useForm<FormValues>>;
+    const validateLat = jest.fn(() => true);
 
     const App = () => {
       form = useForm<FormValues>({
@@ -1996,7 +1997,11 @@ describe('setValue', () => {
         validate: (coords) => coords.lat >= 0 || 'Invalid latitude',
       });
 
-      return <input {...form.register('location.coords.lat')} />;
+      return (
+        <input
+          {...form.register('location.coords.lat', { validate: validateLat })}
+        />
+      );
     };
 
     render(<App />);
@@ -2013,6 +2018,8 @@ describe('setValue', () => {
     expect(form.formState.errors.location?.coords?.message).toBe(
       'Invalid latitude',
     );
+    // the validation of `location.coords` covers it, so it runs once
+    expect(validateLat).toHaveBeenCalledTimes(1);
   });
 
   it('update both dirty and touched state', () => {
