@@ -1175,17 +1175,6 @@ export function createFormControl<
       }
     }
 
-    updateFieldState(name, field, value, fieldValue, options, skipRender);
-  };
-
-  const updateFieldState = (
-    name: InternalFieldName,
-    field: Field | undefined,
-    value: SetFieldValue<TFieldValues>,
-    fieldValue: unknown,
-    options: SetValueConfig,
-    skipRender: boolean,
-  ) => {
     (options.shouldDirty || options.shouldTouch) &&
       updateTouchAndDirty(
         name,
@@ -1251,38 +1240,37 @@ export function createFormControl<
       }
 
       if (
-        field &&
-        field._f &&
+        field?._f &&
         isObject(fieldValue) &&
         !isDateObject(fieldValue) &&
-        Object.keys(field).some((key) => key !== '_f')
+        !_names.array.has(name)
       ) {
-        // A registered field holding an object, with fields registered below it:
-        // set those so their inputs update, then update the state of this field.
-        // Its validation covers the fields below it, so they don't validate twice.
-        setFieldValues(
+        // A registered field holding an object is set like `setValue` on its
+        // own name. Inputs registered below it get their values first; its
+        // validation covers them.
+        Object.keys(field).length > 1 &&
+          setFieldValues(
+            fieldName,
+            fieldValue,
+            { ...options, shouldValidate: false },
+            skipClone,
+            skipRender,
+            skipValueRender,
+          );
+        setFieldValue(
           fieldName,
           fieldValue,
-          { ...options, shouldValidate: false },
+          options,
           skipClone,
           skipRender,
           skipValueRender,
-        );
-        updateFieldState(
-          fieldName,
-          get(_fields, fieldName),
-          fieldValue,
-          fieldValue,
-          options,
-          skipRender,
         );
         continue;
       }
 
       (_names.array.has(name) ||
-        (field && !field._f) ||
-        // A registered field holding an object is set as one value.
-        (isObject(fieldValue) && !field)) &&
+        isObject(fieldValue) ||
+        (field && !field._f)) &&
       !isDateObject(fieldValue)
         ? setFieldValues(
             fieldName,
