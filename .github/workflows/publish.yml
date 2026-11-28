@@ -31,5 +31,7 @@ jobs:
             TAG="${TAG%%.*}"
           else
             TAG=latest
+            LATEST=$(npm view react-hook-form dist-tags.latest)
+            [ "$(printf '%s\n%s\n' "$LATEST" "$VERSION" | sort -V | tail -1)" = "$VERSION" ] || TAG="latest-${VERSION%%.*}"
           fi
           pnpm publish --no-git-checks --tag "$TAG"
