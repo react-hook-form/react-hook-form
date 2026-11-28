@@ -19,7 +19,10 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "ignoreDeprecations": "6.0"
+    "ignoreDeprecations": "6.0",
+    "paths": {
+      "react-hook-form": ["./src"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": [

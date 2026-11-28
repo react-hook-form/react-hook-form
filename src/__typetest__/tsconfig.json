@@ -10,7 +10,10 @@
     "skipLibCheck": true,
     "noEmit": true,
     "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+    "paths": {
+      "react-hook-form": ["../index.ts"]
+    }
   },
   "include": ["./**/*.test-d.ts", "./__fixtures__/**/*.ts", "../**/*.ts"],
   "exclude": ["../**/__tests__", "../**/*.test.ts", "../**/*.test.tsx"]

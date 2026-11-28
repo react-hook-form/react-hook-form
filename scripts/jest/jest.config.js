@@ -5,6 +5,7 @@ const jestDefaultConfig = {
   rootDir: '.',
   roots: ['<rootDir>/src'],
   transformIgnorePatterns: ['[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$'],
+  moduleNameMapper: { '^react-hook-form$': '<rootDir>/src' },
 };
 
 const web = {

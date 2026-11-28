@@ -20,6 +20,8 @@ const options = [
     format: 'umd',
     input: pkg.source,
   },
+  { name: 'devtools', format: 'cjs', input: 'src/devtools/index.ts' },
+  { name: 'devtools', format: 'esm', input: 'src/devtools/index.ts' },
 ];
 
 export default options.map((option) => createRollupConfig(option));

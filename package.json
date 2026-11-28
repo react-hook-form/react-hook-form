@@ -21,6 +21,11 @@
       "react-server": "./dist/react-server.esm.mjs",
       "import": "./dist/index.esm.mjs",
       "require": "./dist/index.cjs.js"
+    },
+    "./devtools": {
+      "types": "./dist/devtools/index.d.ts",
+      "import": "./dist/devtools.esm.mjs",
+      "require": "./dist/devtools.cjs.js"
     }
   },
   "scripts": {
