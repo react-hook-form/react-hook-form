@@ -2291,6 +2291,21 @@ export function createFormControl<
       return result;
     };
 
+  const clearCustomValidity = (
+    fields: FieldRefs,
+    names?: InternalFieldName[],
+  ) =>
+    _options.shouldUseNativeValidation &&
+    iterateFieldsByAction(
+      fields,
+      (ref, _, _f) =>
+        (_f.refs || [ref as HTMLInputElement]).forEach(
+          (ref) =>
+            isFunction(ref.setCustomValidity) && ref.setCustomValidity(''),
+        ),
+      names,
+    );
+
   const resetField: UseFormResetField<TFieldValues> = (name, options = {}) => {
     if (get(_fields, name)) {
       _updateValidatingFields([name]);
@@ -2316,6 +2331,7 @@ export function createFormControl<
 
       if (!options.keepError) {
         cancelDelayedErrorTree(name);
+        clearCustomValidity(_fields, [name]);
         unset(_formState.errors, name);
         _formState.errors = { ..._formState.errors };
         _setValid();
@@ -2468,6 +2484,7 @@ export function createFormControl<
     _dirtyFieldsStale = false;
 
     if (!keepStateOptions.keepErrors) {
+      clearCustomValidity(fieldRefs);
       _formState.errors = {};
     }
 

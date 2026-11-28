@@ -4,7 +4,7 @@ import isObject from '../utils/isObject';
 
 const iterateFieldsByAction = (
   fields: FieldRefs,
-  action: (ref: Ref, name: string) => 1 | undefined | void,
+  action: (ref: Ref, name: string, _f: Field['_f']) => 1 | undefined | void,
   fieldsNames?: Set<InternalFieldName> | InternalFieldName[] | 0,
 ) => {
   for (const key of fieldsNames || Object.keys(fields)) {
@@ -21,9 +21,9 @@ const iterateFieldsByAction = (
 
       if (_f) {
         const groupRef = _f.refs?.find((ref) => !ref.disabled);
-        if (groupRef && action(groupRef, _f.name)) {
+        if (groupRef && action(groupRef, _f.name, _f)) {
           return true;
-        } else if (_f.ref && action(_f.ref, _f.name)) {
+        } else if (_f.ref && action(_f.ref, _f.name, _f)) {
           return true;
         } else {
           if (iterateFieldsByAction(field as FieldRefs, action)) {
