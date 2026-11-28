@@ -1,5 +1,47 @@
 # Changelog
 
+## [7.92.0] - 2026-11-11
+
+### Changed
+
+- Improve performance of `useFormState` and `Controller` by avoiding form state cloning on mount and unmount
+- Skip non-dirty array holes when collecting dirty field names
+- Avoid mutating field metadata when building resolver options
+
+### Fixed
+
+- `setValues` not updating dirty state for unregistered fields
+- Form state values becoming inconsistent
+- `setValue` not selecting checkbox options with empty string values
+- Stale asynchronous form-level validation results
+- `useFieldArray` applying `reValidateMode: 'onSubmit'` before submission
+- Default values not applied to selects with disabled optgroups
+- `useController` reading stale `shouldUnregister` options
+- Focusing disabled radio and checkbox inputs
+- TypeScript type regression
+- Field array notifications using stale values
+- Rejected submission callbacks with falsy rejection reasons
+- `useWatch` missing `reset()` updates on mount in React Native
+- `trigger` losing nested field array root errors
+- `unregister` retaining descendant registrations when removing a parent
+- `trigger` not marking nested fields as touched when `shouldTouch` targets a parent
+- `useWatch` compute cache not synchronizing when `compute` is removed
+- `setValues` ignoring options when values remain unchanged
+- `handleSubmit` updating form state after `reset()` during asynchronous callbacks
+- `useFieldArray` retaining validation rules after the `rules` prop is removed
+- `reset` not updating `isValid` after cancelling pending validation
+- TypeScript nested array paths not preserving `undefined`
+- `Form` not respecting `encType` when constructing request bodies
+- `handleSubmit` not supporting nullish and primitive transformed values with disabled fields
+- `useController` dirty tracking with controller-level `defaultValue`
+- Multi-select changes including disabled options
+- `register` overwriting untouched range and color input defaults
+- Stale schema resolver errors after field array operations
+- `unset` failing on primitive values
+- Form-level validation errors appearing before submission during `isValid` checks
+- Stale field errors when form-level validation returns a message
+- Repeated `reset()` calls and error focusing with `keepFieldsRef` and memoized inputs
+
 ## [7.91.0] - 2026-10-24
 
 ### Changed
