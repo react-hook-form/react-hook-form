@@ -124,8 +124,8 @@ export function Panel({
   onClose,
   onExpand,
 }: PanelProps) {
-  const formState = useFormState({ control });
-  const values = useWatch({ control });
+  const formState = useFormState({ control, disabled: !open });
+  const values = useWatch({ control, disabled: !open });
   const [filter, setFilter] = React.useState('');
   const [, refresh] = React.useReducer((count: number) => count + 1, 0);
 

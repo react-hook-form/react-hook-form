@@ -5,7 +5,6 @@ import { useFormContext } from 'react-hook-form';
 import { Logo } from './logo';
 import { Panel } from './panel';
 import { styles as css } from './styles';
-import { useExtension } from './useExtension';
 
 export type Placement =
   | 'top-left'
@@ -16,7 +15,6 @@ export type Placement =
 export type DevToolProps<T extends FieldValues = FieldValues> = {
   id?: string;
   control?: Control<T>;
-  extension?: boolean;
   placement?: Placement;
   styles?: {
     button?: React.CSSProperties;
@@ -60,14 +58,9 @@ function useSettings(key: string) {
 function DevToolUI({
   id,
   control,
-  extension = false,
   placement = 'top-right',
   styles,
 }: DevToolProps & { control: Control }) {
-  const [fallbackId] = React.useState(() =>
-    Math.random().toString(36).slice(2),
-  );
-  useExtension(id || fallbackId, control, extension);
   const [{ open, expanded, ...settings }, update] = useSettings(
     id ? `${STORAGE_KEY}:${id}` : STORAGE_KEY,
   );

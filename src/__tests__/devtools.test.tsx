@@ -178,92 +178,14 @@ describe('DevTool', () => {
     ).toBeVisible();
   });
 
-  describe('extension bridge', () => {
-    const messages: any[] = [];
-    const listener = (event: MessageEvent) => messages.push(event.data);
+  it('should show values changed while the panel was closed', async () => {
+    render(<App />);
 
-    beforeEach(() => {
-      messages.length = 0;
-      window.addEventListener('message', listener);
+    fireEvent.change(screen.getAllByRole('textbox')[0], {
+      target: { value: 'updated' },
     });
+    open();
 
-    afterEach(() => window.removeEventListener('message', listener));
-
-    const Form = ({ extension = true }: { extension?: boolean }) => {
-      const { control, register } = useForm({
-        defaultValues: { count: 0, agree: false },
-      });
-
-      return (
-        <>
-          <input {...register('count')} />
-          <input type="checkbox" {...register('agree')} />
-          <DevTool id="form" control={control} extension={extension} />
-        </>
-      );
-    };
-
-    it('should not respond to INIT unless extension is enabled', async () => {
-      render(<Form extension={false} />);
-
-      fireEvent(
-        window,
-        new MessageEvent('message', {
-          data: { source: 'react-hook-form-bridge', type: 'INIT' },
-          origin: window.location.origin,
-          source: window,
-        }),
-      );
-
-      await new Promise((resolve) => setTimeout(resolve, 50));
-
-      expect(messages).toEqual([
-        { source: 'react-hook-form-bridge', type: 'INIT' },
-      ]);
-    });
-
-    it('should ignore INIT messages from another origin', async () => {
-      render(<Form />);
-
-      fireEvent(
-        window,
-        new MessageEvent('message', {
-          data: { source: 'react-hook-form-bridge', type: 'INIT' },
-          origin: 'https://evil.example',
-          source: window,
-        }),
-      );
-
-      await new Promise((resolve) => setTimeout(resolve, 50));
-
-      expect(messages).toEqual([
-        { source: 'react-hook-form-bridge', type: 'INIT' },
-      ]);
-    });
-
-    it('should send falsy values and keep the panel visible', async () => {
-      render(<Form />);
-
-      fireEvent(
-        window,
-        new MessageEvent('message', {
-          data: { source: 'react-hook-form-bridge', type: 'INIT' },
-          origin: window.location.origin,
-          source: window,
-        }),
-      );
-
-      await waitFor(() =>
-        expect(messages.map((message) => message.type)).toContain('UPDATE'),
-      );
-
-      expect(
-        messages.find((message) => message.type === 'UPDATE').payload.data
-          .formValues,
-      ).toEqual({ count: 0, agree: false });
-      expect(
-        screen.getByRole('button', { name: 'Show dev panel' }),
-      ).toBeVisible();
-    });
+    expect(await screen.findByText('"updated"')).toBeVisible();
   });
 });
