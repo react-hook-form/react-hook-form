@@ -808,4 +808,54 @@ describe('resetField', () => {
 
     expect(input.validationMessage).toBe('');
   });
+  it('clear the native validation messages of a registered parent and its nested fields', async () => {
+    const App = () => {
+      const { register, trigger, resetField } = useForm({
+        shouldUseNativeValidation: true,
+      });
+
+      return (
+        <form>
+          <input {...register('test', { validate: () => 'parent' })} />
+          <input {...register('test.first', { required: 'first' })} />
+          <input {...register('test.last', { required: 'last' })} />
+          <button
+            type="button"
+            onClick={async () => {
+              await trigger('test.first');
+              await trigger('test.last');
+              await trigger('test');
+            }}
+          >
+            validate
+          </button>
+          <button type="button" onClick={() => resetField('test')}>
+            reset
+          </button>
+        </form>
+      );
+    };
+
+    render(<App />);
+
+    const inputs = screen.getAllByRole<HTMLInputElement>('textbox');
+
+    fireEvent.click(screen.getByRole('button', { name: 'validate' }));
+
+    await waitFor(() =>
+      expect(inputs.map((input) => input.validationMessage)).toEqual([
+        'parent',
+        'first',
+        'last',
+      ]),
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'reset' }));
+
+    expect(inputs.map((input) => input.validationMessage)).toEqual([
+      '',
+      '',
+      '',
+    ]);
+  });
 });
