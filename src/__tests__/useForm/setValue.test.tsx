@@ -1929,6 +1929,101 @@ describe('setValue', () => {
     expect(await screen.findByText('dirty')).toBeVisible();
   });
 
+  it('validate and touch a field holding an object when its parent is set', async () => {
+    type FormValues = { location: { coords: { lat: number; lng: number } } };
+    const { result } = renderHook(() =>
+      useForm<FormValues>({
+        defaultValues: { location: { coords: { lat: 1, lng: 1 } } },
+      }),
+    );
+
+    result.current.formState.errors;
+    result.current.formState.touchedFields;
+    result.current.register('location.coords', {
+      validate: (coords) => coords.lat >= 0 || 'Invalid latitude',
+    });
+
+    await act(async () => {
+      result.current.setValue(
+        'location',
+        { coords: { lat: -1, lng: 2 } },
+        { shouldValidate: true, shouldTouch: true },
+      );
+    });
+
+    expect(result.current.formState.errors.location?.coords?.message).toBe(
+      'Invalid latitude',
+    );
+    expect(result.current.formState.touchedFields).toEqual({
+      location: { coords: true },
+    });
+  });
+
+  it('update fields registered below a field holding an object when its parent is set', () => {
+    type FormValues = { location: { coords: { lat: number } } };
+    let setValue: (name: 'location', value: FormValues['location']) => void =
+      noop;
+
+    const App = () => {
+      const form = useForm<FormValues>({
+        defaultValues: { location: { coords: { lat: 0 } } },
+      });
+      setValue = form.setValue;
+      form.register('location.coords');
+
+      return <input {...form.register('location.coords.lat')} />;
+    };
+
+    render(<App />);
+
+    act(() => {
+      setValue('location', { coords: { lat: 5 } });
+    });
+
+    expect(screen.getByRole('textbox')).toHaveValue('5');
+  });
+
+  it('validate a registered object field and update its registered children when its parent is set', async () => {
+    type FormValues = { location: { coords: { lat: number } } };
+    let form!: ReturnType<typeof useForm<FormValues>>;
+    const validateLat = jest.fn(() => 'Invalid lat');
+
+    const App = () => {
+      form = useForm<FormValues>({
+        defaultValues: { location: { coords: { lat: 1 } } },
+      });
+      form.formState.errors;
+      form.register('location.coords', {
+        validate: (coords) => coords.lat >= 0 || 'Invalid latitude',
+      });
+
+      return (
+        <input
+          {...form.register('location.coords.lat', { validate: validateLat })}
+        />
+      );
+    };
+
+    render(<App />);
+
+    await act(async () => {
+      form.setValue(
+        'location',
+        { coords: { lat: -1 } },
+        { shouldValidate: true },
+      );
+    });
+
+    expect(screen.getByRole('textbox')).toHaveValue('-1');
+    expect(form.formState.errors.location?.coords?.message).toBe(
+      'Invalid latitude',
+    );
+    expect(form.formState.errors.location?.coords?.lat?.message).toBe(
+      'Invalid lat',
+    );
+    expect(validateLat).toHaveBeenCalledTimes(1);
+  });
+
   it('update both dirty and touched state', () => {
     const App = () => {
       const {
