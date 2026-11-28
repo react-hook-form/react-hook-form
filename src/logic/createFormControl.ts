@@ -1239,6 +1239,26 @@ export function createFormControl<
         });
       }
 
+      if (field && field._f && isObject(fieldValue)) {
+        setFieldValues(
+          fieldName,
+          fieldValue,
+          {},
+          skipClone,
+          skipRender,
+          skipValueRender,
+        );
+        setFieldValue(
+          fieldName,
+          fieldValue,
+          options,
+          skipClone,
+          skipRender,
+          skipValueRender,
+        );
+        continue;
+      }
+
       (_names.array.has(name) ||
         isObject(fieldValue) ||
         (field && !field._f)) &&
