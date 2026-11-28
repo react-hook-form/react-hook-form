@@ -1986,7 +1986,7 @@ describe('setValue', () => {
   it('validate a registered object field and update its registered children when its parent is set', async () => {
     type FormValues = { location: { coords: { lat: number } } };
     let form!: ReturnType<typeof useForm<FormValues>>;
-    const validateLat = jest.fn(() => true);
+    const validateLat = jest.fn(() => 'Invalid lat');
 
     const App = () => {
       form = useForm<FormValues>({
@@ -2017,6 +2017,9 @@ describe('setValue', () => {
     expect(screen.getByRole('textbox')).toHaveValue('-1');
     expect(form.formState.errors.location?.coords?.message).toBe(
       'Invalid latitude',
+    );
+    expect(form.formState.errors.location?.coords?.lat?.message).toBe(
+      'Invalid lat',
     );
     expect(validateLat).toHaveBeenCalledTimes(1);
   });
